@@ -1,12 +1,2 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/social-posts",
-      "schedule": "0 */2 * * *"
-    },
-    {
-      "path": "/api/cron/sofia-comments",
-      "schedule": "*/2 * * * *"
-    }
-  ]
 }
