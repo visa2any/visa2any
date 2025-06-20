@@ -1,0 +1,362 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Waitlist Management System",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waitlist-signup",
+        "options": {}
+      },
+      "id": "waitlist-signup-webhook",
+      "name": "Waitlist Signup Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "waitlist-signup",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body;\nconst headers = $json.headers;\n\nif (headers['x-webhook-secret'] !== 'visa2any_webhook_secret_2024') {\n  throw new Error('Invalid webhook secret');\n}\n\nconst waitlistData = {\n  clientId: body.clientId,\n  clientName: body.clientName,\n  clientEmail: body.clientEmail,\n  clientPhone: body.clientPhone,\n  country: body.country,\n  consulate: body.consulate,\n  visaType: body.visaType,\n  currentAppointmentDate: body.currentAppointmentDate,\n  preferredDateStart: body.preferredDateStart,\n  preferredDateEnd: body.preferredDateEnd,\n  priority: parseInt(body.priority) || 2,\n  notificationMethods: body.notificationMethods || ['whatsapp', 'email'],\n  maxNoticeHours: parseInt(body.maxNoticeHours) || 24,\n  signupSource: body.source || 'WEBSITE',\n  createdAt: new Date().toISOString()\n};\n\nconst requiredFields = ['clientId', 'clientName', 'country', 'consulate', 'visaType'];\nfor (const field of requiredFields) {\n  if (!waitlistData[field]) {\n    throw new Error(`Missing required field: ${field}`);\n  }\n}\n\nreturn [{ json: waitlistData }];"
+      },
+      "id": "validate-waitlist-signup",
+      "name": "Validate Waitlist Signup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "executeQuery",
+            "data": {
+              "query": "SELECT * FROM appointment_waitlist WHERE client_id = $1 AND country = $2 AND consulate = $3 AND status = 'ACTIVE'",
+              "values": ["{{ $json.clientId }}", "{{ $json.country }}", "{{ $json.consulate }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "check-existing-waitlist",
+      "name": "Check Existing Waitlist",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "is-new-signup",
+      "name": "Is New Signup?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "insert",
+            "data": {
+              "table": "appointment_waitlist",
+              "columns": "client_id, country, consulate, visa_type, current_appointment_date, preferred_date_range_start, preferred_date_range_end, priority, notification_methods, max_notice_hours, created_at, status",
+              "values": ["{{ $('validate-waitlist-signup').item.json.clientId }}", "{{ $('validate-waitlist-signup').item.json.country }}", "{{ $('validate-waitlist-signup').item.json.consulate }}", "{{ $('validate-waitlist-signup').item.json.visaType }}", "{{ $('validate-waitlist-signup').item.json.currentAppointmentDate }}", "{{ $('validate-waitlist-signup').item.json.preferredDateStart }}", "{{ $('validate-waitlist-signup').item.json.preferredDateEnd }}", "{{ $('validate-waitlist-signup').item.json.priority }}", "{{ JSON.stringify($('validate-waitlist-signup').item.json.notificationMethods) }}", "{{ $('validate-waitlist-signup').item.json.maxNoticeHours }}", "{{ $('validate-waitlist-signup').item.json.createdAt }}", "ACTIVE"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "add-to-waitlist",
+      "name": "Add to Waitlist",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        800,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "update",
+            "data": {
+              "table": "appointment_waitlist",
+              "updateKey": "id",
+              "columns": "preferred_date_range_start, preferred_date_range_end, priority, notification_methods, max_notice_hours, status",
+              "values": ["{{ $('validate-waitlist-signup').item.json.preferredDateStart }}", "{{ $('validate-waitlist-signup').item.json.preferredDateEnd }}", "{{ $('validate-waitlist-signup').item.json.priority }}", "{{ JSON.stringify($('validate-waitlist-signup').item.json.notificationMethods) }}", "{{ $('validate-waitlist-signup').item.json.maxNoticeHours }}", "ACTIVE"],
+              "where": {
+                "id": "{{ $json.id }}"
+              }
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "update-existing-waitlist",
+      "name": "Update Existing Waitlist",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        800,
+        50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const signupData = $('validate-waitlist-signup').item.json;\nconst isNew = $('is-new-signup').item.json.id ? false : true;\n\nconst confirmationMessage = `✅ *WAITLIST CONFIRMADA!* ✅\\n\\n` +\n  `Olá ${signupData.clientName}!\\n\\n` +\n  `${isNew ? '🆕 Você foi adicionado' : '🔄 Suas preferências foram atualizadas'} na nossa waitlist para:\\n\\n` +\n  `🏛️ *Consulado:* ${signupData.consulate}\\n` +\n  `🌍 *País:* ${signupData.country}\\n` +\n  `📋 *Tipo de Visto:* ${signupData.visaType}\\n\\n` +\n  `📅 *Período Preferido:*\\n` +\n  `De: ${signupData.preferredDateStart ? new Date(signupData.preferredDateStart).toLocaleDateString('pt-BR') : 'Qualquer data'}\\n` +\n  `Até: ${signupData.preferredDateEnd ? new Date(signupData.preferredDateEnd).toLocaleDateString('pt-BR') : 'Qualquer data'}\\n\\n` +\n  `⚡ *Prioridade:* ${getPriorityText(signupData.priority)}\\n` +\n  `⏰ *Aviso mínimo:* ${signupData.maxNoticeHours}h\\n\\n` +\n  `🔔 *Como você será notificado:*\\n${signupData.notificationMethods.map(method => getMethodEmoji(method) + ' ' + getMethodName(method)).join('\\n')}\\n\\n` +\n  `🤖 *Sistema ativo:* Monitoramos cancelamentos a cada 2 minutos\\n` +\n  `⚡ *Resposta rápida:* Você será notificado instantaneamente\\n\\n` +\n  `📞 Dúvidas? Responda esta mensagem!`;\n\nfunction getPriorityText(priority) {\n  const priorities = {\n    1: 'Baixa (notificação em 1h)',\n    2: 'Média (notificação em 15min)', \n    3: 'Alta (notificação em 5min)',\n    4: 'Urgente (notificação imediata)'\n  };\n  return priorities[priority] || 'Média';\n}\n\nfunction getMethodEmoji(method) {\n  const emojis = {\n    'whatsapp': '📱',\n    'email': '📧',\n    'sms': '💬',\n    'phone': '📞'\n  };\n  return emojis[method] || '📱';\n}\n\nfunction getMethodName(method) {\n  const names = {\n    'whatsapp': 'WhatsApp',\n    'email': 'Email',\n    'sms': 'SMS',\n    'phone': 'Ligação'\n  };\n  return names[method] || 'WhatsApp';\n}\n\nconst emailSubject = `✅ Waitlist Confirmada - ${signupData.consulate}`;\n\nreturn [{\n  json: {\n    ...signupData,\n    isNewSignup: isNew,\n    confirmationMessage,\n    emailSubject\n  }\n}];"
+      },
+      "id": "prepare-confirmation",
+      "name": "Prepare Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.confirmationMessage }}",
+            "priority": "MEDIUM",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "WAITLIST_CONFIRMATION"
+          }
+        }
+      },
+      "id": "send-confirmation-whatsapp",
+      "name": "Send Confirmation WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "{{ $json.emailSubject }}",
+            "template": "waitlist-confirmation",
+            "priority": "MEDIUM",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "country": "{{ $json.country }}",
+              "consulate": "{{ $json.consulate }}",
+              "visaType": "{{ $json.visaType }}",
+              "preferredDateStart": "{{ $json.preferredDateStart }}",
+              "preferredDateEnd": "{{ $json.preferredDateEnd }}",
+              "priority": "{{ $json.priority }}",
+              "maxNoticeHours": "{{ $json.maxNoticeHours }}",
+              "isNewSignup": "{{ $json.isNewSignup }}"
+            }
+          }
+        }
+      },
+      "id": "send-confirmation-email",
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "message": "📋 *WAITLIST SIGNUP* 📋\\n\\n👤 *Cliente:* {{ $json.clientName }}\\n📧 *Email:* {{ $json.clientEmail }}\\n🏛️ *Consulado:* {{ $json.consulate }}\\n🌍 *País:* {{ $json.country }}\\n📋 *Visto:* {{ $json.visaType }}\\n\\n📅 *Período Preferido:*\\n• De: {{ $json.preferredDateStart || 'Qualquer data' }}\\n• Até: {{ $json.preferredDateEnd || 'Qualquer data' }}\\n\\n⚡ *Prioridade:* {{ $json.priority }}/4\\n⏰ *Aviso mínimo:* {{ $json.maxNoticeHours }}h\\n🔔 *Métodos:* {{ $json.notificationMethods.join(', ') }}\\n\\n📊 *Status:* {{ $json.isNewSignup ? 'Novo cadastro' : 'Atualização' }}",
+        "chatId": "-1001234567890",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-team-signup",
+      "name": "Notify Team Signup",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 4,
+      "position": [
+        1400,
+        0
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Waitlist Signup Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Waitlist Signup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Waitlist Signup": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Waitlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Waitlist": {
+      "main": [
+        [
+          {
+            "node": "Is New Signup?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New Signup?": {
+      "main": [
+        [
+          {
+            "node": "Add to Waitlist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Existing Waitlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Waitlist": {
+      "main": [
+        [
+          {
+            "node": "Prepare Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Existing Waitlist": {
+      "main": [
+        [
+          {
+            "node": "Prepare Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Notify Team Signup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Team Signup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  }
+}

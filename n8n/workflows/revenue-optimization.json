@@ -1,0 +1,510 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Revenue Optimization - Intelligent Upsell",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "visa-approved",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "id": "visa-approved-webhook",
+      "name": "Visa Approved Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "visa-approved",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "amount": 7,
+        "unit": "days"
+      },
+      "id": "celebration-delay",
+      "name": "Celebration Period (7 days)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate visa approval data\nconst body = $json.body;\nconst headers = $json.headers;\n\n// Validate webhook secret\nif (headers['x-webhook-secret'] !== 'visa2any_webhook_secret_2024') {\n  throw new Error('Invalid webhook secret');\n}\n\nconst approvalData = {\n  clientId: body.clientId,\n  clientName: body.clientName,\n  clientEmail: body.clientEmail,\n  clientPhone: body.clientPhone,\n  visaType: body.visaType,\n  targetCountry: body.targetCountry,\n  approvalDate: body.approvalDate || new Date().toISOString(),\n  totalAmountPaid: body.totalAmountPaid || 0,\n  serviceLevel: body.serviceLevel || 'STANDARD', // BASIC, STANDARD, PREMIUM, VIP\n  processingTime: body.processingTime || null,\n  consultor: body.consultor || null,\n  referralSource: body.referralSource || null\n};\n\n// Calculate client value score for upsell targeting\nlet clientValueScore = 0;\nif (approvalData.totalAmountPaid >= 5000) clientValueScore += 30;\nelse if (approvalData.totalAmountPaid >= 3000) clientValueScore += 20;\nelse if (approvalData.totalAmountPaid >= 1500) clientValueScore += 10;\n\nif (approvalData.serviceLevel === 'VIP') clientValueScore += 25;\nelse if (approvalData.serviceLevel === 'PREMIUM') clientValueScore += 15;\nelse if (approvalData.serviceLevel === 'STANDARD') clientValueScore += 5;\n\nif (approvalData.processingTime && approvalData.processingTime <= 30) clientValueScore += 15;\n\nif (['USA', 'CANADA', 'AUSTRALIA', 'UK'].includes(approvalData.targetCountry)) clientValueScore += 20;\nelse if (['GERMANY', 'FRANCE', 'SPAIN', 'PORTUGAL'].includes(approvalData.targetCountry)) clientValueScore += 15;\n\nreturn [{ json: { ...approvalData, clientValueScore } }];"
+      },
+      "id": "process-approval-data",
+      "name": "Process Approval Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "executeQuery",
+            "data": {
+              "query": "SELECT c.*, cp.family_members, cp.has_dependents, cp.plans_to_immigrate, cp.interested_in_citizenship, cp.budget_range FROM clients c LEFT JOIN client_profiles cp ON c.id = cp.client_id WHERE c.id = $1",
+              "values": ["{{ $json.clientId }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "fetch-client-profile",
+      "name": "Fetch Client Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Intelligent upsell opportunity detection\nconst approvalData = $('process-approval-data').item.json;\nconst clientProfile = $json;\n\nconst upsellOpportunities = [];\nlet totalUpsellValue = 0;\n\n// 1. FAMILY REUNIFICATION\nif (clientProfile.has_dependents && clientProfile.family_members > 0) {\n  const familyValue = clientProfile.family_members * 2500; // Average per family member\n  upsellOpportunities.push({\n    type: 'FAMILY_REUNIFICATION',\n    title: 'Reunificação Familiar',\n    description: `Traga ${clientProfile.family_members} familiar(es) para ${approvalData.targetCountry}`,\n    estimatedValue: familyValue,\n    probability: clientProfile.family_members <= 3 ? 85 : 70,\n    timeline: '2-6 meses',\n    priority: 'HIGH'\n  });\n  totalUpsellValue += familyValue;\n}\n\n// 2. PERMANENT RESIDENCY / CITIZENSHIP\nif (clientProfile.interested_in_citizenship || clientProfile.plans_to_immigrate) {\n  const citizenshipValue = approvalData.targetCountry === 'USA' ? 8000 : \n                          ['CANADA', 'AUSTRALIA'].includes(approvalData.targetCountry) ? 6000 :\n                          ['GERMANY', 'PORTUGAL'].includes(approvalData.targetCountry) ? 5000 : 4000;\n  \n  upsellOpportunities.push({\n    type: 'CITIZENSHIP_PATHWAY',\n    title: 'Caminho para Cidadania',\n    description: `Processo completo de cidadania ${approvalData.targetCountry}`,\n    estimatedValue: citizenshipValue,\n    probability: clientProfile.interested_in_citizenship ? 75 : 50,\n    timeline: '12-24 meses',\n    priority: 'MEDIUM'\n  });\n  totalUpsellValue += citizenshipValue;\n}\n\n// 3. RELOCATION SERVICES\nif (approvalData.clientValueScore >= 50) {\n  upsellOpportunities.push({\n    type: 'RELOCATION_PACKAGE',\n    title: 'Pacote Completo de Relocação',\n    description: 'Moradia, escola, trabalho, abertura de conta bancária',\n    estimatedValue: 3500,\n    probability: 60,\n    timeline: '1-3 meses',\n    priority: 'MEDIUM'\n  });\n  totalUpsellValue += 3500;\n}\n\n// 4. BUSINESS VISA UPGRADE\nif (approvalData.visaType.includes('TOURIST') && clientProfile.budget_range === 'HIGH') {\n  upsellOpportunities.push({\n    type: 'BUSINESS_VISA',\n    title: 'Upgrade para Visto de Negócios',\n    description: 'Possibilidades de investimento e negócios',\n    estimatedValue: 4500,\n    probability: 40,\n    timeline: '3-6 meses',\n    priority: 'LOW'\n  });\n  totalUpsellValue += 4500;\n}\n\n// 5. SECOND COUNTRY VISA\nif (approvalData.clientValueScore >= 40) {\n  const secondCountryOptions = {\n    'USA': ['CANADA', 'UK'],\n    'CANADA': ['USA', 'AUSTRALIA'],\n    'AUSTRALIA': ['NEW_ZEALAND', 'CANADA'],\n    'UK': ['IRELAND', 'PORTUGAL'],\n    'GERMANY': ['AUSTRIA', 'SWITZERLAND']\n  };\n  \n  const secondCountries = secondCountryOptions[approvalData.targetCountry] || ['PORTUGAL', 'SPAIN'];\n  \n  upsellOpportunities.push({\n    type: 'SECOND_COUNTRY',\n    title: 'Segundo Visto - Múltiplas Opções',\n    description: `Expanda suas possibilidades: ${secondCountries.join(' ou ')}`,\n    estimatedValue: 3000,\n    probability: 35,\n    timeline: '4-8 meses',\n    priority: 'LOW'\n  });\n  totalUpsellValue += 3000;\n}\n\n// 6. PREMIUM SUPPORT UPGRADE\nif (approvalData.serviceLevel === 'STANDARD' && approvalData.clientValueScore >= 30) {\n  upsellOpportunities.push({\n    type: 'PREMIUM_SUPPORT',\n    title: 'Upgrade para Suporte Premium',\n    description: 'Atendimento VIP para futuros processos',\n    estimatedValue: 1500,\n    probability: 70,\n    timeline: 'Imediato',\n    priority: 'MEDIUM'\n  });\n  totalUpsellValue += 1500;\n}\n\n// Sort by priority and probability\nupsellOpportunities.sort((a, b) => {\n  const priorityWeight = { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };\n  const scoreA = priorityWeight[a.priority] * a.probability;\n  const scoreB = priorityWeight[b.priority] * b.probability;\n  return scoreB - scoreA;\n});\n\nreturn [{\n  json: {\n    ...approvalData,\n    clientProfile,\n    upsellOpportunities,\n    totalUpsellValue,\n    upsellScore: Math.min(100, (upsellOpportunities.length * 15) + (approvalData.clientValueScore * 0.5)),\n    celebrationCompleted: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "detect-upsell-opportunities",
+      "name": "Detect Upsell Opportunities",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.upsellOpportunities.length }}",
+              "operation": "largerEqual",
+              "value2": 1
+            }
+          ]
+        }
+      },
+      "id": "has-upsell-opportunities",
+      "name": "Has Upsell Opportunities?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare personalized upsell campaign\nconst data = $json;\nconst topOpportunity = data.upsellOpportunities[0];\nconst secondaryOpportunities = data.upsellOpportunities.slice(1, 3);\n\n// Congratulatory message with strategic upsell\nconst whatsappMessage = `🎉 PARABÉNS, ${data.clientName}! Seu visto para ${data.targetCountry} foi aprovado! 🇺🇸✈️\\n\\n` +\n  `🌟 Que conquista incrível! Agora é hora de planejar os próximos passos...\\n\\n` +\n  `💡 *OPORTUNIDADE ESPECIAL*\\n` +\n  `🎯 ${topOpportunity.title}\\n` +\n  `📋 ${topOpportunity.description}\\n` +\n  `⏰ ${topOpportunity.timeline}\\n\\n` +\n  `${secondaryOpportunities.length > 0 ? \n    `🔥 *OUTRAS POSSIBILIDADES:*\\n${secondaryOpportunities.map(opp => `• ${opp.title}`).join('\\n')}\\n\\n` : ''}` +\n  `📞 Quer saber mais? Responda \"SIM\" e nossa equipe entrará em contato!\\n\\n` +\n  `🎁 *OFERTA LIMITADA:* 15% desconto para ex-clientes até ${new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}`;\n\n// Email content with detailed opportunities\nconst emailData = {\n  to: data.clientEmail,\n  subject: `🎉 PARABÉNS! Seu visto foi aprovado + Próximas oportunidades`,\n  template: 'visa-approved-upsell',\n  priority: 'HIGH',\n  data: {\n    clientName: data.clientName,\n    targetCountry: data.targetCountry,\n    visaType: data.visaType,\n    approvalDate: data.approvalDate,\n    topOpportunity: topOpportunity,\n    allOpportunities: data.upsellOpportunities,\n    totalValue: data.totalUpsellValue,\n    celebrationDate: data.celebrationCompleted,\n    discountExpiry: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString()\n  }\n};\n\n// Follow-up sequence planning\nconst followUpSequence = [\n  {\n    delay: 3, // days\n    type: 'EMAIL',\n    subject: 'Como Está Se Preparando para a Viagem?',\n    content: 'tips_preparation',\n    cta: 'relocation_services'\n  },\n  {\n    delay: 7, // days  \n    type: 'WHATSAPP',\n    content: 'family_reunification_offer',\n    condition: data.clientProfile.has_dependents\n  },\n  {\n    delay: 14, // days\n    type: 'EMAIL',\n    subject: 'Planejando Permanência? Cidadania Pode Ser Sua!',\n    content: 'citizenship_pathway',\n    condition: data.clientProfile.interested_in_citizenship\n  },\n  {\n    delay: 30, // days\n    type: 'PHONE_CALL',\n    content: 'personal_consultation',\n    priority: 'HIGH'\n  }\n];\n\nreturn [{\n  json: {\n    ...data,\n    upsellCampaign: {\n      whatsappMessage,\n      emailData,\n      followUpSequence,\n      campaignId: `UPSELL_${data.clientId}_${Date.now()}`,\n      expectedRevenue: data.totalUpsellValue * 0.3, // 30% conversion estimate\n      campaignStarted: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "prepare-upsell-campaign",
+      "name": "Prepare Upsell Campaign",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.upsellCampaign.whatsappMessage }}",
+            "priority": "HIGH",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "{{ $json.upsellCampaign.campaignId }}"
+          }
+        }
+      },
+      "id": "send-congratulations-whatsapp",
+      "name": "Send Congratulations WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": "{{ $json.upsellCampaign.emailData }}"
+        }
+      },
+      "id": "send-congratulations-email",
+      "name": "Send Congratulations Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "insert",
+            "data": {
+              "table": "upsell_campaigns",
+              "columns": "client_id, campaign_id, visa_approved_date, opportunities, total_value, campaign_data, status, created_at",
+              "values": ["{{ $json.clientId }}", "{{ $json.upsellCampaign.campaignId }}", "{{ $json.approvalDate }}", "{{ JSON.stringify($json.upsellOpportunities) }}", "{{ $json.totalUpsellValue }}", "{{ JSON.stringify($json.upsellCampaign) }}", "ACTIVE", "{{ $json.upsellCampaign.campaignStarted }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "create-upsell-campaign",
+      "name": "Create Upsell Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Schedule follow-up sequence\nconst data = $json;\nconst followUps = data.upsellCampaign.followUpSequence;\n\nconst scheduledTasks = followUps.map((followUp, index) => {\n  // Check conditions\n  if (followUp.condition && !followUp.condition) {\n    return null; // Skip this follow-up\n  }\n  \n  const scheduleDate = new Date(Date.now() + followUp.delay * 24 * 60 * 60 * 1000);\n  \n  return {\n    json: {\n      clientId: data.clientId,\n      campaignId: data.upsellCampaign.campaignId,\n      sequenceStep: index + 1,\n      type: followUp.type,\n      scheduledFor: scheduleDate.toISOString(),\n      content: followUp.content,\n      subject: followUp.subject || null,\n      cta: followUp.cta || null,\n      priority: followUp.priority || 'MEDIUM',\n      status: 'SCHEDULED'\n    }\n  };\n}).filter(Boolean);\n\nreturn scheduledTasks;"
+      },
+      "id": "schedule-follow-ups",
+      "name": "Schedule Follow-ups",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "insert",
+            "data": {
+              "table": "scheduled_follow_ups",
+              "columns": "client_id, campaign_id, sequence_step, type, scheduled_for, content, subject, cta, priority, status",
+              "values": ["{{ $json.clientId }}", "{{ $json.campaignId }}", "{{ $json.sequenceStep }}", "{{ $json.type }}", "{{ $json.scheduledFor }}", "{{ $json.content }}", "{{ $json.subject }}", "{{ $json.cta }}", "{{ $json.priority }}", "{{ $json.status }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "save-follow-ups",
+      "name": "Save Follow-ups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "message": "💰 *UPSELL CAMPAIGN LAUNCHED*\\n\\n🎉 *Client:* {{ $json.clientName }}\\n🌍 *Approved for:* {{ $json.targetCountry }}\\n💎 *Upsell Score:* {{ $json.upsellScore }}/100\\n\\n🎯 *Opportunities ({{ $json.upsellOpportunities.length }}):*\\n{{ $json.upsellOpportunities.slice(0,3).map(opp => `• ${opp.title} (${opp.probability}%)`).join('\\n') }}\\n\\n💵 *Total Value:* R$ {{ $json.totalUpsellValue.toLocaleString() }}\\n📈 *Expected Revenue:* R$ {{ $json.upsellCampaign.expectedRevenue.toLocaleString() }}\\n\\n🚀 *Campaign:* {{ $json.upsellCampaign.campaignId }}\\n📅 *Follow-ups:* {{ $json.upsellCampaign.followUpSequence.length }} scheduled",
+        "chatId": "-1001234567890",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-sales-team",
+      "name": "Notify Sales Team",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 4,
+      "position": [
+        2200,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple congratulations for clients without immediate upsell opportunities\nconst data = $json;\n\nconst simpleMessage = `🎉 PARABÉNS, ${data.clientName}! Seu visto para ${data.targetCountry} foi aprovado! 🌟\\n\\n` +\n  `✈️ Que conquista incrível! Desejamos uma excelente viagem e experiência!\\n\\n` +\n  `🤝 Lembre-se: a Visa2Any está sempre aqui para te ajudar com futuros processos\\n\\n` +\n  `📞 Qualquer dúvida, pode nos procurar!\\n\\n` +\n  `🌟 Obrigado por confiar em nossos serviços!`;\n\nreturn [{\n  json: {\n    ...data,\n    simpleMessage,\n    campaignType: 'CONGRATULATIONS_ONLY'\n  }\n}];"
+      },
+      "id": "prepare-simple-congratulations",
+      "name": "Prepare Simple Congratulations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.simpleMessage }}",
+            "priority": "MEDIUM",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "SIMPLE_CONGRATULATIONS"
+          }
+        }
+      },
+      "id": "send-simple-whatsapp",
+      "name": "Send Simple WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "🎉 PARABÉNS! Seu visto foi aprovado!",
+            "template": "simple-visa-congratulations",
+            "priority": "MEDIUM",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "targetCountry": "{{ $json.targetCountry }}",
+              "visaType": "{{ $json.visaType }}",
+              "approvalDate": "{{ $json.approvalDate }}"
+            }
+          }
+        }
+      },
+      "id": "send-simple-email",
+      "name": "Send Simple Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        100
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Visa Approved Webhook": {
+      "main": [
+        [
+          {
+            "node": "Celebration Period (7 days)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Celebration Period (7 days)": {
+      "main": [
+        [
+          {
+            "node": "Process Approval Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Approval Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch Client Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Client Profile": {
+      "main": [
+        [
+          {
+            "node": "Detect Upsell Opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Upsell Opportunities": {
+      "main": [
+        [
+          {
+            "node": "Has Upsell Opportunities?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Upsell Opportunities?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Upsell Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Simple Congratulations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Upsell Campaign": {
+      "main": [
+        [
+          {
+            "node": "Send Congratulations WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Congratulations Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Congratulations WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Create Upsell Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Congratulations Email": {
+      "main": [
+        [
+          {
+            "node": "Create Upsell Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Upsell Campaign": {
+      "main": [
+        [
+          {
+            "node": "Schedule Follow-ups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Follow-ups": {
+      "main": [
+        [
+          {
+            "node": "Save Follow-ups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Follow-ups": {
+      "main": [
+        [
+          {
+            "node": "Notify Sales Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Simple Congratulations": {
+      "main": [
+        [
+          {
+            "node": "Send Simple WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Simple Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  }
+}

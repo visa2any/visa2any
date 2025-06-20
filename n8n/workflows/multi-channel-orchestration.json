@@ -1,0 +1,542 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Multi-Channel Orchestration",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "trigger-orchestration",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "id": "orchestration-trigger",
+      "name": "Orchestration Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "trigger-orchestration",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate orchestration request\nconst body = $json.body;\nconst headers = $json.headers;\n\n// Validate webhook secret\nif (headers['x-webhook-secret'] !== 'visa2any_webhook_secret_2024') {\n  throw new Error('Invalid webhook secret');\n}\n\nconst orchestrationData = {\n  clientId: body.clientId,\n  clientName: body.clientName,\n  clientEmail: body.clientEmail,\n  clientPhone: body.clientPhone,\n  trigger: body.trigger, // HIGH_SCORE, PAYMENT_PENDING, NO_RESPONSE, etc.\n  priority: body.priority || 'MEDIUM', // URGENT, HIGH, MEDIUM, LOW\n  context: body.context || {}, // Additional context data\n  targetCountry: body.targetCountry || null,\n  visaType: body.visaType || null,\n  serviceLevel: body.serviceLevel || 'STANDARD',\n  lastContact: body.lastContact || null,\n  preferredChannel: body.preferredChannel || 'AUTO',\n  timeZone: body.timeZone || 'America/Sao_Paulo',\n  orchestrationId: `ORCH_${Date.now()}_${body.clientId}`,\n  createdAt: new Date().toISOString()\n};\n\n// Validate required fields\nconst requiredFields = ['clientId', 'clientName', 'trigger'];\nfor (const field of requiredFields) {\n  if (!orchestrationData[field]) {\n    throw new Error(`Missing required field: ${field}`);\n  }\n}\n\nreturn [{ json: orchestrationData }];"
+      },
+      "id": "validate-orchestration-data",
+      "name": "Validate Orchestration Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "fetch_communication_history",
+            "data": {
+              "clientId": "{{ $json.clientId }}",
+              "query": "SELECT cc.*, cp.communication_preferences, cp.best_contact_time FROM client_communications cc LEFT JOIN client_preferences cp ON cc.client_id = cp.client_id WHERE cc.client_id = ? ORDER BY cc.created_at DESC LIMIT 10",
+              "values": ["{{ $json.clientId }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "fetch-communication-history",
+      "name": "Fetch Communication History",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Intelligent channel orchestration strategy\nconst orchestrationData = $('validate-orchestration-data').item.json;\nconst commHistory = $input.all().map(item => item.json);\n\n// Analyze communication patterns\nconst channelStats = {\n  whatsapp: { sent: 0, responded: 0, lastResponse: null },\n  email: { sent: 0, responded: 0, lastResponse: null },\n  sms: { sent: 0, responded: 0, lastResponse: null },\n  phone: { attempted: 0, connected: 0, lastCall: null }\n};\n\ncommHistory.forEach(comm => {\n  if (channelStats[comm.channel]) {\n    channelStats[comm.channel].sent++;\n    if (comm.response_received) {\n      channelStats[comm.channel].responded++;\n      if (!channelStats[comm.channel].lastResponse || \n          new Date(comm.created_at) > new Date(channelStats[comm.channel].lastResponse)) {\n        channelStats[comm.channel].lastResponse = comm.created_at;\n      }\n    }\n  }\n});\n\n// Calculate response rates\nObject.keys(channelStats).forEach(channel => {\n  const stats = channelStats[channel];\n  stats.responseRate = stats.sent > 0 ? (stats.responded / stats.sent) * 100 : 0;\n  stats.daysSinceLastResponse = stats.lastResponse ? \n    Math.floor((new Date() - new Date(stats.lastResponse)) / (1000 * 60 * 60 * 24)) : 999;\n});\n\n// Determine orchestration strategy based on trigger and history\nlet orchestrationStrategy = {\n  sequence: [],\n  totalDuration: 0, // hours\n  expectedChannels: 0,\n  escalationPath: []\n};\n\nswitch (orchestrationData.trigger) {\n  case 'HIGH_SCORE_LEAD':\n    orchestrationStrategy = createHighScoreStrategy(orchestrationData, channelStats);\n    break;\n  case 'PAYMENT_PENDING':\n    orchestrationStrategy = createPaymentStrategy(orchestrationData, channelStats);\n    break;\n  case 'NO_RESPONSE_FOLLOWUP':\n    orchestrationStrategy = createFollowUpStrategy(orchestrationData, channelStats);\n    break;\n  case 'DOCUMENT_REMINDER':\n    orchestrationStrategy = createDocumentStrategy(orchestrationData, channelStats);\n    break;\n  case 'CONSULTATION_REMINDER':\n    orchestrationStrategy = createConsultationStrategy(orchestrationData, channelStats);\n    break;\n  case 'VISA_APPROVED_CELEBRATION':\n    orchestrationStrategy = createCelebrationStrategy(orchestrationData, channelStats);\n    break;\n  default:\n    orchestrationStrategy = createStandardStrategy(orchestrationData, channelStats);\n}\n\n// Functions to create different strategies\nfunction createHighScoreStrategy(data, stats) {\n  const bestChannel = getBestChannel(stats);\n  return {\n    sequence: [\n      { channel: 'whatsapp', delay: 0, type: 'IMMEDIATE_CONTACT', priority: 'URGENT' },\n      { channel: 'email', delay: 2, type: 'DETAILED_PROPOSAL', priority: 'HIGH' },\n      { channel: 'phone', delay: 24, type: 'PERSONAL_CONSULTATION', priority: 'HIGH' },\n      { channel: 'sms', delay: 48, type: 'FINAL_OFFER', priority: 'MEDIUM' }\n    ],\n    totalDuration: 72,\n    expectedChannels: 4,\n    escalationPath: ['whatsapp', 'phone', 'email', 'sms']\n  };\n}\n\nfunction createPaymentStrategy(data, stats) {\n  return {\n    sequence: [\n      { channel: 'whatsapp', delay: 0, type: 'PAYMENT_REMINDER', priority: 'URGENT' },\n      { channel: 'email', delay: 4, type: 'PAYMENT_LINK', priority: 'URGENT' },\n      { channel: 'phone', delay: 24, type: 'PAYMENT_ASSISTANCE', priority: 'HIGH' },\n      { channel: 'sms', delay: 48, type: 'PAYMENT_FINAL_NOTICE', priority: 'URGENT' },\n      { channel: 'phone', delay: 72, type: 'MANAGER_ESCALATION', priority: 'URGENT' }\n    ],\n    totalDuration: 96,\n    expectedChannels: 4,\n    escalationPath: ['whatsapp', 'email', 'phone', 'manager']\n  };\n}\n\nfunction createFollowUpStrategy(data, stats) {\n  const responseRate = Object.values(stats).reduce((acc, s) => acc + s.responseRate, 0) / 4;\n  const sequence = responseRate > 50 ? [\n    { channel: getBestChannel(stats), delay: 0, type: 'GENTLE_FOLLOWUP', priority: 'MEDIUM' },\n    { channel: 'email', delay: 24, type: 'VALUE_REMINDER', priority: 'MEDIUM' },\n    { channel: 'whatsapp', delay: 72, type: 'FINAL_ATTEMPT', priority: 'LOW' }\n  ] : [\n    { channel: 'whatsapp', delay: 0, type: 'REENGAGEMENT', priority: 'MEDIUM' },\n    { channel: 'email', delay: 12, type: 'SPECIAL_OFFER', priority: 'MEDIUM' },\n    { channel: 'phone', delay: 48, type: 'PERSONAL_OUTREACH', priority: 'MEDIUM' }\n  ];\n  \n  return {\n    sequence,\n    totalDuration: 96,\n    expectedChannels: 3,\n    escalationPath: [getBestChannel(stats), 'email', 'phone']\n  };\n}\n\nfunction createDocumentStrategy(data, stats) {\n  return {\n    sequence: [\n      { channel: 'whatsapp', delay: 0, type: 'DOCUMENT_REMINDER', priority: 'HIGH' },\n      { channel: 'email', delay: 8, type: 'DOCUMENT_GUIDE', priority: 'HIGH' },\n      { channel: 'phone', delay: 24, type: 'DOCUMENT_ASSISTANCE', priority: 'MEDIUM' },\n      { channel: 'whatsapp', delay: 48, type: 'DEADLINE_WARNING', priority: 'HIGH' }\n    ],\n    totalDuration: 72,\n    expectedChannels: 3,\n    escalationPath: ['whatsapp', 'email', 'phone']\n  };\n}\n\nfunction createConsultationStrategy(data, stats) {\n  return {\n    sequence: [\n      { channel: 'whatsapp', delay: 0, type: 'CONSULTATION_REMINDER', priority: 'HIGH' },\n      { channel: 'email', delay: 2, type: 'CONSULTATION_DETAILS', priority: 'HIGH' },\n      { channel: 'sms', delay: 8, type: 'CONSULTATION_CONFIRMATION', priority: 'MEDIUM' },\n      { channel: 'phone', delay: 1, type: 'CONSULTATION_CALL', priority: 'HIGH' } // 1 hour before\n    ],\n    totalDuration: 24,\n    expectedChannels: 4,\n    escalationPath: ['whatsapp', 'email', 'phone']\n  };\n}\n\nfunction createCelebrationStrategy(data, stats) {\n  return {\n    sequence: [\n      { channel: 'whatsapp', delay: 0, type: 'VISA_CELEBRATION', priority: 'HIGH' },\n      { channel: 'email', delay: 1, type: 'DETAILED_CONGRATULATIONS', priority: 'MEDIUM' },\n      { channel: 'phone', delay: 24, type: 'CELEBRATION_CALL', priority: 'MEDIUM' },\n      { channel: 'email', delay: 168, type: 'UPSELL_OPPORTUNITY', priority: 'LOW' } // 1 week later\n    ],\n    totalDuration: 192, // 8 days\n    expectedChannels: 3,\n    escalationPath: ['whatsapp', 'email', 'phone']\n  };\n}\n\nfunction createStandardStrategy(data, stats) {\n  return {\n    sequence: [\n      { channel: getBestChannel(stats), delay: 0, type: 'INITIAL_CONTACT', priority: 'MEDIUM' },\n      { channel: 'email', delay: 24, type: 'FOLLOWUP_EMAIL', priority: 'MEDIUM' },\n      { channel: 'whatsapp', delay: 72, type: 'FINAL_ATTEMPT', priority: 'LOW' }\n    ],\n    totalDuration: 96,\n    expectedChannels: 2,\n    escalationPath: [getBestChannel(stats), 'email']\n  };\n}\n\nfunction getBestChannel(stats) {\n  const channels = Object.entries(stats)\n    .filter(([channel, data]) => data.sent > 0)\n    .sort(([,a], [,b]) => b.responseRate - a.responseRate);\n  \n  return channels.length > 0 ? channels[0][0] : 'whatsapp';\n}\n\nreturn [{\n  json: {\n    ...orchestrationData,\n    channelAnalysis: channelStats,\n    orchestrationStrategy,\n    analyzedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "create-orchestration-strategy",
+      "name": "Create Orchestration Strategy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Schedule the orchestration sequence\nconst data = $json;\nconst sequence = data.orchestrationStrategy.sequence;\nconst now = new Date();\n\nconst scheduledSteps = sequence.map((step, index) => {\n  const scheduleTime = new Date(now.getTime() + step.delay * 60 * 60 * 1000); // delay in hours\n  \n  return {\n    json: {\n      orchestrationId: data.orchestrationId,\n      clientId: data.clientId,\n      clientName: data.clientName,\n      clientEmail: data.clientEmail,\n      clientPhone: data.clientPhone,\n      stepIndex: index + 1,\n      totalSteps: sequence.length,\n      channel: step.channel,\n      type: step.type,\n      priority: step.priority,\n      scheduledFor: scheduleTime.toISOString(),\n      delayHours: step.delay,\n      status: 'SCHEDULED',\n      context: data.context,\n      targetCountry: data.targetCountry,\n      visaType: data.visaType,\n      serviceLevel: data.serviceLevel,\n      trigger: data.trigger\n    }\n  };\n});\n\nreturn scheduledSteps;"
+      },
+      "id": "schedule-orchestration-steps",
+      "name": "Schedule Orchestration Steps",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "save_orchestration_sequence",
+            "data": {
+              "orchestrationId": "{{ $('create-orchestration-strategy').item.json.orchestrationId }}",
+              "clientId": "{{ $('create-orchestration-strategy').item.json.clientId }}",
+              "triggerType": "{{ $('create-orchestration-strategy').item.json.trigger }}",
+              "strategyData": "{{ JSON.stringify($('create-orchestration-strategy').item.json.orchestrationStrategy) }}",
+              "totalSteps": "{{ $('create-orchestration-strategy').item.json.orchestrationStrategy.expectedChannels }}",
+              "totalDuration": "{{ $('create-orchestration-strategy').item.json.orchestrationStrategy.totalDuration }}",
+              "status": "ACTIVE",
+              "createdAt": "{{ $('create-orchestration-strategy').item.json.createdAt }}",
+              "query": "INSERT INTO orchestration_sequences (orchestration_id, client_id, trigger_type, strategy_data, total_steps, total_duration, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "save-orchestration-sequence",
+      "name": "Save Orchestration Sequence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "save_orchestration_steps",
+            "data": {
+              "orchestrationId": "{{ $json.orchestrationId }}",
+              "clientId": "{{ $json.clientId }}",
+              "stepIndex": "{{ $json.stepIndex }}",
+              "channel": "{{ $json.channel }}",
+              "type": "{{ $json.type }}",
+              "priority": "{{ $json.priority }}",
+              "scheduledFor": "{{ $json.scheduledFor }}",
+              "delayHours": "{{ $json.delayHours }}",
+              "status": "{{ $json.status }}",
+              "contextData": "{{ JSON.stringify($json.context) }}",
+              "query": "INSERT INTO orchestration_steps (orchestration_id, client_id, step_index, channel, type, priority, scheduled_for, delay_hours, status, context_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "save-orchestration-steps",
+      "name": "Save Orchestration Steps",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.delayHours }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "immediate-execution-check",
+      "name": "Immediate Execution?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Execute immediate step\nconst step = $json;\n\nlet messageContent = '';\nlet subject = '';\n\n// Generate content based on type and channel\nswitch (step.type) {\n  case 'IMMEDIATE_CONTACT':\n    if (step.channel === 'whatsapp') {\n      messageContent = `🌟 Olá ${step.clientName}! Vi seu interesse em visto para ${step.targetCountry}\\n\\n⚡ Seu perfil é EXCEPCIONAL! Vou te ligar em 15 minutos para uma consultoria VIP\\n\\n📞 Estará disponível?`;\n    }\n    break;\n    \n  case 'PAYMENT_REMINDER':\n    if (step.channel === 'whatsapp') {\n      messageContent = `💳 ${step.clientName}, seu pagamento está pendente\\n\\n⏰ Para não atrasar seu processo de ${step.visaType}\\n\\n🔗 Finalize em 2 cliques: visa2any.com/payment\\n\\n❓ Dúvidas? Responda aqui!`;\n    }\n    break;\n    \n  case 'DOCUMENT_REMINDER':\n    if (step.channel === 'whatsapp') {\n      messageContent = `📋 ${step.clientName}, seus documentos estão aguardando\\n\\n✅ Finalize em 10 minutos: visa2any.com/documents\\n\\n🤝 Precisa de ajuda? Estou aqui!`;\n    }\n    break;\n    \n  case 'CONSULTATION_REMINDER':\n    if (step.channel === 'whatsapp') {\n      messageContent = `📅 ${step.clientName}, sua consultoria está confirmada!\\n\\n⏰ Não esqueça: hoje às ${step.context.consultationTime || '15:00'}\\n\\n📱 Link da videochamada: ${step.context.meetingLink || 'visa2any.com/meet'}\\n\\n✨ Até logo!`;\n    }\n    break;\n    \n  case 'VISA_CELEBRATION':\n    if (step.channel === 'whatsapp') {\n      messageContent = `🎉 PARABÉNS ${step.clientName}! SEU VISTO FOI APROVADO! 🇺🇸\\n\\n🌟 Que conquista incrível para ${step.targetCountry}!\\n\\n✈️ Hora de planejar sua viagem!\\n\\n🤝 Estamos muito felizes por você!`;\n    }\n    break;\n    \n  default:\n    messageContent = `👋 Olá ${step.clientName}! Aqui é a equipe Visa2Any\\n\\n🌍 Como está seu processo para ${step.targetCountry}?\\n\\n💬 Alguma dúvida? Estamos aqui para ajudar!`;\n}\n\n// Email subjects\nif (step.channel === 'email') {\n  switch (step.type) {\n    case 'DETAILED_PROPOSAL':\n      subject = `🌟 ${step.clientName}, Proposta Personalizada - ${step.targetCountry}`;\n      break;\n    case 'PAYMENT_LINK':\n      subject = `💳 Finalize Seu Pagamento - ${step.visaType}`;\n      break;\n    case 'DOCUMENT_GUIDE':\n      subject = `📋 Guia Completo de Documentos - ${step.targetCountry}`;\n      break;\n    case 'CONSULTATION_DETAILS':\n      subject = `📅 Detalhes da Sua Consultoria - Visa2Any`;\n      break;\n    case 'DETAILED_CONGRATULATIONS':\n      subject = `🎉 PARABÉNS! Seu visto foi aprovado!`;\n      break;\n    default:\n      subject = `Visa2Any - ${step.clientName}`;\n  }\n}\n\nreturn [{\n  json: {\n    ...step,\n    messageContent,\n    subject,\n    executionTime: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "prepare-immediate-message",
+      "name": "Prepare Immediate Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "operation": "equal",
+              "value2": "whatsapp"
+            }
+          ]
+        }
+      },
+      "id": "channel-router",
+      "name": "Channel Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.messageContent }}",
+            "priority": "{{ $json.priority }}",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "ORCHESTRATION_{{ $json.type }}",
+            "orchestrationId": "{{ $json.orchestrationId }}",
+            "stepIndex": "{{ $json.stepIndex }}"
+          }
+        }
+      },
+      "id": "send-whatsapp-message",
+      "name": "Send WhatsApp Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1800,
+        -150
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "{{ $json.subject }}",
+            "template": "orchestration-{{ $json.type.toLowerCase() }}",
+            "priority": "{{ $json.priority }}",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "targetCountry": "{{ $json.targetCountry }}",
+              "visaType": "{{ $json.visaType }}",
+              "context": "{{ $json.context }}",
+              "orchestrationId": "{{ $json.orchestrationId }}"
+            }
+          }
+        }
+      },
+      "id": "send-email-message",
+      "name": "Send Email Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1800,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "action": "update_step_status",
+            "data": {
+              "orchestrationId": "{{ $json.orchestrationId }}",
+              "stepIndex": "{{ $json.stepIndex }}",
+              "status": "EXECUTED",
+              "executedAt": "{{ $json.executionTime }}",
+              "messageContent": "{{ $json.messageContent }}",
+              "query": "UPDATE orchestration_steps SET status = ?, executed_at = ?, message_content = ? WHERE orchestration_id = ? AND step_index = ?",
+              "values": ["EXECUTED", "{{ $json.executionTime }}", "{{ $json.messageContent }}", "{{ $json.orchestrationId }}", "{{ $json.stepIndex }}"]
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "update-step-status",
+      "name": "Update Step Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.delayHours }}",
+        "unit": "hours"
+      },
+      "id": "wait-for-delay",
+      "name": "Wait for Delay",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-n8n-webhook-secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "type": "orchestration_step_ready",
+            "source": "multi_channel_orchestration",
+            "data": "{{ $json }}"
+          }
+        }
+      },
+      "id": "trigger-delayed-step",
+      "name": "Trigger Delayed Step",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "message": "🎯 *ORCHESTRATION LAUNCHED*\\n\\n👤 *Client:* {{ $('create-orchestration-strategy').item.json.clientName }}\\n🎬 *Trigger:* {{ $('create-orchestration-strategy').item.json.trigger }}\\n⚡ *Priority:* {{ $('create-orchestration-strategy').item.json.priority }}\\n\\n📊 *Strategy:*\\n• Total Steps: {{ $('create-orchestration-strategy').item.json.orchestrationStrategy.expectedChannels }}\\n• Duration: {{ $('create-orchestration-strategy').item.json.orchestrationStrategy.totalDuration }}h\\n• Channels: {{ $('create-orchestration-strategy').item.json.orchestrationStrategy.escalationPath.join(' → ') }}\\n\\n🆔 *ID:* {{ $('create-orchestration-strategy').item.json.orchestrationId }}\\n⏰ *Started:* {{ $('create-orchestration-strategy').item.json.createdAt }}",
+        "chatId": "-1001234567890",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-orchestration-start",
+      "name": "Notify Orchestration Start",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        -200
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Orchestration Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Orchestration Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Orchestration Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch Communication History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Communication History": {
+      "main": [
+        [
+          {
+            "node": "Create Orchestration Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Orchestration Strategy": {
+      "main": [
+        [
+          {
+            "node": "Schedule Orchestration Steps",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Orchestration Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Orchestration Steps": {
+      "main": [
+        [
+          {
+            "node": "Save Orchestration Sequence",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Orchestration Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Orchestration Steps": {
+      "main": [
+        [
+          {
+            "node": "Immediate Execution?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Immediate Execution?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Immediate Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Delay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Immediate Message": {
+      "main": [
+        [
+          {
+            "node": "Channel Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Channel Router": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Message": {
+      "main": [
+        [
+          {
+            "node": "Update Step Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email Message": {
+      "main": [
+        [
+          {
+            "node": "Update Step Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Delay": {
+      "main": [
+        [
+          {
+            "node": "Trigger Delayed Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  }
+}

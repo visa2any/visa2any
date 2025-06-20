@@ -1,0 +1,11 @@
+{
+  "phone": "5511987654321",
+  "message": "📞 Lembrete: Sua consultoria é amanhã!\n\nOlá Cliente!\n\n📅 Data: 15/06/2024\n🕐 Horário: 10:00\n👥 Consultor: Sofia IA\n⏱️ Duração: 60 min\n\n📋 Prepare-se:\n✅ Documentos em mãos\n✅ Lista de dúvidas\n✅ Ambiente silencioso\n\nLink da reunião chegará por email.\n\nAté amanhã! 😊",
+  "priority": "HIGH",
+  "clientId": "test-client-456",
+  "campaign": "consultation_reminder",
+  "metadata": {
+    "source": "n8n_automation",
+    "workflow": "consultation_reminder"
+  }
+}

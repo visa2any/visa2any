@@ -1,0 +1,170 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { z } from 'zod'
+import crypto from 'crypto'
+import { applyRateLimit, createRateLimitResponse } from '@/lib/rate-limit'
+
+// Schema para login
+const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(1, 'Senha é obrigatória')
+})
+
+// POST /api/auth/login - Login de usuário com rate limiting
+export async function POST(request: NextRequest) {
+  try {
+    // ✅ Aplicar rate limiting
+    const rateLimitResult = applyRateLimit(request)
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult)
+    }
+
+    const body = await request.json()
+    
+    // Validar dados
+    const validatedData = loginSchema.parse(body)
+
+    // Buscar usuário
+    const user = await prisma.user.findUnique({
+      where: { email: validatedData.email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        role: true,
+        isActive: true
+      }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Credenciais inválidas' },
+        { status: 401 }
+      )
+    }
+
+    // Verificar se usuário está ativo
+    if (!user.isActive) {
+      return NextResponse.json(
+        { success: false, error: 'Usuário inativo. Contate o administrador.' },
+        { status: 401 }
+      )
+    }
+
+    // Verificar senha
+    const isPasswordValid = await bcrypt.compare(validatedData.password, user.password)
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { success: false, error: 'Credenciais inválidas' },
+        { status: 401 }
+      )
+    }
+
+    // ✅ Verificar se JWT secret está configurado
+    const jwtSecret = process.env.NEXTAUTH_SECRET
+    if (!jwtSecret) {
+      console.error('❌ NEXTAUTH_SECRET não está configurado!')
+      return NextResponse.json(
+        { success: false, error: 'Configuração de segurança inválida' },
+        { status: 500 }
+      )
+    }
+
+    // Gerar JWT token com configurações de segurança melhoradas
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email, 
+        role: user.role,
+        iat: Math.floor(Date.now() / 1000), // ✅ Issued at
+        jti: crypto.randomUUID() // ✅ JWT ID único
+      },
+      jwtSecret,
+      { 
+        expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)
+        issuer: 'visa2any-api',
+        audience: 'visa2any-client'
+      }
+    )
+
+    // Dados do usuário para retorno (sem senha)
+    const userData = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive
+    }
+
+    // Log do login (skip if fails)
+    try {
+      await prisma.automationLog.create({
+        data: {
+          type: 'USER_LOGIN',
+          action: 'login',
+          details: {
+            userId: user.id,
+            email: user.email,
+            timestamp: new Date()
+          },
+          success: true
+        }
+      })
+    } catch (logError) {
+      console.warn('Failed to log login:', logError)
+    }
+
+    // Configurar cookie httpOnly
+    const response = NextResponse.json({
+      success: true,
+      data: {
+        user: userData,
+        token
+      },
+      message: 'Login realizado com sucesso'
+    })
+
+    // ✅ Definir cookie seguro com configurações melhoradas
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict', // ✅ Mais seguro que 'lax'
+      maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
+      path: '/',
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+    })
+    
+    console.log('🍪 Cookie auth-token definido com sucesso')
+
+    // ✅ Adicionar headers de rate limit
+    const { headers } = createRateLimitResponse(rateLimitResult)
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
+    return response
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Dados inválidos',
+          details: error.errors
+        },
+        { status: 400 }
+      )
+    }
+
+    console.error('Erro no login:', error)
+    console.error('Error details:', error.message, error.stack)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor', debug: error.message },
+      { status: 500 }
+    )
+  }
+}

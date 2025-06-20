@@ -1,0 +1,963 @@
+// Schema do banco de dados para Visa2Any
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Usuários do sistema (funcionários/admins)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(STAFF)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  assignedClients Client[]
+  consultations   Consultation[]
+  documents       Document[]
+  automationLogs  AutomationLog[]
+  blogPostLikes   BlogPostLike[]
+  blogPostBookmarks BlogPostBookmark[]
+  blogPostComments BlogPostComment[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+  CONSULTANT
+}
+
+// Clientes/Leads
+model Client {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  phone        String?
+  country      String?
+  nationality  String?
+  age          Int?
+  profession   String?
+  education    String?
+  targetCountry String?
+  visaType     String?
+  status       ClientStatus @default(LEAD)
+  score        Int?         // Score de elegibilidade 0-100
+  source       String?      // Como chegou até nós
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Funcionário responsável
+  assignedUserId String?
+  assignedUser   User?   @relation(fields: [assignedUserId], references: [id])
+
+  // Relacionamentos
+  consultations Consultation[]
+  payments      Payment[]
+  documents     Document[]
+  interactions  Interaction[]
+  automationLogs AutomationLog[]
+  affiliateReferrals AffiliateReferral[]
+  appointments  Appointment[]
+  medicalExams  MedicalExam[]
+  translations  Translation[]
+  applicationTracking ApplicationTracking[]
+
+  @@map("clients")
+}
+
+enum ClientStatus {
+  LEAD
+  QUALIFIED
+  CONSULTATION_SCHEDULED
+  IN_PROCESS
+  DOCUMENTS_PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+  COMPLETED
+  INACTIVE
+}
+
+// Consultorias (IA ou Humana)
+model Consultation {
+  id            String            @id @default(cuid())
+  type          ConsultationType
+  status        ConsultationStatus @default(SCHEDULED)
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  duration      Int?              // Duração em minutos
+  result        Json?             // Resultado da consultoria
+  score         Int?              // Score gerado
+  recommendation String?
+  timeline      String?
+  nextSteps     String?
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relacionamentos
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  consultantId String?
+  consultant   User?   @relation(fields: [consultantId], references: [id])
+
+  documents Document[]
+
+  @@map("consultations")
+}
+
+enum ConsultationType {
+  AI_ANALYSIS
+  HUMAN_CONSULTATION
+  FOLLOW_UP
+  DOCUMENT_REVIEW
+  INTERVIEW_PREP
+  VIP_SERVICE
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+// Pagamentos
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  currency      String        @default("BRL")
+  status        PaymentStatus @default(PENDING)
+  paymentMethod String?
+  transactionId String?       @unique
+  description   String?
+  dueDate       DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relacionamentos
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+// Documentos
+model Document {
+  id          String         @id @default(cuid())
+  name        String
+  type        DocumentType
+  fileName    String
+  filePath    String
+  fileId      String?        // ID do arquivo no sistema de storage
+  fileSize    Int?
+  mimeType    String?
+  status      DocumentStatus @default(PENDING)
+  ocrText     String?        // Texto extraído por OCR
+  analysis    Json?          // Análise automática do documento
+  isValid     Boolean?
+  validationNotes String?
+  uploadedAt  DateTime       @default(now())
+  validatedAt DateTime?
+
+  // Relacionamentos
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id])
+  
+  consultationId String?
+  consultation   Consultation? @relation(fields: [consultationId], references: [id])
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  PASSPORT
+  ID_DOCUMENT
+  BIRTH_CERTIFICATE
+  MARRIAGE_CERTIFICATE
+  DIPLOMA
+  TRANSCRIPT
+  WORK_CERTIFICATE
+  BANK_STATEMENT
+  TAX_RETURN
+  MEDICAL_EXAM
+  POLICE_CLEARANCE
+  PHOTOS
+  FORM
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  ANALYZING
+  VALID
+  INVALID
+  NEEDS_REVIEW
+  EXPIRED
+}
+
+// Base de conhecimento sobre vistos - EXPANDIDA
+model VisaRequirement {
+  id                String   @id @default(cuid())
+  country           String
+  countryCode       String   // ISO code (USA, CAN, PRT, etc)
+  visaType          String
+  visaSubtype       String?
+  visaCategory      VisaCategory
+  requiresInterview Boolean  @default(true)
+  onlineApplication Boolean  @default(false)
+  transitVisa       Boolean  @default(false)
+  maxStayDuration   String?  // "90 days", "6 months", etc
+  requiredDocuments Json     // Array de documentos necessários
+  processingTime    String
+  fees              Json     // Taxas governamentais
+  eligibilityCriteria Json   // Critérios de elegibilidade
+  commonPitfalls    Json     // Armadilhas comuns
+  successTips       Json     // Dicas de sucesso
+  governmentLinks   Json     // Links oficiais
+  consulateInfo     Json     // Informações dos consulados
+  medicalExamRequired Boolean @default(false)
+  biometricsRequired Boolean @default(false)
+  apostilleRequired Boolean  @default(false)
+  translationRequired Boolean @default(false)
+  validLanguages    Json     // Idiomas aceitos
+  lastUpdated       DateTime @default(now())
+  isActive          Boolean  @default(true)
+
+  @@unique([country, visaType, visaSubtype])
+  @@map("visa_requirements")
+}
+
+enum VisaCategory {
+  TOURIST
+  BUSINESS
+  TRANSIT
+  STUDENT
+  WORK
+  IMMIGRANT
+  FAMILY
+  DIPLOMATIC
+  OFFICIAL
+  RELIGIOUS
+  MEDIA
+  CREW
+  MEDICAL
+  INVESTMENT
+  STARTUP
+  EXTRAORDINARY
+  VICTIM
+  ASYLUM
+  REFUGEE
+}
+
+// Consulados e centros de aplicação
+model Consulate {
+  id            String   @id @default(cuid())
+  country       String   // País do consulado
+  location      String   // Cidade/Estado onde está localizado
+  name          String   // Nome oficial
+  address       Json     // Endereço completo
+  contact       Json     // Telefones, emails, site
+  services      Json     // Serviços oferecidos
+  workingHours  Json     // Horários de funcionamento
+  appointments  Json     // Sistema de agendamento
+  vfsCenter     Boolean  @default(false)
+  casvEnabled   Boolean  @default(false)
+  onlineServices Json    // Serviços online disponíveis
+  jurisdictionStates Json // Estados/regiões que atende
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  clientAppointments Appointment[]
+
+  @@map("consulates")
+}
+
+// Agendamentos de entrevistas/biometria
+model Appointment {
+  id            String           @id @default(cuid())
+  clientId      String
+  client        Client           @relation(fields: [clientId], references: [id])
+  consulateId   String?
+  consulate     Consulate?       @relation(fields: [consulateId], references: [id])
+  type          AppointmentType
+  scheduledDate DateTime
+  status        AppointmentStatus @default(PENDING)
+  confirmationCode String?
+  requirements  Json             // Documentos necessários para o agendamento
+  notes         String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@map("appointments")
+}
+
+enum AppointmentType {
+  INTERVIEW
+  BIOMETRICS
+  DOCUMENT_SUBMISSION
+  MEDICAL_EXAM
+  PICKUP
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+// Exames médicos
+model MedicalExam {
+  id            String       @id @default(cuid())
+  clientId      String
+  client        Client       @relation(fields: [clientId], references: [id])
+  country       String       // País que requer o exame
+  clinicName    String
+  clinicAddress Json
+  examType      String       // Tipo de exame requerido
+  scheduledDate DateTime?
+  completedDate DateTime?
+  results       Json?
+  validUntil    DateTime?
+  status        ExamStatus   @default(PENDING)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("medical_exams")
+}
+
+enum ExamStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  RESULTS_AVAILABLE
+  EXPIRED
+}
+
+// Traduções e apostilas
+model Translation {
+  id            String            @id @default(cuid())
+  clientId      String
+  client        Client            @relation(fields: [clientId], references: [id])
+  documentType  String
+  sourceLanguage String
+  targetLanguage String
+  originalFile  String            // Path do arquivo original
+  translatedFile String?          // Path do arquivo traduzido
+  apostilleRequired Boolean       @default(false)
+  apostilleFile String?           // Path do arquivo apostilado
+  status        TranslationStatus @default(PENDING)
+  translatorInfo Json?            // Informações do tradutor
+  cost          Float?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("translations")
+}
+
+enum TranslationStatus {
+  PENDING
+  IN_PROGRESS
+  TRANSLATED
+  APOSTILLED
+  COMPLETED
+}
+
+// Tracking de aplicações
+model ApplicationTracking {
+  id            String         @id @default(cuid())
+  clientId      String
+  client        Client         @relation(fields: [clientId], references: [id])
+  country       String
+  visaType      String
+  applicationNumber String?
+  status        ApplicationStatus @default(PREPARING)
+  submittedDate DateTime?
+  lastUpdate    DateTime?
+  estimatedDecision DateTime?
+  decisionDate  DateTime?
+  result        String?        // APPROVED, DENIED, PENDING
+  tracking      Json           // Histórico de status
+  notifications Json           // Configurações de notificação
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("application_tracking")
+}
+
+enum ApplicationStatus {
+  PREPARING
+  DOCUMENTS_REVIEW
+  SUBMITTED
+  IN_PROCESSING
+  INTERVIEW_SCHEDULED
+  INTERVIEW_COMPLETED
+  DECISION_PENDING
+  APPROVED
+  DENIED
+  RETURNED
+  WITHDRAWN
+}
+
+// Interações com clientes
+model Interaction {
+  id          String          @id @default(cuid())
+  type        InteractionType
+  channel     String          // email, whatsapp, phone, in-person
+  direction   String          // inbound, outbound
+  subject     String?
+  content     String
+  response    String?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+
+  // Relacionamentos
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("interactions")
+}
+
+enum InteractionType {
+  EMAIL
+  WHATSAPP
+  PHONE_CALL
+  SMS
+  IN_PERSON
+  AUTOMATED_EMAIL
+  AUTOMATED_WHATSAPP
+  FOLLOW_UP
+  REMINDER
+}
+
+// Log de automações
+model AutomationLog {
+  id        String   @id @default(cuid())
+  type      String   // email_sent, whatsapp_sent, score_calculated, etc
+  action    String
+  details   Json
+  success   Boolean
+  error     String?
+  executedAt DateTime @default(now())
+
+  // Relacionamentos
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id])
+  
+  triggeredById String?
+  triggeredBy   User?   @relation(fields: [triggeredById], references: [id])
+
+  @@map("automation_logs")
+}
+
+// Configurações do sistema
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}
+
+// Posts do Blog
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  excerpt     String
+  content     String
+  category    String
+  author      String
+  authorImage String?
+  publishDate DateTime  @default(now())
+  readTime    String
+  featured    Boolean   @default(false)
+  trending    Boolean   @default(false)
+  urgent      Boolean   @default(false)
+  tags        Json      // Array de strings
+  country     String?
+  flag        String?
+  views       Int       @default(0)
+  likes       Int       @default(0)
+  comments    Int       @default(0)
+  difficulty  String    @default("Intermediário") // Iniciante, Intermediário, Avançado
+  type        String    @default("Notícia") // Guia, Notícia, Atualização, Dica, Análise
+  imageUrl    String?
+  videoUrl    String?
+  sourceUrl   String?   // URL da fonte original (para posts automáticos)
+  sponsored   Boolean   @default(false)
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("blog_posts")
+}
+
+// Blog Post Likes
+model BlogPostLike {
+  id     String @id @default(cuid())
+  userId String
+  postId String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, postId])
+  @@map("blog_post_likes")
+}
+
+// Blog Post Bookmarks
+model BlogPostBookmark {
+  id     String @id @default(cuid())
+  userId String
+  postId String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, postId])
+  @@map("blog_post_bookmarks")
+}
+
+// Blog Post Comments
+model BlogPostComment {
+  id       String @id @default(cuid())
+  userId   String
+  postId   String
+  content  String
+  parentId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User                @relation(fields: [userId], references: [id])
+  parent  BlogPostComment?    @relation("CommentReplies", fields: [parentId], references: [id])
+  replies BlogPostComment[]   @relation("CommentReplies")
+
+  @@map("blog_post_comments")
+}
+
+// Feeds RSS/Sources para monitoramento automático
+model NewsSource {
+  id          String   @id @default(cuid())
+  name        String
+  url         String   @unique
+  type        String   // rss, api, scraping
+  category    String   // categoria padrão para posts desta fonte
+  country     String?
+  flag        String?
+  isActive    Boolean  @default(true)
+  lastChecked DateTime?
+  checkInterval Int    @default(60) // minutos
+  keywords    Json     // palavras-chave para filtrar
+  priority    Int      @default(1) // 1=baixa, 5=alta
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  logs AutoNewsLog[]
+
+  @@map("news_sources")
+}
+
+// Log de monitoramento automático
+model AutoNewsLog {
+  id        String   @id @default(cuid())
+  sourceId  String
+  action    String   // checked, found_articles, created_post, error
+  details   Json
+  success   Boolean
+  error     String?
+  createdAt DateTime @default(now())
+
+  source NewsSource @relation(fields: [sourceId], references: [id])
+
+  @@map("auto_news_logs")
+}
+
+// Assinantes da Newsletter WhatsApp
+model WhatsAppSubscriber {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  countries Json     // Array de países de interesse
+  isActive  Boolean  @default(true)
+  source    String   @default("unknown") // blog_newsletter, manual, etc
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("whatsapp_subscribers")
+}
+
+// Posts agendados para redes sociais
+model SocialPost {
+  id          String            @id @default(cuid())
+  blogPostId  String
+  platform    SocialPlatform
+  content     String
+  imageUrl    String?
+  hashtags    Json              // Array de hashtags
+  scheduledAt DateTime
+  publishedAt DateTime?
+  status      SocialPostStatus  @default(SCHEDULED)
+  error       String?
+  engagement  Json?             // Métricas de engajamento após publicação
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("social_posts")
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  TWITTER
+  TIKTOK
+}
+
+enum SocialPostStatus {
+  SCHEDULED
+  PUBLISHED
+  ERROR
+  CANCELLED
+}
+
+// Configurações das redes sociais
+model SocialConfig {
+  id            String   @id @default(cuid())
+  platform      String   @unique
+  isActive      Boolean  @default(true)
+  accessToken   String?  // Criptografado
+  refreshToken  String?  // Criptografado
+  accountId     String?
+  pageId        String?
+  settings      Json     // Configurações específicas da plataforma
+  lastSync      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("social_configs")
+}
+
+// Métricas de redes sociais
+model SocialMetrics {
+  id         String   @id @default(cuid())
+  postId     String
+  platform   String
+  likes      Int      @default(0)
+  comments   Int      @default(0)
+  shares     Int      @default(0)
+  reach      Int      @default(0)
+  clicks     Int      @default(0)
+  syncedAt   DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@map("social_metrics")
+}
+
+// Comentários das redes sociais
+model SocialComment {
+  id            String            @id @default(cuid())
+  externalId    String            // ID do comentário na plataforma externa
+  platform      SocialPlatform
+  postId        String
+  authorName    String
+  authorId      String?
+  content       String
+  sentiment     CommentSentiment?
+  needsResponse Boolean           @default(false)
+  responded     Boolean           @default(false)
+  escalated     Boolean           @default(false)
+  priority      CommentPriority   @default(MEDIUM)
+  category      String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relacionamento com respostas
+  replies SocialCommentReply[]
+
+  @@unique([platform, externalId])
+  @@map("social_comments")
+}
+
+// Respostas da Sofia aos comentários
+model SocialCommentReply {
+  id             String   @id @default(cuid())
+  commentId      String
+  content        String
+  tone           String   // helpful, professional, friendly, apologetic
+  respondedBy    String   @default("sofia") // sofia, human
+  escalated      Boolean  @default(false)
+  published      Boolean  @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime @default(now())
+
+  comment SocialComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("social_comment_replies")
+}
+
+enum CommentSentiment {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+  QUESTION
+}
+
+enum CommentPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Sistema de Afiliados
+model Affiliate {
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  phone             String?
+  company           String?
+  website           String?
+  profileImage      String?
+  status            AffiliateStatus    @default(PENDING)
+  tier              AffiliateTier      @default(BRONZE)
+  referralCode      String             @unique
+  customLinks       Json?              // Links customizados por país/serviço
+  commissionRate    Float              @default(0.10) // 10% padrão
+  paymentMethod     PaymentMethod      @default(PIX)
+  paymentDetails    Json               // Dados bancários/PIX
+  totalEarnings     Float              @default(0)
+  pendingEarnings   Float              @default(0)
+  paidEarnings      Float              @default(0)
+  totalClicks       Int                @default(0)
+  totalConversions  Int                @default(0)
+  conversionRate    Float              @default(0)
+  lastActivity      DateTime?
+  bio               String?
+  socialMedia       Json?              // Links redes sociais
+  notes             String?
+  approvedAt        DateTime?
+  approvedById      String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // Relacionamentos
+  referrals         AffiliateReferral[]
+  commissions       AffiliateCommission[]
+  payments          AffiliatePayment[]
+  clicks            AffiliateClick[]
+  materials         AffiliateMaterial[]
+  
+  @@map("affiliates")
+}
+
+model AffiliateReferral {
+  id              String               @id @default(cuid())
+  affiliateId     String
+  clientId        String
+  referralCode    String
+  clickId         String?              // Link para o clique original
+  status          ReferralStatus       @default(PENDING)
+  conversionType  ConversionType
+  conversionValue Float
+  commissionRate  Float
+  commissionValue Float
+  notes           String?
+  convertedAt     DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  // Relacionamentos
+  affiliate       Affiliate            @relation(fields: [affiliateId], references: [id])
+  client          Client               @relation(fields: [clientId], references: [id])
+  click           AffiliateClick?      @relation(fields: [clickId], references: [id])
+  commission      AffiliateCommission?
+
+  @@map("affiliate_referrals")
+}
+
+model AffiliateCommission {
+  id              String              @id @default(cuid())
+  affiliateId     String
+  referralId      String              @unique
+  amount          Float
+  currency        String              @default("BRL")
+  status          CommissionStatus    @default(PENDING)
+  type            ConversionType
+  description     String
+  dueDate         DateTime
+  paidAt          DateTime?
+  paymentId       String?
+  notes           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relacionamentos
+  affiliate       Affiliate           @relation(fields: [affiliateId], references: [id])
+  referral        AffiliateReferral   @relation(fields: [referralId], references: [id])
+  payment         AffiliatePayment?   @relation(fields: [paymentId], references: [id])
+
+  @@map("affiliate_commissions")
+}
+
+model AffiliatePayment {
+  id              String              @id @default(cuid())
+  affiliateId     String
+  amount          Float
+  currency        String              @default("BRL")
+  method          PaymentMethod
+  details         Json                // Dados específicos do método de pagamento
+  status          PaymentStatus       @default(PENDING)
+  referenceCode   String?             @unique
+  transactionId   String?
+  receipt         String?             // Link para comprovante
+  processedAt     DateTime?
+  notes           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relacionamentos
+  affiliate       Affiliate           @relation(fields: [affiliateId], references: [id])
+  commissions     AffiliateCommission[]
+
+  @@map("affiliate_payments")
+}
+
+model AffiliateClick {
+  id              String              @id @default(cuid())
+  affiliateId     String
+  referralCode    String
+  url             String
+  ipAddress       String
+  userAgent       String
+  country         String?
+  city            String?
+  device          String?
+  browser         String?
+  source          String?             // Origem do tráfego
+  campaign        String?             // Campanha específica
+  converted       Boolean             @default(false)
+  conversionValue Float?
+  clickedAt       DateTime            @default(now())
+
+  // Relacionamentos
+  affiliate       Affiliate           @relation(fields: [affiliateId], references: [id])
+  referrals       AffiliateReferral[]
+
+  @@map("affiliate_clicks")
+}
+
+model AffiliateMaterial {
+  id              String              @id @default(cuid())
+  affiliateId     String?             // null = material público
+  type            MaterialType
+  title           String
+  description     String
+  content         String?             // HTML/texto do material
+  imageUrl        String?
+  downloadUrl     String?
+  previewUrl      String?
+  category        String
+  tags            Json                // Array de tags
+  language        String              @default("pt")
+  isActive        Boolean             @default(true)
+  downloads       Int                 @default(0)
+  views           Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relacionamentos
+  affiliate       Affiliate?          @relation(fields: [affiliateId], references: [id])
+
+  @@map("affiliate_materials")
+}
+
+// Enums para Sistema de Afiliados
+enum AffiliateStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+  INACTIVE
+}
+
+enum AffiliateTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum ReferralStatus {
+  PENDING
+  CONVERTED
+  CANCELLED
+  EXPIRED
+}
+
+enum ConversionType {
+  CONSULTATION
+  VISA_PROCESS
+  COURSE
+  VIP_SERVICE
+  SUBSCRIPTION
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  PIX
+  BANK_TRANSFER
+  PAYPAL
+  CRYPTO
+}
+
+enum MaterialType {
+  BANNER
+  EMAIL_TEMPLATE
+  SOCIAL_POST
+  VIDEO
+  PRESENTATION
+  GUIDE
+  LANDING_PAGE
+  WIDGET
+}

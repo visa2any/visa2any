@@ -1,0 +1,454 @@
+/* Updated: 1749920015187 */
+/* CSS Crítico - Above the fold */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #f3e8ff 50%, #fef3e2 75%, #f8fafc 100%);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Layout crítico */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Paleta suave que não cansa a vista */
+    --background: 0 0% 100%;
+    --foreground: 213 16% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 213 16% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 16% 20%;
+    --primary: 210 98% 78%;
+    --primary-foreground: 213 16% 20%;
+    --secondary: 213 27% 92%;
+    --secondary-foreground: 213 16% 20%;
+    --muted: 213 27% 96%;
+    --muted-foreground: 213 10% 50%;
+    --accent: 213 27% 92%;
+    --accent-foreground: 213 16% 20%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 213 12% 88%;
+    --input: 213 12% 88%;
+    --ring: 210 98% 78%;
+    --radius: 0.75rem;
+    
+    /* Cores suaves para o admin */
+    --admin-bg: 213 27% 97%;
+    --admin-card: 0 0% 100%;
+    --admin-text: 213 16% 25%;
+    --admin-text-muted: 213 10% 55%;
+    --admin-accent: 210 100% 85%;
+    --admin-accent-hover: 210 100% 80%;
+  }
+
+  .dark {
+    --background: 213 16% 8%;
+    --foreground: 213 27% 96%;
+    --card: 213 16% 10%;
+    --card-foreground: 213 27% 96%;
+    --popover: 213 16% 10%;
+    --popover-foreground: 213 27% 96%;
+    --primary: 210 98% 78%;
+    --primary-foreground: 213 16% 8%;
+    --secondary: 213 16% 15%;
+    --secondary-foreground: 213 27% 96%;
+    --muted: 213 16% 15%;
+    --muted-foreground: 213 10% 65%;
+    --accent: 213 16% 15%;
+    --accent-foreground: 213 27% 96%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 213 27% 96%;
+    --border: 213 16% 20%;
+    --input: 213 16% 20%;
+    --ring: 210 98% 78%;
+  }
+}
+
+/* Reset global */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbars lindas e modernas */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(99, 102, 241, 0.6));
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(99, 102, 241, 0.8));
+  transform: scale(1.1);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+/* Animações suaves */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Classes utilitárias */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Cores suaves para reduzir fadiga visual */
+.bg-admin {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.bg-admin-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.text-admin {
+  color: #334155;
+}
+
+.text-admin-muted {
+  color: #64748b;
+}
+
+/* Melhor contraste para leitura */
+.text-readable {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.text-readable-muted {
+  color: #475569;
+  font-weight: 400;
+}
+
+/* Gradientes suaves */
+.gradient-admin {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #fef3e2 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+}
+
+/* Estados de hover suaves */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Botões com melhor acessibilidade */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  color: #374151;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus states melhorados */
+.focus-ring {
+  transition: all 0.2s ease;
+}
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+}
+
+/* Melhores indicadores de loading */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Tipografia otimizada */
+.text-heading {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.text-body {
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.text-caption {
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Melhor spacing */
+.space-comfortable > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-tight > * + * {
+  margin-top: 0.75rem;
+}
+
+/* Cards com melhor hierarquia visual */
+.card-elevated {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card-elevated:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Melhores indicadores de status */
+.status-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.status-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.status-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.status-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+/* Classes para a página principal */
+.gradient-bg {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 25%, #f3e8ff 50%, #fef3e2 75%, #f8fafc 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  color: white;
+}
+
+/* Animação do ticker - SUAVE E SUTIL */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+}
+
+/* Animação ainda mais suave para o banner de países */
+@keyframes smooth-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-smooth-scroll {
+  animation: smooth-scroll 40s linear infinite;
+}
+
+/* Responsividade melhorada */
+@media (max-width: 768px) {
+  .responsive-text {
+    font-size: 0.9rem;
+  }
+  
+  .responsive-padding {
+    padding: 1rem;
+  }
+  
+  .responsive-margin {
+    margin: 0.5rem;
+  }
+}
+
+/* Ajuste para header fixo */
+.page-content {
+  padding-top: 120px; /* Altura do header + margem adicional */
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding-top: 110px; /* Altura adequada no mobile */
+  }
+}

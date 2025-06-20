@@ -1,0 +1,174 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Zero Touch Client Journey Fixed",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "client-assessment-complete",
+        "options": {}
+      },
+      "id": "assessment-webhook",
+      "name": "Assessment Complete",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "client-assessment-complete",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process assessment completion\nconst data = $json.body || $json;\n\n// Extract and validate client data\nconst clientData = {\n  clientId: data.clientId || 'unknown',\n  clientEmail: data.clientEmail || data.email || 'no-email@visa2any.com',\n  clientName: data.clientName || data.name || 'Cliente Sem Nome',\n  eligibilityScore: parseInt(data.eligibilityScore || data.score || 0),\n  targetCountry: data.targetCountry || data.country || 'UNKNOWN',\n  visaType: data.visaType || data.type || 'UNKNOWN',\n  completedAt: new Date().toISOString()\n};\n\n// Determine journey path based on score\nlet journeyPath = 'standard';\nlet priority = 'medium';\nlet action = 'nurturing';\nlet message = '';\n\nif (clientData.eligibilityScore >= 85) {\n  journeyPath = 'vip';\n  priority = 'high';\n  action = 'immediate_consultation';\n  message = `🌟 Cliente VIP detectado! Score: ${clientData.eligibilityScore}% - Rota para consultoria imediata`;\n} else if (clientData.eligibilityScore >= 70) {\n  journeyPath = 'premium';\n  priority = 'high';\n  action = 'premium_report';\n  message = `💎 Cliente Premium! Score: ${clientData.eligibilityScore}% - Rota para relatório premium`;\n} else if (clientData.eligibilityScore >= 50) {\n  journeyPath = 'standard';\n  priority = 'medium';\n  action = 'standard_nurturing';\n  message = `📋 Cliente Padrão. Score: ${clientData.eligibilityScore}% - Rota para nurturing padrão`;\n} else {\n  journeyPath = 'improvement';\n  priority = 'low';\n  action = 'education_sequence';\n  message = `📚 Cliente precisa melhorar. Score: ${clientData.eligibilityScore}% - Rota para sequência educativa`;\n}\n\n// Log do processamento\nconsole.log('=== CLIENT JOURNEY PROCESSED ===');\nconsole.log('Cliente:', clientData.clientName);\nconsole.log('Score:', clientData.eligibilityScore + '%');\nconsole.log('Caminho:', journeyPath);\nconsole.log('Ação:', action);\nconsole.log('Prioridade:', priority);\nconsole.log('================================');\n\nreturn [{\n  json: {\n    ...clientData,\n    journeyPath,\n    priority,\n    recommendedAction: action,\n    message,\n    processedAt: new Date().toISOString(),\n    automationTriggered: true\n  }\n}];"
+      },
+      "id": "process-assessment",
+      "name": "Process Assessment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.eligibilityScore }}",
+              "operation": "largerEqual",
+              "value2": 70
+            }
+          ]
+        }
+      },
+      "id": "high-score-check",
+      "name": "High Score Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simular disparo de sequência premium\nconst data = $json;\n\nconsole.log('🎯 PREMIUM SEQUENCE TRIGGERED');\nconsole.log('Cliente:', data.clientName);\nconsole.log('Score:', data.eligibilityScore + '%');\nconsole.log('Ação:', data.recommendedAction);\n\n// Simular ações premium\nconst actions = [\n  'Email de parabéns enviado',\n  'Relatório premium gerado',\n  'Consultoria agendada em 24h',\n  'WhatsApp de boas-vindas VIP'\n];\n\nreturn [{\n  json: {\n    ...data,\n    sequenceType: 'PREMIUM',\n    actionsTriggered: actions,\n    scheduledConsultation: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),\n    processed: true\n  }\n}];"
+      },
+      "id": "premium-sequence",
+      "name": "Premium Sequence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        200
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simular sequência de melhoria\nconst data = $json;\n\nconsole.log('📚 IMPROVEMENT SEQUENCE TRIGGERED');\nconsole.log('Cliente:', data.clientName);\nconsole.log('Score:', data.eligibilityScore + '%');\nconsole.log('Precisa melhorar para:', (data.eligibilityScore < 50 ? 'Score mínimo 50%' : 'Score premium 70%+'));\n\n// Simular ações de melhoria\nconst actions = [\n  'Email educativo enviado',\n  'Guia de melhoria personalizado',\n  'Sequência de 7 dias ativada',\n  'Reagendamento em 30 dias'\n];\n\nreturn [{\n  json: {\n    ...data,\n    sequenceType: 'IMPROVEMENT',\n    actionsTriggered: actions,\n    nextContactDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),\n    processed: true\n  }\n}];"
+      },
+      "id": "improvement-sequence",
+      "name": "Improvement Sequence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        400
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log final e completar automação\nconst data = $json;\n\nconsole.log('✅ CLIENT JOURNEY COMPLETED');\nconsole.log('Cliente:', data.clientName);\nconsole.log('Sequência:', data.sequenceType);\nconsole.log('Ações realizadas:', data.actionsTriggered?.length || 0);\nconsole.log('Status: PROCESSADO COM SUCESSO');\n\nreturn [{\n  json: {\n    success: true,\n    clientId: data.clientId,\n    clientName: data.clientName,\n    eligibilityScore: data.eligibilityScore,\n    journeyPath: data.journeyPath,\n    sequenceType: data.sequenceType,\n    actionsCompleted: data.actionsTriggered?.length || 0,\n    completedAt: new Date().toISOString(),\n    message: `Cliente ${data.clientName} processado com sucesso via ${data.sequenceType} sequence`\n  }\n}];"
+      },
+      "id": "log-completion",
+      "name": "Log Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Assessment Complete": {
+      "main": [
+        [
+          {
+            "node": "Process Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Assessment": {
+      "main": [
+        [
+          {
+            "node": "High Score Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Score Check": {
+      "main": [
+        [
+          {
+            "node": "Premium Sequence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Improvement Sequence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Premium Sequence": {
+      "main": [
+        [
+          {
+            "node": "Log Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Improvement Sequence": {
+      "main": [
+        [
+          {
+            "node": "Log Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  },
+  "createdAt": "2024-06-13T17:00:00.000Z",
+  "updatedAt": "2024-06-13T17:00:00.000Z",
+  "id": "client-journey-fixed",
+  "tags": []
+}

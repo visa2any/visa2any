@@ -1,0 +1,44 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "@next/eslint-config-next"
+  ],
+  "rules": {
+    // ✅ Regras de segurança
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    
+    // ✅ Regras de qualidade de código
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "prefer-const": "error",
+    "no-var": "error",
+    
+    // ✅ Regras específicas do React/Next.js
+    "react/no-unescaped-entities": "off",
+    "react/no-children-prop": "error",
+    "react/no-danger": "warn",
+    "@next/next/no-img-element": "error",
+    "@next/next/no-html-link-for-pages": "error",
+    
+    // ✅ TypeScript específicas
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/prefer-nullish-coalescing": "error",
+    "@typescript-eslint/prefer-optional-chain": "error"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  }
+}
