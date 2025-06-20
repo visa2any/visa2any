@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 
 const prisma = new PrismaClient()
 
+export const dynamic = 'force-dynamic'
+
 async function getCustomerFromToken(request: NextRequest) {
   try {
     const token = request.cookies.get('customer-token')?.value

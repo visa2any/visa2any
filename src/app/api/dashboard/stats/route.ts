@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth, isAdmin } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/dashboard/stats - Estatísticas do dashboard
 export async function GET(request: NextRequest) {
   try {

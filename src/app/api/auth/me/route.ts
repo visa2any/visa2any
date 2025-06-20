@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyAuth } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/auth/me - Verificar usuário logado
 export async function GET(request: NextRequest) {
   try {

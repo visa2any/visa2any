@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { 
   Crown, 
@@ -27,7 +27,7 @@ interface UpsellProduct {
   validUntil?: Date
 }
 
-export default function UpsellCheckoutPage() {
+function UpsellCheckoutPageContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [product, setProduct] = useState<UpsellProduct | null>(null)
   const searchParams = useSearchParams()
@@ -387,5 +387,20 @@ export default function UpsellCheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function UpsellCheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <UpsellCheckoutPageContent />
+    </Suspense>
   )
 }
