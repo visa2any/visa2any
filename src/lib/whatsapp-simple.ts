@@ -102,4 +102,7 @@ export function getWhatsAppServiceSimple(): WhatsAppServiceSimple {
   return whatsappServiceSimple
 }
 
+// Alias para compatibilidade
+export const getWhatsAppService = getWhatsAppServiceSimple
+
 export default WhatsAppServiceSimple

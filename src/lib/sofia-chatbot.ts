@@ -145,4 +145,7 @@ export async function generateBlogPost(topic: string): Promise<{
   return templates[topic] || templates['visto-americano']
 }
 
+// Função alias para compatibilidade com código existente
+export const processSocialComments = processComments
+
 console.log('🤖 Sofia Chatbot (Versão Simplificada) carregado com sucesso!')
