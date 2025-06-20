@@ -43,9 +43,9 @@ interface CustomerData {
 export default function PagamentosPage() {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null)
   const [payments, setPayments] = useState<Payment[]>([])
-  const [package, setPackage] = useState<Package | null>(null)
+  const [packageDataData, setPackageData] = useState<Package | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedTab, setSelectedTab] = useState<'payments' | 'package' | 'packages'>('payments')
+  const [selectedTab, setSelectedTab] = useState<'payments' | 'packageData' | 'packageDatas'>('payments')
 
   useEffect(() => {
     loadData()
@@ -116,10 +116,10 @@ export default function PagamentosPage() {
         }
       ])
 
-      // Load package
+      // Load packageData
       setPackage({
         id: 'sub_1',
-        package: 'Premium',
+        packageData: 'Premium',
         price: 599,
         billing_cycle: 'monthly',
         status: 'active',

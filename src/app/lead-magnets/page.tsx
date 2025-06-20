@@ -1,17 +1,8 @@
 'use client'
 
-import type { Metadata } from 'next'
 import { useState } from 'react'
 
-export const metadata: Metadata = {
-  title: 'Materiais Gratuitos - Guias de Visto e Imigração | Visa2Any',
-  description: 'Baixe gratuitamente nossos guias especializados sobre vistos, documentação e imigração. Conteúdo exclusivo para sua jornada internacional.',
-  keywords: ['guia visto gratuito', 'material imigração', 'checklist documentos visto', 'ebook visto'],
-  openGraph: {
-    title: 'Materiais Gratuitos - Guias de Visto',
-    description: 'Acesse conteúdo exclusivo e gratuito sobre vistos e imigração'
-  }
-}
+// Metadata removido - não compatível com 'use client'
 import { Button } from '@/components/ui/button'
 import Breadcrumb from '@/components/Breadcrumb'
 import { Download, CheckCircle, FileText, Calculator, BookOpen, Gift, ArrowRight, Star, Users } from 'lucide-react'

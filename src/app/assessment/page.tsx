@@ -1,17 +1,8 @@
 'use client'
 
-import type { Metadata } from 'next'
 import { useState } from 'react'
 
-export const metadata: Metadata = {
-  title: 'Avaliação de Elegibilidade para Visto | Visa2Any',
-  description: 'Descubra suas chances de aprovação de visto com nossa avaliação personalizada. Análise gratuita em 5 minutos.',
-  keywords: ['avaliação visto', 'elegibilidade visto', 'chances aprovação visto', 'teste visto online'],
-  openGraph: {
-    title: 'Avaliação de Elegibilidade para Visto',
-    description: 'Descubra suas chances de aprovação com nossa IA especializada em vistos'
-  }
-}
+// Metadata removido - não compatível com 'use client'
 import { Button } from '@/components/ui/button'
 import Breadcrumb from '@/components/Breadcrumb'
 import { ArrowRight, ArrowLeft, CheckCircle, Globe, User, GraduationCap, Briefcase, DollarSign, Calendar, Heart, Zap } from 'lucide-react'
