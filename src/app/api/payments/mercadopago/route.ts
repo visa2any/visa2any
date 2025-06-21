@@ -72,9 +72,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       id: result.id,
+      preference_id: result.id,
       init_point: result.init_point,
       sandbox_init_point: result.sandbox_init_point,
-      checkout_url: result.init_point
+      checkout_url: result.init_point,
+      public_key: process.env.MERCADOPAGO_PUBLIC_KEY
     })
 
   } catch (error) {

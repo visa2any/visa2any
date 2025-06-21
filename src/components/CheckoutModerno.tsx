@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, ArrowRight, CreditCard, Shield, Check, Star, Zap, CheckCircle, Gift, Users, Lock, Phone, Mail, User, MapPin, Plus, Minus, Baby, Globe, FileText } from 'lucide-react'
 import Link from 'next/link'
 import ServiceContract from './ServiceContract'
+import InlineCheckout from './InlineCheckout'
 // import Header from '@/components/Header'
 // import Footer from '@/components/Footer'
 
@@ -170,6 +171,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   })
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [showContract, setShowContract] = useState(false)
+  const [showInlineCheckout, setShowInlineCheckout] = useState(false)
+  const [paymentData, setPaymentData] = useState<{
+    preferenceId: string
+    publicKey: string
+  } | null>(null)
 
   const productData = PRODUCT_DATA[currentProduct.id] || {}
   
@@ -379,10 +385,17 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       
       console.log('🔍 Resposta da API:', paymentData)
       
-      if (paymentData.success && paymentData.init_point) {
-        console.log('✅ Redirecionando para MercadoPago:', paymentData.init_point)
-        // Redirecionar para MercadoPago
-        window.location.href = paymentData.init_point
+      if (paymentData.success && paymentData.preference_id) {
+        console.log('✅ Preferência criada, iniciando checkout inline:', paymentData.preference_id)
+        
+        // Configurar dados para checkout inline
+        setPaymentData({
+          preferenceId: paymentData.preference_id,
+          publicKey: paymentData.public_key
+        })
+        
+        // Mostrar checkout inline
+        setShowInlineCheckout(true)
         return
       } else {
         console.error('❌ Erro ao criar pagamento:', paymentData)
@@ -448,6 +461,36 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  // Se checkout inline ativo, renderizar apenas ele
+  if (showInlineCheckout && paymentData) {
+    return (
+      <InlineCheckout
+        preferenceId={paymentData.preferenceId}
+        publicKey={paymentData.publicKey}
+        amount={currentTotal}
+        customerData={{
+          name: customerData.name,
+          email: customerData.email,
+          phone: `${customerData.phoneCountry}${customerData.phone}`
+        }}
+        onSuccess={(payment) => {
+          console.log('✅ Pagamento realizado com sucesso:', payment)
+          // Redirecionar para página de sucesso
+          window.location.href = payment.redirect_url || '/payment/success'
+        }}
+        onError={(error) => {
+          console.error('❌ Erro no pagamento:', error)
+          alert('Erro no pagamento. Tente novamente.')
+          setShowInlineCheckout(false)
+        }}
+        onBack={() => {
+          setShowInlineCheckout(false)
+          setPaymentData(null)
+        }}
+      />
+    )
   }
 
   return (
