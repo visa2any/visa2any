@@ -92,11 +92,6 @@ export default function AdminLoginPage() {
     }
   }
 
-  // Função para preencher credenciais de teste
-  const fillTestCredentials = () => {
-    setEmail('admin@visa2any.com')
-    setPassword('admin123')
-  }
 
   // Carregar email salvo
   useState(() => {
@@ -287,7 +282,7 @@ export default function AdminLoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="admin@visa2any.com"
+                    placeholder="Digite seu email"
                     required
                   />
                 </div>
@@ -352,14 +347,6 @@ export default function AdminLoginPage() {
                 )}
               </button>
 
-              {/* Quick Access Button */}
-              <button
-                type="button"
-                onClick={fillTestCredentials}
-                className="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-all duration-300 border border-gray-200"
-              >
-                🚀 Credenciais de Teste
-              </button>
             </form>
           </div>
 
