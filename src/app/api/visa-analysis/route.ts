@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limiter'
 
 // Schema para análise de elegibilidade
 const eligibilityAnalysisSchema = z.object({
@@ -24,6 +25,13 @@ const eligibilityAnalysisSchema = z.object({
 
 // POST /api/visa-analysis - Analisar elegibilidade
 export async function POST(request: NextRequest) {
+  // Aplicar rate limiting para análise
+  const rateLimitResult = rateLimit(request, RATE_LIMITS.analysis)
+  
+  if (!rateLimitResult.success) {
+    return createRateLimitResponse(rateLimitResult.resetTime)
+  }
+  
   try {
     const body = await request.json()
     const validatedData = eligibilityAnalysisSchema.parse(body)

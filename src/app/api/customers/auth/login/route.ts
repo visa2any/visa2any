@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limiter'
 
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
+  // Aplicar rate limiting para login
+  const rateLimitResult = rateLimit(request, RATE_LIMITS.auth)
+  
+  if (!rateLimitResult.success) {
+    return createRateLimitResponse(rateLimitResult.resetTime)
+  }
   try {
     const body = await request.json()
     const { email, password } = body
@@ -46,13 +53,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Gerar token JWT
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {
+      console.error('JWT_SECRET não configurado')
+      return NextResponse.json({
+        success: false,
+        error: 'Erro de configuração do servidor'
+      }, { status: 500 })
+    }
+    
     const token = jwt.sign(
       { 
         customerId: customer.id, 
         email: customer.email,
         type: 'customer'
       },
-      process.env.JWT_SECRET || 'fallback-secret',
+      jwtSecret,
       { expiresIn: '7d' }
     )
 

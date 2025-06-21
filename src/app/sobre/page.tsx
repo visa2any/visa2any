@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { Globe, Users, Award, Shield, Star, CheckCircle, MessageCircle, Zap } from 'lucide-react'
@@ -247,7 +246,6 @@ export default function SobrePage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

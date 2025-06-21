@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limiter'
 
 export async function POST(request: NextRequest) {
+  // Aplicar rate limiting para checkout/pagamento
+  const rateLimitResult = rateLimit(request, RATE_LIMITS.checkout)
+  
+  if (!rateLimitResult.success) {
+    return createRateLimitResponse(rateLimitResult.resetTime)
+  }
+  
   try {
     const { payment_id, status, external_reference } = await request.json()
 

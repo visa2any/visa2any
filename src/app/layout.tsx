@@ -1,7 +1,23 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { Inter, Poppins } from 'next/font/google'
 import ConditionalLayout from '@/components/ConditionalLayout'
+
+// Otimização de fontes com next/font
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700']
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  display: 'swap', 
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700', '800']
+})
 
 export const metadata: Metadata = {
   title: {
@@ -66,16 +82,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="theme-color" content="#0284c7" />
       </head>
-      <body className="antialiased">
+      <body className={`${inter.className} antialiased`}>
         <ConditionalLayout>
           {children}
         </ConditionalLayout>

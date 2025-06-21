@@ -7,7 +7,6 @@ import ActivityIndicators from '@/components/ActivityIndicators'
 import TrustSignals from '@/components/TrustSignals'
 import SimpleCheckout from '@/components/SimpleCheckout'
 import Breadcrumb from '@/components/Breadcrumb'
-import Footer from '@/components/Footer'
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { ArrowRight, CheckCircle, Star, Crown, Zap, FileText, Users, Clock, Shield, Download, Check } from 'lucide-react'
 
@@ -1000,7 +999,6 @@ export default function PrecosPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }

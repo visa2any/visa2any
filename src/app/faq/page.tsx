@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Footer from '@/components/Footer'
 import { ChevronDown, ChevronUp, MessageCircle, Phone, Zap, Search, BookOpen, Users, Clock, Award, Shield, Globe, Star, ThumbsUp, Calendar, FileText, DollarSign, MapPin, CheckCircle, HelpCircle, AlertCircle, Info } from 'lucide-react'
 
 export default function FAQPage() {
@@ -711,7 +710,6 @@ export default function FAQPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

@@ -3,7 +3,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, FileText, Shield, Star, ArrowRight, Download, Zap } from 'lucide-react'
 
 export default function CertidoesPage() {
@@ -362,7 +361,6 @@ export default function CertidoesPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

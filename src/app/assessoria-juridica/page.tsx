@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, Shield, Star, ArrowRight, Scale, Zap, Globe, Users, Award } from 'lucide-react'
 
 export default function AssessoriaJuridicaPage() {
@@ -515,7 +514,6 @@ export default function AssessoriaJuridicaPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

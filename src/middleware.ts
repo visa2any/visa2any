@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { addSecurityHeaders } from './middleware-security'
 
 // Inicializar serviços automaticamente
 let servicesInitialized = false
@@ -65,7 +66,7 @@ export function middleware(request: NextRequest) {
     if (process.env.NODE_ENV === 'development') {
       console.log('✅ Rota liberada sem auth:', pathname)
     }
-    return NextResponse.next()
+    return addSecurityHeaders(NextResponse.next())
   }
 
   // Apenas proteger rotas admin específicas
@@ -86,11 +87,11 @@ export function middleware(request: NextRequest) {
     const token = authHeader?.replace('Bearer ', '') || cookieToken || backupToken
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('🍪 Auth header:', authHeader ? 'SIM' : 'NÃO')
-      console.log('🍪 Cookie token:', cookieToken ? 'SIM' : 'NÃO')
-      console.log('🍪 Backup token:', backupToken ? 'SIM' : 'NÃO')
+      console.log('🍪 Auth header presente:', authHeader ? 'SIM' : 'NÃO')
+      console.log('🍪 Cookie token presente:', cookieToken ? 'SIM' : 'NÃO')
+      console.log('🍪 Backup token presente:', backupToken ? 'SIM' : 'NÃO')
       console.log('🍪 Token final encontrado:', token ? 'SIM' : 'NÃO')
-      console.log('🍪 Todos os cookies:', allCookies.substring(0, 200) + (allCookies.length > 200 ? '...' : ''))
+      // Removido log de cookies por segurança
     }
 
     if (!token) {
@@ -114,7 +115,7 @@ export function middleware(request: NextRequest) {
       }
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('✅ Token válido para usuário:', decoded.email)
+        console.log('✅ Token válido para usuário verificado')
       }
       
       // Verificar permissões de admin
@@ -130,7 +131,7 @@ export function middleware(request: NextRequest) {
       if (process.env.NODE_ENV === 'development') {
         console.log('✅ Acesso autorizado para:', pathname)
       }
-      return NextResponse.next()
+      return addSecurityHeaders(NextResponse.next())
 
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
@@ -147,7 +148,7 @@ export function middleware(request: NextRequest) {
   if (process.env.NODE_ENV === 'development') {
     console.log('✅ Rota pública:', pathname)
   }
-  return NextResponse.next()
+  return addSecurityHeaders(NextResponse.next())
 }
 
 export const config = {

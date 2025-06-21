@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 
 export default function TermosPage() {
   return (
@@ -92,7 +91,6 @@ export default function TermosPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

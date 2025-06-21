@@ -3,7 +3,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, Globe, Shield, Star, ArrowRight, FileText, Zap, Award } from 'lucide-react'
 
 export default function TraducaoPage() {
@@ -471,7 +470,6 @@ export default function TraducaoPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

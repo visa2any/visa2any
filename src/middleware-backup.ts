@@ -47,7 +47,21 @@ export function middleware(request: NextRequest) {
 
     try {
       // Verificar token
-      const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'fallback-secret') as any
+      const jwtSecret = process.env.NEXTAUTH_SECRET
+      if (!jwtSecret) {
+        console.error('NEXTAUTH_SECRET não configurado')
+        if (isProtectedApiRoute) {
+          return NextResponse.json(
+            { success: false, error: 'Erro de configuração do servidor' },
+            { status: 500 }
+          )
+        } else {
+          const loginUrl = new URL('/admin/login', request.url)
+          return NextResponse.redirect(loginUrl)
+        }
+      }
+      
+      const decoded = jwt.verify(token, jwtSecret) as any
 
       // Adicionar dados do usuário ao header para as APIs
       if (isProtectedApiRoute) {

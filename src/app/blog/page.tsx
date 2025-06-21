@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import Breadcrumb from '@/components/Breadcrumb'
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { Calendar, User, Clock, ArrowRight, Search, Filter, Tag, TrendingUp, Eye, Share2, BookOpen, Globe, Bell, Star, Zap, Heart, MessageCircle, ChevronRight, ChevronDown, Rss, Mail, Play, ExternalLink, Bookmark, ThumbsUp, Users, RefreshCw, CheckCircle } from 'lucide-react'
@@ -873,7 +872,6 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }

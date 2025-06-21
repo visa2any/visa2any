@@ -3,7 +3,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, Award, Shield, Star, ArrowRight, FileCheck, Zap, Globe } from 'lucide-react'
 
 export default function ApostilamentoPage() {
@@ -567,7 +566,6 @@ export default function ApostilamentoPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

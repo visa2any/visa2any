@@ -3,7 +3,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, Shield, Star, ArrowRight, FileCheck, Zap, MapPin } from 'lucide-react'
 
 export default function AntecedentesPage() {
@@ -484,7 +483,6 @@ export default function AntecedentesPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

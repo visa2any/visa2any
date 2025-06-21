@@ -3,7 +3,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Footer from '@/components/Footer'
 import { CheckCircle, Clock, Star, ArrowRight, FileText, Zap, Globe, Award, Shield } from 'lucide-react'
 
 export default function KitEmigracao() {
@@ -532,7 +531,6 @@ export default function KitEmigracao() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

@@ -12,21 +12,27 @@ export async function POST(request: NextRequest) {
     
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'fallback-secret') as any
+        const jwtSecret = process.env.NEXTAUTH_SECRET
+        if (!jwtSecret) {
+          console.error('NEXTAUTH_SECRET não configurado')
+          // Continue with logout even if token verification fails
+        } else {
+          const decoded = jwt.verify(token, jwtSecret) as any
         
-        // Log do logout
-        await prisma.automationLog.create({
-          data: {
-            type: 'USER_LOGOUT',
-            action: 'logout',
-            details: {
-              userId: decoded.userId,
-              email: decoded.email,
-              timestamp: new Date()
-            },
-            success: true
-          }
-        })
+          // Log do logout
+          await prisma.automationLog.create({
+            data: {
+              type: 'USER_LOGOUT',
+              action: 'logout',
+              details: {
+                userId: decoded.userId,
+                email: decoded.email,
+                timestamp: new Date()
+              },
+              success: true
+            }
+          })
+        }
       } catch (tokenError) {
         // Token inválido, mas continua com logout
       }

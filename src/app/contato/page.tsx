@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { MessageCircle, Phone, Mail, MapPin, Clock, Globe } from 'lucide-react'
 
@@ -182,7 +181,6 @@ export default function ContatoPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

@@ -14,7 +14,13 @@ async function getCustomerFromToken(request: NextRequest) {
       return null
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {
+      console.error('JWT_SECRET não configurado')
+      return null
+    }
+
+    const payload = jwt.verify(token, jwtSecret) as any
     
     if (payload.type !== 'customer') {
       return null

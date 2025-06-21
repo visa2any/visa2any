@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { monitoringDataService } from '@/lib/monitoring-data'
+import { monitoring } from '@/lib/monitoring'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +18,13 @@ export async function GET(request: NextRequest) {
 
       case 'stats':
         const stats = await monitoringDataService.getStats()
-        return NextResponse.json({ stats })
+        const appStats = monitoring.getStats()
+        return NextResponse.json({ 
+          stats: {
+            ...stats,
+            application: appStats
+          }
+        })
 
       case 'all':
         const [allChannels, allAlerts, allStats] = await Promise.all([

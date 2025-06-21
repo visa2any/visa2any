@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 
 export default function PrivacidadePage() {
   return (
@@ -121,7 +120,6 @@ export default function PrivacidadePage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }
