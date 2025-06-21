@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CreditCard, Shield, Check, Star, Zap, CheckCircl
 import Link from 'next/link'
 import ServiceContract from './ServiceContract'
 import InlineCheckout from './InlineCheckout'
+import CheckoutTest from './CheckoutTest'
 // import Header from '@/components/Header'
 // import Footer from '@/components/Footer'
 
@@ -388,14 +389,18 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       if (paymentData.success && paymentData.preference_id) {
         console.log('✅ Preferência criada, iniciando checkout inline:', paymentData.preference_id)
         
+        // DEBUG: Testar sem API - forçar checkout inline
+        alert('🧪 TESTE: Forçando checkout inline para debug!')
+        
         // Configurar dados para checkout inline
         setPaymentData({
-          preferenceId: paymentData.preference_id,
-          publicKey: paymentData.public_key
+          preferenceId: paymentData.preference_id || 'test-preference',
+          publicKey: paymentData.public_key || 'TEST-public-key'
         })
         
         // Mostrar checkout inline
         setShowInlineCheckout(true)
+        console.log('🔧 DEBUG: showInlineCheckout set to true')
         return
       } else {
         console.error('❌ Erro ao criar pagamento:', paymentData)
@@ -495,6 +500,12 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      
+      {/* COMPONENTE DE TESTE - REMOVER DEPOIS */}
+      <div className="max-w-6xl mx-auto px-4 pt-8">
+        <CheckoutTest />
+      </div>
+      
       {/* Header simplificado temporário */}
       <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1035,6 +1046,22 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       {ctaText} - R$ {currentTotal.toLocaleString('pt-BR')}
                     </div>
                   )}
+                </button>
+                
+                {/* BOTÃO DE DEBUG - REMOVER DEPOIS */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('🧪 Forçando checkout inline para teste')
+                    setPaymentData({
+                      preferenceId: 'test-preference-123',
+                      publicKey: 'TEST-key'
+                    })
+                    setShowInlineCheckout(true)
+                  }}
+                  className="w-full mt-4 py-3 px-6 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  🧪 TESTE: Forçar Checkout Inline
                 </button>
               </form>
             </div>
