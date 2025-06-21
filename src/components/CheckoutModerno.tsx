@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CreditCard, Shield, Check, Star, Zap, CheckCircl
 import Link from 'next/link'
 import ServiceContract from './ServiceContract'
 import CheckoutTest from './CheckoutTest'
+import MercadoPagoInline from './MercadoPagoInline'
 // import Header from '@/components/Header'
 // import Footer from '@/components/Footer'
 
@@ -467,72 +468,33 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }
 
-  // Se checkout inline ativo, mostrar página simples
+  // Se checkout inline ativo, usar componente real do MercadoPago
   if (showInlineCheckout && paymentData) {
     return (
-      <div className="min-h-screen bg-blue-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <button
-            onClick={() => {
-              setShowInlineCheckout(false)
-              setPaymentData(null)
-            }}
-            className="flex items-center text-blue-600 hover:text-blue-800 mb-6"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Voltar para o checkout
-          </button>
-          
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h1 className="text-3xl font-bold text-green-600 mb-4">
-              ✅ CHECKOUT INLINE FUNCIONANDO!
-            </h1>
-            <p className="text-lg text-gray-700 mb-6">
-              Parabéns! O checkout inline está funcionando corretamente. 
-              Aqui seria exibido o formulário real do MercadoPago com:
-            </p>
-            
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">💳 Cartão de Crédito</h3>
-                <p className="text-sm text-gray-600">Formulário seguro para cartões</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">📱 PIX</h3>
-                <p className="text-sm text-gray-600">QR Code para pagamento instantâneo</p>
-              </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">🎫 Boleto</h3>
-                <p className="text-sm text-gray-600">Código de barras para pagamento</p>
-              </div>
-              <div className="bg-orange-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">🏦 Débito</h3>
-                <p className="text-sm text-gray-600">Pagamento direto da conta</p>
-              </div>
-            </div>
-            
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <h4 className="font-semibold mb-2">Dados do Cliente:</h4>
-              <p>Nome: {customerData.name}</p>
-              <p>Email: {customerData.email}</p>
-              <p>Total: R$ {currentTotal.toLocaleString('pt-BR')}</p>
-              <p>Preference ID: {paymentData.preferenceId}</p>
-            </div>
-            
-            <button
-              onClick={() => {
-                alert('Simulando pagamento aprovado!')
-                setTimeout(() => {
-                  window.location.href = '/payment/success'
-                }, 1000)
-              }}
-              className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-medium text-lg hover:bg-green-700"
-            >
-              🎯 Simular Pagamento Aprovado
-            </button>
-          </div>
-        </div>
-      </div>
+      <MercadoPagoInline
+        preferenceId={paymentData.preferenceId}
+        publicKey={paymentData.publicKey}
+        amount={currentTotal}
+        customerData={{
+          name: customerData.name,
+          email: customerData.email,
+          phone: `${customerData.phoneCountry}${customerData.phone}`
+        }}
+        onSuccess={(payment) => {
+          console.log('✅ Pagamento realizado com sucesso:', payment)
+          // Redirecionar para página de sucesso
+          window.location.href = '/payment/success'
+        }}
+        onError={(error) => {
+          console.error('❌ Erro no pagamento:', error)
+          alert('Erro no pagamento. Tente novamente.')
+          setShowInlineCheckout(false)
+        }}
+        onBack={() => {
+          setShowInlineCheckout(false)
+          setPaymentData(null)
+        }}
+      />
     )
   }
 
@@ -1086,21 +1048,77 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   )}
                 </button>
                 
-                {/* BOTÃO DE DEBUG - REMOVER DEPOIS */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    console.log('🧪 Forçando checkout inline para teste')
-                    setPaymentData({
-                      preferenceId: 'test-preference-123',
-                      publicKey: 'TEST-key'
-                    })
-                    setShowInlineCheckout(true)
-                  }}
-                  className="w-full mt-4 py-3 px-6 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors"
-                >
-                  🧪 TESTE: Forçar Checkout Inline
-                </button>
+                {/* BOTÕES DE DEBUG - REMOVER DEPOIS */}
+                <div className="mt-4 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      console.log('🧪 Forçando checkout inline para teste')
+                      setPaymentData({
+                        preferenceId: 'test-preference-123',
+                        publicKey: 'TEST-key'
+                      })
+                      setShowInlineCheckout(true)
+                    }}
+                    className="w-full py-3 px-6 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors"
+                  >
+                    🧪 TESTE: Simulação Rápida
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      console.log('🔥 Testando com MercadoPago real')
+                      
+                      // Usar dados do formulário se preenchidos
+                      const testData = {
+                        name: customerData.name || 'João Teste',
+                        email: customerData.email || 'teste@email.com',
+                        phone: customerData.phone || '11999999999',
+                        cpf: customerData.cpf || '11111111111'
+                      }
+                      
+                      try {
+                        const response = await fetch('/api/payments/mercadopago', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            customer: testData,
+                            items: [{
+                              id: currentProduct.id,
+                              title: currentProduct.name,
+                              description: 'Teste checkout inline',
+                              unit_price: currentTotal,
+                              quantity: 1
+                            }],
+                            back_urls: {
+                              success: `${window.location.origin}/payment/success`,
+                              failure: `${window.location.origin}/payment/failure`,
+                              pending: `${window.location.origin}/payment/pending`
+                            }
+                          })
+                        })
+                        
+                        const data = await response.json()
+                        
+                        if (data.success) {
+                          setPaymentData({
+                            preferenceId: data.preference_id,
+                            publicKey: data.public_key
+                          })
+                          setShowInlineCheckout(true)
+                        } else {
+                          alert('Erro ao criar preferência: ' + data.error)
+                        }
+                      } catch (error) {
+                        alert('Erro de conexão: ' + error)
+                      }
+                    }}
+                    className="w-full py-3 px-6 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
+                  >
+                    🔥 TESTE: MercadoPago Real
+                  </button>
+                </div>
               </form>
             </div>
           </div>
