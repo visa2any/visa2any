@@ -88,6 +88,11 @@ interface Alert {
   message: string
   notified?: boolean
   createdAt: string
+  country: string
+  date: string
+  location: string
+  channel: string
+  time: string
 }
 
 interface Channel {
@@ -96,6 +101,9 @@ interface Channel {
   status: string
   lastCheck: string
   type: string
+  vagas: number
+  reliability: number
+  cost: string
 }
 
 interface MonitoringStats {
