@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar clientes com fallback em caso de erro
-    let clients = []
+    let clients: any[] = []
     let total = 0
 
     try {
