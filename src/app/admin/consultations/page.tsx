@@ -897,6 +897,16 @@ function NewConsultationSlider({
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [clients, setClients] = useState<any[]>([])
+  
+  const typeLabels: Record<string, string> = {
+    'AI_ANALYSIS': 'Análise IA',
+    'HUMAN_CONSULTATION': 'Consultoria Humana',
+    'FOLLOW_UP': 'Follow-up',
+    'DOCUMENT_REVIEW': 'Revisão de Docs',
+    'INTERVIEW_PREP': 'Prep. Entrevista',
+    'VIP_SERVICE': 'Serviço VIP'
+  }
+  
   const [formData, setFormData] = useState({
     clientId: '',
     type: '',
