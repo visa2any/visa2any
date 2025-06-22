@@ -61,7 +61,7 @@ interface CommunicationStats {
 
 interface CommunicationCenterProps {
   clients: Client[]
-  stats?: CommunicationStats
+  stats?: CommunicationStats | undefined
   selectedClient?: Client | null
   selectedMode?: 'email' | 'whatsapp' | 'phone' | 'general'
   onClientChange?: (client: Client | null) => void
