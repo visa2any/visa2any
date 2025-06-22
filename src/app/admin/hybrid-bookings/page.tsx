@@ -427,7 +427,7 @@ function BookingCard({ booking, onUpdateStatus, onViewDetails, getStatusColor, g
           <div className="mb-4">
             <p className="text-xs font-medium text-gray-600 mb-2">DATAS DISPONÍVEIS:</p>
             <div className="flex flex-wrap gap-2">
-              {booking.availableDates.slice(0, 3).map((date: string, index) => (
+              {booking.availableDates.slice(0, 3).map((date: string, index: number) => (
                 <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
                   {new Date(date).toLocaleDateString('pt-BR')}
                 </span>
