@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import crypto from 'crypto'
-import { applyRateLimit, createRateLimitResponse } from '@/lib/rate-limit'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 // Schema para login
 const loginSchema = z.object({
@@ -18,7 +18,26 @@ export async function POST(request: NextRequest) {
     // ✅ Aplicar rate limiting
     const rateLimitResult = applyRateLimit(request)
     if (!rateLimitResult.success) {
-      return createRateLimitResponse(rateLimitResult)
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: rateLimitResult.error,
+          rateLimitInfo: {
+            limit: rateLimitResult.limit,
+            remaining: rateLimitResult.remaining,
+            reset: rateLimitResult.reset
+          }
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()
+          }
+        }
+      )
     }
 
     const body = await request.json()
@@ -141,12 +160,9 @@ export async function POST(request: NextRequest) {
     console.log('🍪 Cookie auth-token definido com sucesso')
 
     // ✅ Adicionar headers de rate limit
-    const rateLimitResponseData = createRateLimitResponse(rateLimitResult)
-    if ('headers' in rateLimitResponseData) {
-      Object.entries(rateLimitResponseData.headers).forEach(([key, value]) => {
-        response.headers.set(key, value)
-      })
-    }
+    response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString())
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.reset).toISOString())
 
     return response
 
