@@ -375,7 +375,7 @@ function UnifiedAdminDashboardContent() {
             stats={stats?.communicationStats}
             selectedClient={selectedCommunicationClient}
             selectedMode={communicationMode}
-            onClientChange={setSelectedCommunicationClient}
+            onClientChange={(client) => setSelectedCommunicationClient(client)}
           />
         )}
         
