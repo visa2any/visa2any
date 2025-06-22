@@ -4,7 +4,7 @@ import { useState, ReactNode } from 'react'
 import { MoreHorizontal } from 'lucide-react'
 
 interface Action {
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<{ className?: string | undefined }>
   label: string
   onClick: () => void
   variant?: 'default' | 'danger' | 'primary'
