@@ -500,6 +500,11 @@ function MonitoringView() {
     try {
       const alert = alerts[alertIndex]
       
+      if (!alert) {
+        notifyError('Erro', 'Alerta não encontrado')
+        return
+      }
+      
       // Marcar como notificado
       const response = await fetch('/api/monitoring-data', {
         method: 'POST',
