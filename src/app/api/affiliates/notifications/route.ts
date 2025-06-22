@@ -279,7 +279,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
 }
 
 // Funções utilitárias para envio de notificações específicas
-export async function sendConversionNotification(affiliateId: string, conversionData: any) {
+async function sendConversionNotification(affiliateId: string, conversionData: any) {
   const notification = {
     affiliateId,
     type: 'conversion',
@@ -297,7 +297,7 @@ export async function sendConversionNotification(affiliateId: string, conversion
   })
 }
 
-export async function sendPaymentNotification(affiliateId: string, paymentData: any) {
+async function sendPaymentNotification(affiliateId: string, paymentData: any) {
   const notification = {
     affiliateId,
     type: 'payment',
@@ -314,7 +314,7 @@ export async function sendPaymentNotification(affiliateId: string, paymentData: 
   })
 }
 
-export async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
+async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
   const notification = {
     affiliateId,
     type: 'tier_promotion',
