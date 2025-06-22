@@ -177,6 +177,7 @@ export async function POST(request: NextRequest) {
         socialMedia,
         referralCode,
         commissionRate,
+        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto
         status: 'PENDING', // Aguardando aprovação
         tier: 'BRONZE'
       }
