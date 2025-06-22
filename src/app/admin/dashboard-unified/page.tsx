@@ -837,8 +837,8 @@ function MonitoringView() {
                   console.log('Resposta da API:', result)
                   
                   if (result.success) {
-                    notifySuccess(`Web Scraping ativado! Sistema: ${result.system}. Custo: ${result.details?.cost}`)
-                    notifyInfo('Notificação enviada para seu Telegram!')
+                    notifySuccess('Web Scraping Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
+                    notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
                     // Forçar refresh dos dados para atualizar status
                     await fetch('/api/monitoring-data', {
@@ -853,7 +853,7 @@ function MonitoringView() {
                   }
                 } catch (error) {
                   console.error('Erro ao ativar web scraping:', error)
-                  notifyError('Erro ao ativar web scraping')
+                  notifyError('Erro', 'Erro ao ativar web scraping')
                 } finally {
                   setButtonLoading(prev => ({ ...prev, web_scraping: false }))
                 }
@@ -895,8 +895,8 @@ function MonitoringView() {
                   console.log('Resposta da API:', result)
                   
                   if (result.success) {
-                    notifySuccess(`Email Monitor ativado! Sistema: ${result.system}. Custo: ${result.details?.cost}`)
-                    notifyInfo('Notificação enviada para seu Telegram!')
+                    notifySuccess('Email Monitor Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
+                    notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
                     // Forçar refresh dos dados para atualizar status
                     await fetch('/api/monitoring-data', {
@@ -911,7 +911,7 @@ function MonitoringView() {
                   }
                 } catch (error) {
                   console.error('Erro ao ativar email monitoring:', error)
-                  notifyError('Erro ao ativar email monitoring')
+                  notifyError('Erro', 'Erro ao ativar email monitoring')
                 } finally {
                   setButtonLoading(prev => ({ ...prev, email_monitoring: false }))
                 }
