@@ -274,7 +274,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
 }
 
 // Função para enviar evento para webhooks
-export async function sendWebhookEvent(
+async function sendWebhookEvent(
   affiliateId: string, 
   eventType: string, 
   eventData: any
@@ -331,7 +331,7 @@ export async function sendWebhookEvent(
 }
 
 // Funções específicas para diferentes tipos de eventos
-export async function sendConversionWebhook(affiliateId: string, conversionData: any) {
+async function sendConversionWebhook(affiliateId: string, conversionData: any) {
   await sendWebhookEvent(affiliateId, 'conversion.created', {
     conversionId: conversionData.id,
     affiliateId,
@@ -344,7 +344,7 @@ export async function sendConversionWebhook(affiliateId: string, conversionData:
   })
 }
 
-export async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
+async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
   await sendWebhookEvent(affiliateId, 'commission.approved', {
     commissionId: commissionData.id,
     affiliateId,
@@ -356,7 +356,7 @@ export async function sendCommissionWebhook(affiliateId: string, commissionData:
   })
 }
 
-export async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
+async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
   await sendWebhookEvent(affiliateId, 'payment.completed', {
     paymentId: paymentData.id,
     affiliateId,
@@ -368,7 +368,7 @@ export async function sendPaymentWebhook(affiliateId: string, paymentData: any) 
   })
 }
 
-export async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
+async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
   await sendWebhookEvent(affiliateId, 'tier.promoted', {
     affiliateId,
     oldTier: tierData.oldTier,
@@ -379,7 +379,7 @@ export async function sendTierPromotionWebhook(affiliateId: string, tierData: an
   })
 }
 
-export async function sendClickWebhook(affiliateId: string, clickData: any) {
+async function sendClickWebhook(affiliateId: string, clickData: any) {
   await sendWebhookEvent(affiliateId, 'click.registered', {
     clickId: clickData.id,
     affiliateId,
