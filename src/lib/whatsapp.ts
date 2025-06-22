@@ -1,2 +1,2 @@
-// Redirecionando para versão simples durante deploy no Vercel
-export * from './whatsapp-simple'
+// Usando versão híbrida: Baileys (existente) + Business API (opcional)
+export * from './whatsapp-baileys'

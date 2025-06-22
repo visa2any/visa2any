@@ -57,7 +57,9 @@ export async function POST(request: NextRequest) {
         excluded_payment_methods: [],
         excluded_payment_types: [],
         installments: body.installments || 12,
-        default_installments: body.installments || 1
+        default_installments: body.installments || 1,
+        default_payment_method_id: null,
+        default_card_id: null
       },
       statement_descriptor: 'VISA2ANY'
     }

@@ -326,7 +326,22 @@ const PRODUCTS = {
   'uk-religioso-vip': { name: 'VIP UK Religioso', price: 2197, description: 'Serviço completo religioso Reino Unido' },
   'uk-aposentadoria-relatorio': { name: 'Relatório UK Aposentadoria', price: 157, description: 'Relatório para aposentadoria Reino Unido' },
   'uk-aposentadoria-consultoria': { name: 'Consultoria UK Aposentadoria', price: 397, description: 'Consultoria aposentadoria Reino Unido' },
-  'uk-aposentadoria-vip': { name: 'VIP UK Aposentadoria', price: 1997, description: 'Serviço completo aposentadoria Reino Unido' }
+  'uk-aposentadoria-vip': { name: 'VIP UK Aposentadoria', price: 1997, description: 'Serviço completo aposentadoria Reino Unido' },
+  
+  // Certidões - Nascimento
+  'certidao-nascimento-individual': { name: 'Certidão de Nascimento Individual', price: 89, description: 'Uma certidão de nascimento', originalPrice: 149, features: ['Nascimento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  'certidao-nascimento-familiar': { name: 'Kit Familiar Nascimento', price: 249, description: 'Até 3 certidões de nascimento', originalPrice: 399, features: ['Nascimento para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
+  'certidao-nascimento-completo': { name: 'Pacote Completo Nascimento', price: 449, description: 'Certidões de nascimento ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] },
+
+  // Certidões - Casamento
+  'certidao-casamento-individual': { name: 'Certidão de Casamento Individual', price: 89, description: 'Uma certidão de casamento', originalPrice: 149, features: ['Casamento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  'certidao-casamento-familiar': { name: 'Kit Familiar Casamento', price: 249, description: 'Até 3 certidões de casamento', originalPrice: 399, features: ['Casamento para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
+  'certidao-casamento-completo': { name: 'Pacote Completo Casamento', price: 449, description: 'Certidões de casamento ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] },
+
+  // Certidões - Óbito
+  'certidao-obito-individual': { name: 'Certidão de Óbito Individual', price: 89, description: 'Uma certidão de óbito', originalPrice: 149, features: ['Óbito individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  'certidao-obito-familiar': { name: 'Kit Familiar Óbito', price: 249, description: 'Até 3 certidões de óbito', originalPrice: 399, features: ['Óbito para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
+  'certidao-obito-completo': { name: 'Pacote Completo Óbito', price: 449, description: 'Certidões de óbito ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] }
 }
 
 function CheckoutPageContent() {

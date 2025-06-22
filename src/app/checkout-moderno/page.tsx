@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import CheckoutWizard from '@/components/CheckoutWizard'
+import CheckoutModerno from '@/components/CheckoutModerno'
 import { Loader2, Sparkles } from 'lucide-react'
 
 // Dados dos produtos expandidos
@@ -197,7 +197,22 @@ function CheckoutContent() {
   const originalPrice = product.supportsQuantity ? product.price : undefined
 
   return (
-    <CheckoutWizard />
+    <CheckoutModerno
+      productId={productId}
+      productName={product.name}
+      price={finalPrice}
+      originalPrice={originalPrice}
+      adults={finalAdults}
+      children={finalChildren}
+      description={product.description}
+      features={product.features}
+      variant={product.variant}
+      title="Finalizar Pedido"
+      subtitle="Complete seus dados para ativar o monitoramento"
+      ctaText="Contratar Agora"
+      supportsQuantity={product.supportsQuantity}
+      showGroupDiscount={product.supportsQuantity}
+    />
   )
 }
 

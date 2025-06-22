@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ArrowLeft, ArrowRight, CreditCard, Shield, Check, Star, Zap, CheckCircle, Gift, Users, Lock, Phone, Mail, User, MapPin, Plus, Minus, Baby, Globe, FileText } from 'lucide-react'
 import Link from 'next/link'
 import ServiceContract from './ServiceContract'
-import CheckoutTest from './CheckoutTest'
-import MercadoPagoInline from './MercadoPagoInline'
+import MercadoPagoSingle from './MercadoPagoSingle'
 // import Header from '@/components/Header'
 // import Footer from '@/components/Footer'
 
@@ -96,6 +95,67 @@ const PHONE_COUNTRIES = [
   { code: '+27', flag: '🇿🇦', name: 'África do Sul', format: '82 123 4567' }
 ]
 
+// Funções para persistência de dados
+const STORAGE_KEY = 'visa2any-checkout-data'
+
+interface SavedCheckoutData {
+  customerData: Omit<CustomerData, 'terms' | 'contractAccepted'>
+  adults: number
+  children: number
+  savedAt: number
+}
+
+const saveFormData = (customerData: CustomerData, adults: number, children: number) => {
+  try {
+    const dataToSave: SavedCheckoutData = {
+      customerData: {
+        name: customerData.name,
+        email: customerData.email,
+        phone: customerData.phone,
+        phoneCountry: customerData.phoneCountry,
+        cpf: customerData.cpf,
+        targetCountry: customerData.targetCountry,
+        newsletter: customerData.newsletter
+      },
+      adults,
+      children,
+      savedAt: Date.now()
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+  } catch (error) {
+    console.log('Não foi possível salvar dados do formulário:', error)
+  }
+}
+
+const loadFormData = (): SavedCheckoutData | null => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (!saved) return null
+    
+    const data: SavedCheckoutData = JSON.parse(saved)
+    
+    // Verificar se os dados não estão muito antigos (7 dias)
+    const daysSaved = (Date.now() - data.savedAt) / (1000 * 60 * 60 * 24)
+    if (daysSaved > 7) {
+      localStorage.removeItem(STORAGE_KEY)
+      return null
+    }
+    
+    return data
+  } catch (error) {
+    console.log('Não foi possível carregar dados salvos:', error)
+    return null
+  }
+}
+
+const clearFormData = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (error) {
+    console.log('Não foi possível limpar dados salvos:', error)
+  }
+}
+
 const PRODUCT_DATA: Record<string, any> = {
   'vaga-express-vip': {
     badge: '👑 VIP',
@@ -159,6 +219,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentAdults, setCurrentAdults] = useState(adults)
   const [currentChildren, setCurrentChildren] = useState(children)
+  const [hasSavedData, setHasSavedData] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [customerData, setCustomerData] = useState<CustomerData>({
     name: '',
     email: '',
@@ -170,6 +232,26 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     newsletter: true,
     contractAccepted: false
   })
+  
+  // Carregar dados salvos apenas no cliente (após hidratação)
+  useEffect(() => {
+    const savedData = loadFormData()
+    if (savedData) {
+      setCurrentAdults(savedData.adults)
+      setCurrentChildren(savedData.children)
+      setHasSavedData(true)
+      setCustomerData(prev => ({
+        ...prev,
+        name: savedData.customerData.name,
+        email: savedData.customerData.email,
+        phone: savedData.customerData.phone,
+        phoneCountry: savedData.customerData.phoneCountry,
+        cpf: savedData.customerData.cpf,
+        targetCountry: savedData.customerData.targetCountry,
+        newsletter: savedData.customerData.newsletter
+      }))
+    }
+  }, [])
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [showContract, setShowContract] = useState(false)
   const [showInlineCheckout, setShowInlineCheckout] = useState(false)
@@ -180,17 +262,26 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
   const productData = PRODUCT_DATA[currentProduct.id] || {}
   
-  // Debug logs
-  console.log('CheckoutModerno Props:', {
-    isNewInterface,
-    currentProduct,
-    supportsQuantity,
-    showGroupDiscount
-  })
+  // Auto-save dos dados do formulário
+  useEffect(() => {
+    // Só salva se pelo menos o nome ou email estiver preenchido
+    if (customerData.name.trim() || customerData.email.trim()) {
+      setIsSaving(true)
+      const timeoutId = setTimeout(() => {
+        saveFormData(customerData, currentAdults, currentChildren)
+        setIsSaving(false)
+      }, 1000) // Debounce de 1 segundo
+      
+      return () => {
+        clearTimeout(timeoutId)
+        setIsSaving(false)
+      }
+    }
+  }, [customerData, currentAdults, currentChildren])
 
   // Preços base
   const getBaseAdultPrice = () => currentProduct.originalPrice || currentProduct.currentPrice
-  const getBaseChildPrice = () => currentProduct.childPrice || (currentProduct.originalPrice || currentProduct.currentPrice)
+  const getBaseChildPrice = () => (currentProduct as any).childPrice || (currentProduct.originalPrice || currentProduct.currentPrice)
   
   // Preços finais com desconto
   const getFinalAdultPrice = () => {
@@ -221,36 +312,22 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     return originalTotal - discountedTotal
   }
   
-  // Total final
+  // Total final calculado
   const calculateCurrentTotal = () => {
     // Se não suporta quantidade, usar preço base
     if (!supportsQuantity) {
-      console.log('Product does not support quantity, using base price:', price)
       return price
     }
     
     const adultTotal = currentAdults * getFinalAdultPrice()
     const childTotal = currentChildren * getFinalChildPrice()
-    const total = adultTotal + childTotal
-    
-    console.log('Calculating total:', {
-      currentAdults,
-      currentChildren,
-      adultPrice: getFinalAdultPrice(),
-      childPrice: getFinalChildPrice(),
-      adultTotal,
-      childTotal,
-      total,
-      supportsQuantity
-    })
-    
-    return total
+    return adultTotal + childTotal
   }
   
   const getCurrentSavings = () => {
     return getAdultGroupSavings() + getChildrenSavings()
   }
-
+  
   const currentTotal = calculateCurrentTotal()
   const currentSavings = getCurrentSavings()
 
@@ -346,10 +423,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         children: children
       }
       
-      console.log('Dados do cliente:', orderData)
-      
       // Criar pagamento no MercadoPago
-      console.log('Criando pagamento MercadoPago...')
       
       const paymentResponse = await fetch('/api/payments/mercadopago', {
         method: 'POST',
@@ -384,23 +458,16 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       
       const paymentData = await paymentResponse.json()
       
-      console.log('🔍 Resposta da API:', paymentData)
-      
       if (paymentData.success && paymentData.preference_id) {
-        console.log('✅ Preferência criada, iniciando checkout inline:', paymentData.preference_id)
-        
-        // DEBUG: Testar sem API - forçar checkout inline
-        alert('🧪 TESTE: Forçando checkout inline para debug!')
         
         // Configurar dados para checkout inline
         setPaymentData({
-          preferenceId: paymentData.preference_id || 'test-preference',
-          publicKey: paymentData.public_key || 'TEST-public-key'
+          preferenceId: paymentData.preference_id,
+          publicKey: paymentData.public_key
         })
         
         // Mostrar checkout inline
         setShowInlineCheckout(true)
-        console.log('🔧 DEBUG: showInlineCheckout set to true')
         return
       } else {
         console.error('❌ Erro ao criar pagamento:', paymentData)
@@ -471,7 +538,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   // Se checkout inline ativo, usar componente real do MercadoPago
   if (showInlineCheckout && paymentData) {
     return (
-      <MercadoPagoInline
+      <MercadoPagoSingle
+        key={`mp-${paymentData.preferenceId}`} // Key único para forçar re-mount limpo
         preferenceId={paymentData.preferenceId}
         publicKey={paymentData.publicKey}
         amount={currentTotal}
@@ -482,6 +550,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         }}
         onSuccess={(payment) => {
           console.log('✅ Pagamento realizado com sucesso:', payment)
+          // Limpar dados salvos após sucesso
+          clearFormData()
           // Redirecionar para página de sucesso
           window.location.href = '/payment/success'
         }}
@@ -500,11 +570,6 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      
-      {/* COMPONENTE DE TESTE - REMOVER DEPOIS */}
-      <div className="max-w-6xl mx-auto px-4 pt-8">
-        <CheckoutTest />
-      </div>
       
       {/* Header simplificado temporário */}
       <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
@@ -606,14 +671,64 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
             {/* Formulário de dados */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 relative">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Seus Dados
                 </h2>
                 <p className="text-gray-600">
                   Preencha para ativar seu monitoramento
                 </p>
+                
+                {/* Indicador de salvamento */}
+                {isSaving && (
+                  <div className="absolute top-0 right-0 flex items-center text-xs text-gray-500">
+                    <div className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent mr-1"></div>
+                    Salvando...
+                  </div>
+                )}
               </div>
+
+              {/* Banner de dados salvos */}
+              {hasSavedData && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="text-2xl mr-3">💾</div>
+                      <div>
+                        <div className="text-sm font-medium text-blue-800">
+                          Dados anteriores carregados!
+                        </div>
+                        <div className="text-xs text-blue-600">
+                          Seus dados foram restaurados automaticamente
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearFormData()
+                        setHasSavedData(false)
+                        setCustomerData({
+                          name: '',
+                          email: '',
+                          phone: '',
+                          phoneCountry: '+55',
+                          cpf: '',
+                          targetCountry: '',
+                          terms: false,
+                          newsletter: true,
+                          contractAccepted: false
+                        })
+                        setCurrentAdults(adults)
+                        setCurrentChildren(children)
+                      }}
+                      className="text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -936,9 +1051,9 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                             R$ {currentTotal.toLocaleString('pt-BR')}
                           </span>
                         </div>
-                        {getCurrentSavings() > 0 && (
+                        {currentSavings > 0 && (
                           <div className="text-right text-sm text-green-600 font-medium mt-1">
-                            💰 Você economiza R$ {getCurrentSavings().toLocaleString('pt-BR')}!
+                            💰 Você economiza R$ {currentSavings.toLocaleString('pt-BR')}!
                           </div>
                         )}
                         {currentAdults === 3 && (
@@ -1048,77 +1163,6 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   )}
                 </button>
                 
-                {/* BOTÕES DE DEBUG - REMOVER DEPOIS */}
-                <div className="mt-4 space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      console.log('🧪 Forçando checkout inline para teste')
-                      setPaymentData({
-                        preferenceId: 'test-preference-123',
-                        publicKey: 'TEST-key'
-                      })
-                      setShowInlineCheckout(true)
-                    }}
-                    className="w-full py-3 px-6 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors"
-                  >
-                    🧪 TESTE: Simulação Rápida
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      console.log('🔥 Testando com MercadoPago real')
-                      
-                      // Usar dados do formulário se preenchidos
-                      const testData = {
-                        name: customerData.name || 'João Teste',
-                        email: customerData.email || 'teste@email.com',
-                        phone: customerData.phone || '11999999999',
-                        cpf: customerData.cpf || '11111111111'
-                      }
-                      
-                      try {
-                        const response = await fetch('/api/payments/mercadopago', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            customer: testData,
-                            items: [{
-                              id: currentProduct.id,
-                              title: currentProduct.name,
-                              description: 'Teste checkout inline',
-                              unit_price: currentTotal,
-                              quantity: 1
-                            }],
-                            back_urls: {
-                              success: `${window.location.origin}/payment/success`,
-                              failure: `${window.location.origin}/payment/failure`,
-                              pending: `${window.location.origin}/payment/pending`
-                            }
-                          })
-                        })
-                        
-                        const data = await response.json()
-                        
-                        if (data.success) {
-                          setPaymentData({
-                            preferenceId: data.preference_id,
-                            publicKey: data.public_key
-                          })
-                          setShowInlineCheckout(true)
-                        } else {
-                          alert('Erro ao criar preferência: ' + data.error)
-                        }
-                      } catch (error) {
-                        alert('Erro de conexão: ' + error)
-                      }
-                    }}
-                    className="w-full py-3 px-6 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
-                  >
-                    🔥 TESTE: MercadoPago Real
-                  </button>
-                </div>
               </form>
             </div>
           </div>

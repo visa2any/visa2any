@@ -24,12 +24,22 @@ export default function TesteCheckoutPage() {
   return (
     <div>
       <CheckoutModerno
+        productId="consultoria-express-teste"
+        productName="Consultoria Express - Teste"
+        price={297}
+        originalPrice={397}
+        description="Teste do checkout inline com MercadoPago"
+        features={[
+          '60 minutos com especialista',
+          'Análise completa do seu caso',
+          'Plano de ação personalizado',
+          'Suporte WhatsApp por 30 dias',
+          'Relatório em PDF'
+        ]}
+        variant="consultation"
         title="Teste do Checkout Inline"
         subtitle="Teste para verificar o funcionamento do checkout inline"
         ctaText="Testar Checkout"
-        products={[sampleProduct]}
-        supportsQuantity={false}
-        showGroupDiscount={false}
       />
     </div>
   )

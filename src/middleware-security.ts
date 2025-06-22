@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Headers de segurança essenciais
 export function addSecurityHeaders(response: NextResponse): NextResponse {
-  // Previne clickjacking
-  response.headers.set('X-Frame-Options', 'DENY')
+  // Previne clickjacking - mas permite MercadoPago
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
   
   // Previne MIME type sniffing
   response.headers.set('X-Content-Type-Options', 'nosniff')
@@ -19,27 +19,54 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   // Controla referrer - mais flexível para MercadoPago
   response.headers.set('Referrer-Policy', 'no-referrer-when-downgrade')
   
+  // Permitir cookies de terceiros e embeddings para MercadoPago
+  response.headers.set('Cross-Origin-Embedder-Policy', 'unsafe-none')
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+  response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin')
+  
+  // Headers específicos para cookies de terceiros
+  response.headers.set('Access-Control-Allow-Credentials', 'true')
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+  
   // Permissions Policy (antigas Feature Policy)
   response.headers.set('Permissions-Policy', 
     'camera=(), microphone=(), geolocation=(), interest-cohort=()'
   )
   
-  // Content Security Policy otimizada para MercadoPago
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://sdk.mercadopago.com https://http2.mlstatic.com https://js-agent.newrelic.com https://www.gstatic.com https://static.hotjar.com https://script.hotjar.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://http2.mlstatic.com",
-    "font-src 'self' https://fonts.gstatic.com https://http2.mlstatic.com",
-    "img-src 'self' data: https: blob: https://http2.mlstatic.com https://images.unsplash.com",
-    "connect-src 'self' https://api.mercadopago.com https://api.mercadolibre.com https://www.mercadolibre.com https://vc.hotjar.io https://bam.nr-data.net https://api.whatsapp.com https://api.sendgrid.com https://api.resend.com",
-    "frame-src 'self' https://www.mercadopago.com.br https://www.mercadopago.com https://www.google.com",
-    "worker-src 'self' blob:",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self' https://www.mercadopago.com.br"
-  ].join('; ')
-  
-  response.headers.set('Content-Security-Policy', csp)
+  // CSP muito permissiva para debug - TEMPORÁRIO
+  if (process.env.NODE_ENV === 'development') {
+    // Desenvolvimento: CSP mínima
+    const csp = [
+      "default-src *",
+      "script-src * 'unsafe-inline' 'unsafe-eval'",
+      "style-src * 'unsafe-inline'",
+      "img-src * data: blob:",
+      "font-src *",
+      "connect-src *",
+      "frame-src *",
+      "object-src *",
+      "media-src *"
+    ].join('; ')
+    
+    response.headers.set('Content-Security-Policy', csp)
+  } else {
+    // Produção: CSP mais segura
+    const csp = [
+      "default-src 'self' https://*.mercadopago.com https://*.mercadolibre.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+      "style-src 'self' 'unsafe-inline' https:",
+      "font-src 'self' https:",
+      "img-src 'self' data: https: blob:",
+      "connect-src 'self' https:",
+      "frame-src 'self' https:",
+      "worker-src 'self' blob:",
+      "object-src 'none'"
+    ].join('; ')
+    
+    response.headers.set('Content-Security-Policy', csp)
+  }
   
   return response
 }
