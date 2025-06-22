@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         break
       
       case 'document_requirements':
-        analysisResult = await analyzeDocumentRequirements(validatedData.profile, validatedData.documents, countryExpertise)
+        analysisResult = await analyzeDocumentRequirements(validatedData.profile, validatedData.documents || [], countryExpertise)
         break
       
       case 'timeline_estimate':
@@ -62,11 +62,11 @@ export async function POST(request: NextRequest) {
         break
       
       case 'success_probability':
-        analysisResult = await calculateSuccessProbability(validatedData.profile, validatedData.documents, countryExpertise)
+        analysisResult = await calculateSuccessProbability(validatedData.profile, validatedData.documents || [], countryExpertise)
         break
       
       case 'compliance_check':
-        analysisResult = await performComplianceCheck(validatedData.profile, validatedData.documents, countryExpertise)
+        analysisResult = await performComplianceCheck(validatedData.profile, validatedData.documents || [], countryExpertise)
         break
       
       case 'embassy_insights':
