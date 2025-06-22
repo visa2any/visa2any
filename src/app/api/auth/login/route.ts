@@ -141,10 +141,12 @@ export async function POST(request: NextRequest) {
     console.log('🍪 Cookie auth-token definido com sucesso')
 
     // ✅ Adicionar headers de rate limit
-    const { headers } = createRateLimitResponse(rateLimitResult)
-    Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
-    })
+    const rateLimitResponseData = createRateLimitResponse(rateLimitResult)
+    if ('headers' in rateLimitResponseData) {
+      Object.entries(rateLimitResponseData.headers).forEach(([key, value]) => {
+        response.headers.set(key, value)
+      })
+    }
 
     return response
 
