@@ -318,7 +318,7 @@ export default function HybridBookingsPage() {
                     key={booking.id}
                     booking={booking}
                     onUpdateStatus={updateBookingStatus}
-                    onViewDetails={(booking) => {
+                    onViewDetails={(booking: HybridBooking) => {
                       setSelectedBooking(booking)
                       setShowDetails(true)
                     }}
