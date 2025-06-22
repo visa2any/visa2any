@@ -145,7 +145,7 @@ export default function ConsultationsPage() {
         (consultation.client?.email || '').toLowerCase().includes(searchLower) ||
         (consultation.consultant?.name || '').toLowerCase().includes(searchLower) ||
         (consultation.notes || '').toLowerCase().includes(searchLower) ||
-        typeLabels[consultation.type].toLowerCase().includes(searchLower)
+        (typeLabels[consultation.type] || '').toLowerCase().includes(searchLower)
       
       const matchesStatus = statusFilter === 'ALL' || consultation.status === statusFilter
       const matchesType = typeFilter === 'ALL' || consultation.type === typeFilter
