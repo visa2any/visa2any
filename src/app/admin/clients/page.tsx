@@ -429,7 +429,7 @@ export default function ClientsPage() {
                 className="px-4 py-3 bg-white border border-gray-200 rounded-xl focus-ring text-readable min-w-[200px]"
               >
                 <option value="ALL">Todos os Países</option>
-                {[...new Set(safeClients.map(c => c.targetCountry).filter(Boolean))].sort().map(country => (
+                {Array.from(new Set(safeClients.map(c => c.targetCountry).filter(Boolean))).sort().map(country => (
                   <option key={country} value={country}>{country}</option>
                 ))}
               </select>
