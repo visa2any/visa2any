@@ -134,8 +134,8 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     //   }
     // })
 
-    // Notificar cliente sobre mudança de status
-    await notifyClientStatusUpdate(booking, status, appointmentDetails)
+    // Notificar cliente sobre mudança de status (comentado por enquanto pois booking é mock)
+    // await notifyClientStatusUpdate(booking, status, appointmentDetails)
 
     return NextResponse.json({
       success: true,
@@ -184,7 +184,7 @@ async function assignConsultant(bookingId: string, consultantId: string) {
 async function addBookingNote(bookingId: string, note: string) {
   try {
     // Como hybridBooking não existe no schema, vamos simular resposta
-    const booking = null // await prisma.hybridBooking.findUnique({
+    const booking = { notes: [] } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId }
     // })
 
@@ -231,7 +231,7 @@ async function addBookingNote(bookingId: string, note: string) {
 async function extendDeadline(bookingId: string, hours: number) {
   try {
     // Como hybridBooking não existe no schema, vamos simular resposta
-    const booking = null // await prisma.hybridBooking.findUnique({
+    const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId }
     // })
 
