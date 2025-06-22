@@ -6,7 +6,7 @@ import { Check, X, Edit2 } from 'lucide-react'
 interface InlineEditProps {
   value: string
   onSave: (value: string) => Promise<void>
-  type?: 'text' | 'email' | 'tel' | 'number' | 'textarea'
+  type?: 'text' | 'email' | 'tel' | 'number' | 'textarea' | 'datetime-local'
   placeholder?: string
   className?: string
   displayClassName?: string
@@ -14,6 +14,7 @@ interface InlineEditProps {
   validation?: (value: string) => string | null
   multiline?: boolean
   disabled?: boolean
+  displayValue?: string
 }
 
 export function InlineEdit({
@@ -26,7 +27,8 @@ export function InlineEdit({
   editClassName = '',
   validation,
   multiline = false,
-  disabled = false
+  disabled = false,
+  displayValue
 }: InlineEditProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(value)
@@ -103,7 +105,7 @@ export function InlineEdit({
         onClick={handleStartEdit}
       >
         <span className={`${!value ? 'text-gray-400 italic' : ''}`}>
-          {value || placeholder || 'Clique para editar'}
+          {displayValue || value || placeholder || 'Clique para editar'}
         </span>
         {!disabled && (
           <Edit2 className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
