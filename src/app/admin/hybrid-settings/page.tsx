@@ -229,7 +229,7 @@ export default function HybridSettingsPage() {
                 setEditingCountry(null)
                 loadSettings() // Reload original values
               }}
-              onUpdate={(field, value) => updateFee(fee.country, field, value)}
+              onUpdate={(field: string, value: any) => updateFee(fee.country, field, value)}
               onRemove={() => removeCountry(fee.country)}
             />
           ))}
