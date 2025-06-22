@@ -82,6 +82,14 @@ interface DashboardStats {
   }
 }
 
+interface Alert {
+  id: string
+  type: string
+  message: string
+  notified?: boolean
+  createdAt: string
+}
+
 interface Client {
   id: string
   name: string
@@ -453,7 +461,7 @@ function UnifiedAdminDashboardContent() {
 // Componente Monitoring View
 function MonitoringView() {
   const [channels, setChannels] = useState([])
-  const [alerts, setAlerts] = useState([])
+  const [alerts, setAlerts] = useState<Alert[]>([])
   const [stats, setStats] = useState({
     activeChannels: 0,
     vagasToday: 0,
