@@ -496,7 +496,7 @@ function MonitoringView() {
     }
   }
 
-  const handleNotifyAlert = async (alertIndex) => {
+  const handleNotifyAlert = async (alertIndex: number) => {
     try {
       const alert = alerts[alertIndex]
       
