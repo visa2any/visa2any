@@ -285,7 +285,7 @@ FormTextarea.displayName = 'FormTextarea'
 interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string
   error?: string
-  helpText?: string
+  helpText?: string | undefined
   tooltip?: string | React.ReactNode
   success?: boolean
   loading?: boolean
