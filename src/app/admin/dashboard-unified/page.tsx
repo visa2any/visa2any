@@ -849,7 +849,7 @@ function MonitoringView() {
                     
                     loadMonitoringData() // Recarregar dados
                   } else {
-                    notifyError(`Erro ao ativar Web Scraping: ${result.error}`)
+                    notifyError('Erro Web Scraping', `Erro ao ativar: ${result.error}`)
                   }
                 } catch (error) {
                   console.error('Erro ao ativar web scraping:', error)
@@ -907,7 +907,7 @@ function MonitoringView() {
                     
                     loadMonitoringData() // Recarregar dados
                   } else {
-                    notifyError(`Erro ao ativar Email Monitor: ${result.error}`)
+                    notifyError('Erro Email Monitor', `Erro ao ativar: ${result.error}`)
                   }
                 } catch (error) {
                   console.error('Erro ao ativar email monitoring:', error)
