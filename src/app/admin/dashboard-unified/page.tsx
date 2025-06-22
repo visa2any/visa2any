@@ -98,6 +98,13 @@ interface Channel {
   type: string
 }
 
+interface MonitoringStats {
+  activeChannels: number
+  vagasToday: number
+  totalVagas: number
+  monthlyCost: number
+}
+
 interface Client {
   id: string
   name: string
@@ -470,7 +477,7 @@ function UnifiedAdminDashboardContent() {
 function MonitoringView() {
   const [channels, setChannels] = useState<Channel[]>([])
   const [alerts, setAlerts] = useState<Alert[]>([])
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<MonitoringStats>({
     activeChannels: 0,
     vagasToday: 0,
     totalVagas: 0,
