@@ -185,27 +185,27 @@ export default function DocumentsPage() {
     return matchesSearch && matchesStatus && matchesType
   })
 
-  const handleViewDocument = (document: Document) => {
-    setSelectedDocument(document)
+  const handleViewDocument = (doc: Document) => {
+    setSelectedDocument(doc)
     setShowViewSlider(true)
   }
 
-  const handleEditDocument = (document: Document) => {
-    setSelectedDocument(document)
+  const handleEditDocument = (doc: Document) => {
+    setSelectedDocument(doc)
     setShowEditSlider(true)
   }
 
-  const handleDownloadDocument = (document: Document) => {
+  const handleDownloadDocument = (doc: Document) => {
     // Simulate document download
-    const link = document.createElement('a')
+    const link = window.document.createElement('a')
     link.href = `#`
-    link.download = document.fileName
+    link.download = doc.fileName
     link.click()
-    alert(`Download iniciado: ${document.fileName}`)
+    alert(`Download iniciado: ${doc.fileName}`)
   }
 
-  const handleShareDocument = (document: Document) => {
-    setSelectedDocument(document)
+  const handleShareDocument = (doc: Document) => {
+    setSelectedDocument(doc)
     setShowShareSlider(true)
   }
 
