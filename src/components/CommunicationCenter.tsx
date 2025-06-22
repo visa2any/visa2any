@@ -55,8 +55,8 @@ interface CommunicationStats {
   emailsToday: number
   callsToday: number
   responseTime: number
-  pendingMessages: number
-  unreadMessages: number
+  pendingMessages?: number
+  unreadMessages?: number
 }
 
 interface CommunicationCenterProps {
@@ -378,7 +378,7 @@ export function CommunicationCenter({
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <div>
                   <p className="text-xs font-medium text-yellow-900">Pendentes</p>
-                  <p className="text-sm font-bold text-yellow-600">{stats.pendingMessages}</p>
+                  <p className="text-sm font-bold text-yellow-600">{stats.pendingMessages || 0}</p>
                 </div>
               </div>
             </div>
@@ -388,7 +388,7 @@ export function CommunicationCenter({
                 <Bell className="h-4 w-4 text-red-600" />
                 <div>
                   <p className="text-xs font-medium text-red-900">Não Lidas</p>
-                  <p className="text-sm font-bold text-red-600">{stats.unreadMessages}</p>
+                  <p className="text-sm font-bold text-red-600">{stats.unreadMessages || 0}</p>
                 </div>
               </div>
             </div>
