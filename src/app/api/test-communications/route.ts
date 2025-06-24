@@ -112,4 +112,27 @@ export async function GET(request: NextRequest) {
         status: 'success',
         message: 'Webhook de pagamento simulado'
       })
+      
+    } catch (error) {
+      console.error('Erro no teste de webhook:', error)
+      results.tests.push({
+        type: 'webhook_simulation',
+        status: 'error',
+        message: 'Erro ao simular webhook'
+      })
+    }
+
+    // 4. Retornar resultados
+    return NextResponse.json({
+      data: results,
+      message: 'Testes de comunicação concluídos'
+    })
+    
+  } catch (error) {
+    console.error('Erro geral nos testes:', error)
+    return NextResponse.json(
+      { error: 'Erro interno nos testes' },
+      { status: 500 }
+    )
+  }
 }

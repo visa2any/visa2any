@@ -171,6 +171,25 @@ class PaymentService {
       return {
         status: result.status || 'unknown',
         approved: result.status === 'approved',
+        details: result
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status:', error)
+      return {
+        status: 'error',
+        approved: false
+      }
+    }
+  }
+
+  // Calcular preço do serviço
+  calculateServicePrice(serviceLevel: 'basic' | 'premium' | 'express') {
+    const prices = {
+      basic: {
+        amount: 25.00,
+        description: 'Agendamento Básico - Visa2Any',
+        processingTime: '5-7 dias úteis'
+      },
       premium: {
         amount: 45.00,
         description: 'Agendamento Premium - Visa2Any',

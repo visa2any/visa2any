@@ -140,13 +140,32 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class']
       }
     ]
+  }
 
-    const analysis = {
-      totalChanges: changes.length,
-      categories: {} as Record<string, number>,
-      impact: 'medium',
-      affectedPrograms: new Set<string>()
-    }
+  // Filtrar por tipo de visto se especificado
+  const allChanges = lawChangesDatabase[country] || []
+  const filteredChanges = visaType 
+    ? allChanges.filter(change => 
+        change.visaTypes.includes(visaType.toUpperCase()) || 
+        change.visaTypes.includes('ALL')
+      )
+    : allChanges
+
+  // Filtrar por período
+  return filteredChanges.filter(change => {
+    const changeDate = new Date(change.date)
+    return changeDate >= startDate
+  })
+}
+
+// Analisar mudanças nas leis
+async function analyzeLawChanges(changes: any[], country: string, visaType?: string) {
+  const analysis = {
+    totalChanges: changes.length,
+    categories: {} as Record<string, number>,
+    impact: 'medium',
+    affectedPrograms: new Set<string>()
+  }
 
   // Analisar cada mudança
   changes.forEach(change => {
