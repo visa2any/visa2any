@@ -64,7 +64,13 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'AI_CHAT_INTERACTION',
         action: 'chat_with_sofia',
-        clientId: validatedData.clientId || null
+        clientId: validatedData.clientId || null,
+        success: true,
+        details: {
+          message: validatedData.message,
+          intent: sofiaResponse.intent,
+          confidence: sofiaResponse.confidence
+        }
       }
     })
 

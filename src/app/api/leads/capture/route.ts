@@ -99,7 +99,14 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'LEAD_CAPTURED',
         action: 'capture_lead',
-        clientId: client.id
+        clientId: client.id,
+        success: true,
+        details: {
+          source: validatedData.source,
+          leadMagnet: validatedData.leadMagnet,
+          leadScore: leadScore,
+          country: validatedData.country
+        }
       }
     })
 

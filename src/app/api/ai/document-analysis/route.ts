@@ -74,7 +74,14 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'AI_DOCUMENT_ANALYSIS',
         action: 'analyze_document_ai',
-        clientId: document.clientId
+        clientId: document.clientId,
+        success: analysisResult.isValid,
+        details: {
+          documentId: document.id,
+          documentType: document.type,
+          confidence: analysisResult.confidence,
+          processingTime: analysisResult.processingTime
+        }
       }
     })
 
