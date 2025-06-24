@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
     const secret = request.headers.get('x-n8n-webhook-secret')
     if (secret !== process.env.N8N_WEBHOOK_SECRET) {
       return NextResponse.json(
-        { success: false, error: 'Invalid webhook secret' },
         { status: 401 }
       )
     }
@@ -43,12 +42,10 @@ export async function POST(request: NextRequest) {
         console.log('Unknown webhook type:', type)
     }
 
-    return NextResponse.json({ success: true, processed: true })
 
   } catch (error) {
     console.error('N8N Webhook error:', error)
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
       { status: 500 }
     )
   }
@@ -62,15 +59,6 @@ async function handleLegalChange(data: any) {
     data: {
       type: 'LEGAL_CHANGE_DETECTED',
       status: 'SUCCESS',
-      details: {
-        country,
-        changeType,
-        description,
-        affectedVisaTypes,
-        sourceUrl,
-        priority,
-        detectedAt: new Date()
-      },
       executedAt: new Date()
     }
   })
@@ -116,15 +104,6 @@ async function handleConsularSlot(data: any) {
     data: {
       type: 'CONSULAR_SLOT_DETECTED',
       status: 'SUCCESS',
-      details: {
-        country,
-        consulate,
-        city,
-        availableSlots,
-        visaType,
-        earliestDate,
-        detectedAt: new Date()
-      },
       executedAt: new Date()
     }
   })
@@ -199,13 +178,6 @@ async function handleDocumentValidation(data: any) {
       type: 'DOCUMENT_VALIDATED',
       clientId,
       status: 'SUCCESS',
-      details: {
-        documentId,
-        validationResult,
-        issues,
-        recommendations,
-        processedAt: new Date()
-      },
       executedAt: new Date()
     }
   })
@@ -251,13 +223,6 @@ async function handleClientRiskAlert(data: any) {
       type: 'CLIENT_RISK_ALERT',
       clientId,
       status: 'SUCCESS',
-      details: {
-        riskType,
-        riskScore,
-        factors,
-        recommendations,
-        detectedAt: new Date()
-      },
       executedAt: new Date()
     }
   })
@@ -308,13 +273,6 @@ async function handleAutomationCompleted(data: any) {
       type: 'AUTOMATED_EMAIL',
       clientId: clientId || null,
       status: result.success ? 'SUCCESS' : 'FAILED',
-      details: {
-        workflowId,
-        workflowName,
-        result,
-        metrics,
-        completedAt: new Date()
-      },
       executedAt: new Date()
     }
   })

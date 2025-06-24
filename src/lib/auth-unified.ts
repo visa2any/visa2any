@@ -133,13 +133,11 @@ export async function loginCustomer(email: string, password?: string): Promise<{
     })
 
     if (!client) {
-      return { success: false, error: 'Cliente não encontrado' }
     }
 
     // Se não tem senha, é primeiro login (criar senha)
     if (!password) {
       return { 
-        success: false, 
         error: 'NEEDS_PASSWORD_SETUP',
         user: {
           id: client.id,
@@ -169,11 +167,9 @@ export async function loginCustomer(email: string, password?: string): Promise<{
 
     const token = generateToken(user)
 
-    return { success: true, user, token }
 
   } catch (error) {
     console.error('Erro no login do cliente:', error)
-    return { success: false, error: 'Erro interno do servidor' }
   }
 }
 
@@ -185,12 +181,10 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
     })
 
     if (!user || !user.isActive) {
-      return { success: false, error: 'Usuário não encontrado ou inativo' }
     }
 
     const passwordValid = await bcrypt.compare(password, user.password)
     if (!passwordValid) {
-      return { success: false, error: 'Senha incorreta' }
     }
 
     const unifiedUser: UnifiedUser = {
@@ -204,11 +198,9 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
 
     const token = generateToken(unifiedUser)
 
-    return { success: true, user: unifiedUser, token }
 
   } catch (error) {
     console.error('Erro no login do admin:', error)
-    return { success: false, error: 'Erro interno do servidor' }
   }
 }
 
@@ -291,11 +283,9 @@ export async function createCustomerAccount(data: {
 
     const token = generateToken(user)
 
-    return { success: true, user, token }
 
   } catch (error) {
     console.error('Erro ao criar conta do cliente:', error)
-    return { success: false, error: 'Erro ao criar conta' }
   }
 }
 
@@ -306,7 +296,6 @@ export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSUL
     
     if (!user) {
       return {
-        success: false,
         error: 'Não autorizado',
         status: 401
       }
@@ -314,20 +303,17 @@ export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSUL
 
     if (!allowedTypes.includes(user.type)) {
       return {
-        success: false,
         error: 'Tipo de usuário não autorizado',
         status: 403
       }
     }
 
-    return { success: true, user }
   }
 }
 
 // Helper para criar responses de erro de auth
 export function createUnifiedAuthError(message: string, status: number = 401) {
   return Response.json(
-    { success: false, error: message },
     { status }
   )
 }

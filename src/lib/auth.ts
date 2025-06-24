@@ -74,13 +74,11 @@ export function requireAuth() {
     
     if (!user) {
       return {
-        success: false,
         error: 'Não autorizado',
         status: 401
       }
     }
 
-    return { success: true, user }
   }
 }
 
@@ -91,7 +89,6 @@ export function requireAdmin() {
     
     if (!user) {
       return {
-        success: false,
         error: 'Não autorizado',
         status: 401
       }
@@ -99,20 +96,17 @@ export function requireAdmin() {
 
     if (!isAdmin(user)) {
       return {
-        success: false,
         error: 'Acesso negado. Permissão de administrador necessária.',
         status: 403
       }
     }
 
-    return { success: true, user }
   }
 }
 
 // Helper para criar responses de erro de auth
 export function createAuthError(message: string, status: number = 401) {
   return Response.json(
-    { success: false, error: message },
     { status }
   )
 }

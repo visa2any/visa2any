@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         clients,
         pagination: {
@@ -90,7 +89,6 @@ export async function GET(request: NextRequest) {
     
     // Retornar resposta de fallback
     return NextResponse.json({
-      success: true,
       data: {
         clients: [],
         pagination: {
@@ -115,7 +113,6 @@ export async function POST(request: NextRequest) {
     if (!name || !email) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Nome e email são obrigatórios'
         },
         { status: 400 }
@@ -130,7 +127,6 @@ export async function POST(request: NextRequest) {
     if (existingClient) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Cliente já cadastrado com este email'
         },
         { status: 409 }
@@ -154,7 +150,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: client
     })
 
@@ -162,7 +157,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro ao criar cliente:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

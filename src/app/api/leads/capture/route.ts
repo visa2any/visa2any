@@ -83,15 +83,6 @@ export async function POST(request: NextRequest) {
         channel: getChannelFromSource(validatedData.source),
         direction: 'inbound',
         content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
-        details: {
-          leadMagnet: validatedData.leadMagnet,
-          source: validatedData.source,
-          utm: {
-            source: validatedData.utmSource,
-            medium: validatedData.utmMedium,
-            campaign: validatedData.utmCampaign,
-            content: validatedData.utmContent
-          },
           userAgent: request.headers.get('user-agent'),
           ip: ip,
           referrer: validatedData.referrer,
@@ -107,19 +98,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'LEAD_CAPTURED',
         action: 'capture_lead',
-        details: {
-          leadId: client.id,
-          source: validatedData.source,
-          leadMagnet: validatedData.leadMagnet,
-          isNewLead: isNewLead,
-          leadScore: leadScore,
-          utm: {
-            source: validatedData.utmSource,
-            medium: validatedData.utmMedium,
-            campaign: validatedData.utmCampaign
-          }
-        },
-        success: true,
         clientId: client.id
       }
     })
@@ -148,7 +126,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         leadId: client.id,
         leadScore: leadScore,
@@ -162,7 +139,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -172,7 +148,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao capturar lead:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -225,7 +200,6 @@ export async function GET(request: NextRequest) {
     ])
 
     return NextResponse.json({
-      success: true,
       data: {
         overview: {
           totalLeads,
@@ -244,7 +218,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar estatísticas de leads:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -346,13 +319,6 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
       data: {
         type: 'HIGH_PRIORITY_LEAD',
         action: 'notify_sales_team',
-        details: {
-          leadId: clientId,
-          leadScore: leadScore,
-          priority: 'HIGH',
-          action_required: 'Contact within 1 hour'
-        },
-        success: true,
         clientId: clientId
       }
     })

@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json({
-        success: false,
         error: 'Email e senha são obrigatórios'
       }, { status: 400 })
     }
@@ -37,7 +36,6 @@ export async function POST(request: NextRequest) {
 
     if (!customer) {
       return NextResponse.json({
-        success: false,
         error: 'Credenciais inválidas'
       }, { status: 401 })
     }
@@ -47,7 +45,6 @@ export async function POST(request: NextRequest) {
     
     if (!passwordMatch) {
       return NextResponse.json({
-        success: false,
         error: 'Credenciais inválidas'
       }, { status: 401 })
     }
@@ -57,7 +54,6 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        success: false,
         error: 'Erro de configuração do servidor'
       }, { status: 500 })
     }
@@ -74,7 +70,6 @@ export async function POST(request: NextRequest) {
 
     // Configurar cookie
     const response = NextResponse.json({
-      success: true,
       message: 'Login realizado com sucesso',
       customer: {
         id: customer.id,
@@ -103,7 +98,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no login do cliente:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

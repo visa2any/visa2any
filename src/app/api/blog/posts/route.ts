@@ -114,7 +114,6 @@ export async function GET(request: NextRequest) {
     }))
 
     return NextResponse.json({
-      success: true,
       posts: postsWithTags,
       total,
       hasMore: offset + posts.length < total,
@@ -131,7 +130,6 @@ export async function GET(request: NextRequest) {
     
     // Retornar dados de fallback em caso de erro de banco
     return NextResponse.json({
-      success: true,
       posts: [],
       total: 0,
       hasMore: false,
@@ -155,7 +153,6 @@ export async function POST(request: NextRequest) {
     if (!title || !excerpt || !content || !category || !author) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Campos obrigatórios: title, excerpt, content, category, author'
         },
         { status: 400 }
@@ -189,7 +186,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       post: {
         ...post,
         tags: Array.isArray(post.tags) ? post.tags : []
@@ -200,7 +196,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro ao criar post:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

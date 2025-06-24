@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -61,7 +60,6 @@ export async function POST(request: NextRequest) {
 
     if (requirements.length === 0) {
       return NextResponse.json({
-        success: false,
         error: 'Não encontramos informações sobre vistos para este país ainda.'
       }, { status: 404 })
     }
@@ -117,20 +115,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'ELIGIBILITY_ANALYSIS',
         action: 'analyze_eligibility',
-        details: {
-          clientId: validatedData.clientId,
-          targetCountry: validatedData.targetCountry,
-          bestScore: analyses[0]?.analysis.totalScore || 0,
-          recommendedVisa: analyses[0]?.visaType,
-          consultationId: consultation.id
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         consultation,
         analyses: analyses.slice(0, 3), // Top 3 opções
@@ -147,7 +136,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -157,7 +145,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro na análise de elegibilidade:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -285,16 +272,6 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
 
   return {
     totalScore: Math.round(percentageScore),
-    details: {
-      crsScore: totalScore,
-      maxCrsScore: 1200,
-      breakdown: {
-        age: ageScore,
-        education: educationScore,
-        language: languageScore,
-        experience: experienceScore
-      }
-    },
     feedback,
     blockers,
     eligible: blockers.length === 0 && totalScore >= 67,
@@ -372,15 +349,6 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
 
   return {
     totalScore: Math.min((totalScore / 100) * 100, 100),
-    details: {
-      pointsScore: totalScore,
-      breakdown: {
-        age: ageScore,
-        english: englishScore,
-        experience: experienceScore,
-        education: educationScore
-      }
-    },
     feedback,
     blockers,
     eligible,
@@ -418,11 +386,6 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
 
   return {
     totalScore: Math.max(score, 0),
-    details: {
-      monthlyIncomeRequired: minimumIncome,
-      monthlyIncomeProvided: Math.round(monthlyIncome),
-      fundsSufficient: monthlyIncome >= minimumIncome
-    },
     feedback,
     blockers,
     eligible
@@ -461,11 +424,6 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
 
   return {
     totalScore: Math.min(score, 100),
-    details: {
-      category: 'EB-1A Extraordinary Ability',
-      complexity: 'Very High',
-      evidenceRequired: '3 of 10 criteria must be met'
-    },
     feedback,
     blockers,
     eligible: score >= 70 && blockers.length === 0
@@ -504,9 +462,6 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
 
   return {
     totalScore: Math.max(Math.min(score, 100), 0),
-    details: {
-      note: 'Análise preliminar baseada em critérios gerais'
-    },
     feedback,
     blockers,
     eligible: score >= 60

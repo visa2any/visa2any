@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
-        { success: false, error: 'Não autenticado' },
         { status: 401 }
       )
     }
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-        { success: false, error: 'Configuração inválida' },
         { status: 500 }
       )
     }
@@ -29,7 +27,6 @@ export async function POST(request: NextRequest) {
       userId = decoded.userId
     } catch {
       return NextResponse.json(
-        { success: false, error: 'Token inválido' },
         { status: 401 }
       )
     }
@@ -39,7 +36,6 @@ export async function POST(request: NextRequest) {
 
     if (!postId || !action) {
       return NextResponse.json(
-        { success: false, error: 'postId e action são obrigatórios' },
         { status: 400 }
       )
     }
@@ -78,7 +74,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       likeCount,
       action
     })
@@ -86,7 +81,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error handling blog like:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

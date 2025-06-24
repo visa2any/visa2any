@@ -48,19 +48,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'BEHAVIORAL_TRIGGER',
         action: `trigger_${validatedData.event}`,
-        details: {
-          event: validatedData.event,
-          triggerData: validatedData.data,
-          analysis: triggerAnalysis,
-          actionTaken: triggerAnalysis.shouldTrigger
-        },
-        success: true,
         clientId: validatedData.clientId || null
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         triggered: triggerAnalysis.shouldTrigger,
         action: triggerAnalysis.action,
@@ -72,7 +64,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -82,7 +73,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao processar trigger comportamental:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

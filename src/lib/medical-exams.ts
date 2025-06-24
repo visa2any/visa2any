@@ -361,7 +361,6 @@ class MedicalExamService {
     try {
       const clinic = this.approvedClinics.find(c => c.id === booking.clinicId)
       if (!clinic) {
-        return { success: false, error: 'Clínica não encontrada' }
       }
 
       // Verificar se a data está disponível
@@ -372,7 +371,6 @@ class MedicalExamService {
       )
 
       if (!isAvailable) {
-        return { success: false, error: 'Horário não disponível' }
       }
 
       // Gerar ID do agendamento
@@ -385,7 +383,6 @@ class MedicalExamService {
       const instructions = this.generateBookingInstructions(clinic, booking.examTypes)
 
       return {
-        success: true,
         bookingId,
         confirmationCode,
         instructions
@@ -393,7 +390,6 @@ class MedicalExamService {
 
     } catch (error) {
       console.error('Erro ao agendar exame:', error)
-      return { success: false, error: 'Erro interno do sistema' }
     }
   }
 
@@ -425,10 +421,8 @@ class MedicalExamService {
         }
       }
 
-      return { success: true, booking: mockBooking }
 
     } catch (error) {
-      return { success: false, error: 'Erro ao buscar status' }
     }
   }
 
@@ -437,11 +431,9 @@ class MedicalExamService {
     try {
       await this.delay(800)
       return { 
-        success: true, 
         message: 'Exame cancelado com sucesso. Reembolso será processado em 5-7 dias úteis.' 
       }
     } catch (error) {
-      return { success: false, message: 'Erro ao cancelar exame' }
     }
   }
 
@@ -456,12 +448,10 @@ class MedicalExamService {
       const newConfirmationCode = this.generateConfirmationCode()
       
       return { 
-        success: true, 
         confirmationCode: newConfirmationCode,
         message: 'Exame reagendado com sucesso'
       }
     } catch (error) {
-      return { success: false, message: 'Erro ao reagendar exame' }
     }
   }
 

@@ -14,14 +14,12 @@ export async function POST(
 
     if (!clientId) {
       return NextResponse.json(
-        { success: false, error: 'Client ID is required' },
         { status: 400 }
       )
     }
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Note content is required' },
         { status: 400 }
       )
     }
@@ -55,7 +53,6 @@ export async function POST(
     }
 
     return NextResponse.json({
-      success: true,
       message: 'Note added successfully',
       data: {
         note: newNote,
@@ -66,7 +63,6 @@ export async function POST(
   } catch (error) {
     console.error('Add note error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to add note' },
       { status: 500 }
     )
   }
@@ -81,7 +77,6 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json(
-        { success: false, error: 'Client ID is required' },
         { status: 400 }
       )
     }
@@ -107,7 +102,6 @@ export async function GET(
     ]
 
     return NextResponse.json({
-      success: true,
       notes: mockNotes,
       total: mockNotes.length
     })
@@ -115,7 +109,6 @@ export async function GET(
   } catch (error) {
     console.error('Get notes error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch notes' },
       { status: 500 }
     )
   }

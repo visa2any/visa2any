@@ -58,22 +58,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'COMPLIANCE_CHECK',
         action: `compliance_${validatedData.checkType}`,
-        details: {
-          country: validatedData.country,
-          visaType: validatedData.visaType,
-          checkType: validatedData.checkType,
-          documentsChecked: validatedData.documents.length,
-          complianceScore: complianceResult.overallScore,
-          issues: complianceResult.issues.length,
-          result: complianceResult
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         compliance: complianceResult,
         report: detailedReport,
@@ -86,7 +75,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -96,7 +84,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro na verificação de compliance:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -112,7 +99,6 @@ export async function GET(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-        { success: false, error: 'País e tipo de visto são obrigatórios' },
         { status: 400 }
       )
     }
@@ -120,7 +106,6 @@ export async function GET(request: NextRequest) {
     const requirements = await getComplianceRequirements(country, visaType, detailed)
 
     return NextResponse.json({
-      success: true,
       data: {
         country: country,
         visaType: visaType,
@@ -132,7 +117,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao obter requisitos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

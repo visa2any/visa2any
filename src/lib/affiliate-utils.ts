@@ -147,7 +147,6 @@ export async function trackConversion(
     return data
   } catch (error) {
     console.error('Erro ao registrar conversão:', error)
-    return { success: false, error: 'Erro de conexão' }
   }
 }
 

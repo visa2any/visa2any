@@ -317,7 +317,6 @@ export async function GET(request: NextRequest) {
       })
 
       return NextResponse.json({
-        success: true,
         data: filteredDefaults.map((material, index) => ({
           id: `default_${index}`,
           ...material,
@@ -330,14 +329,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: materials
     })
 
   } catch (error) {
     console.error('Erro ao buscar materiais:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -366,7 +363,6 @@ export async function POST(request: NextRequest) {
     // Validações básicas
     if (!type || !title || !description) {
       return NextResponse.json({
-        success: false,
         error: 'Tipo, título e descrição são obrigatórios'
       }, { status: 400 })
     }
@@ -388,14 +384,12 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: material
     })
 
   } catch (error) {
     console.error('Erro ao criar material:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -411,7 +405,6 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json({
-        success: false,
         error: 'ID do material é obrigatório'
       }, { status: 400 })
     }
@@ -425,14 +418,12 @@ export async function PUT(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: material
     })
 
   } catch (error) {
     console.error('Erro ao atualizar material:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {

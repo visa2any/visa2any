@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
       const clinics = await medicalExamService.getApprovedClinics(country, city, state)
       
       return NextResponse.json({
-        success: true,
         clinics,
         total: clinics.length,
         message: clinics.length > 0 
@@ -41,7 +40,6 @@ export async function GET(request: NextRequest) {
       const exams = medicalExamService.getRequiredExams(country)
       
       return NextResponse.json({
-        success: true,
         exams,
         total: exams.length,
         message: exams.length > 0 
@@ -106,7 +104,6 @@ export async function POST(request: NextRequest) {
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         booking: {
           bookingId: result.bookingId,
           confirmationCode: result.confirmationCode,
@@ -116,7 +113,6 @@ export async function POST(request: NextRequest) {
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.error },
         { status: 400 }
       )
     }

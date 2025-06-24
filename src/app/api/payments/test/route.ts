@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     
     // Simular sucesso
     return NextResponse.json({
-      success: true,
       preference_id: 'test-preference-' + Date.now(),
       public_key: process.env.MERCADOPAGO_PUBLIC_KEY || 'TEST-PUBLIC-KEY',
       message: 'Preferência de teste criada com sucesso'
@@ -19,7 +18,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro na API de teste:', error)
     
     return NextResponse.json({
-      success: false,
       error: 'Erro na API de teste',
       details: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 })

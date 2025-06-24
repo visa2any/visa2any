@@ -44,7 +44,6 @@ export function rateLimit(
     rateStore.set(key, newEntry)
     
     return {
-      success: true,
       remaining: config.maxRequests - 1,
       resetTime: newEntry.resetTime
     }
@@ -53,7 +52,6 @@ export function rateLimit(
   if (entry.count >= config.maxRequests) {
     // Limite excedido
     return {
-      success: false,
       remaining: 0,
       resetTime: entry.resetTime
     }
@@ -64,7 +62,6 @@ export function rateLimit(
   rateStore.set(key, entry)
   
   return {
-    success: true,
     remaining: config.maxRequests - entry.count,
     resetTime: entry.resetTime
   }

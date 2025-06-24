@@ -158,14 +158,12 @@ class TranslationService {
       }
 
       return {
-        success: false,
         error: 'Todos os provedores de tradução falharam'
       }
 
     } catch (error) {
       console.error('Erro na tradução:', error)
       return {
-        success: false,
         error: 'Erro interno do serviço de tradução'
       }
     }
@@ -202,7 +200,6 @@ class TranslationService {
     const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.95)
 
     return {
-      success: true,
       translatedText: mockTranslation,
       confidence: 0.95,
       provider: 'DeepL',
@@ -223,7 +220,6 @@ class TranslationService {
     const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.85)
 
     return {
-      success: true,
       translatedText: mockTranslation,
       confidence: 0.85,
       provider: 'Google Translate',
@@ -244,7 +240,6 @@ class TranslationService {
     const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.88)
 
     return {
-      success: true,
       translatedText: mockTranslation,
       confidence: 0.88,
       provider: 'Azure Translator',
@@ -265,7 +260,6 @@ class TranslationService {
     const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.82)
 
     return {
-      success: true,
       translatedText: mockTranslation,
       confidence: 0.82,
       provider: 'AWS Translate',
@@ -287,7 +281,6 @@ class TranslationService {
 
       if (availableTranslators.length === 0) {
         return {
-          success: false,
           error: 'Nenhum tradutor juramentado disponível para este par de idiomas'
         }
       }
@@ -305,7 +298,6 @@ class TranslationService {
       const certificationNumber = this.generateCertificationNumber()
 
       return {
-        success: true,
         translatedText: 'Tradução oficial será entregue em ' + selectedTranslator.turnaroundTime,
         confidence: 1.0,
         provider: selectedTranslator.name,
@@ -317,7 +309,6 @@ class TranslationService {
 
     } catch (error) {
       return {
-        success: false,
         error: 'Erro ao processar solicitação de tradução oficial'
       }
     }
@@ -376,7 +367,6 @@ class TranslationService {
 
         if (translators.length === 0) {
           return {
-            success: false,
             error: 'Nenhum tradutor juramentado disponível'
           }
         }
@@ -395,7 +385,6 @@ class TranslationService {
         const deliveryTime = this.calculateDeliveryTime(selectedTranslator.turnaroundTime, document.priority)
 
         return {
-          success: true,
           translationId: 'TRANS-' + Date.now(),
           estimatedCost: finalCost,
           estimatedDelivery: deliveryTime,
@@ -406,7 +395,6 @@ class TranslationService {
         const baseCost = document.pageCount * 2.50 // R$ 2,50 por página para tradução automática
         
         return {
-          success: true,
           translationId: 'AUTO-' + Date.now(),
           estimatedCost: baseCost,
           estimatedDelivery: 'Até 30 minutos',
@@ -416,7 +404,6 @@ class TranslationService {
 
     } catch (error) {
       return {
-        success: false,
         error: 'Erro ao processar documento para tradução'
       }
     }

@@ -131,7 +131,6 @@ export async function GET(request: NextRequest) {
     filteredMessages = filteredMessages.slice(0, limit)
 
     return NextResponse.json({
-      success: true,
       messages: filteredMessages,
       total: filteredMessages.length
     })
@@ -139,7 +138,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Messages fetch error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch messages' },
       { status: 500 }
     )
   }
@@ -176,7 +174,6 @@ export async function POST(request: NextRequest) {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     return NextResponse.json({
-      success: true,
       message: newMessage,
       messageId: newMessage.id
     })
@@ -184,7 +181,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Message send error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to send message' },
       { status: 500 }
     )
   }

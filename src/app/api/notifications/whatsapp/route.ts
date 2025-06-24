@@ -36,13 +36,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'WHATSAPP',
         action: 'send_whatsapp',
-        details: {
-          to: validatedData.to,
-          message: validatedData.message.substring(0, 100),
-          template: validatedData.template,
-          messageId: whatsAppResult.messageId,
-          queued: whatsAppResult.queued || false
-        },
         success: whatsAppResult.success,
         clientId: validatedData.clientId || null,
         error: whatsAppResult.error || null
@@ -50,7 +43,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         messageId: whatsAppResult.messageId,
         sent: whatsAppResult.success,
@@ -64,7 +56,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -74,7 +65,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao enviar WhatsApp:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -87,7 +77,6 @@ export async function GET(request: NextRequest) {
     const status = whatsappService.getStatus()
 
     return NextResponse.json({
-      success: true,
       data: {
         status,
         timestamp: new Date().toISOString()
@@ -97,7 +86,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar status:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

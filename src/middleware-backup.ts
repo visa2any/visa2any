@@ -35,7 +35,6 @@ export function middleware(request: NextRequest) {
     if (!token) {
       if (isProtectedApiRoute) {
         return NextResponse.json(
-          { success: false, error: 'Acesso negado. Token necessário.' },
           { status: 401 }
         )
       } else {
@@ -52,7 +51,6 @@ export function middleware(request: NextRequest) {
         console.error('NEXTAUTH_SECRET não configurado')
         if (isProtectedApiRoute) {
           return NextResponse.json(
-            { success: false, error: 'Erro de configuração do servidor' },
             { status: 500 }
           )
         } else {
@@ -79,7 +77,6 @@ export function middleware(request: NextRequest) {
     } catch (error) {
       if (isProtectedApiRoute) {
         return NextResponse.json(
-          { success: false, error: 'Token inválido' },
           { status: 401 }
         )
       } else {

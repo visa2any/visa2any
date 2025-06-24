@@ -83,7 +83,6 @@ class PaymentService {
         })
 
         return {
-          success: true,
           paymentId: result.id!.toString(),
           pixCode: result.point_of_interaction?.transaction_data?.qr_code,
           pixQrCode: result.point_of_interaction?.transaction_data?.qr_code_base64,
@@ -92,7 +91,6 @@ class PaymentService {
         }
       } else {
         return {
-          success: false,
           status: 'rejected',
           error: 'Falha ao criar pagamento PIX'
         }
@@ -101,7 +99,6 @@ class PaymentService {
     } catch (error) {
       console.error('Erro ao criar pagamento PIX:', error)
       return {
-        success: false,
         status: 'rejected',
         error: `Erro no pagamento: ${error}`
       }
@@ -153,7 +150,6 @@ class PaymentService {
     } catch (error) {
       console.error('Erro ao processar cartão:', error)
       return {
-        success: false,
         status: 'rejected',
         error: `Erro no pagamento: ${error}`
       }
@@ -175,76 +171,6 @@ class PaymentService {
       return {
         status: result.status || 'unknown',
         approved: result.status === 'approved',
-        details: {
-          amount: result.transaction_amount,
-          paymentMethod: result.payment_method_id,
-          processedAt: result.date_approved
-        }
-      }
-
-    } catch (error) {
-      console.error('Erro ao verificar pagamento:', error)
-      return {
-        status: 'error',
-        approved: false
-      }
-    }
-  }
-
-  // Processar webhook do Mercado Pago
-  async processWebhook(webhookData: any): Promise<{
-    success: boolean
-    action: string
-    trackingId?: string
-  }> {
-    try {
-      if (webhookData.type === 'payment') {
-        const paymentId = webhookData.data.id
-        const paymentStatus = await this.checkPaymentStatus(paymentId)
-        
-        if (paymentStatus.approved) {
-          // Buscar tracking ID do pagamento
-          const paymentRecord = await this.getPaymentRecord(paymentId)
-          
-          if (paymentRecord) {
-            // Notificar aprovação
-            await this.notifyPaymentApproved(paymentRecord.trackingId)
-            
-            return {
-              success: true,
-              action: 'payment_approved',
-              trackingId: paymentRecord.trackingId
-            }
-          }
-        }
-      }
-
-      return {
-        success: true,
-        action: 'webhook_processed'
-      }
-
-    } catch (error) {
-      console.error('Erro ao processar webhook:', error)
-      return {
-        success: false,
-        action: 'webhook_error'
-      }
-    }
-  }
-
-  // Calcular preços baseado no nível de serviço
-  calculateServicePrice(serviceLevel: 'basic' | 'premium' | 'express'): {
-    amount: number
-    description: string
-    processingTime: string
-  } {
-    const prices = {
-      basic: {
-        amount: 25.00,
-        description: 'Agendamento Básico - Visa2Any',
-        processingTime: '2-5 dias úteis'
-      },
       premium: {
         amount: 45.00,
         description: 'Agendamento Premium - Visa2Any',
@@ -285,7 +211,6 @@ class PaymentService {
       const paymentUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/payment/${trackingId}`
       
       return {
-        success: true,
         paymentUrl,
         pixCode: pixPayment.pixCode,
         amount: pricing.amount,
@@ -294,7 +219,6 @@ class PaymentService {
     }
 
     return {
-      success: false,
       amount: pricing.amount
     }
   }
@@ -347,13 +271,11 @@ class PaymentService {
       const isProduction = !accessToken.startsWith('TEST-')
       
       return {
-        success: true,
         mercadoPagoStatus: accessToken ? 'Configurado' : 'Não configurado',
         environment: isProduction ? 'Produção' : 'Teste'
       }
     } catch (error) {
       return {
-        success: false,
         mercadoPagoStatus: 'Erro na configuração',
         environment: 'Desconhecido'
       }

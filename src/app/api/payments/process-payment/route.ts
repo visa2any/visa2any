@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     // Validar dados essenciais
     if (!selectedPaymentMethod || !formData || !preferenceId) {
       return NextResponse.json({
-        success: false,
         error: 'Dados obrigatórios ausentes',
         details: 'selectedPaymentMethod, formData e preferenceId são obrigatórios'
       }, { status: 400 })
@@ -31,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     if (!formData.transaction_amount || formData.transaction_amount <= 0) {
       return NextResponse.json({
-        success: false,
         error: 'Valor inválido',
         details: 'transaction_amount deve ser maior que zero'
       }, { status: 400 })
@@ -87,7 +85,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       payment_id: result.id,
       status: result.status,
       status_detail: result.status_detail,
@@ -104,7 +101,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
     
     return NextResponse.json({
-      success: false,
       error: 'Erro ao processar pagamento',
       details: error instanceof Error ? error.message : 'Erro desconhecido',
       errorType: error instanceof Error ? error.constructor.name : 'Unknown',

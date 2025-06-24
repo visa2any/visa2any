@@ -12,7 +12,6 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json(
-        { success: false, error: 'Client ID is required' },
         { status: 400 }
       )
     }
@@ -159,7 +158,6 @@ export async function GET(
     )
 
     return NextResponse.json({
-      success: true,
       timeline: sortedTimeline,
       total: sortedTimeline.length
     })
@@ -167,7 +165,6 @@ export async function GET(
   } catch (error) {
     console.error('Timeline fetch error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch client timeline' },
       { status: 500 }
     )
   }

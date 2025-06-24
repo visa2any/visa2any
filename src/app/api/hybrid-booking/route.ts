@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         booking: {
           method: result.method,
           provider: result.provider,
@@ -56,7 +55,6 @@ export async function POST(request: NextRequest) {
       })
     } else {
       return NextResponse.json({
-        success: false,
         error: result.error,
         attempts: result.attempts,
         warnings: result.warnings,
@@ -91,7 +89,6 @@ export async function GET(request: NextRequest) {
     const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
 
     return NextResponse.json({
-      success: true,
       country,
       visaType,
       availability: {

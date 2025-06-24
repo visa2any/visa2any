@@ -49,7 +49,6 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
     })
     
     return {
-      success: true,
       limit: config.limit,
       remaining: config.limit - 1,
       reset: now + config.windowMs
@@ -59,7 +58,6 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   if (entry.count >= config.limit) {
     // Limite excedido
     return {
-      success: false,
       limit: config.limit,
       remaining: 0,
       reset: entry.resetTime,
@@ -72,7 +70,6 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   rateLimit.set(key, entry)
   
   return {
-    success: true,
     limit: config.limit,
     remaining: config.limit - entry.count,
     reset: entry.resetTime
@@ -123,7 +120,6 @@ export function createRateLimitResponse(rateLimitResult: ReturnType<typeof apply
     
     return Response.json(
       { 
-        success: false, 
         error: rateLimitResult.error,
         rateLimitInfo: {
           limit: rateLimitResult.limit,

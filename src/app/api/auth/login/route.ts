@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { 
-          success: false, 
           error: rateLimitResult.error,
           rateLimitInfo: {
             limit: rateLimitResult.limit,
@@ -60,7 +59,6 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Credenciais inválidas' },
         { status: 401 }
       )
     }
@@ -68,7 +66,6 @@ export async function POST(request: NextRequest) {
     // Verificar se usuário está ativo
     if (!user.isActive) {
       return NextResponse.json(
-        { success: false, error: 'Usuário inativo. Contate o administrador.' },
         { status: 401 }
       )
     }
@@ -78,7 +75,6 @@ export async function POST(request: NextRequest) {
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        { success: false, error: 'Credenciais inválidas' },
         { status: 401 }
       )
     }
@@ -88,7 +84,6 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return NextResponse.json(
-        { success: false, error: 'Configuração de segurança inválida' },
         { status: 500 }
       )
     }
@@ -125,11 +120,6 @@ export async function POST(request: NextRequest) {
         data: {
           type: 'USER_LOGIN',
           action: 'login',
-          details: {
-            userId: user.id,
-            email: user.email,
-            timestamp: new Date()
-          },
           success: true
         }
       })
@@ -139,7 +129,6 @@ export async function POST(request: NextRequest) {
 
     // Configurar cookie httpOnly
     const response = NextResponse.json({
-      success: true,
       data: {
         user: userData,
         token
@@ -170,7 +159,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -183,7 +171,6 @@ export async function POST(request: NextRequest) {
     const errorStack = error instanceof Error ? error.stack : undefined
     console.error('Error details:', errorMessage, errorStack)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor', debug: errorMessage },
       { status: 500 }
     )
   }

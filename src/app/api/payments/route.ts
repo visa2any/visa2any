@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit)
 
     return NextResponse.json({
-      success: true,
       data: {
         payments,
         stats: {
@@ -99,7 +98,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -118,7 +116,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -151,14 +148,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'PAYMENT_CREATED',
         action: 'create_payment',
-        details: {
-          paymentId: payment.id,
-          clientId: validatedData.clientId,
-          amount: validatedData.amount,
-          currency: validatedData.currency,
-          transactionId
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
@@ -167,7 +156,6 @@ export async function POST(request: NextRequest) {
     const paymentLink = await generatePaymentLink(payment)
 
     return NextResponse.json({
-      success: true,
       data: {
         ...payment,
         paymentLink
@@ -179,7 +167,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -189,7 +176,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar pagamento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -333,20 +319,17 @@ export async function PUT(request: NextRequest) {
       ]
 
       return NextResponse.json({
-        success: true,
         data: { packages }
       })
     }
 
     return NextResponse.json(
-      { success: false, error: 'Ação não reconhecida' },
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro ao processar planos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

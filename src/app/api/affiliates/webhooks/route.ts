@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        success: false,
         error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
@@ -40,7 +39,6 @@ export async function GET(request: NextRequest) {
     const endpoints = webhookEndpoints.get(affiliateId) || []
 
     return NextResponse.json({
-      success: true,
       data: endpoints.map(endpoint => ({
         ...endpoint,
         secret: undefined // Não retornar o secret
@@ -50,7 +48,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar webhooks:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -64,7 +61,6 @@ export async function POST(request: NextRequest) {
 
     if (!affiliateId || !webhookUrl || !Array.isArray(events)) {
       return NextResponse.json({
-        success: false,
         error: 'affiliateId, url e events são obrigatórios'
       }, { status: 400 })
     }
@@ -74,7 +70,6 @@ export async function POST(request: NextRequest) {
       new URL(webhookUrl)
     } catch {
       return NextResponse.json({
-        success: false,
         error: 'URL inválida'
       }, { status: 400 })
     }
@@ -92,7 +87,6 @@ export async function POST(request: NextRequest) {
     const invalidEvents = events.filter(event => !validEvents.includes(event))
     if (invalidEvents.length > 0) {
       return NextResponse.json({
-        success: false,
         error: `Eventos inválidos: ${invalidEvents.join(', ')}`
       }, { status: 400 })
     }
@@ -115,7 +109,6 @@ export async function POST(request: NextRequest) {
     const testResult = await testWebhook(endpoint)
 
     return NextResponse.json({
-      success: true,
       data: {
         ...endpoint,
         secret: undefined, // Não retornar o secret
@@ -126,7 +119,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao configurar webhook:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -140,7 +132,6 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
-        success: false,
         error: 'affiliateId e webhookId são obrigatórios'
       }, { status: 400 })
     }
@@ -150,7 +141,6 @@ export async function PUT(request: NextRequest) {
 
     if (index === -1) {
       return NextResponse.json({
-        success: false,
         error: 'Webhook não encontrado'
       }, { status: 404 })
     }
@@ -160,7 +150,6 @@ export async function PUT(request: NextRequest) {
     webhookEndpoints.set(affiliateId, endpoints)
 
     return NextResponse.json({
-      success: true,
       data: {
         ...endpoints[index],
         secret: undefined
@@ -170,7 +159,6 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao atualizar webhook:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -185,7 +173,6 @@ export async function DELETE(request: NextRequest) {
 
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
-        success: false,
         error: 'affiliateId e webhookId são obrigatórios'
       }, { status: 400 })
     }
@@ -195,7 +182,6 @@ export async function DELETE(request: NextRequest) {
 
     if (filteredEndpoints.length === endpoints.length) {
       return NextResponse.json({
-        success: false,
         error: 'Webhook não encontrado'
       }, { status: 404 })
     }
@@ -203,14 +189,12 @@ export async function DELETE(request: NextRequest) {
     webhookEndpoints.set(affiliateId, filteredEndpoints)
 
     return NextResponse.json({
-      success: true,
       data: { message: 'Webhook removido com sucesso' }
     })
 
   } catch (error) {
     console.error('Erro ao remover webhook:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -257,17 +241,14 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
     })
 
     if (response.ok) {
-      return { success: true, message: 'Webhook testado com sucesso' }
     } else {
       return { 
-        success: false, 
         message: `Erro HTTP ${response.status}: ${response.statusText}` 
       }
     }
 
   } catch (error) {
     return { 
-      success: false, 
       message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}` 
     }
   }

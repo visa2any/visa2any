@@ -51,7 +51,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -85,22 +84,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'QUALITY_ASSESSMENT',
         action: `quality_${validatedData.assessmentType}`,
-        details: {
-          assessmentType: validatedData.assessmentType,
-          overallScore: qualityAssessment.overallScore,
-          readinessLevel: qualityAssessment.readinessLevel,
-          criticalIssues: qualityAssessment.issues.filter(i => i.severity === 'critical').length,
-          recommendations: qualityAssessment.recommendations.length,
-          scope: validatedData.scope,
-          assessment: qualityAssessment
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         assessment: qualityAssessment,
         report: detailedReport,
@@ -115,7 +103,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -125,7 +112,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro na avaliação de qualidade:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -141,7 +127,6 @@ export async function GET(request: NextRequest) {
 
     if (!clientId) {
       return NextResponse.json(
-        { success: false, error: 'Cliente é obrigatório' },
         { status: 400 }
       )
     }
@@ -169,7 +154,6 @@ export async function GET(request: NextRequest) {
     const trends = analyzeQualityTrends(assessments)
 
     return NextResponse.json({
-      success: true,
       data: {
         assessments: assessments.map(a => ({
           id: a.id,
@@ -191,7 +175,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar histórico de qualidade:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

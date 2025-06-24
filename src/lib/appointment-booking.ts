@@ -80,7 +80,6 @@ class AppointmentBookingService {
       // 1. Login no sistema CASV
       const loginResponse = await this.casvLogin()
       if (!loginResponse.success) {
-        return { success: false, error: 'Falha na autenticação CASV' }
       }
 
       // 2. Buscar vagas disponíveis
@@ -91,7 +90,6 @@ class AppointmentBookingService {
       
       if (!selectedSlot) {
         return { 
-          success: false, 
           error: 'Nenhuma vaga disponível nas datas preferidas. Próximas vagas: ' + 
                  availableSlots.slice(0, 3).map(s => s.date).join(', ')
         }
@@ -101,7 +99,6 @@ class AppointmentBookingService {
       const booking = await this.confirmCASVBooking(selectedSlot, request.applicantInfo)
       
       return {
-        success: true,
         appointmentId: booking.appointmentId,
         confirmationCode: booking.confirmationCode,
         date: selectedSlot.date,
@@ -113,7 +110,6 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento CASV:', error)
       return { 
-        success: false, 
         error: 'Erro técnico no sistema CASV. Tente novamente em alguns minutos.' 
       }
     }
@@ -137,7 +133,6 @@ class AppointmentBookingService {
       const booking = await this.makeVFSBooking(availability[0], request.applicantInfo)
       
       return {
-        success: true,
         appointmentId: booking.reference,
         confirmationCode: booking.confirmationCode,
         date: booking.date,
@@ -149,7 +144,6 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento VFS:', error)
       return { 
-        success: false, 
         error: 'Erro no sistema VFS Global. Verificando alternativas...' 
       }
     }
@@ -163,7 +157,6 @@ class AppointmentBookingService {
       const booking = await this.makeTLSBooking(request)
       
       return {
-        success: true,
         appointmentId: booking.id,
         confirmationCode: booking.reference,
         date: booking.date,
@@ -175,7 +168,6 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento TLS:', error)
       return { 
-        success: false, 
         error: 'Erro no sistema TLS Contact.' 
       }
     }
@@ -236,9 +228,7 @@ class AppointmentBookingService {
         await this.cancelTLSAppointment(appointmentId)
       }
 
-      return { success: true, message: 'Agendamento cancelado com sucesso' }
     } catch (error) {
-      return { success: false, message: 'Erro ao cancelar agendamento' }
     }
   }
 
@@ -270,7 +260,6 @@ class AppointmentBookingService {
       
       return await this.bookAppointment(mockRequest)
     } catch (error) {
-      return { success: false, error: 'Erro ao reagendar' }
     }
   }
 
@@ -335,7 +324,6 @@ class AppointmentBookingService {
   private async bookDirectConsulate(request: BookingRequest): Promise<BookingResponse> {
     await this.delay(2500)
     return {
-      success: true,
       appointmentId: 'DIRECT-' + Date.now(),
       confirmationCode: 'DIR' + Math.random().toString(36).substr(2, 6).toUpperCase(),
       date: request.preferredDates[0],

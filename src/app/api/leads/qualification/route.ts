@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
 
     if (!email || !name || !responses) {
       return NextResponse.json({
-        success: false,
         error: 'Dados obrigatórios faltando'
       }, { status: 400 })
     }
@@ -90,7 +89,6 @@ export async function POST(request: NextRequest) {
     await triggerEmailAutomation(client, category, responses)
 
     return NextResponse.json({
-      success: true,
       message: 'Qualificação processada com sucesso',
       client: {
         id: client.id,
@@ -106,7 +104,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar qualificação:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

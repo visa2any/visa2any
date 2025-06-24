@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
     const slots = await appointmentBookingService.getAvailableSlots(consulate, visaType, days)
 
     return NextResponse.json({
-      success: true,
       slots,
       total: slots.length,
       consulate,
@@ -73,7 +72,6 @@ export async function POST(request: NextRequest) {
       // TODO: Implementar salvamento no Prisma
       
       return NextResponse.json({
-        success: true,
         appointment: {
           id: bookingResult.appointmentId,
           confirmationCode: bookingResult.confirmationCode,
@@ -87,7 +85,6 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json(
         { 
-          success: false, 
           error: bookingResult.error,
           message: 'Não foi possível realizar o agendamento'
         },
@@ -126,7 +123,6 @@ export async function PUT(request: NextRequest) {
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         appointment: {
           id: result.appointmentId,
           confirmationCode: result.confirmationCode,
@@ -138,7 +134,6 @@ export async function PUT(request: NextRequest) {
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.error },
         { status: 400 }
       )
     }

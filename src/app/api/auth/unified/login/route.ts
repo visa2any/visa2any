@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { success: false, error: 'Email é obrigatório' },
         { status: 400 }
       )
     }
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
       // Login para admin/staff
       if (!password) {
         return NextResponse.json(
-          { success: false, error: 'Senha é obrigatória para admin' },
           { status: 400 }
         )
       }
@@ -30,14 +28,12 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: result.error },
         { status: result.error === 'NEEDS_PASSWORD_SETUP' ? 202 : 401 }
       )
     }
 
     // Criar cookie de autenticação
     const response = NextResponse.json({
-      success: true,
       user: result.user,
       token: result.token
     })
@@ -56,7 +52,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no login unificado:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

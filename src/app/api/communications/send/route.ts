@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
 
     if (!type || !content || !clientId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
         { status: 400 }
       )
     }
@@ -34,7 +33,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Client not found' },
         { status: 404 }
       )
     }
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Simulate different communication channels
-    let deliveryResult = { success: true, messageId: '', status: 'sent' }
 
     switch (type) {
       case 'whatsapp':
@@ -64,14 +61,12 @@ export async function POST(request: NextRequest) {
         break
       default:
         return NextResponse.json(
-          { success: false, error: 'Unsupported communication type' },
           { status: 400 }
         )
     }
 
     if (!deliveryResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Failed to send message' },
         { status: 500 }
       )
     }
@@ -102,7 +97,6 @@ export async function POST(request: NextRequest) {
     // await saveCommunicationRecord(communicationRecord)
 
     return NextResponse.json({
-      success: true,
       messageId: deliveryResult.messageId,
       status: deliveryResult.status,
       communication: communicationRecord
@@ -111,7 +105,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Send message error:', error)
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
       { status: 500 }
     )
   }
@@ -123,7 +116,6 @@ async function sendWhatsApp(phone: string, message: string) {
   await new Promise(resolve => setTimeout(resolve, 1000))
   
   return {
-    success: true,
     messageId: `wa_${Date.now()}`,
     status: 'sent'
   }
@@ -134,7 +126,6 @@ async function sendEmail(email: string, subject: string, content: string) {
   await new Promise(resolve => setTimeout(resolve, 800))
   
   return {
-    success: true,
     messageId: `email_${Date.now()}`,
     status: 'sent'
   }
@@ -145,7 +136,6 @@ async function sendSMS(phone: string, message: string) {
   await new Promise(resolve => setTimeout(resolve, 500))
   
   return {
-    success: true,
     messageId: `sms_${Date.now()}`,
     status: 'sent'
   }

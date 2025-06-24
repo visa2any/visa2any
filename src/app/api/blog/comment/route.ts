@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
     const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
-        { success: false, error: 'Não autenticado' },
         { status: 401 }
       )
     }
@@ -25,7 +24,6 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-        { success: false, error: 'Configuração inválida' },
         { status: 500 }
       )
     }
@@ -38,7 +36,6 @@ export async function POST(request: NextRequest) {
       userEmail = decoded.email
     } catch {
       return NextResponse.json(
-        { success: false, error: 'Token inválido' },
         { status: 401 }
       )
     }
@@ -54,7 +51,6 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Usuário não encontrado' },
         { status: 404 }
       )
     }
@@ -90,7 +86,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       comment,
       message: 'Comentário adicionado com sucesso'
     })
@@ -99,7 +94,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -109,7 +103,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Error adding blog comment:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -123,7 +116,6 @@ export async function GET(request: NextRequest) {
 
     if (!postId) {
       return NextResponse.json(
-        { success: false, error: 'Post ID é obrigatório' },
         { status: 400 }
       )
     }
@@ -162,14 +154,12 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       comments
     })
 
   } catch (error) {
     console.error('Error fetching blog comments:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

@@ -69,20 +69,17 @@ export async function GET(
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
 
     return NextResponse.json({
-      success: true,
       data: client
     })
 
   } catch (error) {
     console.error('Erro ao buscar cliente:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -112,7 +109,6 @@ export async function PATCH(
 
     if (!existingClient) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -133,19 +129,11 @@ export async function PATCH(
       data: {
         type: 'CLIENT_UPDATED',
         action: 'inline_edit',
-        details: {
-          clientId: id,
-          changes: validatedData,
-          previousStatus: existingClient.status,
-          newStatus: validatedData.status || existingClient.status
-        },
-        success: true,
         clientId: id
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: updatedClient
     })
 
@@ -153,7 +141,6 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -163,7 +150,6 @@ export async function PATCH(
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -193,7 +179,6 @@ export async function PUT(
 
     if (!existingClient) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -214,19 +199,11 @@ export async function PUT(
       data: {
         type: 'CLIENT_UPDATED',
         action: 'update_client',
-        details: {
-          clientId: id,
-          changes: validatedData,
-          previousStatus: existingClient.status,
-          newStatus: validatedData.status || existingClient.status
-        },
-        success: true,
         clientId: id
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: updatedClient
     })
 
@@ -234,7 +211,6 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -244,7 +220,6 @@ export async function PUT(
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -270,7 +245,6 @@ export async function DELETE(
 
     if (!existingClient) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -285,27 +259,17 @@ export async function DELETE(
       data: {
         type: 'CLIENT_DELETED',
         action: 'delete_client',
-        details: {
-          clientId: id,
-          clientData: {
-            name: existingClient.name,
-            email: existingClient.email,
-            status: existingClient.status
-          }
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       message: 'Cliente deletado com sucesso'
     })
 
   } catch (error) {
     console.error('Erro ao deletar cliente:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

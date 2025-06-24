@@ -79,7 +79,6 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, { count: number; amount: number }>)
 
     return NextResponse.json({
-      success: true,
       data: {
         commissions,
         pagination: {
@@ -95,7 +94,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -111,7 +109,6 @@ export async function POST(request: NextRequest) {
 
     if (!commissionIds || !Array.isArray(commissionIds) || commissionIds.length === 0) {
       return NextResponse.json({
-        success: false,
         error: 'IDs de comissões são obrigatórios'
       }, { status: 400 })
     }
@@ -129,7 +126,6 @@ export async function POST(request: NextRequest) {
 
     if (commissions.length === 0) {
       return NextResponse.json({
-        success: false,
         error: 'Nenhuma comissão pendente encontrada'
       }, { status: 400 })
     }
@@ -164,17 +160,6 @@ export async function POST(request: NextRequest) {
           affiliateId,
           amount: group.totalAmount,
           method: paymentMethod,
-          details: {
-            commissions: group.commissions.map((c: any) => ({
-              id: c.id,
-              amount: c.amount,
-              description: c.description
-            })),
-            affiliateName: group.affiliate.name,
-            affiliateEmail: group.affiliate.email,
-            paymentMethod,
-            notes
-          },
           referenceCode,
           status: 'PENDING',
           notes
@@ -207,7 +192,6 @@ export async function POST(request: NextRequest) {
     // await processPayments(payments)
 
     return NextResponse.json({
-      success: true,
       data: {
         payments,
         message: `${payments.length} pagamento(s) criado(s) com sucesso`
@@ -217,7 +201,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar pagamentos:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -233,7 +216,6 @@ export async function PUT(request: NextRequest) {
 
     if (!paymentId || !status) {
       return NextResponse.json({
-        success: false,
         error: 'ID do pagamento e status são obrigatórios'
       }, { status: 400 })
     }
@@ -241,7 +223,6 @@ export async function PUT(request: NextRequest) {
     const validStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']
     if (!validStatuses.includes(status)) {
       return NextResponse.json({
-        success: false,
         error: 'Status inválido'
       }, { status: 400 })
     }
@@ -316,14 +297,12 @@ export async function PUT(request: NextRequest) {
     // await sendPaymentNotification(payment)
 
     return NextResponse.json({
-      success: true,
       data: payment
     })
 
   } catch (error) {
     console.error('Erro ao atualizar pagamento:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {

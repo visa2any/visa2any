@@ -90,7 +90,6 @@ class HybridBookingSystem {
           // Se teve sucesso, retornar resultado
           if (result.success) {
             return {
-              success: true,
               method,
               provider: result.provider || method,
               appointmentDetails: result.appointmentDetails,
@@ -112,7 +111,6 @@ class HybridBookingSystem {
           attempts.push({
             method,
             provider: method,
-            success: false,
             error: `Erro técnico: ${error}`
           })
         }
@@ -120,7 +118,6 @@ class HybridBookingSystem {
 
       // Se chegou aqui, todas as tentativas falharam
       return {
-        success: false,
         method: 'none',
         provider: 'none',
         cost: 0,
@@ -133,7 +130,6 @@ class HybridBookingSystem {
 
     } catch (error) {
       return {
-        success: false,
         method: 'error',
         provider: 'error',
         cost: 0,
@@ -167,7 +163,6 @@ class HybridBookingSystem {
       }
     } catch (error) {
       return {
-        success: false,
         provider: 'official_api',
         error: `Erro na API oficial: ${error}`
       }
@@ -197,7 +192,6 @@ class HybridBookingSystem {
 
       if (!bestPartner) {
         return {
-          success: false,
           provider: 'no_partner',
           error: 'Nenhum parceiro disponível'
         }
@@ -206,7 +200,6 @@ class HybridBookingSystem {
       // Verificar limite de orçamento
       if (options.budgetLimit && bestPartner.pricing.perTransaction > options.budgetLimit) {
         return {
-          success: false,
           provider: bestPartner.name,
           error: `Custo (${bestPartner.pricing.perTransaction}) excede limite (${options.budgetLimit})`
         }
@@ -236,7 +229,6 @@ class HybridBookingSystem {
 
     } catch (error) {
       return {
-        success: false,
         provider: 'partner_api',
         error: `Erro na API de parceiro: ${error}`
       }
@@ -255,7 +247,6 @@ class HybridBookingSystem {
       
       if (!targetId) {
         return {
-          success: false,
           provider: 'scraping',
           error: 'Target de scraping não disponível para este consulado'
         }
@@ -266,7 +257,6 @@ class HybridBookingSystem {
       
       if (!result.success || result.slots.length === 0) {
         return {
-          success: false,
           provider: 'scraping',
           error: result.error || 'Nenhuma vaga encontrada via scraping'
         }
@@ -277,7 +267,6 @@ class HybridBookingSystem {
       const firstSlot = result.slots[0]
       
       return {
-        success: true,
         provider: 'Web Scraping',
         appointmentDetails: {
           id: 'SCRAPING-' + Date.now(),
@@ -294,7 +283,6 @@ class HybridBookingSystem {
 
     } catch (error) {
       return {
-        success: false,
         provider: 'scraping',
         error: `Erro no web scraping: ${error}`
       }

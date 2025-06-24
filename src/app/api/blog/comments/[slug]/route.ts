@@ -73,7 +73,6 @@ export async function GET(
     }))
 
     return NextResponse.json({
-      success: true,
       comments: formattedComments
     })
 
@@ -81,7 +80,6 @@ export async function GET(
     console.error('❌ Erro ao buscar comentários:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

@@ -80,7 +80,6 @@ export async function POST(request: NextRequest) {
     
     if (!countryFees) {
       return NextResponse.json({
-        success: false,
         error: 'País não suportado no momento',
         supportedCountries: Object.keys(CONSULAR_FEES)
       }, { status: 400 })
@@ -124,7 +123,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json({
-        success: false,
         error: 'Cliente não encontrado'
       }, { status: 404 })
     }
@@ -171,7 +169,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       payment: {
         id: payment.id,
         costs: costs,
@@ -190,7 +187,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na cobrança híbrida:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
@@ -220,13 +216,11 @@ export async function GET(request: NextRequest) {
 
       if (!payment) {
         return NextResponse.json({
-          success: false,
           error: 'Pagamento não encontrado'
         }, { status: 404 })
       }
 
       return NextResponse.json({
-        success: true,
         payment
       })
     }
@@ -248,20 +242,17 @@ export async function GET(request: NextRequest) {
       })
 
       return NextResponse.json({
-        success: true,
         payments
       })
     }
 
     return NextResponse.json({
-      success: false,
       error: 'paymentId ou clientId obrigatório'
     }, { status: 400 })
 
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

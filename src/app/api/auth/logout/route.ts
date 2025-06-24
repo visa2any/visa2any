@@ -24,11 +24,6 @@ export async function POST(request: NextRequest) {
             data: {
               type: 'USER_LOGOUT',
               action: 'logout',
-              details: {
-                userId: decoded.userId,
-                email: decoded.email,
-                timestamp: new Date()
-              },
               success: true
             }
           })

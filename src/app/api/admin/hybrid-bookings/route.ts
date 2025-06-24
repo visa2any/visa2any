@@ -50,7 +50,6 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       bookings,
       stats
     })
@@ -58,7 +57,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar agendamentos híbridos:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -83,7 +81,6 @@ export async function POST(request: NextRequest) {
       
       default:
         return NextResponse.json({
-          success: false,
           error: 'Ação não reconhecida'
         }, { status: 400 })
     }
@@ -91,7 +88,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na ação de agendamento:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -138,7 +134,6 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     // await notifyClientStatusUpdate(booking, status, appointmentDetails)
 
     return NextResponse.json({
-      success: true,
       booking,
       message: `Status atualizado para ${status}`
     })
@@ -146,7 +141,6 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
   } catch (error) {
     console.error('Erro ao atualizar status:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro ao atualizar status'
     }, { status: 500 })
   }
@@ -166,7 +160,6 @@ async function assignConsultant(bookingId: string, consultantId: string) {
     // })
 
     return NextResponse.json({
-      success: true,
       booking,
       message: 'Consultor atribuído com sucesso'
     })
@@ -174,7 +167,6 @@ async function assignConsultant(bookingId: string, consultantId: string) {
   } catch (error) {
     console.error('Erro ao atribuir consultor:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro ao atribuir consultor'
     }, { status: 500 })
   }
@@ -190,7 +182,6 @@ async function addBookingNote(bookingId: string, note: string) {
 
     if (!booking) {
       return NextResponse.json({
-        success: false,
         error: 'Agendamento não encontrado'
       }, { status: 404 })
     }
@@ -213,7 +204,6 @@ async function addBookingNote(bookingId: string, note: string) {
     // })
 
     return NextResponse.json({
-      success: true,
       booking: updatedBooking,
       message: 'Nota adicionada com sucesso'
     })
@@ -221,7 +211,6 @@ async function addBookingNote(bookingId: string, note: string) {
   } catch (error) {
     console.error('Erro ao adicionar nota:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro ao adicionar nota'
     }, { status: 500 })
   }
@@ -237,7 +226,6 @@ async function extendDeadline(bookingId: string, hours: number) {
 
     if (!booking) {
       return NextResponse.json({
-        success: false,
         error: 'Agendamento não encontrado'
       }, { status: 404 })
     }
@@ -255,7 +243,6 @@ async function extendDeadline(bookingId: string, hours: number) {
     // })
 
     return NextResponse.json({
-      success: true,
       booking: updatedBooking,
       message: `Prazo estendido em ${hours} horas`
     })
@@ -263,7 +250,6 @@ async function extendDeadline(bookingId: string, hours: number) {
   } catch (error) {
     console.error('Erro ao estender prazo:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro ao estender prazo'
     }, { status: 500 })
   }

@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
 
     if (!document) {
       return NextResponse.json(
-        { success: false, error: 'Documento não encontrado' },
         { status: 404 }
       )
     }
@@ -39,7 +38,6 @@ export async function POST(request: NextRequest) {
     // Verificar se já foi analisado
     if (document.analysis && !validatedData.forceReanalysis) {
       return NextResponse.json({
-        success: true,
         data: {
           documentId: document.id,
           analysis: document.analysis,
@@ -76,14 +74,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'AI_DOCUMENT_ANALYSIS',
         action: 'analyze_document_ai',
-        details: {
-          documentId: validatedData.documentId,
-          documentType: document.type,
-          isValid: analysisResult.isValid,
-          confidence: analysisResult.confidence,
-          processingTime: analysisResult.processingTime
-        },
-        success: true,
         clientId: document.clientId
       }
     })
@@ -94,7 +84,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         documentId: document.id,
         analysis: analysisResult,
@@ -107,7 +96,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -117,7 +105,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro na análise de documento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -145,13 +132,11 @@ export async function GET(
 
     if (!document) {
       return NextResponse.json(
-        { success: false, error: 'Documento não encontrado' },
         { status: 404 }
       )
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         documentId: document.id,
         ocrText: document.ocrText,
@@ -165,7 +150,6 @@ export async function GET(
   } catch (error) {
     console.error('Erro ao buscar análise:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

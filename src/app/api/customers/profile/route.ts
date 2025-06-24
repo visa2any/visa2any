@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
 
     if (!customer) {
       return NextResponse.json({
-        success: false,
         error: 'Cliente não encontrado ou não autenticado'
       }, { status: 401 })
     }
@@ -238,14 +237,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       customer: customerData
     })
 
   } catch (error) {
     console.error('Erro ao buscar perfil do cliente:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

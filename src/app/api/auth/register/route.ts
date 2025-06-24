@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { success: false, error: 'Usuário com este email já existe' },
         { status: 400 }
       )
     }
@@ -57,17 +56,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'USER_CREATED',
         action: 'register_user',
-        details: {
-          userId: user.id,
-          email: user.email,
-          role: user.role
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: user,
       message: 'Usuário criado com sucesso'
     }, { status: 201 })
@@ -76,7 +69,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -86,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar usuário:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

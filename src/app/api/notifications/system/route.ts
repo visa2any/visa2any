@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
     const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Não autorizado' },
         { status: 401 }
       )
     }
@@ -22,7 +21,6 @@ export async function GET(request: NextRequest) {
         executedAt: {
           gte: new Date(Date.now() - 5 * 60 * 1000) // Last 5 minutes
         },
-        success: true,
         type: {
           in: [
             'EMAIL_SENT',
@@ -171,14 +169,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       notifications: notifications.slice(0, 5) // Return max 5 notifications
     })
 
   } catch (error) {
     console.error('Erro ao buscar notificações do sistema:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -191,7 +187,6 @@ export async function POST(request: NextRequest) {
     const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Não autorizado' },
         { status: 401 }
       )
     }
@@ -204,14 +199,12 @@ export async function POST(request: NextRequest) {
     console.log(`User ${user.id} marked notifications as read:`, notificationIds)
 
     return NextResponse.json({
-      success: true,
       message: 'Notificações marcadas como lidas'
     })
 
   } catch (error) {
     console.error('Erro ao marcar notificações como lidas:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

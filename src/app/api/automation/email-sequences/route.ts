@@ -215,7 +215,6 @@ export async function POST(request: NextRequest) {
 
     if (!sequence || !email || !name) {
       return NextResponse.json({
-        success: false,
         error: 'Dados obrigatórios faltando'
       }, { status: 400 })
     }
@@ -224,7 +223,6 @@ export async function POST(request: NextRequest) {
     
     if (!templates) {
       return NextResponse.json({
-        success: false,
         error: 'Sequência de email não encontrada'
       }, { status: 404 })
     }
@@ -274,7 +272,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       message: `Sequência ${sequence} ativada para ${email}`,
       emailsScheduled: templates.length
     })
@@ -282,7 +279,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar sequência de emails:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

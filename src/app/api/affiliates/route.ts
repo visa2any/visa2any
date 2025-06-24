@@ -83,7 +83,6 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         affiliates,
         pagination: {
@@ -107,7 +106,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar afiliados:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -133,7 +131,6 @@ export async function POST(request: NextRequest) {
     // Validações básicas
     if (!name || !email) {
       return NextResponse.json({
-        success: false,
         error: 'Nome e email são obrigatórios'
       }, { status: 400 })
     }
@@ -145,7 +142,6 @@ export async function POST(request: NextRequest) {
 
     if (existingAffiliate) {
       return NextResponse.json({
-        success: false,
         error: 'Email já cadastrado'
       }, { status: 400 })
     }
@@ -187,7 +183,6 @@ export async function POST(request: NextRequest) {
     // await sendAffiliateWelcomeEmail(affiliate)
 
     return NextResponse.json({
-      success: true,
       data: affiliate,
       message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.'
     })
@@ -195,7 +190,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao criar afiliado:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {
@@ -211,7 +205,6 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json({
-        success: false,
         error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
@@ -225,14 +218,12 @@ export async function PUT(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: affiliate
     })
 
   } catch (error) {
     console.error('Erro ao atualizar afiliado:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   } finally {

@@ -131,7 +131,6 @@ export async function POST(request: NextRequest) {
     const referralCode = bodyReferralCode || cookieReferralCode
 
     if (!referralCode || !clientId) {
-      return NextResponse.json({ success: false, error: 'Dados insuficientes' })
     }
 
     // Buscar afiliado
@@ -140,7 +139,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!affiliate) {
-      return NextResponse.json({ success: false, error: 'Afiliado não encontrado' })
     }
 
     // Verificar se já existe uma conversão para este cliente
@@ -152,7 +150,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingReferral) {
-      return NextResponse.json({ success: false, error: 'Conversão já registrada' })
     }
 
     // Calcular comissão
@@ -220,7 +217,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ 
-      success: true, 
       referralId: referral.id,
       commissionValue 
     })
@@ -228,7 +224,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao registrar conversão:', error)
     return NextResponse.json({ 
-      success: false, 
       error: 'Erro interno do servidor' 
     }, { status: 500 })
   } finally {

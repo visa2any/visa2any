@@ -94,7 +94,6 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit)
 
     return NextResponse.json({
-      success: true,
       data: {
         requirements,
         stats: {
@@ -123,7 +122,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar requisitos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -148,7 +146,6 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { success: false, error: 'Requisitos para este visto já existem' },
         { status: 400 }
       )
     }
@@ -167,17 +164,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'VISA_REQUIREMENT_CREATED',
         action: 'create_visa_requirement',
-        details: {
-          requirementId: requirement.id,
-          country: validatedData.country,
-          visaType: validatedData.visaType
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: requirement,
       message: 'Requisitos criados com sucesso'
     }, { status: 201 })
@@ -186,7 +177,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -196,7 +186,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar requisitos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -210,7 +199,6 @@ export async function PUT(request: NextRequest) {
     
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'ID é obrigatório' },
         { status: 400 }
       )
     }
@@ -230,16 +218,11 @@ export async function PUT(request: NextRequest) {
       data: {
         type: 'VISA_REQUIREMENT_UPDATED',
         action: 'update_visa_requirement',
-        details: {
-          requirementId: id,
-          changes: validatedData
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: requirement,
       message: 'Requisitos atualizados com sucesso'
     })
@@ -247,7 +230,6 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao atualizar requisitos:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

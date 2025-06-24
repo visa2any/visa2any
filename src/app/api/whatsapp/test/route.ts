@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(request: NextRequest) {
   try {
     return NextResponse.json({
-      success: true,
       message: 'WhatsApp API está funcionando!',
       timestamp: new Date().toISOString(),
       info: {
@@ -17,7 +16,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { 
-        success: false, 
         error: 'Erro na API de teste',
         details: error instanceof Error ? error.message : 'Erro desconhecido'
       },
@@ -34,7 +32,6 @@ export async function POST(request: NextRequest) {
 
     if (!phone || !message) {
       return NextResponse.json(
-        { success: false, error: 'Phone e message são obrigatórios' },
         { status: 400 }
       )
     }
@@ -49,7 +46,6 @@ export async function POST(request: NextRequest) {
     console.log('---')
 
     return NextResponse.json({
-      success: true,
       data: {
         messageId,
         phone,
@@ -63,7 +59,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { 
-        success: false, 
         error: 'Erro no teste de envio',
         details: error instanceof Error ? error.message : 'Erro desconhecido'
       },

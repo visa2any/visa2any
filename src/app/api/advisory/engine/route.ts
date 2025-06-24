@@ -93,20 +93,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'ADVISORY_CONSULTATION',
         action: `advisory_${validatedData.queryType}`,
-        details: {
-          queryType: validatedData.queryType,
-          targetCountry: validatedData.profile.targetCountry,
-          visaType: validatedData.profile.visaType,
-          analysisResult: analysisResult,
-          recommendations: strategicRecommendations
-        },
-        success: true,
         clientId: validatedData.clientId || null
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         queryType: validatedData.queryType,
         analysis: analysisResult,
@@ -124,7 +115,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -134,7 +124,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro no advisory engine:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -149,7 +138,6 @@ export async function GET(request: NextRequest) {
     const supportedCountries = await getSupportedCountries(includeStats)
 
     return NextResponse.json({
-      success: true,
       data: {
         countries: supportedCountries,
         totalSupported: supportedCountries.length,
@@ -160,7 +148,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao listar países suportados:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

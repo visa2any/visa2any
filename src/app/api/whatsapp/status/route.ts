@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     const status = whatsappService.getStatus()
 
     return NextResponse.json({
-      success: true,
       data: {
         service: 'WhatsApp Baileys Integrado',
         ...status,
@@ -27,7 +26,6 @@ export async function GET(request: NextRequest) {
     console.error('Erro ao verificar status do WhatsApp:', error)
     return NextResponse.json(
       { 
-        success: false, 
         error: 'Erro ao verificar status do WhatsApp',
         details: error instanceof Error ? error.message : 'Erro desconhecido'
       },
@@ -43,7 +41,6 @@ export async function POST(request: NextRequest) {
     const whatsappService = getWhatsAppServiceSimple()
     
     return NextResponse.json({
-      success: true,
       message: 'Reconexão iniciada. Verifique o console para o QR Code.',
       timestamp: new Date().toISOString()
     })
@@ -52,7 +49,6 @@ export async function POST(request: NextRequest) {
     console.error('Erro ao reconectar WhatsApp:', error)
     return NextResponse.json(
       { 
-        success: false, 
         error: 'Erro ao reconectar WhatsApp',
         details: error instanceof Error ? error.message : 'Erro desconhecido'
       },

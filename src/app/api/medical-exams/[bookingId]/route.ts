@@ -13,13 +13,11 @@ export async function GET(
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         booking: result.booking,
         message: 'Status do exame recuperado com sucesso'
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.error },
         { status: 404 }
       )
     }
@@ -54,13 +52,11 @@ export async function PUT(
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         confirmationCode: result.confirmationCode,
         message: result.message
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.message },
         { status: 400 }
       )
     }
@@ -86,13 +82,11 @@ export async function DELETE(
 
     if (result.success) {
       return NextResponse.json({
-        success: true,
         message: result.message,
         cancelledAt: new Date().toISOString()
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.message },
         { status: 400 }
       )
     }

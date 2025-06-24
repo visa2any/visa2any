@@ -72,7 +72,6 @@ export async function POST(request: NextRequest) {
     console.log('✅ Preferência criada:', result)
 
     return NextResponse.json({
-      success: true,
       id: result.id,
       preference_id: result.id,
       init_point: result.init_point,
@@ -85,7 +84,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro ao criar preferência MercadoPago:', error)
     
     return NextResponse.json({
-      success: false,
       error: 'Erro ao criar pagamento',
       details: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 })

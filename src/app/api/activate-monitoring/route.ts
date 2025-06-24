@@ -84,18 +84,6 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
     return NextResponse.json({
       success: true,
       message: 'Web scraping ativado com sucesso!',
-      details: {
-        interval: '30 minutos',
-        sites: ['CASV', 'VFS Global'],
-        cost: 'R$ 2 por consulta'
-      }
-    })
-
-  } catch (error) {
-    return NextResponse.json({ 
-      error: 'Erro ao ativar web scraping',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
   }
 }
 
@@ -144,18 +132,6 @@ Você receberá alertas quando consulados enviarem emails sobre vagas!`)
     return NextResponse.json({
       success: true,
       message: 'Email monitoring ativado com sucesso!',
-      details: {
-        interval: '15 minutos',
-        sources: ['Gmail API', 'Consulados'],
-        cost: 'R$ 20/mês'
-      }
-    })
-
-  } catch (error) {
-    return NextResponse.json({ 
-      error: 'Erro ao ativar email monitoring',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
   }
 }
 
@@ -178,18 +154,6 @@ Máxima eficiência na detecção de slots!`)
     return NextResponse.json({
       success: true,
       message: 'Browser automation ativado com sucesso!',
-      details: {
-        technology: 'Puppeteer + AI',
-        coverage: ['EUA', 'Canadá', 'Reino Unido'],
-        cost: 'R$ 50/mês'
-      }
-    })
-
-  } catch (error) {
-    return NextResponse.json({ 
-      error: 'Erro ao ativar automation',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
   }
 }
 

@@ -21,7 +21,6 @@ export async function GET(
     if (!post) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Post não encontrado'
         },
         { status: 404 }
@@ -52,7 +51,6 @@ export async function GET(
     })
 
     return NextResponse.json({
-      success: true,
       post: {
         ...post,
         tags: Array.isArray(post.tags) ? post.tags : [],
@@ -69,7 +67,6 @@ export async function GET(
     console.error('Slug solicitado:', slug)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }
@@ -93,7 +90,6 @@ export async function PUT(
     if (!existingPost) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Post não encontrado'
         },
         { status: 404 }
@@ -110,7 +106,6 @@ export async function PUT(
     })
 
     return NextResponse.json({
-      success: true,
       post: {
         ...updatedPost,
         tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : []
@@ -121,7 +116,6 @@ export async function PUT(
     console.error('❌ Erro ao atualizar post:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }
@@ -144,7 +138,6 @@ export async function DELETE(
     if (!existingPost) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Post não encontrado'
         },
         { status: 404 }
@@ -161,7 +154,6 @@ export async function DELETE(
     })
 
     return NextResponse.json({
-      success: true,
       message: 'Post removido com sucesso'
     })
 
@@ -169,7 +161,6 @@ export async function DELETE(
     console.error('❌ Erro ao remover post:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

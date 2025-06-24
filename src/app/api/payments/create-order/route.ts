@@ -81,20 +81,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'ORDER_CREATED',
         action: 'create_order',
-        details: {
-          orderId: payment.id,
-          productId: validatedData.productId,
-          amount: validatedData.totalAmount,
-          quantity: validatedData.quantity,
-          hasClient: !!clientId
-        },
-        success: true,
         clientId: clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         orderId: payment.id,
         paymentUrl: paymentUrl,
@@ -107,7 +98,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -117,7 +107,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar pedido:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

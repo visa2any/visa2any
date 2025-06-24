@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
 
     if (!clientId || !score) {
       return NextResponse.json(
-        { success: false, error: 'Dados da análise incompletos' },
         { status: 400 }
       )
     }
@@ -73,18 +72,11 @@ export async function POST(request: NextRequest) {
         clientId,
         type: 'analysis_completed',
         action: `Score: ${score}% - Trigger: ${automationAction}`,
-        details: {
-          score,
-          level,
-          automationAction,
-          calculatedAt: new Date().toISOString()
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         consultationId: consultation.id,
         score,
@@ -96,7 +88,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao salvar resultado da análise:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

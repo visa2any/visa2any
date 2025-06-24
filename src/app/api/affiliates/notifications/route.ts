@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        success: false,
         error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
@@ -54,7 +53,6 @@ export async function GET(request: NextRequest) {
       .filter(n => !n.read).length
 
     return NextResponse.json({
-      success: true,
       data: {
         notifications,
         unreadCount,
@@ -65,7 +63,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar notificações:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -86,7 +83,6 @@ export async function POST(request: NextRequest) {
 
     if (!affiliateId || !type || !title || !message) {
       return NextResponse.json({
-        success: false,
         error: 'Campos obrigatórios: affiliateId, type, title, message'
       }, { status: 400 })
     }
@@ -122,14 +118,12 @@ export async function POST(request: NextRequest) {
     // }
 
     return NextResponse.json({
-      success: true,
       data: notification
     })
 
   } catch (error) {
     console.error('Erro ao criar notificação:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }
@@ -143,7 +137,6 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        success: false,
         error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
@@ -167,7 +160,6 @@ export async function PUT(request: NextRequest) {
     const unreadCount = notifications.filter(n => !n.read).length
 
     return NextResponse.json({
-      success: true,
       data: {
         message: 'Notificações atualizadas',
         unreadCount
@@ -177,7 +169,6 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao atualizar notificações:', error)
     return NextResponse.json({
-      success: false,
       error: 'Erro interno do servidor'
     }, { status: 500 })
   }

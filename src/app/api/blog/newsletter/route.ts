@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
     if (!name || !phone) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Nome e telefone são obrigatórios'
         },
         { status: 400 }
@@ -25,7 +24,6 @@ export async function POST(request: NextRequest) {
     if (cleanPhone.length < 10) {
       return NextResponse.json(
         {
-          success: false,
           error: 'Telefone inválido'
         },
         { status: 400 }
@@ -54,7 +52,6 @@ export async function POST(request: NextRequest) {
       })
 
       return NextResponse.json({
-        success: true,
         message: 'Dados atualizados com sucesso!',
         subscriber: {
           id: updatedSubscriber.id,
@@ -79,7 +76,6 @@ export async function POST(request: NextRequest) {
     // await sendWelcomeMessage(cleanPhone, name)
 
     return NextResponse.json({
-      success: true,
       message: 'Cadastro realizado com sucesso! Você receberá atualizações no WhatsApp.',
       subscriber: {
         id: newSubscriber.id,
@@ -92,7 +88,6 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro ao cadastrar newsletter:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }
@@ -146,7 +141,6 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       stats: {
         total: totalSubscribers,
         active: activeSubscribers,
@@ -168,7 +162,6 @@ export async function GET(request: NextRequest) {
     console.error('❌ Erro ao buscar estatísticas:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

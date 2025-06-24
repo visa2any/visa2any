@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Não autorizado' },
         { status: 401 }
       )
     }
@@ -19,7 +18,6 @@ export async function GET(request: NextRequest) {
     // Verificar se é admin
     if (!isAdmin(user)) {
       return NextResponse.json(
-        { success: false, error: 'Acesso negado' },
         { status: 403 }
       )
     }
@@ -95,7 +93,6 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: simulatedData
     })
 
@@ -104,7 +101,6 @@ export async function GET(request: NextRequest) {
     
     // Retornar dados de fallback em caso de erro
     return NextResponse.json({
-      success: true,
       data: {
         overview: {
           totalClients: 156,
@@ -136,7 +132,6 @@ export async function GET(request: NextRequest) {
             type: 'CLIENT_REGISTRATION',
             action: 'Novo cliente cadastrado',
             client: { name: 'Maria Silva', email: 'maria@email.com' },
-            success: true,
             executedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 min atrás
           },
           {
@@ -144,7 +139,6 @@ export async function GET(request: NextRequest) {
             type: 'EMAIL',
             action: 'Consultoria concluída',
             client: { name: 'João Santos', email: 'joao@email.com' },
-            success: true,
             executedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2h atrás
           },
           {
@@ -152,7 +146,6 @@ export async function GET(request: NextRequest) {
             type: 'DOCUMENT_ANALYSIS',
             action: 'Análise de documento iniciada',
             client: { name: 'Ana Costa', email: 'ana@email.com' },
-            success: true,
             executedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() // 4h atrás
           }
         ]
@@ -201,7 +194,6 @@ async function generateRecentActivity(startDate: Date) {
         type: 'USER_LOGIN',
         action: 'Login realizado',
         client: null,
-        success: true,
         executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
       },
       {
@@ -209,7 +201,6 @@ async function generateRecentActivity(startDate: Date) {
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        success: true,
         executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
     ]
@@ -221,7 +212,6 @@ async function generateRecentActivity(startDate: Date) {
         type: 'USER_LOGIN',
         action: 'Login realizado',
         client: null,
-        success: true,
         executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
       },
       {
@@ -229,7 +219,6 @@ async function generateRecentActivity(startDate: Date) {
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        success: true,
         executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
     ]

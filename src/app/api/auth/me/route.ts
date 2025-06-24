@@ -11,14 +11,12 @@ export async function GET(request: NextRequest) {
     
     if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Não autenticado' },
         { status: 401 }
       )
     }
     
     // Retornar dados do usuário
     return NextResponse.json({
-      success: true,
       user: user,
       data: user
     })
@@ -29,7 +27,6 @@ export async function GET(request: NextRequest) {
       console.error('❌ /api/auth/me: Erro:', error)
     }
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

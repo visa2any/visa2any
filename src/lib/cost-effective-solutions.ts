@@ -122,7 +122,6 @@ class CostEffectiveSolutions {
       const instructions = this.generateClientInstructions(request, trackingId)
 
       return {
-        success: true,
         method: 'manual_assisted',
         estimatedTime: estimatedTime,
         cost,
@@ -132,7 +131,6 @@ class CostEffectiveSolutions {
 
     } catch (error) {
       return {
-        success: false,
         method: 'manual_assisted',
         estimatedTime: '',
         cost: 0,
@@ -169,7 +167,6 @@ class CostEffectiveSolutions {
     }
 
     return {
-      success: true,
       monitoringId,
       targets
     }
@@ -190,7 +187,6 @@ class CostEffectiveSolutions {
     // Always return mock data for now to avoid playwright compilation issues
     console.log('Using mock automation for development')
     return {
-      success: true,
       slots: await this.getMockSlots(country),
       method: 'playwright_automation_mock',
       cost: 2
@@ -230,7 +226,6 @@ class CostEffectiveSolutions {
     ]
 
     return {
-      success: true,
       botInfo: {
         token: botToken,
         channels,
@@ -275,7 +270,6 @@ Confiabilidade: 70%
     ]
 
     return {
-      success: true,
       emailConfig: {
         providers,
         keywords,
@@ -350,7 +344,6 @@ ROI: Altíssimo (quase gratuito)
     const cost = request.serviceLevel === 'express' ? 75 : 35
 
     return {
-      success: true,
       workflow,
       totalTime,
       cost

@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit)
 
     return NextResponse.json({
-      success: true,
       data: {
         interactions,
         pagination: {
@@ -78,7 +77,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar interações:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -99,7 +97,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -128,20 +125,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'EMAIL',
         action: 'create_interaction',
-        details: {
-          interactionId: interaction.id,
-          clientId: validatedData.clientId,
-          type: validatedData.type,
-          channel: validatedData.channel,
-          direction: validatedData.direction
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: interaction
     }, { status: 201 })
 
@@ -149,7 +137,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -159,7 +146,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar interação:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email) {
       return NextResponse.json(
-        { success: false, error: 'Nome e email são obrigatórios' },
         { status: 400 }
       )
     }
@@ -30,14 +29,12 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: result.error },
         { status: 400 }
       )
     }
 
     // Criar cookie de autenticação automática
     const response = NextResponse.json({
-      success: true,
       user: result.user,
       token: result.token,
       message: 'Conta criada e login automático realizado'
@@ -57,7 +54,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na criação automática de conta:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

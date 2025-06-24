@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
     
     if (webhookSecret !== 'visa2any_webhook_secret_2024') {
       return NextResponse.json({
-        success: false,
         error: 'Invalid webhook secret'
       }, { status: 401 })
     }
@@ -37,7 +36,6 @@ export async function POST(request: NextRequest) {
     // Validar que pagamento foi aprovado
     if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
       return NextResponse.json({
-        success: false,
         error: 'Payment not completed'
       }, { status: 400 })
     }
@@ -102,7 +100,6 @@ export async function POST(request: NextRequest) {
     // INSERT INTO vaga_express_subscriptions (...)
 
     return NextResponse.json({
-      success: true,
       message: 'Vaga Express activated successfully',
       data: {
         purchaseId,
@@ -116,7 +113,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao ativar Vaga Express:', error)
     return NextResponse.json({
-      success: false,
       error: 'Internal server error'
     }, { status: 500 })
   }

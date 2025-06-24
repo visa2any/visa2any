@@ -51,11 +51,9 @@ export class BackupSystem {
       // Limpar backups antigos
       await this.cleanOldBackups()
 
-      return { success: true, filePath: backupPath }
 
     } catch (error) {
       console.error('❌ Erro ao criar backup:', error)
-      return { success: false, error: error.message }
     }
   }
 
@@ -124,11 +122,9 @@ export class BackupSystem {
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2))
 
       console.log(`✅ Export de dados criado: ${exportFileName}`)
-      return { success: true, filePath: exportPath }
 
     } catch (error) {
       console.error('❌ Erro ao criar export de dados:', error)
-      return { success: false, error: error.message }
     }
   }
 
@@ -191,7 +187,6 @@ export class BackupSystem {
 
     } catch (error) {
       console.error('❌ Erro ao restaurar backup:', error)
-      return { success: false, error: error.message }
     }
   }
 
@@ -245,13 +240,10 @@ export class BackupSystem {
       })
 
       if (hasError && files.length === 0) {
-        return { success: false, error: 'Todos os backups falharam' }
       }
 
-      return { success: true, files }
 
     } catch (error) {
-      return { success: false, error: error.message }
     }
   }
 }

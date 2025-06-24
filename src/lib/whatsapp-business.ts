@@ -77,13 +77,11 @@ class WhatsAppBusinessService {
       if (response.ok && result.messages?.[0]?.id) {
         console.log('✅ WhatsApp enviado:', result.messages[0].id)
         return {
-          success: true,
           messageId: result.messages[0].id
         }
       } else {
         console.error('❌ Erro Meta API:', result)
         return {
-          success: false,
           error: result.error?.message || 'Erro desconhecido'
         }
       }
@@ -91,7 +89,6 @@ class WhatsAppBusinessService {
     } catch (error) {
       console.error('❌ Erro ao enviar WhatsApp:', error)
       return {
-        success: false,
         error: error.message || 'Erro de conexão'
       }
     }
@@ -121,7 +118,6 @@ class WhatsAppBusinessService {
         if (response.ok) {
           const result = await response.json()
           return {
-            success: true,
             messageId: result.messageId || `wh_${Date.now()}`
           }
         }
@@ -138,7 +134,6 @@ class WhatsAppBusinessService {
     console.log('---')
 
     return {
-      success: true,
       messageId: `sim_${Date.now()}`,
       queued: false
     }
@@ -153,7 +148,6 @@ class WhatsAppBusinessService {
     
     if (!this.isConfigured) {
       console.log(`📱 TEMPLATE SIMULADO: ${templateName} para ${to}`)
-      return { success: true, messageId: `temp_${Date.now()}` }
     }
 
     try {
@@ -184,12 +178,10 @@ class WhatsAppBusinessService {
 
       if (response.ok && result.messages?.[0]?.id) {
         return {
-          success: true,
           messageId: result.messages[0].id
         }
       } else {
         return {
-          success: false,
           error: result.error?.message || 'Erro no template'
         }
       }
@@ -197,7 +189,6 @@ class WhatsAppBusinessService {
     } catch (error) {
       console.error('❌ Erro template:', error)
       return {
-        success: false,
         error: error.message
       }
     }

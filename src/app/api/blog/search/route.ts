@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     
     if (!query.trim()) {
       return NextResponse.json({
-        success: true,
         results: [],
         suggestions: []
       })
@@ -23,7 +22,6 @@ export async function GET(request: NextRequest) {
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
-        success: true,
         suggestions
       })
     }
@@ -32,7 +30,6 @@ export async function GET(request: NextRequest) {
     const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
-      success: true,
       results,
       total: results.length
     })
@@ -41,7 +38,6 @@ export async function GET(request: NextRequest) {
     console.error('❌ Erro na busca:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

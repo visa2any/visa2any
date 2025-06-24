@@ -176,7 +176,6 @@ class PartnerIntegrationService {
       const partner = this.partners.find(p => p.id === request.partnerId)
       if (!partner) {
         return {
-          success: false,
           partnerId: request.partnerId,
           error: 'Parceiro não encontrado'
         }
@@ -184,7 +183,6 @@ class PartnerIntegrationService {
 
       if (!partner.apiKey) {
         return {
-          success: false,
           partnerId: request.partnerId,
           error: 'API key não configurada para este parceiro'
         }
@@ -204,7 +202,6 @@ class PartnerIntegrationService {
           return await this.bookOnlineVisa(partner, request)
         default:
           return {
-            success: false,
             partnerId: request.partnerId,
             error: 'Integração não implementada para este parceiro'
           }
@@ -213,7 +210,6 @@ class PartnerIntegrationService {
     } catch (error) {
       console.error(`Erro na integração com parceiro ${request.partnerId}:`, error)
       return {
-        success: false,
         partnerId: request.partnerId,
         error: 'Erro técnico na integração'
       }
@@ -250,7 +246,6 @@ class PartnerIntegrationService {
     if (response.ok) {
       const data = await response.json()
       return {
-        success: true,
         partnerId: partner.id,
         partnerReference: data.reference_number,
         appointmentDetails: {
@@ -266,7 +261,6 @@ class PartnerIntegrationService {
     } else {
       const error = await response.json()
       return {
-        success: false,
         partnerId: partner.id,
         error: error.message || 'Erro na API VisaHQ'
       }
@@ -300,7 +294,6 @@ class PartnerIntegrationService {
     if (response.ok) {
       const data = await response.json()
       return {
-        success: true,
         partnerId: partner.id,
         partnerReference: data.order_id,
         cost: data.price.total,
@@ -309,7 +302,6 @@ class PartnerIntegrationService {
       }
     } else {
       return {
-        success: false,
         partnerId: partner.id,
         error: 'Erro na API iVisa'
       }
@@ -344,7 +336,6 @@ class PartnerIntegrationService {
     if (response.ok) {
       const data = await response.json()
       return {
-        success: true,
         partnerId: partner.id,
         partnerReference: data.application_id,
         cost: data.fees.total,
@@ -353,7 +344,6 @@ class PartnerIntegrationService {
       }
     } else {
       return {
-        success: false,
         partnerId: partner.id,
         error: 'Erro na API TravelVisa'
       }
@@ -366,7 +356,6 @@ class PartnerIntegrationService {
     await this.delay(2000)
     
     return {
-      success: true,
       partnerId: partner.id,
       partnerReference: 'VC-' + Date.now(),
       cost: partner.pricing.perTransaction + (request.visaInfo.urgency === 'express' ? 50 : 0),
@@ -380,7 +369,6 @@ class PartnerIntegrationService {
     await this.delay(800)
     
     return {
-      success: true,
       partnerId: partner.id,
       partnerReference: 'OV-' + Date.now(),
       cost: partner.pricing.perTransaction,

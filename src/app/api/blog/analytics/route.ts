@@ -180,7 +180,6 @@ export async function GET(request: NextRequest) {
     } : { viewsPerPost: 0, likesPerPost: 0, commentsPerPost: 0 }
 
     return NextResponse.json({
-      success: true,
       analytics: {
         overview: {
           totalPosts,
@@ -243,7 +242,6 @@ export async function GET(request: NextRequest) {
     console.error('❌ Erro ao buscar analytics:', error)
     return NextResponse.json(
       {
-        success: false,
         error: 'Erro interno do servidor'
       },
       { status: 500 }

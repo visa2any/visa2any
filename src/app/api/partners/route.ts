@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
       const partnersStatus = partnerIntegrationService.getPartnersStatus()
       
       return NextResponse.json({
-        success: true,
         partners: partnersStatus,
         total: partnersStatus.length,
         message: 'Status dos parceiros recuperado com sucesso'
@@ -25,7 +24,6 @@ export async function GET(request: NextRequest) {
       const availablePartners = await partnerIntegrationService.getAvailablePartners(country)
       
       return NextResponse.json({
-        success: true,
         partners: availablePartners,
         total: availablePartners.length,
         country,
@@ -50,7 +48,6 @@ export async function GET(request: NextRequest) {
     
     if (bestPartner) {
       return NextResponse.json({
-        success: true,
         recommendedPartner: {
           id: bestPartner.id,
           name: bestPartner.name,
@@ -63,7 +60,6 @@ export async function GET(request: NextRequest) {
       })
     } else {
       return NextResponse.json({
-        success: false,
         message: 'Nenhum parceiro disponível para esta combinação'
       })
     }
@@ -141,7 +137,6 @@ export async function POST(request: NextRequest) {
       )
 
       return NextResponse.json({
-        success: true,
         booking: {
           partnerId: result.partnerId,
           partnerReference: result.partnerReference,
@@ -156,7 +151,6 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json(
         { 
-          success: false, 
           error: result.error,
           partnerId: result.partnerId
         },

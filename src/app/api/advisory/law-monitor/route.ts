@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         country: validatedData.country,
         visaType: validatedData.visaType,
@@ -46,7 +45,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -56,7 +54,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro no monitoramento legal:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -72,7 +69,6 @@ export async function GET(request: NextRequest) {
 
     if (!country) {
       return NextResponse.json(
-        { success: false, error: 'País é obrigatório' },
         { status: 400 }
       )
     }
@@ -81,7 +77,6 @@ export async function GET(request: NextRequest) {
     const analysis = await analyzeLawChanges(changes, country, visaType ?? undefined)
 
     return NextResponse.json({
-      success: true,
       data: {
         country: country,
         visaType: visaType,
@@ -95,7 +90,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar mudanças legais:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -133,13 +127,6 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         source: 'IRCC',
         category: 'requirements',
         affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program'],
-        details: {
-          previousRequirement: 'CAD $25/hora',
-          newRequirement: 'CAD $27/hora',
-          effectiveDate: '2024-02-01',
-          provinces: ['Ontario', 'British Columbia', 'Alberta']
-        }
-      },
       {
         id: 'ca-2024-002', 
         date: '2024-01-10',
@@ -150,117 +137,6 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         source: 'IRCC',
         category: 'selection_criteria',
         affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class'],
-        details: {
-          newCategories: ['Healthcare', 'STEM', 'French language', 'Trades'],
-          minimumCRS: 'Varia por categoria',
-          firstDraw: '2024-02-15'
-        }
-      }
-    ],
-    
-    'Australia': [
-      {
-        id: 'au-2024-001',
-        date: '2024-01-20',
-        title: 'Aumento do English requirement',
-        description: 'Competent English (6.0 IELTS) agora é mínimo para todos os vistos skilled',
-        visaTypes: ['SKILLED'],
-        impact: 'high',
-        source: 'Department of Home Affairs',
-        category: 'language_requirements',
-        details: {
-          previousRequirement: 'Functional English (5.0 IELTS)',
-          newRequirement: 'Competent English (6.0 IELTS)',
-          effectiveDate: '2024-03-01'
-        }
-      }
-    ],
-    
-    'Portugal': [
-      {
-        id: 'pt-2024-001',
-        date: '2024-01-12',
-        title: 'Mudanças no Golden Visa',
-        description: 'Investimento mínimo em fundos aumentou para €500,000',
-        visaTypes: ['INVESTMENT'],
-        impact: 'high',
-        source: 'SEF',
-        category: 'investment_amounts',
-        details: {
-          previousAmount: '€350,000',
-          newAmount: '€500,000',
-          applicableInvestments: ['Investment funds', 'Research activities']
-        }
-      }
-    ],
-    
-    'Germany': [
-      {
-        id: 'de-2024-001',
-        date: '2024-01-18',
-        title: 'Skilled Immigration Act atualizado',
-        description: 'Novas facilidades para profissionais de IT sem degree universitário',
-        visaTypes: ['SKILLED', 'WORK'],
-        impact: 'medium',
-        source: 'BAMF',
-        category: 'education_requirements',
-        details: {
-          newProvision: 'IT professionals with 3+ years experience can qualify without university degree',
-          requiredExperience: '3 years minimum',
-          salaryThreshold: '€40,000 annually'
-        }
-      }
-    ],
-    
-    'United States': [
-      {
-        id: 'us-2024-001',
-        date: '2024-01-08',
-        title: 'H-1B lottery system modificado',
-        description: 'Novo sistema de beneficiários únicos para reduzir múltiplas aplicações',
-        visaTypes: ['WORK'],
-        impact: 'high',
-        source: 'USCIS',
-        category: 'application_process',
-        details: {
-          change: 'One registration per person regardless of multiple petitions',
-          effectiveDate: '2024 H-1B season',
-          impact: 'Reduces advantage of multiple employer petitions'
-        }
-      }
-    ]
-  }
-
-  let changes = lawChangesDatabase[country] || []
-  
-  // Filtrar por período
-  changes = changes.filter(change => {
-    const changeDate = new Date(change.date)
-    return changeDate >= startDate
-  })
-  
-  // Filtrar por tipo de visto se especificado
-  if (visaType) {
-    changes = changes.filter(change => 
-      change.visaTypes.includes(visaType)
-    )
-  }
-  
-  return changes
-}
-
-// Analisar impacto das mudanças legais
-async function analyzeLawChanges(changes: any[], country: string, visaType?: string) {
-  const analysis = {
-    totalChanges: changes.length,
-    impactLevel: 'low' as 'low' | 'medium' | 'high',
-    categories: {} as Record<string, number>,
-    recommendations: [] as string[],
-    timeline: {
-      immediate: 0,
-      upcoming: 0,
-      future: 0
-    },
     affectedPrograms: new Set<string>()
   }
 
@@ -326,13 +202,6 @@ async function setupLawChangeAlerts(data: any) {
     data: {
       type: 'LAW_CHANGE_ALERT_SETUP',
       action: 'setup_monitoring',
-      details: {
-        country: data.country,
-        visaType: data.visaType,
-        alertType: data.alertType,
-        keywords: data.keywords
-      },
-      success: true,
       clientId: data.clientId
     }
   })

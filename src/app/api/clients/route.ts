@@ -98,7 +98,6 @@ export async function GET(request: NextRequest) {
     const hasMore = page < totalPages
 
     return NextResponse.json({
-      success: true,
       data: {
         clients,
         pagination: {
@@ -114,7 +113,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar clientes:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -140,7 +138,6 @@ export async function POST(request: NextRequest) {
 
     if (existingClient) {
       return NextResponse.json(
-        { success: false, error: 'Cliente com este email já existe' },
         { status: 400 }
       )
     }
@@ -163,17 +160,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'CLIENT_CREATED',
         action: 'create_client',
-        details: {
-          clientId: client.id,
-          source: validatedData.source || 'website'
-        },
-        success: true,
         clientId: client.id
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: client
     }, { status: 201 })
 
@@ -181,7 +172,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -191,7 +181,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar cliente:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

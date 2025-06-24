@@ -33,7 +33,6 @@ export async function GET(
 
     if (!payment) {
       return NextResponse.json(
-        { success: false, error: 'Pagamento não encontrado' },
         { status: 404 }
       )
     }
@@ -46,7 +45,6 @@ export async function GET(
     }
 
     return NextResponse.json({
-      success: true,
       data: {
         ...payment,
         paymentInfo
@@ -56,7 +54,6 @@ export async function GET(
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -79,7 +76,6 @@ export async function PUT(
 
     if (!existingPayment) {
       return NextResponse.json(
-        { success: false, error: 'Pagamento não encontrado' },
         { status: 404 }
       )
     }
@@ -112,19 +108,11 @@ export async function PUT(
       data: {
         type: 'PAYMENT_UPDATED',
         action: 'update_payment',
-        details: {
-          paymentId: params.id,
-          previousStatus: existingPayment.status,
-          newStatus: validatedData.status,
-          changes: validatedData
-        },
-        success: true,
         clientId: existingPayment.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: payment,
       message: 'Pagamento atualizado com sucesso'
     })
@@ -133,7 +121,6 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -143,7 +130,6 @@ export async function PUT(
 
     console.error('Erro ao atualizar pagamento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -166,7 +152,6 @@ export async function POST(
 
     if (!payment) {
       return NextResponse.json(
-        { success: false, error: 'Pagamento não encontrado' },
         { status: 404 }
       )
     }
@@ -216,26 +201,17 @@ export async function POST(
       data: {
         type: 'PAYMENT_WEBHOOK',
         action: 'webhook_received',
-        details: {
-          paymentId: params.id,
-          provider,
-          status: newStatus,
-          webhook_data: body
-        },
-        success: true,
         clientId: payment.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       message: 'Webhook processado com sucesso'
     })
 
   } catch (error) {
     console.error('Erro ao processar webhook:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -390,14 +366,6 @@ async function processPaymentSuccess(payment: any) {
       data: {
         type: 'PAYMENT_SUCCESS_PROCESSED',
         action: 'process_payment_success',
-        details: {
-          paymentId: payment.id,
-          clientId: payment.clientId,
-          amount: payment.amount,
-          currency: payment.currency,
-          automations: ['client_status_updated', 'confirmation_email_sent', 'consultation_scheduled']
-        },
-        success: true,
         clientId: payment.clientId
       }
     })
@@ -410,11 +378,6 @@ async function processPaymentSuccess(payment: any) {
       data: {
         type: 'PAYMENT_SUCCESS_ERROR',
         action: 'process_payment_success',
-        details: {
-          paymentId: payment.id,
-          error: error.message
-        },
-        success: false,
         clientId: payment.clientId
       }
     })

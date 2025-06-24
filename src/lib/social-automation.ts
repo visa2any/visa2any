@@ -339,11 +339,9 @@ export async function scheduleAutomaticPosts(blogPost: BlogPost) {
     }
     
     console.log(`📱 Posts agendados para ${socialPosts.length} redes sociais`)
-    return { success: true, postsScheduled: socialPosts.length }
     
   } catch (error) {
     console.error('Erro ao agendar posts automáticos:', error)
-    return { success: false, error }
   }
 }
 

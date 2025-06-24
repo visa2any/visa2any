@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -52,12 +51,7 @@ export async function POST(request: NextRequest) {
     const existingSequence = await prisma.automationLog.findFirst({
       where: {
         clientId: validatedData.clientId,
-        type: 'NURTURING_SEQUENCE',
-        details: {
-          path: ['sequenceType'],
-          equals: validatedData.sequenceType
-        },
-        success: true,
+        action: "start_nurturing_sequence",
         createdAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
         }
@@ -66,7 +60,6 @@ export async function POST(request: NextRequest) {
 
     if (existingSequence) {
       return NextResponse.json({
-        success: false,
         error: 'Sequência já ativa para este cliente'
       }, { status: 400 })
     }
@@ -87,21 +80,13 @@ export async function POST(request: NextRequest) {
     // Log do início da sequência
     await prisma.automationLog.create({
       data: {
-        type: 'NURTURING_SEQUENCE',
+        action: "start_nurturing_sequence",
         action: 'start_sequence',
-        details: {
-          sequenceType: validatedData.sequenceType,
-          emailsScheduled: scheduledEmails.length,
-          sequence: personalizedSequence,
-          triggerData: validatedData.triggerData
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         sequenceType: validatedData.sequenceType,
         emailsScheduled: scheduledEmails.length,
@@ -115,7 +100,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -125,7 +109,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao iniciar sequência de nurturing:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -138,7 +121,7 @@ export async function GET(request: NextRequest) {
     const clientId = searchParams.get('clientId')
 
     const whereClause = {
-      type: 'NURTURING_SEQUENCE',
+      action: "start_nurturing_sequence",
       ...(clientId && { clientId })
     }
 
@@ -159,7 +142,6 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: sequences.map(seq => ({
         id: seq.id,
         client: seq.client,
@@ -173,7 +155,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao listar sequências:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -347,13 +328,6 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       data: {
         type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
-        details: {
-          template: template,
-          subject: subject,
-          success: result.success,
-          messageId: result.data?.messageId
-        },
-        success: result.success,
         clientId: clientId
       }
     })
@@ -367,16 +341,10 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       data: {
         type: 'EMAIL',
         action: 'send_scheduled_email',
-        details: {
-          template: template,
-          error: error instanceof Error ? error.message : 'Erro desconhecido'
-        },
-        success: false,
         clientId: clientId
       }
     })
 
-    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
   }
 }
 

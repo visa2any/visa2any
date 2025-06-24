@@ -97,7 +97,6 @@ export async function GET(request: NextRequest) {
         type: 'client_created',
         action: 'Novo cliente cadastrado',
         client: { id: '1', name: 'João Silva', email: 'joao@email.com' },
-        success: true,
         executedAt: new Date().toISOString(),
         priority: 'medium' as const
       },
@@ -106,7 +105,6 @@ export async function GET(request: NextRequest) {
         type: 'consultation_completed',
         action: 'Consulta finalizada',
         client: { id: '2', name: 'Maria Santos', email: 'maria@email.com' },
-        success: true,
         executedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         priority: 'high' as const
       },
@@ -115,7 +113,6 @@ export async function GET(request: NextRequest) {
         type: 'document_uploaded',
         action: 'Documento enviado',
         client: { id: '3', name: 'Pedro Costa', email: 'pedro@email.com' },
-        success: true,
         executedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         priority: 'low' as const
       }
@@ -184,14 +181,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
       data: dashboardStats
     })
 
   } catch (error) {
     console.error('Dashboard stats error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch dashboard stats' },
       { status: 500 }
     )
   }

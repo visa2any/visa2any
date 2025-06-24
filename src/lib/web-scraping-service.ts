@@ -154,7 +154,6 @@ class WebScrapingService {
     
     if (!target) {
       return {
-        success: false,
         slots: [],
         error: 'Target não encontrado',
         lastUpdated: new Date().toISOString(),
@@ -164,7 +163,6 @@ class WebScrapingService {
 
     if (!target.enabled) {
       return {
-        success: false,
         slots: [],
         error: 'Scraping desabilitado para este target (questões legais)',
         lastUpdated: new Date().toISOString(),
@@ -179,7 +177,6 @@ class WebScrapingService {
 
     if (timeSinceLastAccess < minInterval) {
       return {
-        success: false,
         slots: [],
         error: `Rate limit: aguarde ${Math.ceil((minInterval - timeSinceLastAccess) / 1000)}s`,
         lastUpdated: new Date().toISOString(),
@@ -222,7 +219,6 @@ class WebScrapingService {
       target.lastAccess = now
 
       return {
-        success: true,
         slots,
         lastUpdated: new Date().toISOString(),
         source: target.name
@@ -231,7 +227,6 @@ class WebScrapingService {
     } catch (error) {
       console.error(`Erro no scraping de ${target.name}:`, error)
       return {
-        success: false,
         slots: [],
         error: `Erro técnico: ${error}`,
         lastUpdated: new Date().toISOString(),
@@ -419,7 +414,6 @@ class WebScrapingService {
   }> {
     // ⚠️ EXTREMAMENTE ARRISCADO - pode violar ToS e causar problemas legais
     return {
-      success: false,
       error: 'Agendamento via scraping desabilitado por questões legais e éticas'
     }
   }

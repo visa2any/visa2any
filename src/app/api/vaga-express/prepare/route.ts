@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json({
-          success: false,
           error: `Missing required field: ${field}`
         }, { status: 400 })
       }
@@ -29,7 +28,6 @@ export async function POST(request: NextRequest) {
     // ou enviaria para fila de processamento
 
     return NextResponse.json({
-      success: true,
       message: 'Vaga Express prepared successfully',
       purchaseId: body.purchaseId
     })
@@ -37,7 +35,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao preparar Vaga Express:', error)
     return NextResponse.json({
-      success: false,
       error: 'Internal server error'
     }, { status: 500 })
   }

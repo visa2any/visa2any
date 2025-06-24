@@ -14,21 +14,18 @@ export async function POST(request: NextRequest) {
 
     if (!webhookResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Webhook inválido' },
         { status: 400 }
       )
     }
 
     // Processar apenas webhooks de pagamento
     if (webhookResult.type !== 'payment') {
-      return NextResponse.json({ success: true, message: 'Webhook ignorado' })
     }
 
     const paymentId = webhookResult.payment_id
 
     if (!paymentId) {
       return NextResponse.json(
-        { success: false, error: 'Payment ID não encontrado no webhook' },
         { status: 400 }
       )
     }
@@ -39,7 +36,6 @@ export async function POST(request: NextRequest) {
     if (!mpPaymentResult.success) {
       console.error('Erro ao buscar pagamento no MercadoPago:', mpPaymentResult.error)
       return NextResponse.json(
-        { success: false, error: 'Erro ao buscar pagamento' },
         { status: 500 }
       )
     }
@@ -59,7 +55,6 @@ export async function POST(request: NextRequest) {
     if (!payment) {
       console.error('Pagamento não encontrado no banco:', mpPayment.external_reference)
       return NextResponse.json(
-        { success: false, error: 'Pagamento não encontrado' },
         { status: 404 }
       )
     }
@@ -93,15 +88,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'PAYMENT_WEBHOOK_PROCESSED',
         action: 'process_mercadopago_webhook',
-        details: {
-          paymentId: payment.id,
-          mpPaymentId: mpPayment.id,
-          previousStatus: payment.status,
-          newStatus: newStatus,
-          mpStatus: mpPayment.status,
-          webhook_data: body
-        },
-        success: true,
         clientId: payment.clientId
       }
     })
@@ -121,17 +107,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'PAYMENT_WEBHOOK_ERROR',
         action: 'process_mercadopago_webhook',
-        details: {
-          error: error.message,
-          webhook_data: request.body
-        },
-        success: false,
         clientId: null
       }
     }).catch(() => {}) // Não falhar se log não funcionar
 
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -219,13 +199,6 @@ async function processPaymentSuccess(payment: any) {
       data: {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS',
         action: 'process_payment_success_automations',
-        details: {
-          paymentId: payment.id,
-          transactionId: payment.transactionId,
-          amount: payment.amount,
-          automations: ['client_status_updated', 'confirmation_email_sent', 'confirmation_whatsapp_sent', 'consultation_created']
-        },
-        success: true,
         clientId: payment.clientId
       }
     })
@@ -237,11 +210,6 @@ async function processPaymentSuccess(payment: any) {
       data: {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS_ERROR',
         action: 'process_payment_success_automations',
-        details: {
-          paymentId: payment.id,
-          error: error.message
-        },
-        success: false,
         clientId: payment.clientId
       }
     }).catch(() => {})

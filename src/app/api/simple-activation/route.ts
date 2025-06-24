@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
       case 'activate_webscraping':
         if (!process.env.ENABLE_REAL_MONITORING) {
           return NextResponse.json({
-            success: false,
             message: 'Monitoramento real não habilitado',
             error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar'
           })
@@ -39,118 +38,13 @@ export async function POST(request: NextRequest) {
 Sistema pronto para produção!`)
         
         return NextResponse.json({
-          success: true,
           message: 'Sistema híbrido ativo!',
           system: 'hybrid-booking',
           active: true,
-          details: {
-            type: 'Agendamento Híbrido',
-            payment: currentState.paymentProcessing ? 'Ativo' : 'Configure MercadoPago',
-            notifications: currentState.automation ? 'Ativo' : 'Configure Telegram/WhatsApp'
-          }
-        })
-
-      case 'activate_email':
-        if (!currentState.emailMonitoring) {
-          return NextResponse.json({
-            success: false,
-            message: 'Email não configurado',
-            error: 'Configure RESEND_API_KEY ou SMTP no .env para ativar'
-          })
-        }
-        
-        await sendTelegramNotification('📧 NOTIFICAÇÕES EMAIL ATIVAS!',
-          `Sistema de email configurado e funcionando:
-          
-📧 Provedor: ${process.env.RESEND_API_KEY ? 'Resend' : 'SMTP'}
-🎯 Uso: Confirmações de agendamento
-📋 Templates: Prontos para produção
-🔍 Status: Operacional
-
-Clientes receberão emails automáticos!`)
-
-        return NextResponse.json({
-          success: true,
-          message: 'Notificações email ativas!',
-          system: 'email-notifications',
-          active: true,
-          details: {
-            provider: process.env.RESEND_API_KEY ? 'Resend' : 'SMTP',
-            usage: 'Confirmações automáticas',
-            cost: 'R$ 0,001/email'
-          }
-        })
-
-      case 'activate_automation':
-        if (!currentState.automation) {
-          return NextResponse.json({
-            success: false,
-            message: 'Automação não disponível',
-            error: 'Configure WHATSAPP_TOKEN e TELEGRAM_BOT_TOKEN no .env para ativar'
-          })
-        }
-        
-        await sendTelegramNotification('🤖 Automação ATIVADA!',
-          `Sistema de automação operacional:
-          
-🔍 Monitoramento: Telegram bots ativos
-🤖 Tecnologia: WhatsApp + Telegram integrado
-⏰ Verificação: Tempo real
-💰 Custo: Gratuito + notificações
-🎯 Cobertura: Todos os consulados
-🔍 Status: Ativo e funcionando
-
-Sistema híbrido funcionando perfeitamente!`)
-
-        return NextResponse.json({
-          success: true,
-          message: 'Automação ativada com sucesso!',
-          system: 'automation',
-          active: true,
-          details: {
-            technology: 'WhatsApp + Telegram',
-            coverage: ['Todos os consulados'],
-            cost: 'Gratuito'
-          }
-        })
-
-      case 'status':
-        const currentStatus = getSystemState()
-        return NextResponse.json({
-          success: true,
-          systems: currentStatus,
-          activeCount: Object.values(currentStatus).filter(v => v === true).length,
-          monthlyCost: calculateMonthlyCost(currentStatus),
-          environment: process.env.NODE_ENV,
-          configured: {
-            telegram: !!process.env.TELEGRAM_BOT_TOKEN,
-            whatsapp: !!process.env.WHATSAPP_TOKEN,
-            email: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST),
-            payment: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
-          }
-        })
-
-      case 'deactivate_all':
-        await sendTelegramNotification('⏹️ SISTEMAS DESATIVADOS',
-          'Sistemas de monitoramento foram pausados. Use as variáveis de ambiente para reativar.')
-
-        return NextResponse.json({
-          success: true,
-          message: 'Sistemas pausados (use variáveis de ambiente para reativar)',
-          systems: getSystemState()
-        })
-
-      default:
-        return NextResponse.json({ 
-          success: false,
-          error: 'Ação não reconhecida',
-          availableActions: ['activate_webscraping', 'activate_email', 'activate_automation', 'status', 'deactivate_all']
-        }, { status: 400 })
     }
   } catch (error) {
     console.error('Erro na API de ativação:', error)
     return NextResponse.json({ 
-      success: false,
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
@@ -160,7 +54,6 @@ Sistema híbrido funcionando perfeitamente!`)
 export async function GET(request: NextRequest) {
   const currentStatus = getSystemState()
   return NextResponse.json({
-    success: true,
     systems: currentStatus,
     activeCount: Object.values(currentStatus).filter(v => v === true).length,
     monthlyCost: calculateMonthlyCost(currentStatus),

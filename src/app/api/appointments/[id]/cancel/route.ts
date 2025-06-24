@@ -24,13 +24,11 @@ export async function DELETE(
       // TODO: Atualizar status no banco de dados
       
       return NextResponse.json({
-        success: true,
         message: result.message,
         cancelledAt: new Date().toISOString()
       })
     } else {
       return NextResponse.json(
-        { success: false, error: result.message },
         { status: 400 }
       )
     }

@@ -75,7 +75,6 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit)
 
     return NextResponse.json({
-      success: true,
       data: {
         consultations,
         pagination: {
@@ -91,7 +90,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar consultorias:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -117,7 +115,6 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -130,7 +127,6 @@ export async function POST(request: NextRequest) {
 
       if (!consultant) {
         return NextResponse.json(
-          { success: false, error: 'Consultor não encontrado' },
           { status: 404 }
         )
       }
@@ -173,19 +169,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'CONSULTATION_CREATED',
         action: 'create_consultation',
-        details: {
-          consultationId: consultation.id,
-          clientId: validatedData.clientId,
-          type: validatedData.type,
-          scheduledAt: validatedData.scheduledAt
-        },
-        success: true,
         clientId: validatedData.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: consultation
     }, { status: 201 })
 
@@ -193,7 +181,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -203,7 +190,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao criar consultoria:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

@@ -82,20 +82,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'ML_LEAD_SCORING',
         action: 'calculate_lead_score',
-        details: {
-          leadScore: scoringResult.totalScore,
-          breakdown: scoringResult.breakdown,
-          conversionProbability: conversionProbability,
-          estimatedLTV: estimatedLTV,
-          recommendedActions: recommendedActions
-        },
-        success: true,
         clientId: validatedData.clientId || null
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         leadScore: scoringResult.totalScore,
         grade: getScoreGrade(scoringResult.totalScore),
@@ -111,7 +102,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -121,7 +111,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro no lead scoring:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -164,7 +153,6 @@ export async function GET(request: NextRequest) {
     const conversionFactors = analyzeConversionFactors(scoringData)
 
     return NextResponse.json({
-      success: true,
       data: {
         overview: {
           totalScored: scoringData.length,
@@ -181,7 +169,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro em analytics de lead scoring:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

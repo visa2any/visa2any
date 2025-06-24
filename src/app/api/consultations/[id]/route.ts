@@ -53,20 +53,17 @@ export async function GET(
 
     if (!consultation) {
       return NextResponse.json(
-        { success: false, error: 'Consultoria não encontrada' },
         { status: 404 }
       )
     }
 
     return NextResponse.json({
-      success: true,
       data: consultation
     })
 
   } catch (error) {
     console.error('Erro ao buscar consultoria:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -96,7 +93,6 @@ export async function PATCH(
 
     if (!existingConsultation) {
       return NextResponse.json(
-        { success: false, error: 'Consultoria não encontrada' },
         { status: 404 }
       )
     }
@@ -137,19 +133,11 @@ export async function PATCH(
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'inline_edit',
-        details: {
-          consultationId: id,
-          changes: validatedData,
-          previousStatus: existingConsultation.status,
-          newStatus: validatedData.status || existingConsultation.status
-        },
-        success: true,
         clientId: existingConsultation.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: updatedConsultation
     })
 
@@ -157,7 +145,6 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -167,7 +154,6 @@ export async function PATCH(
 
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -198,7 +184,6 @@ export async function PUT(
 
     if (!existingConsultation) {
       return NextResponse.json(
-        { success: false, error: 'Consultoria não encontrada' },
         { status: 404 }
       )
     }
@@ -265,20 +250,11 @@ export async function PUT(
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'update_consultation',
-        details: {
-          consultationId: id,
-          clientId: existingConsultation.clientId,
-          changes: validatedData,
-          previousStatus: existingConsultation.status,
-          newStatus: validatedData.status || existingConsultation.status
-        },
-        success: true,
         clientId: existingConsultation.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: updatedConsultation
     })
 
@@ -286,7 +262,6 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -296,7 +271,6 @@ export async function PUT(
 
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -322,7 +296,6 @@ export async function DELETE(
 
     if (!existingConsultation) {
       return NextResponse.json(
-        { success: false, error: 'Consultoria não encontrada' },
         { status: 404 }
       )
     }
@@ -337,26 +310,17 @@ export async function DELETE(
       data: {
         type: 'CONSULTATION_DELETED',
         action: 'delete_consultation',
-        details: {
-          consultationId: id,
-          clientId: existingConsultation.clientId,
-          type: existingConsultation.type,
-          status: existingConsultation.status
-        },
-        success: true,
         clientId: existingConsultation.clientId
       }
     })
 
     return NextResponse.json({
-      success: true,
       message: 'Consultoria deletada com sucesso'
     })
 
   } catch (error) {
     console.error('Erro ao deletar consultoria:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

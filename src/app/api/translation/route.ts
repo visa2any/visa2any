@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
       const languages = translationService.getSupportedLanguages()
       
       return NextResponse.json({
-        success: true,
         languages,
         total: Object.keys(languages).length,
         message: 'Idiomas suportados recuperados com sucesso'
@@ -28,7 +27,6 @@ export async function GET(request: NextRequest) {
       )
       
       return NextResponse.json({
-        success: true,
         translators,
         total: translators.length,
         message: translators.length > 0 
@@ -73,7 +71,6 @@ export async function POST(request: NextRequest) {
 
       if (result.success) {
         return NextResponse.json({
-          success: true,
           translation: {
             originalText: translationRequest.text,
             translatedText: result.translatedText,
@@ -91,7 +88,6 @@ export async function POST(request: NextRequest) {
         })
       } else {
         return NextResponse.json(
-          { success: false, error: result.error },
           { status: 400 }
         )
       }
@@ -116,7 +112,6 @@ export async function POST(request: NextRequest) {
 
       if (result.success) {
         return NextResponse.json({
-          success: true,
           documentTranslation: {
             translationId: result.translationId,
             estimatedCost: result.estimatedCost,
@@ -133,7 +128,6 @@ export async function POST(request: NextRequest) {
         })
       } else {
         return NextResponse.json(
-          { success: false, error: result.error },
           { status: 400 }
         )
       }

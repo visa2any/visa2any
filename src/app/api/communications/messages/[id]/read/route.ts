@@ -9,7 +9,6 @@ export async function PATCH(
 
     if (!messageId) {
       return NextResponse.json(
-        { success: false, error: 'Message ID is required' },
         { status: 400 }
       )
     }
@@ -26,7 +25,6 @@ export async function PATCH(
     await new Promise(resolve => setTimeout(resolve, 200))
 
     return NextResponse.json({
-      success: true,
       message: 'Message marked as read',
       data: updatedMessage
     })
@@ -34,7 +32,6 @@ export async function PATCH(
   } catch (error) {
     console.error('Mark message as read error:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to mark message as read' },
       { status: 500 }
     )
   }

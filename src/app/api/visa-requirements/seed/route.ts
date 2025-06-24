@@ -397,16 +397,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'VISA_REQUIREMENTS_SEEDED',
         action: 'seed_visa_requirements',
-        details: {
-          count: created.length,
-          countries: visaRequirements.map(r => r.country)
-        },
         success: true
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         created: created.length,
         requirements: created
@@ -417,7 +412,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao popular base de conhecimento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

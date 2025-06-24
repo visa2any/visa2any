@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
 
     if (!payment_id || !status) {
       return NextResponse.json(
-        { success: false, error: 'Dados de pagamento incompletos' },
         { status: 400 }
       )
     }
@@ -76,7 +75,6 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json({
-          success: true,
           message: 'Pagamento processado com sucesso',
           data: {
             paymentId: payment.id,
@@ -95,14 +93,12 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       message: 'Confirmação recebida mas pagamento não encontrado no sistema'
     })
 
   } catch (error) {
     console.error('Erro ao confirmar pagamento:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

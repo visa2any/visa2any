@@ -123,13 +123,6 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'EMAIL',
         action: 'send_email',
-        details: {
-          to: validatedData.to,
-          subject: emailContent.subject,
-          template: validatedData.template,
-          messageId: emailResult.messageId,
-          provider: emailResult.provider
-        },
         success: emailResult.success,
         clientId: validatedData.clientId || null,
         error: emailResult.error || null
@@ -137,7 +130,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         messageId: emailResult.messageId,
         sent: emailResult.success,
@@ -151,7 +143,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -161,7 +152,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao enviar email:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -194,7 +184,6 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       console.log('✅ Email enviado via Hostinger:', result.messageId)
       
       return {
-        success: true,
         messageId: result.messageId,
         provider: 'hostinger_smtp'
       }
@@ -230,7 +219,6 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
 
       if (response.ok) {
         return {
-          success: true,
           messageId: `sg_${Date.now()}`,
           provider: 'sendgrid'
         }
@@ -248,7 +236,6 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   console.log('---')
 
   return {
-    success: true,
     messageId: `sim_${Date.now()}`,
     provider: 'simulation'
   }

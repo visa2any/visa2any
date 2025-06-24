@@ -64,20 +64,11 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'AI_CHAT_INTERACTION',
         action: 'chat_with_sofia',
-        details: {
-          userMessage: validatedData.message.substring(0, 100),
-          sofiaResponse: sofiaResponse.message.substring(0, 100),
-          intent: sofiaResponse.intent,
-          confidence: sofiaResponse.confidence,
-          hasClientContext: !!clientContext
-        },
-        success: true,
         clientId: validatedData.clientId || null
       }
     })
 
     return NextResponse.json({
-      success: true,
       data: {
         message: sofiaResponse.message,
         intent: sofiaResponse.intent,
@@ -92,7 +83,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          success: false, 
           error: 'Dados inválidos',
           details: error.errors
         },
@@ -102,7 +92,6 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro no chat com Sofia:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -114,14 +103,12 @@ export async function GET(request: NextRequest) {
     const intents = getSofiaIntents()
 
     return NextResponse.json({
-      success: true,
       data: { intents }
     })
 
   } catch (error) {
     console.error('Erro ao buscar intenções:', error)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
