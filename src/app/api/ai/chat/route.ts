@@ -502,7 +502,7 @@ ${genericDocs}
 
 // Documentos genéricos por país
 function getGenericDocuments(country: string): string {
-  const genericDocs = {
+  const genericDocs: { [key: string]: string } = {
     'canadá': `- Passaporte válido
 - Diploma universitário + histórico
 - Comprovante de experiência profissional
