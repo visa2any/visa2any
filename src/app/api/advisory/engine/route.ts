@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           queryType: validatedData.queryType,
-          country: validatedData.country,
-          visaType: validatedData.visaType,
+          targetCountry: validatedData.profile.targetCountry,
+          visaType: validatedData.profile.visaType,
           responseGenerated: true
         }
       }
