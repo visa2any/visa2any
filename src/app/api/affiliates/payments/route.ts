@@ -162,7 +162,13 @@ export async function POST(request: NextRequest) {
           method: paymentMethod,
           referenceCode,
           status: 'PENDING',
-          notes
+          notes,
+          details: {
+            paymentMethod: paymentMethod,
+            commissionCount: group.commissions.length,
+            paymentPeriod: 'manual',
+            processedAt: new Date().toISOString()
+          }
         }
       })
 
