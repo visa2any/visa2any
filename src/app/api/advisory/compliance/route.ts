@@ -58,7 +58,13 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'COMPLIANCE_CHECK',
         action: `compliance_${validatedData.checkType}`,
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
+        success: true,
+        details: {
+          checkType: validatedData.checkType,
+          complianceScore: complianceResult.score,
+          requirementsCount: complianceResult.requirements.length
+        }
       }
     })
 
