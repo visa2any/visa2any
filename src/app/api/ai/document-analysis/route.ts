@@ -522,7 +522,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   // Buscar requisitos específicos
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
-      country: { contains: document.client.targetCountry, mode: 'insensitive' },
+      country: { contains: document.client.targetCountry },
       isActive: true
     }
   })
