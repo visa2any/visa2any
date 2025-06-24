@@ -218,7 +218,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
       confidence: 0,
       ocrText: '',
       analysis: {
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
         processingTime: Date.now() - startTime
       },
       validationNotes: 'Erro durante análise automática. Revisão manual necessária.',
