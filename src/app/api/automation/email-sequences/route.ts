@@ -369,14 +369,11 @@ async function scheduleEmail(emailData: {
         data: {
           clientId: emailData.clientId,
           type: 'AUTOMATED_EMAIL',
-          description: `Email agendado: ${emailData.subject}`,
-          executedAt: new Date(),
-          success: true,
-          metadata: JSON.stringify({
-            sequence: emailData.sequence,
-            templateIndex: emailData.templateIndex,
-            scheduledFor: emailData.sendAt
-          })
+          channel: 'email',
+          direction: 'outbound',
+          subject: emailData.subject,
+          content: `Email agendado: ${emailData.subject}`,
+          completedAt: new Date()
         }
       })
     }
