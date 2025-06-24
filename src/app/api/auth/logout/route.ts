@@ -24,7 +24,14 @@ export async function POST(request: NextRequest) {
             data: {
               type: 'USER_LOGOUT',
               action: 'logout',
-              success: true
+              success: true,
+              clientId: null,
+              details: {
+                userId: decoded.userId,
+                email: decoded.email,
+                role: decoded.role,
+                logoutTimestamp: new Date().toISOString()
+              }
             }
           })
         }
