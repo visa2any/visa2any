@@ -77,8 +77,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const changes = await getLawChanges(country, days, visaType || undefined)
-    const analysis = await analyzeLawChanges(changes, country, visaType || undefined)
+    const changes = await getLawChanges(country, days, visaType ?? undefined)
+    const analysis = await analyzeLawChanges(changes, country, visaType ?? undefined)
 
     return NextResponse.json({
       success: true,
