@@ -164,7 +164,12 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     totalChanges: changes.length,
     categories: {} as Record<string, number>,
     impact: 'medium',
-    affectedPrograms: new Set<string>()
+    affectedPrograms: new Set<string>(),
+    timeline: {
+      immediate: 0,
+      upcoming: 0,
+      future: 0
+    }
   }
 
   // Analisar cada mudança
@@ -229,7 +234,13 @@ async function setupLawChangeAlerts(data: any) {
     data: {
       type: 'LAW_CHANGE_ALERT_SETUP',
       action: 'setup_monitoring',
-      clientId: data.clientId
+      clientId: data.clientId,
+      success: true,
+      details: {
+        alertType: 'law_change_monitoring',
+        country: data.country || 'all',
+        visaType: data.visaType || 'all'
+      }
     }
   })
   
