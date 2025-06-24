@@ -62,8 +62,10 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           checkType: validatedData.checkType,
-          complianceScore: complianceResult.score,
-          requirementsCount: complianceResult.requirements.length
+          complianceScore: complianceResult.overallScore,
+          complianceLevel: complianceResult.complianceLevel,
+          issuesCount: complianceResult.issues.length,
+          passedCount: complianceResult.passed.length
         }
       }
     })
