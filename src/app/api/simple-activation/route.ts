@@ -40,8 +40,8 @@ Sistema pronto para produção!`)
         return NextResponse.json({
           message: 'Sistema híbrido ativo!',
           system: 'hybrid-booking',
-          active: true,
-    }
+          active: true
+        })
   } catch (error) {
     console.error('Erro na API de ativação:', error)
     return NextResponse.json({ 

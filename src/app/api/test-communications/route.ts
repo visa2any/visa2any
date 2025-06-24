@@ -110,6 +110,6 @@ export async function GET(request: NextRequest) {
       results.tests.push({
         type: 'webhook_simulation',
         status: 'success',
-        message: 'Webhook de pagamento simulado',
-  }
+        message: 'Webhook de pagamento simulado'
+      })
 }
