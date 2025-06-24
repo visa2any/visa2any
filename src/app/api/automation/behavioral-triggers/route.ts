@@ -248,7 +248,7 @@ async function getAssessmentProgress(clientId?: string) {
     const interactions = await prisma.interaction.findMany({
       where: { 
         clientId,
-        type: 'ASSESSMENT_STEP'
+        type: 'AUTOMATED_EMAIL'
       },
       orderBy: { createdAt: 'desc' },
       take: 1
