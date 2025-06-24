@@ -85,6 +85,13 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
       success: true,
       message: 'Web scraping ativado com sucesso!'
     })
+
+  } catch (error) {
+    return NextResponse.json({
+      error: 'Erro ao ativar web scraping',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function activateEmailMonitoring() {
@@ -133,6 +140,13 @@ Você receberá alertas quando consulados enviarem emails sobre vagas!`)
       success: true,
       message: 'Email monitoring ativado com sucesso!'
     })
+
+  } catch (error) {
+    return NextResponse.json({
+      error: 'Erro ao ativar email monitoring',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function activateAutomation() {

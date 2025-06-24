@@ -137,9 +137,16 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         impact: 'medium',
         source: 'IRCC',
         category: 'selection_criteria',
-        affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class'],
-    affectedPrograms: new Set<string>()
-  }
+        affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class']
+      }
+    ]
+
+    const analysis = {
+      totalChanges: changes.length,
+      categories: {} as Record<string, number>,
+      impact: 'medium',
+      affectedPrograms: new Set<string>()
+    }
 
   // Analisar cada mudança
   changes.forEach(change => {

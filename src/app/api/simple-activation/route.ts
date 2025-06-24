@@ -42,6 +42,13 @@ Sistema pronto para produção!`)
           system: 'hybrid-booking',
           active: true
         })
+        
+      default:
+        return NextResponse.json({
+          error: 'Ação não reconhecida'
+        }, { status: 400 })
+    }
+    
   } catch (error) {
     console.error('Erro na API de ativação:', error)
     return NextResponse.json({ 
