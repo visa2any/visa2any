@@ -131,6 +131,10 @@ export async function POST(request: NextRequest) {
     const referralCode = bodyReferralCode || cookieReferralCode
 
     if (!referralCode || !clientId) {
+      return NextResponse.json(
+        { error: 'Código de referência e ID do cliente são obrigatórios' },
+        { status: 400 }
+      )
     }
 
     // Buscar afiliado
@@ -139,6 +143,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (!affiliate) {
+      return NextResponse.json(
+        { error: 'Afiliado não encontrado' },
+        { status: 404 }
+      )
     }
 
     // Verificar se já existe uma conversão para este cliente
@@ -150,6 +158,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingReferral) {
+      return NextResponse.json({
+        data: { message: 'Conversão já registrada', referralId: existingReferral.id }
+      })
     }
 
     // Calcular comissão
