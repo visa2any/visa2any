@@ -49,18 +49,18 @@ export async function GET(request: NextRequest) {
     const where: any = { isActive: true }
     
     if (country) {
-      where.country = { contains: country, mode: 'insensitive' }
+      where.country = { contains: country }
     }
     
     if (visaType) {
-      where.visaType = { contains: visaType, mode: 'insensitive' }
+      where.visaType = { contains: visaType }
     }
     
     if (search) {
       where.OR = [
-        { country: { contains: search, mode: 'insensitive' } },
-        { visaType: { contains: search, mode: 'insensitive' } },
-        { visaSubtype: { contains: search, mode: 'insensitive' } }
+        { country: { contains: search } },
+        { visaType: { contains: search } },
+        { visaSubtype: { contains: search } }
       ]
     }
 

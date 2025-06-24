@@ -254,7 +254,7 @@ async function getAssessmentProgress(clientId?: string) {
       take: 1
     })
     
-    return interactions[0] ? { step: interactions[0].details?.step || 0 } : null
+    return interactions[0] ? { step: 0 } : null
   } catch {
     return null
   }
