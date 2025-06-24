@@ -120,7 +120,14 @@ export async function POST(request: NextRequest) {
         data: {
           type: 'USER_LOGIN',
           action: 'login',
-          success: true
+          success: true,
+          clientId: null,
+          details: {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            loginTimestamp: new Date().toISOString()
+          }
         }
       })
     } catch (logError) {
