@@ -369,14 +369,14 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
         action: 'send_scheduled_email',
         details: {
           template: template,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Erro desconhecido'
         },
         success: false,
         clientId: clientId
       }
     })
 
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
   }
 }
 

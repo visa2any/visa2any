@@ -179,9 +179,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Erro no login:', error)
-    console.error('Error details:', error.message, error.stack)
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    console.error('Error details:', errorMessage, errorStack)
     return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor', debug: error.message },
+      { success: false, error: 'Erro interno do servidor', debug: errorMessage },
       { status: 500 }
     )
   }
