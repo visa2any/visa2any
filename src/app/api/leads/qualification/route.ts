@@ -62,17 +62,12 @@ export async function POST(request: NextRequest) {
     await prisma.interaction.create({
       data: {
         clientId: client.id,
-        type: 'QUALIFICATION',
-        description: `Lead qualification completed with score ${score}/100`,
-        executedAt: new Date(),
-        success: true,
-        metadata: JSON.stringify({
-          score,
-          category,
-          priority,
-          nextAction,
-          qualificationData: responses
-        })
+        type: 'EMAIL',
+        channel: 'form',
+        direction: 'inbound',
+        subject: 'Lead Qualification',
+        content: `Lead qualification completed with score ${score}/100`,
+        completedAt: new Date()
       }
     })
 
