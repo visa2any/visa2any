@@ -164,6 +164,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     totalChanges: changes.length,
     categories: {} as Record<string, number>,
     impact: 'medium',
+    impactLevel: 'medium' as 'high' | 'medium' | 'low',
     affectedPrograms: new Set<string>(),
     timeline: {
       immediate: 0,
