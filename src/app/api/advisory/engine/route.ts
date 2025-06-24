@@ -93,7 +93,14 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'ADVISORY_CONSULTATION',
         action: `advisory_${validatedData.queryType}`,
-        clientId: validatedData.clientId || null
+        clientId: validatedData.clientId || null,
+        success: true,
+        details: {
+          queryType: validatedData.queryType,
+          country: validatedData.country,
+          visaType: validatedData.visaType,
+          responseGenerated: true
+        }
       }
     })
 
