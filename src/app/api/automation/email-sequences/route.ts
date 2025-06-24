@@ -414,13 +414,11 @@ async function sendEmailNow(emailData: {
         data: {
           clientId: emailData.clientId,
           type: 'EMAIL',
-          description: `Email enviado: ${emailData.subject}`,
-          executedAt: new Date(),
-          success: response.ok,
-          metadata: JSON.stringify({
-            sequence: emailData.sequence,
-            emailTo: emailData.to
-          })
+          channel: 'email',
+          direction: 'outbound',
+          subject: emailData.subject,
+          content: `Email enviado: ${emailData.subject}`,
+          completedAt: new Date()
         }
       })
     }
