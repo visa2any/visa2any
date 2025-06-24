@@ -241,14 +241,20 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
     })
 
     if (response.ok) {
+      return { 
+        success: true,
+        message: 'Webhook testado com sucesso'
+      }
     } else {
       return { 
+        success: false,
         message: `Erro HTTP ${response.status}: ${response.statusText}` 
       }
     }
 
   } catch (error) {
     return { 
+      success: false,
       message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}` 
     }
   }
