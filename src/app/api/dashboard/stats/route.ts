@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
           },
           {
             id: '2',
-            type: 'CONSULTATION_COMPLETED',
+            type: 'EMAIL',
             action: 'Consultoria concluída',
             client: { name: 'João Santos', email: 'joao@email.com' },
             success: true,

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Log do envio
     await prisma.automationLog.create({
       data: {
-        type: 'WHATSAPP_SENT',
+        type: 'WHATSAPP',
         action: 'send_whatsapp',
         details: {
           to: validatedData.to,

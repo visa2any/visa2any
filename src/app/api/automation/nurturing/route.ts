@@ -345,7 +345,7 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
     // Log do envio
     await prisma.automationLog.create({
       data: {
-        type: 'NURTURING_EMAIL_SENT',
+        type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
         details: {
           template: template,
@@ -365,7 +365,7 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
     
     await prisma.automationLog.create({
       data: {
-        type: 'NURTURING_EMAIL_ERROR',
+        type: 'EMAIL',
         action: 'send_scheduled_email',
         details: {
           template: template,

@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     // Log do envio
     await prisma.automationLog.create({
       data: {
-        type: 'EMAIL_SENT',
+        type: 'EMAIL',
         action: 'send_email',
         details: {
           to: validatedData.to,

@@ -368,7 +368,7 @@ async function scheduleEmail(emailData: {
       await prisma.interaction.create({
         data: {
           clientId: emailData.clientId,
-          type: 'EMAIL_SCHEDULED',
+          type: 'AUTOMATED_EMAIL',
           description: `Email agendado: ${emailData.subject}`,
           executedAt: new Date(),
           success: true,
@@ -416,7 +416,7 @@ async function sendEmailNow(emailData: {
       await prisma.interaction.create({
         data: {
           clientId: emailData.clientId,
-          type: 'EMAIL_SENT',
+          type: 'EMAIL',
           description: `Email enviado: ${emailData.subject}`,
           executedAt: new Date(),
           success: response.ok,

@@ -305,7 +305,7 @@ async function handleAutomationCompleted(data: any) {
   // Log automation completion
   await prisma.automationLog.create({
     data: {
-      type: 'AUTOMATION_COMPLETED',
+      type: 'AUTOMATED_EMAIL',
       clientId: clientId || null,
       status: result.success ? 'SUCCESS' : 'FAILED',
       details: {

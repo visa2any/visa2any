@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     // Log da criação
     await prisma.automationLog.create({
       data: {
-        type: 'INTERACTION_CREATED',
+        type: 'EMAIL',
         action: 'create_interaction',
         details: {
           interactionId: interaction.id,
