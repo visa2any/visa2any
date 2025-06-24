@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const existingSequence = await prisma.automationLog.findFirst({
       where: {
         clientId: validatedData.clientId,
-        action: "start_nurturing_sequence",
+        type: 'NURTURING_SEQUENCE',
         createdAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
         }
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     // Log do início da sequência
     await prisma.automationLog.create({
       data: {
-        action: "start_nurturing_sequence",
+        type: 'NURTURING_SEQUENCE',
         action: 'start_sequence',
         clientId: validatedData.clientId
       }
@@ -120,13 +120,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const clientId = searchParams.get('clientId')
 
-    const whereClause = {
-      action: "start_nurturing_sequence",
-      ...(clientId && { clientId })
-    }
-
     const sequences = await prisma.automationLog.findMany({
-      where: whereClause,
+      where: {
+        type: 'NURTURING_SEQUENCE',
+        ...(clientId && { clientId })
+      },
       orderBy: { createdAt: 'desc' },
       take: 50,
       include: {
@@ -339,9 +337,10 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
     
     await prisma.automationLog.create({
       data: {
-        type: 'EMAIL',
+        type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
-        clientId: clientId
+        clientId: clientId,
+        success: false
       }
     })
 

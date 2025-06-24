@@ -83,8 +83,8 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Web scraping ativado com sucesso!',
-  }
+      message: 'Web scraping ativado com sucesso!'
+    })
 }
 
 async function activateEmailMonitoring() {
@@ -131,8 +131,8 @@ Você receberá alertas quando consulados enviarem emails sobre vagas!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Email monitoring ativado com sucesso!',
-  }
+      message: 'Email monitoring ativado com sucesso!'
+    })
 }
 
 async function activateAutomation() {
@@ -153,8 +153,8 @@ Máxima eficiência na detecção de slots!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Browser automation ativado com sucesso!',
-  }
+      message: 'Browser automation ativado com sucesso!'
+    })
 }
 
 async function deactivateAll() {
