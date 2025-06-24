@@ -86,8 +86,8 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-6 text-yellow-400">💰 Parceiros</h3>
             <ul className="space-y-3 text-gray-300">
               <li><a href="/afiliados" className="hover:text-yellow-400 transition-colors hover:underline font-medium">🤝 Seja um Afiliado</a></li>
-              <li><a href="/afiliados/portal" className="hover:text-white transition-colors hover:underline">📊 Portal do Afiliado</a></li>
-              <li><a href="/afiliados/admin" className="hover:text-white transition-colors hover:underline">⚙️ Admin Afiliados</a></li>
+              <li><a href="/afiliado/dashboard" className="hover:text-white transition-colors hover:underline">📊 Portal do Afiliado</a></li>
+              <li><a href="/admin/affiliates" className="hover:text-white transition-colors hover:underline">⚙️ Admin Afiliados</a></li>
               <li className="text-xs text-yellow-300 font-medium">💎 Até 30% de comissão</li>
               <li className="text-xs text-gray-400">🚀 Material de marketing</li>
             </ul>

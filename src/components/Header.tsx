@@ -345,15 +345,15 @@ export default function Header() {
                       </div>
                       
                       <div className="p-2">
-                        <a href="/cliente/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <a href="/cliente" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
                           <User className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-700">Meu Perfil</span>
                         </a>
-                        <a href="/cliente/configuracoes" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <a href="/cliente" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
                           <Settings className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-700">Configurações</span>
                         </a>
-                        <a href="/cliente/processos" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <a href="/cliente/documentos" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
                           <Globe className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-700">Meus Processos</span>
                         </a>
