@@ -150,7 +150,7 @@ function detectIntent(message: string) {
   const lowercaseMessage = message.toLowerCase()
   const intents = getSofiaIntents()
   
-  let bestMatch = { name: 'unknown', confidence: 0, keywords: [] }
+  let bestMatch: { name: string; confidence: number; keywords: string[] } = { name: 'unknown', confidence: 0, keywords: [] }
   
   for (const [intentName, intentData] of Object.entries(intents)) {
     let score = 0
