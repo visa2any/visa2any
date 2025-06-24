@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (validatedData.clientId) {
       await prisma.interaction.create({
         data: {
-          type: 'AI_CHAT',
+          type: 'AUTOMATED_EMAIL',
           channel: 'chat',
           direction: 'inbound',
           content: validatedData.message,
