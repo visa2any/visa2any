@@ -70,9 +70,15 @@ export async function POST(request: NextRequest) {
     await prisma.automationLog.create({
       data: {
         clientId,
-        type: 'analysis_completed',
-        action: `Score: ${score}% - Trigger: ${automationAction}`,
-        success: true
+        type: 'ANALYSIS_COMPLETED',
+        action: `analysis_saved`,
+        success: true,
+        details: {
+          score: score,
+          automationAction: automationAction,
+          analysisType: 'eligibility_analysis',
+          triggeredAt: new Date().toISOString()
+        }
       }
     })
 
