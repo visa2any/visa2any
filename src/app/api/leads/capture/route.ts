@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
         channel: getChannelFromSource(validatedData.source),
         direction: 'inbound',
         content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
+        response: {
           userAgent: request.headers.get('user-agent'),
           ip: ip,
           referrer: validatedData.referrer,

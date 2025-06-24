@@ -155,6 +155,13 @@ Máxima eficiência na detecção de slots!`)
       success: true,
       message: 'Browser automation ativado com sucesso!'
     })
+
+  } catch (error) {
+    return NextResponse.json({
+      error: 'Erro ao ativar automation',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function deactivateAll() {
