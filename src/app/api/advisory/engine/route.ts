@@ -201,7 +201,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           seasonalVariations: 'Higher draws in Q4',
           currentPriorities: 'Healthcare workers, IT professionals, trades'
         }
-      }
+      },
       'WORK': {
         system: 'LMIA + Work Permit',
         averageProcessingTime: '4-6 months',
@@ -212,7 +212,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Language proficiency'
         ]
       }
-    }
+    },
     
     'Australia': {
       'SKILLED': {
@@ -243,7 +243,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           currentPriorities: 'Engineers, nurses, IT specialists'
         }
       }
-    }
+    },
     
     'Portugal': {
       'INVESTMENT': {
@@ -273,7 +273,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Criminal background check'
         ]
       }
-    }
+    },
     
     'United States': {
       'WORK': {
@@ -297,7 +297,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           currentPriorities: 'STEM fields, healthcare'
         }
       }
-    }
+    },
     
     'Germany': {
       'SKILLED': {

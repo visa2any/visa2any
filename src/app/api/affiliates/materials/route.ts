@@ -51,7 +51,7 @@ const defaultMaterials = [
     imageUrl: '/images/banners/banner-eua.jpg',
     previewUrl: '/materials/preview/banner-eua',
     isActive: true
-  }
+  },
 
   // Posts para Redes Sociais
   {

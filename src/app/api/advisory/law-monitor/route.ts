@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: validatedData.country
+        country: validatedData.country,
         visaType: validatedData.visaType,
         recentChanges: recentChanges,
         monitoring: {

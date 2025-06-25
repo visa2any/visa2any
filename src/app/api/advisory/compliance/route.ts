@@ -239,7 +239,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
           }
         ]
       }
-    }
+    },
     
     'Australia': {
       'SKILLED': {
@@ -273,7 +273,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
           }
         ]
       }
-    }
+    },
     
     'Portugal': {
       'INVESTMENT': {
@@ -307,7 +307,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             minimum: '€30,000 coverage'
           }
         ]
-      }
+      },
       'WORK': {
         mandatory: [
           {
