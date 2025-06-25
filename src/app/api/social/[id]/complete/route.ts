@@ -32,5 +32,5 @@ export async function PATCH(,
       { error: 'Erro ao atualizar status' },
       { status: 500 }
     ),
-  },
+  }
 }

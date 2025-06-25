@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     if (!email || !name || !responses) {
       return NextResponse.json({
         error: 'Dados obrigatórios faltando',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Verificar se já existe cliente com este email
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-      }),
+      })
     }
 
     // Registrar interação da qualificação
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Lead frio - nurturing com conteúdo
       await createFollowUpTask(client.id, 'SEND_LEAD_MAGNETS', 'Enviar materiais educativos', 1)
-      await createFollowUpTask(client.id, 'ADD_TO_NURTURING', 'Adicionar à sequência de nurturing', 2),
+      await createFollowUpTask(client.id, 'ADD_TO_NURTURING', 'Adicionar à sequência de nurturing', 2)
     }
 
     // Trigger automações de email
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 async function createFollowUpTask(clientId: string, type: string, description: string, priority: number) {
@@ -137,7 +137,7 @@ async function createFollowUpTask(clientId: string, type: string, description: s
     
   } catch (error) {
     console.error('Erro ao criar tarefa de follow-up:', error),
-  },
+  }
 }
 
 async function triggerEmailAutomation(client: any, category: string, responses: any) {
@@ -150,7 +150,7 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
       responses,
       destinationCountry: responses.country,
       urgency: responses.urgency,
-      budget: responses.budget,
+      budget: responses.budget
     }
 
     // Trigger automação baseada na categoria
@@ -180,10 +180,10 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
           sequence: 'cold_lead_education',
           ...automationData,
         }),
-      }),
+      })
     }
 
   } catch (error) {
     console.error('Erro ao trigger automação de email:', error),
-  },
+  }
 }

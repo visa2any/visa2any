@@ -12,19 +12,19 @@ async function getCustomerFromToken(request: NextRequest) {
     const token = request.cookies.get('customer-token')?.value
     
     if (!token) {
-      return null,
+      return null
     }
 
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
-      return null,
+      return null
     }
 
     const payload = jwt.verify(token, jwtSecret) as any
     
     if (payload.type !== 'customer') {
-      return null,
+      return null
     }
 
     return await prisma.client.findUnique({
@@ -45,11 +45,11 @@ async function getCustomerFromToken(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
         },
       },
-    }),
+    })
   } catch (error) {
     console.error('Erro ao buscar cliente:', error)
     return null,
-  },
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     if (!customer) {
       return NextResponse.json({
         error: 'Cliente não encontrado ou não autenticado',
-      }, { status: 401 }),
+      }, { status: 401 })
     }
 
     // Calcular progresso baseado no status
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       'DOCUMENTS_PENDING': 60,
       'SUBMITTED': 80,
       'APPROVED': 95,
-      'COMPLETED': 100,
+      'COMPLETED': 100
     }
 
     const progress = progressMap[customer.status] || 10
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       name: 'Ana Silva',
       email: 'ana.silva@visa2any.com',
       phone: '+55 11 99999-9999',
-      avatar: null,
+      avatar: null
     }
 
     // Simular próximo milestone
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
              customer.status === 'SUBMITTED' ? 'Acompanhamento da Aplicação' :
              customer.status === 'APPROVED' ? 'Preparação para Viagem' : 'Processo Concluído',
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
-      description: 'Próxima etapa do seu processo de imigração',
+      description: 'Próxima etapa do seu processo de imigração'
     }
 
     // Simular timeline
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
         description: 'Recebimento da aprovação oficial',
         date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         status: ['APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                customer.status === 'SUBMITTED' ? 'current' : 'upcoming',
+                customer.status === 'SUBMITTED' ? 'current' : 'upcoming'
       }
     ]
 
@@ -171,9 +171,9 @@ export async function GET(request: NextRequest) {
           name: 'Diploma Universitário',
           status: 'pending',
           uploadDate: 'Aguardando envio',
-          comments: null,
+          comments: null
         }
-      ),
+      )
     }
 
     // Simular pagamentos
@@ -195,7 +195,7 @@ export async function GET(request: NextRequest) {
         status: 'pending',
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         paidDate: undefined,
-      }),
+      })
     }
 
     // Simular notificações
@@ -214,7 +214,7 @@ export async function GET(request: NextRequest) {
         message: 'Complete seu perfil para uma análise mais precisa.',
         type: 'info',
         date: new Date().toLocaleDateString('pt-BR'),
-        read: false,
+        read: false
       }
     ]
 
@@ -234,7 +234,7 @@ export async function GET(request: NextRequest) {
       documents,
       timeline,
       payments,
-      notifications,
+      notifications
     }
 
     return NextResponse.json({
@@ -246,5 +246,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }

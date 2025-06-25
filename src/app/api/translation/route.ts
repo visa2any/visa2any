@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         languages,
         total: Object.keys(languages).length,
         message: 'Idiomas suportados recuperados com sucesso',
-      }),
+      })
     }
 
     if (action === 'translators') {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         message: translators.length > 0 
           ? `${translators.length} tradutores encontrados` 
           : 'Nenhum tradutor disponível para os idiomas especificados',
-      }),
+      })
     }
 
     return NextResponse.json(
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST - Traduzir texto ou documento
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' },
           { status: 400 }
-        ),
+        )
       }
 
       const result = await translationService.translateText(translationRequest)
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       { error: 'Dados inválidos' },
       { status: 400 }
     ),
-      },
+      }
     }
 
     if (type === 'document') {
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
             { error: `Campo ${field} é obrigatório para tradução de documento` },
             { status: 400 }
           ),
-        },
+        }
       }
 
       const result = await translationService.translateDocument(documentRequest)
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       { error: 'Dados inválidos' },
       { status: 400 }
     ),
-      },
+      }
     }
 
     return NextResponse.json(
@@ -146,5 +146,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

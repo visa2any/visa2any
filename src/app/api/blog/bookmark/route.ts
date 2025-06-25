@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!authToken) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Verify token
@@ -19,17 +19,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
     }
 
     let userId: string
     try {
       const decoded = jwt.verify(authToken, jwtSecret) as any
-      userId = decoded.userId,
+      userId = decoded.userId
     } catch {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     const body = await request.json()
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     if (action === 'add') {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
           userId,
           postId,
         },
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -80,5 +80,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

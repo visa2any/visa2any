@@ -30,11 +30,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (clientId) {
-      where.clientId = clientId,
+      where.clientId = clientId
     }
     
     if (type && type !== 'ALL') {
-      where.type = type,
+      where.type = type
     }
 
     // Buscar interações
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/interactions - Criar nova interação
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Criar interação
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar interação:', error)
@@ -155,5 +155,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

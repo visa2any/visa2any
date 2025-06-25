@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
           error: 'Nome e telefone são obrigatórios',
         },
         { status: 400 }
-      ),
+      )
     }
 
     // Limpar e validar telefone
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
           error: 'Telefone inválido',
         },
         { status: 400 }
-      ),
+      )
     }
 
     // Verificar se já existe
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           name: updatedSubscriber.name,
           isActive: updatedSubscriber.isActive,
         },
-      }),
+      })
     }
 
     // Criar novo assinante
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para enviar mensagem de boas-vindas (placeholder)

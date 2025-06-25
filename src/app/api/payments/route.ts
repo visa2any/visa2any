@@ -27,11 +27,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (clientId) {
-      where.clientId = clientId,
+      where.clientId = clientId
     }
     
     if (status && status !== 'ALL') {
-      where.status = status,
+      where.status = status
     }
 
     // Buscar pagamentos
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
           byStatus: statusStats.reduce((acc, stat) => {
             acc[stat.status] = {
               count: stat._count.status,
-              amount: stat._sum.amount || 0,
+              amount: stat._sum.amount || 0
             }
             return acc,
           }, {} as Record<string, any>),
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/payments - Criar pagamento
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Gerar ID de transação único
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar pagamento:', error)
@@ -185,14 +185,14 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para gerar ID de transação
 function generateTransactionId(): string {
   const timestamp = Date.now().toString()
   const random = Math.random().toString(36).substring(2, 10)
-  return `TXN_${timestamp}_${random}`.toUpperCase(),
+  return `TXN_${timestamp}_${random}`.toUpperCase()
 }
 
 // Função para gerar link de pagamento (simulado)
@@ -225,12 +225,12 @@ async function generatePaymentLink(payment: any) {
       url: `${baseUrl}/api/payments/${payment.id}/paypal`,
       methods: ['PayPal', 'Credit Card'],
     },
-  },
+  }
 }
 
 // Gerar chave PIX simulada
 function generatePixKey(): string {
-  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`,
+  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`
 }
 
 // POST /api/payments/packages - Criar pacotes de pagamento pré-definidos
@@ -321,13 +321,13 @@ export async function PUT(request: NextRequest) {
             '30-day follow-up',
             'Priority support'
           ],
-          popular: true,
+          popular: true
         }
       ]
 
       return NextResponse.json({
         data: { packages },
-      }),
+      })
     }
 
     return NextResponse.json(
@@ -341,5 +341,5 @@ export async function PUT(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

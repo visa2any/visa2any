@@ -31,5 +31,5 @@ export async function GET() {
       { error: 'Erro ao buscar posts pendentes' },
       { status: 500 }
     ),
-  },
+  }
 }

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
             select: { type: true, status: true },
           },
         },
-      }),
+      })
     }
 
     // Processar mensagem com Sofia IA
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
           clientId: validatedData.clientId,
           completedAt: new Date(),
         },
-      }),
+      })
     }
 
     // Log da conversa
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro no chat com Sofia:', error)
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/ai/chat/intents - Listar intenções disponíveis
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função principal da Sofia IA
@@ -137,7 +137,7 @@ async function processSofiaMessage(message: string, clientContext: any, context:
     suggestions: response.suggestions,
     actions: response.actions,
     conversationId: generateConversationId(),
-  },
+  }
 }
 
 // Detectar intenção da mensagem
@@ -156,7 +156,7 @@ function detectIntent(message: string) {
       if (lowercaseMessage.includes(keyword.toLowerCase())) {
         score += 1
         matchedKeywords.push(keyword),
-      },
+      }
     }
     
     // Verificar patterns
@@ -164,7 +164,7 @@ function detectIntent(message: string) {
       const regex = new RegExp(pattern, 'i')
       if (regex.test(lowercaseMessage)) {
         score += 2,
-      },
+      }
     }
     
     // Calcular confiança
@@ -176,10 +176,10 @@ function detectIntent(message: string) {
         confidence,
         keywords: matchedKeywords,
       },
-    },
+    }
   }
   
-  return bestMatch,
+  return bestMatch
 }
 
 // Gerar resposta da Sofia
@@ -197,7 +197,7 @@ async function generateSofiaResponse(intent: any, message: string, clientContext
           'Quanto custa o processo?',
           'Quanto tempo demora?'
         ],
-        actions: [],
+        actions: []
       }
     
     case 'eligibility_question':
@@ -230,7 +230,7 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
               clientId: clientContext.id,
             }],
           },
-        },
+        }
       }
       return {
         message: `Claro! Para analisar sua elegibilidade, preciso conhecer melhor seu perfil. 
@@ -249,13 +249,13 @@ Essas informações me ajudam a dar uma análise mais precisa!`,
           'Portugal',
           'Estados Unidos'
         ],
-        actions: [],
+        actions: []
       }
     
     case 'documents_question':
       const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)
       if (country) {
-        return await getDocumentsResponse(country, clientName),
+        return await getDocumentsResponse(country, clientName)
       }
       return {
         message: `Para te ajudar com os documentos, preciso saber para qual país você está aplicando. 
@@ -269,7 +269,7 @@ Os documentos variam significativamente entre países:
 
 Para qual país você está interessado?`,
         suggestions: ['Canadá', 'Austrália', 'Portugal', 'Estados Unidos'],
-        actions: [],
+        actions: []
       }
     
     case 'cost_question':
@@ -308,7 +308,7 @@ Qual pacote faz mais sentido para você?`,
         actions: [{
           type: 'show_pricing',
           label: 'Ver Detalhes dos Pacotes',
-        }],
+        }]
       }
     
     case 'timeline_question':
@@ -338,7 +338,7 @@ Para qual país você está pensando?`,
           'Austrália - quero detalhes',
           'Estados Unidos'
         ],
-        actions: [],
+        actions: []
       }
     
     case 'contact_human':
@@ -370,7 +370,7 @@ Qual opção prefere?`,
         actions: [{
           type: 'contact_specialist',
           label: 'Falar com Especialista Agora',
-        }],
+        }]
       }
     
     case 'complaint':
@@ -399,7 +399,7 @@ Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução
         actions: [{
           type: 'escalate_complaint',
           label: 'Falar com Gerente Agora',
-        }],
+        }]
       }
     
     default:
@@ -424,7 +424,7 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
         ],
         actions: [],
       },
-  },
+  }
 }
 
 // Obter resposta sobre documentos por país
@@ -468,7 +468,7 @@ Quer uma análise completa do seu perfil?`,
         type: 'start_analysis',
         label: 'Iniciar Análise Completa',
       }],
-    },
+    }
   }
   
   // Resposta genérica se não tem dados específicos
@@ -492,7 +492,7 @@ ${genericDocs}
       type: 'start_analysis',
       label: 'Análise Gratuita Agora',
     }],
-  },
+  }
 }
 
 // Documentos genéricos por país
@@ -525,14 +525,14 @@ function getGenericDocuments(country: string): string {
 - Formulários específicos (I-140, etc)
 - Evidências de habilidade extraordinária
 - Cartas de recomendação
-- Histórico profissional detalhado`,
+- Histórico profissional detalhado`
   }
   
   return genericDocs[country] || `- Passaporte válido
 - Documentos educacionais
 - Experiência profissional
 - Antecedentes criminais
-- Comprovante financeiro`,
+- Comprovante financeiro`
 }
 
 // Extrair país da mensagem
@@ -546,10 +546,10 @@ function extractCountryFromMessage(message: string): string | null {
              country === 'australia' ? 'austrália' :
              country === 'eua' || country === 'usa' ? 'estados unidos' : 
              country,
-    },
+    }
   }
   
-  return null,
+  return null
 }
 
 // Mapear status para label
@@ -562,14 +562,14 @@ function getStatusLabel(status: string): string {
     'DOCUMENTS_PENDING': 'Docs Pendentes',
     'SUBMITTED': 'Submetido',
     'APPROVED': 'Aprovado',
-    'COMPLETED': 'Concluído',
+    'COMPLETED': 'Concluído'
   }
-  return labels[status] || status,
+  return labels[status] || status
 }
 
 // Gerar ID de conversa
 function generateConversationId(): string {
-  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
 
 // Intenções da Sofia IA
@@ -609,5 +609,5 @@ function getSofiaIntents() {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
       patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora'],
     },
-  },
+  }
 }

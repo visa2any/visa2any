@@ -15,7 +15,7 @@ export async function GET(,
       return NextResponse.json(
         { error: 'Parâmetro reference é obrigatório' },
         { status: 400 }
-      ),
+      )
     }
 
     const status = await partnerIntegrationService.checkStatus(partnerId, reference)
@@ -36,5 +36,5 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

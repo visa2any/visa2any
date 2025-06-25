@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
           lastActivityAt: new Date(),
         },
       })
-      isNewLead = true,
+      isNewLead = true
     }
 
     // Calcular lead score baseado em dados disponíveis
@@ -112,11 +112,11 @@ export async function POST(request: NextRequest) {
 
     // Disparar automações baseadas no lead score
     if (isNewLead) {
-      await triggerWelcomeSequence(client.id, validatedData.leadMagnet),
+      await triggerWelcomeSequence(client.id, validatedData.leadMagnet)
     }
 
     if (leadScore >= 70) {
-      await triggerHighPriorityActions(client.id, leadScore),
+      await triggerHighPriorityActions(client.id, leadScore)
     }
 
     // Resposta baseada no lead score
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       responseMessage = 'Lead qualificado capturado'
       recommendations = ['nurture_sequence', 'assessment_offer'],
     } else {
-      recommendations = ['basic_nurture', 'educational_content'],
+      recommendations = ['basic_nurture', 'educational_content']
     }
 
     return NextResponse.json({
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao capturar lead:', error)
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/leads/capture/stats - Estatísticas de leads
@@ -230,7 +230,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Calcular score do lead baseado em fatores
@@ -253,7 +253,7 @@ function calculateLeadScore(factors: {
     'organic': 20,
     'paid': 35,
     'social': 25,
-    'email': 45,
+    'email': 45
   }
   score += sourceScores[factors.source || ''] || 10
 
@@ -264,7 +264,7 @@ function calculateLeadScore(factors: {
     'calculadora-tempo': 35,
     'guia-entrevista': 30,
     'planilha-financeira': 40,
-    'kit-emergencia': 50,
+    'kit-emergencia': 50
   }
   score += magnetScores[factors.leadMagnet || ''] || 0
 
@@ -277,7 +277,7 @@ function calculateLeadScore(factors: {
   if (factors.utmSource === 'facebook') score += 8
 
   // Normalizar para 0-100
-  return Math.min(score, 100),
+  return Math.min(score, 100)
 }
 
 // Determinar canal baseado na fonte
@@ -291,9 +291,9 @@ function getChannelFromSource(source: string): string {
     'organic': 'organic',
     'paid': 'paid_ads',
     'social': 'social_media',
-    'email': 'email',
+    'email': 'email'
   }
-  return channelMap[source] || 'website',
+  return channelMap[source] || 'website'
 }
 
 // Disparar sequência de boas-vindas
@@ -318,7 +318,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
     
   } catch (error) {
     console.error('Erro ao disparar sequência de boas-vindas:', error),
-  },
+  }
 }
 
 // Disparar ações para leads de alta prioridade
@@ -343,5 +343,5 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
     
   } catch (error) {
     console.error('Erro ao processar lead de alta prioridade:', error),
-  },
+  }
 }

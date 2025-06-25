@@ -34,14 +34,14 @@ export async function GET(,
     if (!payment) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Gerar informações de pagamento baseado no status
     let paymentInfo: any = {}
     
     if (payment.status === 'PENDING') {
-      paymentInfo = await generatePaymentInfo(payment),
+      paymentInfo = await generatePaymentInfo(payment)
     }
 
     return NextResponse.json({
@@ -57,7 +57,7 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT /api/payments/[id] - Atualizar pagamento
@@ -78,7 +78,7 @@ export async function PUT(,
     if (!existingPayment) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Atualizar pagamento
@@ -101,7 +101,7 @@ export async function PUT(,
 
     // Se pagamento foi confirmado, processar automações
     if (validatedData.status === 'COMPLETED' && existingPayment.status !== 'COMPLETED') {
-      await processPaymentSuccess(payment),
+      await processPaymentSuccess(payment)
     }
 
     // Log da atualização
@@ -131,7 +131,7 @@ export async function PUT(,
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao atualizar pagamento:', error)
@@ -139,7 +139,7 @@ export async function PUT(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/payments/[id]/webhook - Webhook para notificações de pagamento
@@ -160,7 +160,7 @@ export async function POST(,
     if (!payment) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Mapear status do provider para nosso status
@@ -184,7 +184,7 @@ export async function POST(,
         break
       case 'refunded':
         newStatus = 'REFUNDED'
-        break,
+        break
     }
 
     // Atualizar pagamento
@@ -200,7 +200,7 @@ export async function POST(,
 
     // Se pagamento foi confirmado, processar automações
     if (newStatus === 'COMPLETED' && payment.status !== 'COMPLETED') {
-      await processPaymentSuccess(updatedPayment),
+      await processPaymentSuccess(updatedPayment)
     }
 
     // Log do webhook
@@ -227,7 +227,7 @@ export async function POST(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para gerar informações de pagamento
@@ -276,10 +276,10 @@ async function generatePaymentInfo(payment: any) {
           type: 'BANK_TRANSFER',
           name: 'Bank Transfer (ACH)',
           fee: 0.80,
-          processingTime: '3-5 business days',
+          processingTime: '3-5 business days'
         }
       ],
-    },
+    }
   }
 
   return {
@@ -289,10 +289,10 @@ async function generatePaymentInfo(payment: any) {
         type: 'PAYPAL',
         name: 'PayPal',
         fee: payment.amount * 0.034 + 0.30, // 3.4% + fee
-        processingTime: 'Instant',
+        processingTime: 'Instant'
       }
     ],
-  },
+  }
 }
 
 // Calcular opções de parcelamento
@@ -318,10 +318,10 @@ function calculateInstallments(amount: number) {
       text: i === 1 
         ? `1x R$ ${amount.toFixed(2)} sem juros`
         : `${i}x R$ ${installmentAmount.toFixed(2)} ${interestRate > 0 ? 'com juros' : 'sem juros'}`,
-    }),
+    })
   }
 
-  return installments,
+  return installments
 }
 
 // Processar automações quando pagamento é confirmado
@@ -360,7 +360,7 @@ async function processPaymentSuccess(payment: any) {
       // Criar consultoria baseada no valor pago
       let consultationType = 'HUMAN_CONSULTATION'
       if (payment.amount >= 1000) {
-        consultationType = 'VIP_SERVICE',
+        consultationType = 'VIP_SERVICE'
       }
 
       await prisma.consultation.create({
@@ -371,7 +371,7 @@ async function processPaymentSuccess(payment: any) {
           scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Agendar para amanhã
           notes: `Consultoria criada automaticamente após confirmação do pagamento de ${payment.currency} ${payment.amount}`,
         },
-      }),
+      })
     }
 
     // 4. Log do processamento
@@ -404,5 +404,5 @@ async function processPaymentSuccess(payment: any) {
         success: true,
       },
     }),
-  },
+  }
 }

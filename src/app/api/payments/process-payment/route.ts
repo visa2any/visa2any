@@ -4,7 +4,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago'
 // Configurar MercadoPago
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
 if (!accessToken) {
-  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado'),
+  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
 }
 
 const client = new MercadoPagoConfig({
@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'Dados obrigatórios ausentes',
         details: 'selectedPaymentMethod, formData e preferenceId são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     if (!formData.transaction_amount || formData.transaction_amount <= 0) {
       return NextResponse.json({
         error: 'Valor inválido',
         details: 'transaction_amount deve ser maior que zero',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Criar dados do pagamento com base no método selecionado
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       transaction_amount: formData.transaction_amount,
       description: 'Consultoria Express - Visa2Any',
       external_reference: preferenceId,
-      payment_method_id: selectedPaymentMethod,
+      payment_method_id: selectedPaymentMethod
     }
 
     // Configurar dados específicos por método de pagamento
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     } else if (selectedPaymentMethod === 'bolbradesco' || selectedPaymentMethod === 'pec') {
       // Boleto
       paymentData.payment_method_id = selectedPaymentMethod
-      console.log('🎫 Processando boleto'),
+      console.log('🎫 Processando boleto')
     }
 
     // Adicionar dados do pagador se disponíveis
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         first_name: formData.payer.first_name,
         last_name: formData.payer.last_name,
         identification: formData.payer.identification,
-      },
+      }
     }
 
     console.log('📋 Dados do pagamento:', JSON.stringify(paymentData, null, 2))
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     if ((selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer')) {
       console.log('🎯 PIX - Dados de interação:', result.point_of_interaction)
       console.log('🎯 PIX - QR Code:', result.point_of_interaction?.transaction_data?.qr_code ? 'Presente' : 'Ausente')
-      console.log('🎯 PIX - QR Code Base64:', result.point_of_interaction?.transaction_data?.qr_code_base64 ? 'Presente' : 'Ausente'),
+      console.log('🎯 PIX - QR Code Base64:', result.point_of_interaction?.transaction_data?.qr_code_base64 ? 'Presente' : 'Ausente')
     }
 
     return NextResponse.json({
@@ -106,5 +106,5 @@ export async function POST(request: NextRequest) {
       errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       paymentData: JSON.stringify(paymentData, null, 2),
     }, { status: 500 }),
-  },
+  }
 }

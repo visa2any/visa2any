@@ -10,7 +10,7 @@ interface WebhookEvent {
   event: string,
   data: any,
   timestamp: string
-  signature?: string,
+  signature?: string
 }
 
 interface WebhookEndpoint {
@@ -19,7 +19,7 @@ interface WebhookEndpoint {
   events: string[],
   secret: string,
   active: boolean
-  affiliateId?: string,
+  affiliateId?: string
 }
 
 // Simulação de storage de webhooks (em produção, usar Redis ou banco)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     if (!affiliateId) {
       return NextResponse.json({
         error: 'ID do afiliado é obrigatório',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const endpoints = webhookEndpoints.get(affiliateId) || []
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 // POST - Configurar novo webhook
@@ -63,16 +63,16 @@ export async function POST(request: NextRequest) {
     if (!affiliateId || !webhookUrl || !Array.isArray(events)) {
       return NextResponse.json({
         error: 'affiliateId, url e events são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Validar URL
     try {
-      new URL(webhookUrl),
+      new URL(webhookUrl)
     } catch {
       return NextResponse.json({
         error: 'URL inválida',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Validar eventos
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     if (invalidEvents.length > 0) {
       return NextResponse.json({
         error: `Eventos inválidos: ${invalidEvents.join(', ')}`,
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const endpoint: WebhookEndpoint = {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       events,
       secret: secret || generateWebhookSecret(),
       active: true,
-      affiliateId,
+      affiliateId
     }
 
     // Adicionar ao storage
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 // PUT - Atualizar webhook
@@ -134,7 +134,7 @@ export async function PUT(request: NextRequest) {
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
         error: 'affiliateId e webhookId são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const endpoints = webhookEndpoints.get(affiliateId) || []
@@ -143,7 +143,7 @@ export async function PUT(request: NextRequest) {
     if (index === -1) {
       return NextResponse.json({
         error: 'Webhook não encontrado',
-      }, { status: 404 }),
+      }, { status: 404 })
     }
 
     // Atualizar endpoint
@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 // DELETE - Remover webhook
@@ -175,7 +175,7 @@ export async function DELETE(request: NextRequest) {
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
         error: 'affiliateId e webhookId são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const endpoints = webhookEndpoints.get(affiliateId) || []
@@ -184,7 +184,7 @@ export async function DELETE(request: NextRequest) {
     if (filteredEndpoints.length === endpoints.length) {
       return NextResponse.json({
         error: 'Webhook não encontrado',
-      }, { status: 404 }),
+      }, { status: 404 })
     }
 
     webhookEndpoints.set(affiliateId, filteredEndpoints)
@@ -198,12 +198,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 // Função para gerar secret do webhook
 function generateWebhookSecret(): string {
-  return crypto.randomBytes(32).toString('hex'),
+  return crypto.randomBytes(32).toString('hex')
 }
 
 // Função para gerar assinatura do webhook
@@ -211,7 +211,7 @@ function generateSignature(payload: string, secret: string): string {
   return crypto
     .createHmac('sha256', secret)
     .update(payload)
-    .digest('hex'),
+    .digest('hex')
 }
 
 // Função para testar webhook
@@ -224,7 +224,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
         message: 'Este é um evento de teste para verificar se seu webhook está funcionando corretamente.',
         timestamp: new Date().toISOString(),
       },
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     }
 
     const payload = JSON.stringify(testEvent)
@@ -250,7 +250,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
       return { 
         success: false,
         message: `Erro HTTP ${response.status}: ${response.statusText}` ,
-      },
+      }
     }
 
   } catch (error) {
@@ -258,7 +258,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
       success: false,
       message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}` ,
     },
-  },
+  }
 }
 
 // Função para enviar evento para webhooks
@@ -274,14 +274,14 @@ async function sendWebhookEvent(,
     )
 
     if (relevantEndpoints.length === 0) {
-      return,
+      return
     }
 
     const webhookEvent: WebhookEvent = {
       id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       event: eventType,
       data: eventData,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     }
 
     // Enviar para todos os endpoints relevantes
@@ -303,7 +303,7 @@ async function sendWebhookEvent(,
         })
 
         if (!response.ok) {
-          console.error(`Erro ao enviar webhook para ${endpoint.url}: ${response.status}`),
+          console.error(`Erro ao enviar webhook para ${endpoint.url}: ${response.status}`)
         }
 
       } catch (error) {
@@ -315,7 +315,7 @@ async function sendWebhookEvent(,
 
   } catch (error) {
     console.error('Erro ao enviar webhooks:', error),
-  },
+  }
 }
 
 // Funções específicas para diferentes tipos de eventos
@@ -329,7 +329,7 @@ async function sendConversionWebhook(affiliateId: string, conversionData: any) {
     commissionValue: conversionData.commissionValue,
     referralCode: conversionData.referralCode,
     timestamp: new Date().toISOString(),
-  }),
+  })
 }
 
 async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
@@ -341,7 +341,7 @@ async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
     description: commissionData.description,
     dueDate: commissionData.dueDate,
     timestamp: new Date().toISOString(),
-  }),
+  })
 }
 
 async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
@@ -353,7 +353,7 @@ async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
     transactionId: paymentData.transactionId,
     processedAt: paymentData.processedAt,
     timestamp: new Date().toISOString(),
-  }),
+  })
 }
 
 async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
@@ -364,7 +364,7 @@ async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
     newCommissionRate: tierData.newCommissionRate,
     reason: tierData.reason,
     timestamp: new Date().toISOString(),
-  }),
+  })
 }
 
 async function sendClickWebhook(affiliateId: string, clickData: any) {
@@ -378,5 +378,5 @@ async function sendClickWebhook(affiliateId: string, clickData: any) {
     source: clickData.source,
     campaign: clickData.campaign,
     timestamp: new Date().toISOString(),
-  }),
+  })
 }

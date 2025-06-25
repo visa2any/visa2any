@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 }),
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
     // Buscar todas as consultorias
@@ -87,5 +87,5 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro no export de consultorias:', error)
     return NextResponse.json({ error: 'Erro interno' }, { status: 500 }),
-  },
+  }
 }

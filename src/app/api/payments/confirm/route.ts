@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, RATE_LIMITS.checkout)
   
   if (!rateLimitResult.success) {
-    return createRateLimitResponse(rateLimitResult.resetTime),
+    return createRateLimitResponse(rateLimitResult.resetTime)
   }
   
   try {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Atualizar status do pagamento no banco
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
             clientId: payment.clientId,
             amount: payment.amount,
             transactionId: payment_id,
-          }),
+          })
         }
 
         return NextResponse.json({
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
             status: status === 'approved' ? 'COMPLETED' : 'FAILED',
           },
         }),
-      },
+      }
     }
 
     // Se não encontrou o pagamento, criar log
@@ -103,5 +103,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

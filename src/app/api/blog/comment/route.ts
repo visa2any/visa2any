@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!authToken) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Verify token
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
     }
 
     let userId: string
@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
     try {
       const decoded = jwt.verify(authToken, jwtSecret) as any
       userId = decoded.userId
-      userEmail = decoded.email,
+      userEmail = decoded.email
     } catch {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     const body = await request.json()
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Create comment
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Error adding blog comment:', error)
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/blog/comment - Get comments for a blog post
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     const comments = await prisma.blogPostComment.findMany({
@@ -166,5 +166,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

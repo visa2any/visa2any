@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
             name: 'documentos-visto-canadense.pdf',
             type: 'application/pdf',
             size: 245678,
-            url: '/files/documentos-visto-canadense.pdf',
+            url: '/files/documentos-visto-canadense.pdf'
           }
         ],
         metadata: {
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
         metadata: {
           sentiment: 'neutral',
           requiresResponse: true,
-        },
+        }
       }
     ]
 
@@ -121,11 +121,11 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (clientId) {
-      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId),
+      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
     }
 
     if (type && type !== 'all') {
-      filteredMessages = filteredMessages.filter(msg => msg.type === type),
+      filteredMessages = filteredMessages.filter(msg => msg.type === type)
     }
 
     // Limit results
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
       attachments: attachments || [],
       metadata: {
         sentAt: new Date().toISOString(),
-      },
+      }
     }
 
     // Simulate sending delay
@@ -186,5 +186,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

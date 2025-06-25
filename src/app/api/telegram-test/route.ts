@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
     const token = process.env.TELEGRAM_BOT_TOKEN
     
     if (!token) {
-      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 }),
+      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
     // Buscar updates do Telegram
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
             date: new Date(update.message.date * 1000).toLocaleString(),
           }),
         },
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       error: 'Erro ao buscar dados do Telegram',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const token = process.env.TELEGRAM_BOT_TOKEN
     
     if (!token) {
-      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 }),
+      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
     // Enviar mensagem de teste
@@ -88,5 +88,5 @@ export async function POST(request: NextRequest) {
       error: 'Erro ao enviar mensagem',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Verificar se já existe sequência ativa
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (existingSequence) {
       return NextResponse.json({
         error: 'Sequência já ativa para este cliente',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Obter configuração da sequência
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao iniciar sequência de nurturing:', error)
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/automation/nurturing/sequences - Listar sequências ativas
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Configurações das sequências de nurturing
@@ -238,10 +238,10 @@ function getNurturingSequence(type: string, client: any) {
         { day: 5, hour: 14, template: 'docs_feedback', subject: 'Feedback dos seus documentos' },
         { day: 7, hour: 16, template: 'docs_completion', subject: 'Documentos aprovados! 🎉' }
       ],
-    },
+    }
   }
 
-  return sequences[type as keyof typeof sequences] || sequences.welcome_lead,
+  return sequences[type as keyof typeof sequences] || sequences.welcome_lead
 }
 
 // Personalizar sequência baseada no perfil do cliente
@@ -257,7 +257,7 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
         target_country: client.targetCountry,
         country_specific: getCountrySpecificContent(client.targetCountry),
       },
-    })),
+    }))
   }
 
   // Personalizar baseado no lead score
@@ -267,7 +267,7 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
     personalized.emails = personalized.emails.map((email: any) => ({
       ...email,
       day: Math.floor(email.day / 2) // Reduzir delay pela metade
-    })),
+    }))
   }
 
   // Personalizar baseado em interações anteriores
@@ -279,10 +279,10 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
       hour: 14,
       template: 'advanced_strategies',
       subject: 'Estratégias avançadas para seu perfil',
-    }),
+    })
   }
 
-  return personalized,
+  return personalized
 }
 
 // Agendar emails da sequência
@@ -309,10 +309,10 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
     // Simular agendamento (em produção usar scheduler real)
     setTimeout(async () => {
       await sendScheduledEmail(clientId, email.template, email.subject, email.variables),
-    }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000)),
+    }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000))
   }
 
-  return scheduledEmails,
+  return scheduledEmails
 }
 
 // Enviar email agendado
@@ -366,7 +366,7 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       },
     })
 
-  },
+  }
 }
 
 // Calcular score do cliente
@@ -383,7 +383,7 @@ function calculateClientScore(client: any): number {
   if (client.targetCountry) score += 15
   if (client.visaType) score += 10
 
-  return Math.min(score, 100),
+  return Math.min(score, 100)
 }
 
 // Conteúdo específico por país
@@ -403,12 +403,12 @@ function getCountrySpecificContent(country: string): any {
       tips: 'D7 visa é ideal para renda passiva/aposentados',
       processing_time: '2-4 meses',
       success_rate: '92%',
-    },
+    }
   }
 
   return countryContent[country] || {
     tips: 'Cada país tem suas especificidades',
     processing_time: 'Varia por país',
     success_rate: '80%+',
-  },
+  }
 }

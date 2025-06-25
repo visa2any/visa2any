@@ -31,7 +31,7 @@ export async function GET(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
@@ -70,7 +70,7 @@ export async function GET(,
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     return NextResponse.json({
@@ -83,7 +83,7 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PATCH /api/clients/[id] - Atualizar campo específico (inline edit)
@@ -95,7 +95,7 @@ export async function PATCH(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
@@ -111,7 +111,7 @@ export async function PATCH(,
     if (!existingClient) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Atualizar cliente
@@ -151,7 +151,7 @@ export async function PATCH(,
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao atualizar cliente:', error)
@@ -159,7 +159,7 @@ export async function PATCH(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT /api/clients/[id] - Atualizar cliente completo
@@ -171,7 +171,7 @@ export async function PUT(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
@@ -187,7 +187,7 @@ export async function PUT(,
     if (!existingClient) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Atualizar cliente
@@ -227,7 +227,7 @@ export async function PUT(,
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao atualizar cliente:', error)
@@ -235,7 +235,7 @@ export async function PUT(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // DELETE /api/clients/[id] - Deletar cliente
@@ -247,7 +247,7 @@ export async function DELETE(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
@@ -259,7 +259,7 @@ export async function DELETE(,
     if (!existingClient) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Deletar cliente (cascade irá deletar relacionamentos)
@@ -290,5 +290,5 @@ export async function DELETE(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

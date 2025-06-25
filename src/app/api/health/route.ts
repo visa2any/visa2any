@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     status: 'healthy',
     services: {} as any,
     configuration: {} as any,
-    database: {} as any,
+    database: {} as any
   }
 
   try {
@@ -18,14 +18,14 @@ export async function GET(request: NextRequest) {
     health.database = {
       status: 'connected',
       responseTime: Date.now() - dbStart,
-      url: process.env.DATABASE_URL ? 'configured' : 'missing',
-    },
+      url: process.env.DATABASE_URL ? 'configured' : 'missing'
+    }
   } catch (error) {
     health.database = {
       status: 'error',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
-    health.status = 'unhealthy',
+    health.status = 'unhealthy'
   }
 
   // Verificar Telegram
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
       health.services.telegram = {
         status: telegramResponse.ok ? 'active' : 'error',
         configured: true,
-        chatId: process.env.TELEGRAM_CHAT_ID ? 'configured' : 'missing',
-      },
+        chatId: process.env.TELEGRAM_CHAT_ID ? 'configured' : 'missing'
+      }
     } catch (error) {
       health.services.telegram = {
         status: 'error',
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     health.services.telegram = {
       status: 'not_configured',
       configured: false,
-    },
+    }
   }
 
   // Verificar WhatsApp Business API
@@ -67,8 +67,8 @@ export async function GET(request: NextRequest) {
       health.services.whatsapp = {
         status: whatsappResponse.ok ? 'active' : 'error',
         configured: true,
-        phoneId: 'configured',
-      },
+        phoneId: 'configured'
+      }
     } catch (error) {
       health.services.whatsapp = {
         status: 'error',
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       status: 'not_configured',
       configured: false,
       missing: !process.env.WHATSAPP_TOKEN ? 'WHATSAPP_TOKEN' : 'WHATSAPP_PHONE_ID',
-    },
+    }
   }
 
   // Verificar Email (Resend)
@@ -97,8 +97,8 @@ export async function GET(request: NextRequest) {
       health.services.email = {
         status: emailResponse.ok ? 'active' : 'error',
         configured: true,
-        provider: 'resend',
-      },
+        provider: 'resend'
+      }
     } catch (error) {
       health.services.email = {
         status: 'error',
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
       status: 'not_configured',
       configured: false,
       missing: 'RESEND_API_KEY or SMTP_HOST',
-    },
+    }
   }
 
   // Verificar MercadoPago
@@ -135,8 +135,8 @@ export async function GET(request: NextRequest) {
       health.services.payment = {
         status: mpResponse.ok ? 'active' : 'error',
         configured: true,
-        provider: 'mercadopago',
-      },
+        provider: 'mercadopago'
+      }
     } catch (error) {
       health.services.payment = {
         status: 'error',
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
       status: 'not_configured',
       configured: false,
       missing: 'MERCADOPAGO_ACCESS_TOKEN or STRIPE_SECRET_KEY',
-    },
+    }
   }
 
   // Verificar configurações gerais
@@ -173,7 +173,7 @@ export async function GET(request: NextRequest) {
     storage: {
       cloudinary: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY),
       aws: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY),
-    },
+    }
   }
 
   // Determinar status geral
@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
       health.status = 'healthy' // Tudo que está configurado está funcionando
     } else {
       health.status = 'degraded' // Alguns serviços com problema
-    },
+    }
   }
 
   // Retornar status HTTP baseado na saúde
@@ -204,5 +204,5 @@ export async function GET(request: NextRequest) {
                      health.status === 'degraded' ? 200 : 
                      health.status === 'minimal' ? 200 : 503
 
-  return NextResponse.json(health, { status: statusCode }),
+  return NextResponse.json(health, { status: statusCode })
 }

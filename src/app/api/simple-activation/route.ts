@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({
             message: 'Monitoramento real não habilitado',
             error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar',
-          }),
+          })
         }
         
         // Enviar notificação Telegram sobre ativação real
@@ -46,7 +46,7 @@ Sistema pronto para produção!`)
       default:
         return NextResponse.json({
           error: 'Ação não reconhecida',
-        }, { status: 400 }),
+        }, { status: 400 })
     }
     
   } catch (error) {
@@ -55,7 +55,7 @@ Sistema pronto para produção!`)
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       payment: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY),
       database: !!process.env.DATABASE_URL,
     },
-  }),
+  })
 }
 
 function calculateMonthlyCost(state: any): number {
@@ -85,7 +85,7 @@ function calculateMonthlyCost(state: any): number {
       total += 5 // Resend: $1/mês para até 3000 emails
     } else {
       total += 0 // SMTP próprio = gratuito
-    },
+    }
   }
   
   if (state.paymentProcessing) {
@@ -97,7 +97,7 @@ function calculateMonthlyCost(state: any): number {
   }
   
   // Híbrido = apenas taxas de transação
-  return total,
+  return total
 }
 
 async function sendTelegramNotification(title: string, message: string) {
@@ -106,7 +106,7 @@ async function sendTelegramNotification(title: string, message: string) {
 
   if (!token || !chatId) {
     console.log('Token ou Chat ID não configurados - notificação não enviada')
-    return,
+    return
   }
 
   try {
@@ -123,9 +123,9 @@ async function sendTelegramNotification(title: string, message: string) {
     if (response.ok) {
       console.log('Notificação Telegram enviada com sucesso'),
     } else {
-      console.error('Erro ao enviar notificação Telegram:', await response.text()),
-    },
+      console.error('Erro ao enviar notificação Telegram:', await response.text())
+    }
   } catch (error) {
     console.error('Erro ao enviar notificação:', error),
-  },
+  }
 }

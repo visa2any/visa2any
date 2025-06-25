@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const { data, type } = body
     
     if (type !== 'payment') {
-      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' }),
+      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })
     }
 
     // Buscar detalhes do pagamento no MercadoPago
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!paymentResponse.ok) {
-      throw new Error('Erro ao buscar pagamento no MercadoPago'),
+      throw new Error('Erro ao buscar pagamento no MercadoPago')
     }
 
     const paymentData = await paymentResponse.json()
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Validar se é um pagamento híbrido
     const paymentId = paymentData.external_reference
     if (!paymentId) {
-      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' }),
+      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })
     }
 
     // Buscar registro de pagamento híbrido
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     if (!hybridPayment) {
       console.error('Pagamento híbrido não encontrado:', paymentId)
-      return NextResponse.json({ status: 'error', reason: 'payment not found' }),
+      return NextResponse.json({ status: 'error', reason: 'payment not found' })
     }
 
     // Processar baseado no status do pagamento
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Status não tratado:', paymentData.status),
+        console.log('Status não tratado:', paymentData.status)
     }
 
     return NextResponse.json({ status: 'processed' })
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no webhook híbrido:', error)
     return NextResponse.json({ status: 'error' }, { status: 500 }),
-  },
+  }
 }
 
 // Processar pagamento aprovado
@@ -144,7 +144,7 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
 
   } catch (error) {
     console.error('Erro ao processar pagamento aprovado:', error),
-  },
+  }
 }
 
 // Processar pagamento pendente
@@ -172,7 +172,7 @@ Recebemos seu pagamento e ele está sendo processado:
 
 ${paymentData.payment_method_id === 'pix' ? 
   '⚡ PIX: Confirmação em até 5 minutos' : 
-  '📄 Boleto: Confirmação em até 2 dias úteis',
+  '📄 Boleto: Confirmação em até 2 dias úteis'
 }
 
 ✅ Assim que confirmado, agendaremos sua vaga automaticamente!
@@ -190,7 +190,7 @@ ${paymentData.payment_method_id === 'pix' ?
 
   } catch (error) {
     console.error('Erro ao processar pagamento pendente:', error),
-  },
+  }
 }
 
 // Processar pagamento rejeitado
@@ -240,7 +240,7 @@ Infelizmente seu pagamento não foi aprovado:
 
   } catch (error) {
     console.error('Erro ao processar pagamento rejeitado:', error),
-  },
+  }
 }
 
 // Notificar consultor para fazer agendamento
@@ -248,13 +248,13 @@ async function notifyConsultantToBook(data: any) {
   const urgencyEmoji = {
     'NORMAL': '⏰',
     'URGENT': '🚨',
-    'EMERGENCY': '🔥',
+    'EMERGENCY': '🔥'
   }
 
   const planEmoji = {
     'BASIC': '🥉',
     'PREMIUM': '🥈',
-    'VIP': '🥇',
+    'VIP': '🥇'
   }
 
   const deadlineText = new Date(data.deadline).toLocaleString('pt-BR')
@@ -300,10 +300,10 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
         text: message,
         parse_mode: 'HTML',
       }),
-    }),
+    })
   } catch (error) {
     console.error('Erro ao notificar consultor:', error),
-  },
+  }
 }
 
 // Notificar cliente sobre confirmação de pagamento
@@ -328,7 +328,7 @@ Seu pagamento foi aprovado com sucesso:
 ⏰ TEMPO ESTIMADO:
 ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' : 
   data.plan === 'PREMIUM' ? '• Premium: Até 2 horas' : 
-  '• Basic: Até 4 horas',
+  '• Basic: Até 4 horas'
 }
 
 📱 ACOMPANHE:
@@ -347,10 +347,10 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
         to: data.client.phone,
         message: message,
       }),
-    }),
+    })
   } catch (error) {
     console.error('Erro ao notificar cliente:', error),
-  },
+  }
 }
 
 // Utilitários
@@ -360,7 +360,7 @@ function getBookingDeadline(urgency: string): number {
     'URGENT': 2 * 60 * 60 * 1000,  // 2 horas
     'EMERGENCY': 30 * 60 * 1000    // 30 minutos
   }
-  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL,
+  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL
 }
 
 function getPaymentMethodName(methodId: string): string {
@@ -371,9 +371,9 @@ function getPaymentMethodName(methodId: string): string {
     'elo': 'Elo',
     'hipercard': 'Hipercard',
     'bolbradesco': 'Boleto Bradesco',
-    'account_money': 'Saldo Mercado Pago',
+    'account_money': 'Saldo Mercado Pago'
   }
-  return methods[methodId] || 'Cartão',
+  return methods[methodId] || 'Cartão'
 }
 
 function getRejectionReason(detail: string): string {
@@ -385,7 +385,7 @@ function getRejectionReason(detail: string): string {
     'cc_rejected_bad_filled_other': 'Dados do cartão incorretos',
     'cc_rejected_blacklist': 'Cartão bloqueado',
     'cc_rejected_high_risk': 'Transação de alto risco',
-    'cc_rejected_max_attempts': 'Muitas tentativas',
+    'cc_rejected_max_attempts': 'Muitas tentativas'
   }
-  return reasons[detail] || 'Verifique os dados e tente novamente',
+  return reasons[detail] || 'Verifique os dados e tente novamente'
 }

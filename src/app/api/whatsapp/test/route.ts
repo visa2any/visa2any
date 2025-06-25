@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/whatsapp/test - Testar envio simulado
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Simular envio bem-sucedido
@@ -65,5 +65,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }

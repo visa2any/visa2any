@@ -76,7 +76,7 @@ const EMAIL_TEMPLATES = {
         </div>
       </div>
     `,
-  },
+  }
 }
 
 // POST /api/notifications/email - Enviar email
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     let emailContent = {
       subject: validatedData.subject || 'Mensagem da Visa2Any',
-      html: validatedData.message || '',
+      html: validatedData.message || ''
     }
 
     // Se usar template, carregar template e processar variáveis
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
             String(value)
           ),
         }),
-      },
+      }
     }
 
     // Enviar email usando o provedor configurado
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao enviar email:', error)
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para enviar email usando SMTP Hostinger configurado
@@ -190,11 +190,11 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       
       return {
         messageId: result.messageId,
-        provider: 'hostinger_smtp',
-      },
+        provider: 'hostinger_smtp'
+      }
     } catch (error) {
       console.error('❌ Erro SMTP Hostinger:', error),
-    },
+    }
   }
 
   // Fallback: Tentar SendGrid se configurado
@@ -226,11 +226,11 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         return {
           messageId: `sg_${Date.now()}`,
           provider: 'sendgrid',
-        },
-      },
+        }
+      }
     } catch (error) {
       console.error('SendGrid falhou:', error),
-    },
+    }
   }
 
   // Se nada funcionou, simular envio
@@ -243,5 +243,5 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   return {
     messageId: `sim_${Date.now()}`,
     provider: 'simulation',
-  },
+  }
 }

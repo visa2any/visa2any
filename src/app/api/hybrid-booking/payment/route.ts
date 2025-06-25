@@ -7,7 +7,7 @@ interface PaymentRequest {
   consulate: string,
   availableDates: string[],
   plan: 'BASIC' | 'PREMIUM' | 'VIP',
-  urgency: 'NORMAL' | 'URGENT' | 'EMERGENCY',
+  urgency: 'NORMAL' | 'URGENT' | 'EMERGENCY'
 }
 
 interface ConsularFees {
@@ -19,7 +19,7 @@ interface ConsularFees {
     currency: string,
     paymentMethods: string[]
     officialPaymentUrl?: string,
-  },
+  }
 }
 
 // Tabela completa de taxas consulares atualizadas
@@ -57,14 +57,14 @@ const CONSULAR_FEES: ConsularFees = {
     currency: 'BRL',
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
-  },
+  }
 }
 
 // Multiplicadores por plano
 const PLAN_MULTIPLIERS = {
   'BASIC': 1.0,
   'PREMIUM': 2.2,
-  'VIP': 3.0,
+  'VIP': 3.0
 }
 
 // Desconto PIX
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'País não suportado no momento',
         supportedCountries: Object.keys(CONSULAR_FEES),
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // 2. Calcular custos detalhados
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
         withoutDiscount: 0,
         withPixDiscount: 0,
       },
-      currency: countryFees.currency,
+      currency: countryFees.currency
     }
 
     costs.total.withoutDiscount = costs.subtotal
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json({
         error: 'Cliente não encontrado',
-      }, { status: 404 }),
+      }, { status: 404 })
     }
 
     // 4. Criar registro de cobrança híbrida
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -217,12 +217,12 @@ export async function GET(request: NextRequest) {
       if (!payment) {
         return NextResponse.json({
           error: 'Pagamento não encontrado',
-        }, { status: 404 }),
+        }, { status: 404 })
       }
 
       return NextResponse.json({
         payment,
-      }),
+      })
     }
 
     if (clientId) {
@@ -243,7 +243,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         payments,
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -255,7 +255,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 // Gerar links de pagamento para diferentes métodos
@@ -263,7 +263,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
   const links = {
     pix: null as string | null,
     card: null as string | null,
-    boleto: null as string | null,
+    boleto: null as string | null
   }
 
   try {
@@ -300,10 +300,10 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
     links.boleto = boletoPreference?.init_point || null
 
   } catch (error) {
-    console.error('Erro ao gerar links de pagamento:', error),
+    console.error('Erro ao gerar links de pagamento:', error)
   }
 
-  return links,
+  return links
 }
 
 // Criar preferência no MercadoPago
@@ -344,14 +344,14 @@ async function createMercadoPagoPreference(options: any) {
     })
 
     if (!response.ok) {
-      throw new Error(`MercadoPago API error: ${response.status}`),
+      throw new Error(`MercadoPago API error: ${response.status}`)
     }
 
-    return await response.json(),
+    return await response.json()
   } catch (error) {
     console.error('Erro MercadoPago:', error)
     return null,
-  },
+  }
 }
 
 // Notificar consultor via Telegram
@@ -359,13 +359,13 @@ async function notifyConsultant(data: any) {
   const urgencyEmoji = {
     'NORMAL': '⏰',
     'URGENT': '🚨',
-    'EMERGENCY': '🔥',
+    'EMERGENCY': '🔥'
   }
 
   const planEmoji = {
     'BASIC': '🥉',
     'PREMIUM': '🥈',
-    'VIP': '🥇',
+    'VIP': '🥇'
   }
 
   const message = `${urgencyEmoji[data.urgency]} COBRANÇA HÍBRIDA GERADA
@@ -405,10 +405,10 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
         text: message,
         parse_mode: 'HTML',
       }),
-    }),
+    })
   } catch (error) {
     console.error('Erro ao notificar consultor:', error),
-  },
+  }
 }
 
 // Notificar cliente sobre cobrança
@@ -477,5 +477,5 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
 
   } catch (error) {
     console.error('Erro ao notificar cliente:', error),
-  },
+  }
 }

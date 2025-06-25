@@ -29,5 +29,5 @@ export async function GET() {
       { error: 'Erro ao buscar comentários pendentes' },
       { status: 500 }
     ),
-  },
+  }
 }

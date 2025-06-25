@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Processar apenas webhooks de pagamento
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Buscar informações do pagamento no MercadoPago
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
     }
 
     const mpPayment = mpPaymentResult.payment
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       console.error('Pagamento não encontrado no banco:', mpPayment.external_reference)
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Mapear status do MercadoPago para nosso sistema
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Se pagamento foi aprovado e não estava aprovado antes, processar automações
     if (newStatus === 'COMPLETED' && !wasCompleted) {
-      await processPaymentSuccess(updatedPayment),
+      await processPaymentSuccess(updatedPayment)
     }
 
     return NextResponse.json({ success: true })
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Processar automações quando pagamento é confirmado
@@ -158,9 +158,9 @@ async function processPaymentSuccess(payment: any) {
             transaction_id: payment.transactionId,
           },
         }),
-      }),
+      })
     } catch (emailError) {
-      console.error('Erro ao enviar email de confirmação:', emailError),
+      console.error('Erro ao enviar email de confirmação:', emailError)
     }
 
     // 3. Enviar WhatsApp de confirmação
@@ -178,10 +178,10 @@ async function processPaymentSuccess(payment: any) {
               payment_plan: getPaymentPackageName(payment.productId),
             },
           }),
-        }),
-      },
+        })
+      }
     } catch (whatsappError) {
-      console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError),
+      console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError)
     }
 
     // 4. Criar consultoria se aplicável
@@ -205,7 +205,7 @@ async function processPaymentSuccess(payment: any) {
             notes: `Consultoria criada automaticamente após pagamento confirmado (${payment.transactionId})`,
           },
         }),
-      },
+      }
     }
 
     // 5. Log das automações
@@ -237,7 +237,7 @@ async function processPaymentSuccess(payment: any) {
         success: true,
       },
     }).catch(() => {}),
-  },
+  }
 }
 
 function getPaymentPackageName(productId: string): string {
@@ -245,15 +245,15 @@ function getPaymentPackageName(productId: string): string {
     'pre-analise': 'Pré-análise Gratuita',
     'relatorio-premium': 'Relatório Premium',
     'consultoria-express': 'Consultoria Express',
-    'servico-vip': 'Serviço VIP',
+    'servico-vip': 'Serviço VIP'
   }
 
   // Encontrar o pacote baseado no productId
   for (const [key, name] of Object.entries(packageNames)) {
     if (productId.includes(key)) {
       return name,
-    },
+    }
   }
 
-  return 'Serviço Visa2Any',
+  return 'Serviço Visa2Any'
 }

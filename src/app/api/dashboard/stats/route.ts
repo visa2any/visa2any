@@ -12,14 +12,14 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Verificar se é admin
     if (!isAdmin(user)) {
       return NextResponse.json(
         { status: 403 }
-      ),
+      )
     }
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30' // dias
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       if (existing) {
         existing.count++,
       } else {
-        acc.push({ status: client.status, count: 1 }),
+        acc.push({ status: client.status, count: 1 })
       }
       return acc,
     }, [] as Array<{ status: string, count: number }>)
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         { type: 'FOLLOW_UP', count: Math.floor(totalClients * 0.15) },
         { type: 'VIP_SERVICE', count: Math.floor(totalClients * 0.05) }
       ],
-      recentActivity: await generateRecentActivity(startDate),
+      recentActivity: await generateRecentActivity(startDate)
     }
 
     return NextResponse.json({
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
         ],
       },
     }),
-  },
+  }
 }
 
 async function generateRecentActivity(startDate: Date) {
@@ -201,9 +201,9 @@ async function generateRecentActivity(startDate: Date) {
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
-    ],
+    ]
   } catch (error) {
     // Retornar atividade simulada
     return [
@@ -219,8 +219,8 @@ async function generateRecentActivity(startDate: Date) {
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
     ],
-  },
+  }
 }

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!document) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Verificar se já foi analisado
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
           cached: true,
         },
         message: 'Análise recuperada do cache',
-      }),
+      })
     }
 
     // Marcar como analisando
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Se documento foi aprovado, verificar se pode prosseguir com próximo passo
     if (analysisResult.isValid) {
-      await checkAndTriggerNextSteps(document.clientId, document.type),
+      await checkAndTriggerNextSteps(document.clientId, document.type)
     }
 
     return NextResponse.json({
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro na análise de documento:', error)
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/ai/document-analysis/[id] - Obter análise de documento
@@ -141,7 +141,7 @@ export async function GET(,
     if (!document) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     return NextResponse.json({
@@ -161,7 +161,7 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função principal de análise avançada de documentos
@@ -200,7 +200,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
         processingTime: processingTime,
       },
       validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection),
-      processingTime: processingTime,
+      processingTime: processingTime
     }
     
   } catch (error) {
@@ -217,7 +217,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
       validationNotes: 'Erro durante análise automática. Revisão manual necessária.',
       processingTime: Date.now() - startTime,
     },
-  },
+  }
 }
 
 // Simular OCR
@@ -272,7 +272,7 @@ trabalhou em nossa empresa no período de
 Cargo: Engenheira de Software Sênior
 Salário: R$ 12.000,00
 Função: Desenvolvimento de sistemas, liderança de equipe
-São Paulo, 20 de dezembro de 2023`,
+São Paulo, 20 de dezembro de 2023`
   }
   
   const text = mockTexts[document.type] || `Document content for ${document.fileName}`
@@ -283,7 +283,7 @@ São Paulo, 20 de dezembro de 2023`,
     language: 'pt',
     pages: 1,
     extractedFields: extractFieldsFromText(text, document.type),
-  },
+  }
 }
 
 // Extrair campos específicos do texto OCR
@@ -315,10 +315,10 @@ function extractFieldsFromText(text: string, documentType: string) {
       fields.position = text.match(/Cargo:(.*?)(?:\n|Salário)/i)?.[1]?.trim()
       fields.salary = text.match(/Salário.*?R\$\s*([\d.,]+)/i)?.[1]
       fields.period = text.match(/período de(.*?)(?:\n|Cargo)/i)?.[1]?.trim()
-      break,
+      break
   }
   
-  return fields,
+  return fields
 }
 
 // Análise específica por tipo de documento
@@ -329,11 +329,11 @@ async function analyzeByDocumentType(document: any, ocrResult: any) {
     'BANK_STATEMENT': analyzeBankStatement,
     'WORK_CERTIFICATE': analyzeWorkCertificate,
     'BIRTH_CERTIFICATE': analyzeBirthCertificate,
-    'POLICE_CLEARANCE': analyzePoliceClearance,
+    'POLICE_CLEARANCE': analyzePoliceClearance
   }
   
   const analyzeFunction = analysisRules[document.type] || analyzeGenericDocument
-  return await analyzeFunction(document, ocrResult),
+  return await analyzeFunction(document, ocrResult)
 }
 
 // Análise específica de passaporte
@@ -354,13 +354,13 @@ async function analyzePassport(document: any, ocrResult: any) {
     },
   } else {
     issues.push('Data de expiração não identificada')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   // Verificar se tem número do passaporte
   if (!fields.passportNumber) {
     issues.push('Número do passaporte não identificado')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   return {
@@ -370,7 +370,7 @@ async function analyzePassport(document: any, ocrResult: any) {
     extractedData: fields,
     issues: issues,
     recommendations: issues.length > 0 ? ['Renovar passaporte se próximo do vencimento'] : [],
-  },
+  }
 }
 
 // Análise específica de diploma
@@ -381,17 +381,17 @@ async function analyzeDiploma(document: any, ocrResult: any) {
   
   if (!fields.degree) {
     issues.push('Tipo de diploma não identificado')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   if (!fields.university) {
     issues.push('Universidade não identificada')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   if (!fields.graduationDate) {
     issues.push('Data de graduação não identificada')
-    confidence -= 0.1,
+    confidence -= 0.1
   }
   
   return {
@@ -401,7 +401,7 @@ async function analyzeDiploma(document: any, ocrResult: any) {
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se precisa de validação/apostilamento'],
-  },
+  }
 }
 
 // Análise específica de extrato bancário
@@ -418,12 +418,12 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
     },
   } else {
     issues.push('Saldo final não identificado')
-    confidence -= 0.3,
+    confidence -= 0.3
   }
   
   if (!fields.period) {
     issues.push('Período do extrato não identificado')
-    confidence -= 0.1,
+    confidence -= 0.1
   }
   
   return {
@@ -433,7 +433,7 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se período está adequado (mínimo 3 meses)'],
-  },
+  }
 }
 
 // Análise específica de certificado de trabalho
@@ -444,17 +444,17 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
   
   if (!fields.company) {
     issues.push('Nome da empresa não identificado')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   if (!fields.position) {
     issues.push('Cargo não identificado')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   if (!fields.period) {
     issues.push('Período de trabalho não identificado')
-    confidence -= 0.2,
+    confidence -= 0.2
   }
   
   return {
@@ -464,7 +464,7 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se atende tempo mínimo de experiência'],
-  },
+  }
 }
 
 // Análises genéricas para outros tipos
@@ -476,7 +476,7 @@ async function analyzeBirthCertificate(document: any, ocrResult: any) {
     extractedData: {},
     issues: [],
     recommendations: ['Verificar se precisa de apostilamento'],
-  },
+  }
 }
 
 async function analyzePoliceClearance(document: any, ocrResult: any) {
@@ -487,7 +487,7 @@ async function analyzePoliceClearance(document: any, ocrResult: any) {
     extractedData: {},
     issues: [],
     recommendations: ['Verificar validade (máximo 12 meses)'],
-  },
+  }
 }
 
 async function analyzeGenericDocument(document: any, ocrResult: any) {
@@ -498,7 +498,7 @@ async function analyzeGenericDocument(document: any, ocrResult: any) {
     extractedData: {},
     issues: ['Tipo de documento requer análise manual'],
     recommendations: ['Solicitar revisão de especialista'],
-  },
+  }
 }
 
 // Validar contra requisitos do país
@@ -509,7 +509,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['País de destino não especificado'],
-    },
+    }
   }
   
   // Buscar requisitos específicos
@@ -526,7 +526,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['Requisitos específicos não encontrados'],
-    },
+    }
   }
   
   const requiredDocs = requirements.requiredDocuments as any[]
@@ -538,7 +538,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       needsReview: false,
       confidence: 0.8,
       countrySpecificIssues: [],
-    },
+    }
   }
   
   const issues: string[] = []
@@ -554,7 +554,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       if (expiryDate < requiredValidUntil) {
         issues.push(`Passaporte deve ser válido por pelo menos ${relevantDoc.validityMonths} meses`),
       },
-    },
+    }
   }
   
   return {
@@ -563,7 +563,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
     confidence: issues.length === 0 ? 0.9 : 0.6,
     countrySpecificIssues: issues,
     requirement: relevantDoc,
-  },
+  }
 }
 
 // Detecção de fraudes e problemas
@@ -573,7 +573,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
   
   // Verificar qualidade da imagem/OCR
   if (ocrResult.confidence < 0.7) {
-    warnings.push('Qualidade da imagem pode estar comprometida'),
+    warnings.push('Qualidade da imagem pode estar comprometida')
   }
   
   // Verificar consistência de dados
@@ -583,7 +583,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     
     if (extractedName.includes(clientName.split(' ')[0]) === false) {
       warnings.push('Nome no documento pode não corresponder ao cliente'),
-    },
+    }
   }
   
   // Verificar padrões suspeitos no texto
@@ -598,7 +598,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     if (pattern.test(ocrResult.text)) {
       criticalIssues.push('Documento pode ser uma cópia ou amostra')
       break,
-    },
+    }
   }
   
   return {
@@ -607,7 +607,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     warnings: warnings,
     criticalIssues: criticalIssues,
     riskScore: criticalIssues.length * 0.8 + warnings.length * 0.3,
-  },
+  }
 }
 
 // Gerar recomendações
@@ -616,24 +616,24 @@ function generateRecommendations(analysisResult: any, countryValidation: any, fr
   
   // Adicionar recomendações da análise específica
   if (analysisResult.recommendations) {
-    recommendations.push(...analysisResult.recommendations),
+    recommendations.push(...analysisResult.recommendations)
   }
   
   // Adicionar recomendações de validação do país
   if (countryValidation.countrySpecificIssues?.length > 0) {
-    recommendations.push('Verificar requisitos específicos do país de destino'),
+    recommendations.push('Verificar requisitos específicos do país de destino')
   }
   
   // Adicionar recomendações de segurança
   if (fraudDetection.hasWarnings) {
-    recommendations.push('Revisar qualidade e autenticidade do documento'),
+    recommendations.push('Revisar qualidade e autenticidade do documento')
   }
   
   if (fraudDetection.hasCriticalIssues) {
-    recommendations.push('URGENTE: Documento requer validação manual imediata'),
+    recommendations.push('URGENTE: Documento requer validação manual imediata')
   }
   
-  return recommendations,
+  return recommendations
 }
 
 // Gerar notas de validação
@@ -641,22 +641,22 @@ function generateValidationNotes(analysisResult: any, countryValidation: any, fr
   const notes: string[] = []
   
   if (analysisResult.issues?.length > 0) {
-    notes.push(`Análise técnica: ${analysisResult.issues.join(', ')}`),
+    notes.push(`Análise técnica: ${analysisResult.issues.join(', ')}`)
   }
   
   if (countryValidation.countrySpecificIssues?.length > 0) {
-    notes.push(`Requisitos do país: ${countryValidation.countrySpecificIssues.join(', ')}`),
+    notes.push(`Requisitos do país: ${countryValidation.countrySpecificIssues.join(', ')}`)
   }
   
   if (fraudDetection.warnings?.length > 0) {
-    notes.push(`Alertas: ${fraudDetection.warnings.join(', ')}`),
+    notes.push(`Alertas: ${fraudDetection.warnings.join(', ')}`)
   }
   
   if (fraudDetection.criticalIssues?.length > 0) {
-    notes.push(`CRÍTICO: ${fraudDetection.criticalIssues.join(', ')}`),
+    notes.push(`CRÍTICO: ${fraudDetection.criticalIssues.join(', ')}`)
   }
   
-  return notes.join(' | '),
+  return notes.join(' | ')
 }
 
 // Verificar e disparar próximos passos
@@ -695,10 +695,10 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
         
         // Enviar notificação
         // (implementar call para API de email/whatsapp)
-      },
+      }
     }
     
   } catch (error) {
     console.error('Erro ao verificar próximos passos:', error),
-  },
+  }
 }

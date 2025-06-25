@@ -17,14 +17,14 @@ export async function POST(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Create note record
@@ -35,7 +35,7 @@ export async function POST(,
       content: content.trim(),
       author: 'Current User', // In a real app, get from session
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
 
     // Here you would save the note to the database
@@ -52,7 +52,7 @@ export async function POST(,
       author: 'Current User',
       metadata: {
         noteId: noteId,
-      },
+      }
     }
 
     return NextResponse.json({
@@ -69,7 +69,7 @@ export async function POST(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 export async function GET(,
@@ -83,7 +83,7 @@ export async function GET(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Mock notes data
@@ -102,7 +102,7 @@ export async function GET(,
         content: 'Documentação acadêmica está completa. Próximo passo é reunir cartas de recomendação.',
         author: 'Ana Silva',
         createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
       }
     ]
 
@@ -117,5 +117,5 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

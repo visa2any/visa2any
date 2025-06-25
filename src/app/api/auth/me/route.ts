@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
     
     // Retornar dados do usuário
@@ -24,11 +24,11 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     // Log apenas em desenvolvimento
     if (process.env.NODE_ENV === 'development') {
-      console.error('❌ /api/auth/me: Erro:', error),
+      console.error('❌ /api/auth/me: Erro:', error)
     }
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

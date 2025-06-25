@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     const userId = user.id
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         title: '',
         message: '',
         actionUrl: '',
-        actionLabel: '',
+        actionLabel: ''
       }
 
       switch (log.type) {
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
             title: 'Email enviado',
             message: `Email enviado para ${log.client?.name || 'cliente'}`,
             actionUrl: `/admin/clients`,
-            actionLabel: 'Ver cliente',
+            actionLabel: 'Ver cliente'
           }
 
         case 'WHATSAPP_SENT':
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
             title: 'WhatsApp enviado',
             message: `Mensagem WhatsApp enviada para ${log.client?.name || 'cliente'}`,
             actionUrl: `/admin/clients`,
-            actionLabel: 'Ver cliente',
+            actionLabel: 'Ver cliente'
           }
 
         case 'ANALYSIS_COMPLETED':
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
             title: 'Análise concluída',
             message: `Análise de elegibilidade concluída para ${log.client?.name || 'cliente'}`,
             actionUrl: `/admin/consultations`,
-            actionLabel: 'Ver análise',
+            actionLabel: 'Ver análise'
           }
 
         case 'DOCUMENT_VALIDATED':
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
             title: 'Documento validado',
             message: `Documento ${details?.documentName || 'novo'} foi validado`,
             actionUrl: `/admin/documents`,
-            actionLabel: 'Ver documentos',
+            actionLabel: 'Ver documentos'
           }
 
         case 'PAYMENT_CONFIRMED':
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
             title: 'Pagamento confirmado',
             message: `Pagamento recebido de ${log.client?.name || 'cliente'}`,
             actionUrl: `/admin/payments`,
-            actionLabel: 'Ver pagamentos',
+            actionLabel: 'Ver pagamentos'
           }
 
         case 'CLIENT_STATUS_CHANGED':
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
             title: 'Status atualizado',
             message: `Status do cliente ${log.client?.name || 'cliente'} foi atualizado para ${statusDetails?.newStatus || 'novo status'}`,
             actionUrl: `/admin/clients`,
-            actionLabel: 'Ver cliente',
+            actionLabel: 'Ver cliente'
           }
 
         default:
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
         message: `${pendingConsultations} consultoria${pendingConsultations > 1 ? 's' : ''} agendada${pendingConsultations > 1 ? 's' : ''} para a próxima hora`,
         actionUrl: '/admin/consultations',
         actionLabel: 'Ver consultorias',
-      }),
+      })
     }
 
     if (pendingDocuments > 0) {
@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
         message: `${pendingDocuments} documento${pendingDocuments > 1 ? 's' : ''} aguardando validação`,
         actionUrl: '/admin/documents',
         actionLabel: 'Ver documentos',
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/notifications/system - Mark system notifications as read (optional)
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     const body = await request.json()
@@ -209,5 +209,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

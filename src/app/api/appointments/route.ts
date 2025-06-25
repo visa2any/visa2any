@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Parâmetros consulate e visaType são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     const slots = await appointmentBookingService.getAvailableSlots(consulate, visaType, days)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST - Fazer agendamento
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
           { error: `Campo ${field} é obrigatório` },
           { status: 400 }
         ),
-      },
+      }
     }
 
     // Validação dos dados do requerente
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           { error: `Campo applicantInfo.${field} é obrigatório` },
           { status: 400 }
         ),
-      },
+      }
     }
 
     // Tentar fazer o agendamento
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           message: 'Não foi possível realizar o agendamento',
         },
         { status: 400 }
-      ),
+      )
     }
 
   } catch (error) {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT - Reagendar
@@ -111,7 +111,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     const result = await appointmentBookingService.rescheduleAppointment(
@@ -136,7 +136,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
   } catch (error) {
@@ -145,5 +145,5 @@ export async function PUT(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

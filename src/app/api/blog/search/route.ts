@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         results: [],
         suggestions: [],
-      }),
+      })
     }
 
     // Se for para sugestões, retornar resultados mais rápidos
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
         suggestions,
-      }),
+      })
     }
 
     // Busca completa com ranking de relevância
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 async function generateSuggestions(query: string) {
@@ -139,7 +139,7 @@ async function generateSuggestions(query: string) {
   } catch (error) {
     console.error('Erro ao gerar sugestões:', error)
     return [],
-  },
+  }
 }
 
 async function performAdvancedSearch(query: string) {
@@ -202,17 +202,17 @@ async function performAdvancedSearch(query: string) {
       // Score por match exato no título (alta relevância)
       if (titleLower.includes(queryLower)) {
         score += 100
-        if (titleLower.startsWith(queryLower)) score += 50,
+        if (titleLower.startsWith(queryLower)) score += 50
       }
 
       // Score por match no resumo
       if (excerptLower.includes(queryLower)) {
-        score += 50,
+        score += 50
       }
 
       // Score por país
       if (post.country && post.country.toLowerCase().includes(queryLower)) {
-        score += 30,
+        score += 30
       }
 
       // Score por palavras individuais
@@ -249,5 +249,5 @@ async function performAdvancedSearch(query: string) {
   } catch (error) {
     console.error('Erro na busca avançada:', error)
     return [],
-  },
+  }
 }

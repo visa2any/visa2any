@@ -30,7 +30,7 @@ export async function GET() {
       { error: 'Erro ao buscar fontes' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST - Adicionar nova fonte
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: name, url, type, category' },
         { status: 400 }
-      ),
+      )
     }
 
     // Verificar se URL já existe
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Fonte com esta URL já existe' },
         { status: 409 }
-      ),
+      )
     }
 
     const newSource = await prisma.newsSource.create({
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro ao criar fonte' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT - Atualizar fonte existente
@@ -108,7 +108,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID da fonte é obrigatório' },
         { status: 400 }
-      ),
+      )
     }
 
     const updatedSource = await prisma.newsSource.update({
@@ -131,7 +131,7 @@ export async function PUT(request: NextRequest) {
       { error: 'Erro ao atualizar fonte' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // DELETE - Remover fonte
@@ -144,7 +144,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID da fonte é obrigatório' },
         { status: 400 }
-      ),
+      )
     }
 
     // Primeiro deletar logs relacionados
@@ -168,5 +168,5 @@ export async function DELETE(request: NextRequest) {
       { error: 'Erro ao deletar fonte' },
       { status: 500 }
     ),
-  },
+  }
 }

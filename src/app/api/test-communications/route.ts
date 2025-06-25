@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     summary: {
       email: { configured: false, working: false },
       whatsapp: { configured: false, working: false },
-    },
+    }
   }
 
   // 1. Testar configuração de email
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         status: 'warning',
         message: 'Email não configurado - usando simulação',
         details: 'Configure SENDGRID_API_KEY ou RESEND_API_KEY',
-      }),
+      })
     }
 
     // 2. Testar configuração de WhatsApp
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
           name: 'Cliente Teste',
           email: email,
           phone: phone,
-        },
+        }
       }
 
       // Simular automações de pagamento aprovado
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
         type: 'webhook_simulation',
         status: 'error',
         message: 'Erro ao simular webhook',
-      }),
+      })
     }
 
     // 4. Retornar resultados
@@ -134,5 +134,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno nos testes' },
       { status: 500 }
     ),
-  },
+  }
 }

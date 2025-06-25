@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
               status: 'LEAD',
               source: 'checkout',
             },
-          }),
+          })
         }
         
-        clientId = client.id,
+        clientId = client.id
       } catch (error) {
         console.error('Erro ao criar/encontrar cliente:', error)
         // Não bloquear o pedido se houver erro com cliente
-      },
+      }
     }
 
     // Criar pedido no banco
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar pedido:', error)
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para criar pagamento no Mercado Pago
@@ -137,7 +137,7 @@ async function createMercadoPagoPayment(orderData: {
           description: orderData.description,
           quantity: 1, // Sempre 1 no MP, preço já é total
           unit_price: orderData.unitPrice,
-          currency_id: 'BRL',
+          currency_id: 'BRL'
         }
       ],
       payer: orderData.clientEmail ? {
@@ -158,7 +158,7 @@ async function createMercadoPagoPayment(orderData: {
         excluded_payment_methods: [],
         excluded_payment_types: [],
         installments: 12,
-      },
+      }
     }
 
     // Usar SDK do Mercado Pago real
@@ -180,5 +180,5 @@ async function createMercadoPagoPayment(orderData: {
     console.error('Erro ao criar pagamento MP:', error)
     // Fallback para checkout interno
     return null,
-  },
+  }
 }

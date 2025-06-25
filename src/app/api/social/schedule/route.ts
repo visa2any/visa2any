@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'blogPostId, platform e content são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     // Converter platform string para enum
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Plataforma inválida' },
         { status: 400 }
-      ),
+      )
     }
 
     // Criar post agendado
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Listar posts agendados
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
       byPlatform: socialPosts.reduce((acc, post) => {
         acc[post.platform] = (acc[post.platform] || 0) + 1
         return acc,
-      }, {} as Record<string, number>),
+      }, {} as Record<string, number>)
     }
 
     return NextResponse.json({
@@ -113,5 +113,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro ao listar posts agendados' },
       { status: 500 }
     ),
-  },
+  }
 }

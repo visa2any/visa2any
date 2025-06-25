@@ -15,7 +15,7 @@ function parseUserAgent(userAgent: string) {
   else if (userAgent.includes('Safari')) browser = 'safari'
   else if (userAgent.includes('Edge')) browser = 'edge'
   
-  return { device, browser },
+  return { device, browser }
 }
 
 // Função para obter informações de geolocalização por IP
@@ -24,19 +24,19 @@ async function getLocationFromIP(ip: string) {
     // Em produção, usar um serviço como ipapi.co ou similar
     // Para desenvolvimento, retornar valores padrão
     if (process.env.NODE_ENV === 'development') {
-      return { country: 'Brazil', city: 'São Paulo' },
+      return { country: 'Brazil', city: 'São Paulo' }
     }
     
     const response = await fetch(`https://ipapi.co/${ip}/json/`)
     const data = await response.json()
     return {
       country: data.country_name || 'Unknown',
-      city: data.city || 'Unknown',
-    },
+      city: data.city || 'Unknown'
+    }
   } catch (error) {
     console.error('Erro ao obter localização:', error)
     return { country: 'Unknown', city: 'Unknown' },
-  },
+  }
 }
 
 // GET - Redirecionar com tracking
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const source = url.searchParams.get('source')
 
     if (!referralCode) {
-      return NextResponse.redirect(new URL(targetUrl, request.url)),
+      return NextResponse.redirect(new URL(targetUrl, request.url))
     }
 
     // Buscar afiliado pelo código de referência
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!affiliate || affiliate.status !== 'ACTIVE') {
-      return NextResponse.redirect(new URL(targetUrl, request.url)),
+      return NextResponse.redirect(new URL(targetUrl, request.url))
     }
 
     // Obter informações do request
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(targetUrl, request.url)),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // POST - Registrar conversão
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Código de referência e ID do cliente são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     // Buscar afiliado
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Afiliado não encontrado' },
         { status: 404 }
-      ),
+      )
     }
 
     // Verificar se já existe uma conversão para este cliente
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
     if (existingReferral) {
       return NextResponse.json({
         data: { message: 'Conversão já registrada', referralId: existingReferral.id },
-      }),
+      })
     }
 
     // Calcular comissão
@@ -240,5 +240,5 @@ export async function POST(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }

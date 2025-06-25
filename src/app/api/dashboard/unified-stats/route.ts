@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
         action: 'Documento enviado',
         client: { id: '3', name: 'Pedro Costa', email: 'pedro@email.com' },
         executedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        priority: 'low' as const,
+        priority: 'low' as const
       }
     ]
 
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
         client: { id: '2', name: 'Maria Santos' },
         dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'high' as const,
-        type: 'consultation',
+        type: 'consultation'
       }
     ]
 
@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
       callsToday: 12,
       responseTime: 2.3,
       pendingMessages: 8,
-      unreadMessages: 15,
+      unreadMessages: 15
     }
 
     const dashboardStats = {
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
       recentActivity,
       topPerformers,
       urgentTasks: urgentTasksList,
-      communicationStats,
+      communicationStats
     }
 
     return NextResponse.json({
@@ -191,5 +191,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

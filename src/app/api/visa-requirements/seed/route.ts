@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
             name: 'Antecedentes criminais',
             required: true,
             description: 'De todos os países onde viveu',
-            validityMonths: 12,
+            validityMonths: 12
           }
         ],
         processingTime: '6-8 meses',
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
           {
             criterion: 'Recursos financeiros',
             description: 'Comprovação de fundos suficientes',
-            required: true,
+            required: true
           }
         ],
         commonPitfalls: [
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
             name: 'Character assessment',
             required: true,
             description: 'Police certificates from all countries',
-            validityMonths: 12,
+            validityMonths: 12
           }
         ],
         processingTime: '8-12 meses',
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
           {
             criterion: 'EOI Points',
             description: 'Mínimo 65 pontos no SkillSelect',
-            required: true,
+            required: true
           }
         ],
         commonPitfalls: [
@@ -259,7 +259,7 @@ export async function POST(request: NextRequest) {
             name: 'Comprovativo de alojamento',
             required: true,
             description: 'Contrato de arrendamento ou propriedade',
-            validityMonths: null,
+            validityMonths: null
           }
         ],
         processingTime: '2-4 meses',
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
           {
             criterion: 'Seguro',
             description: 'Seguro de saúde válido',
-            required: true,
+            required: true
           }
         ],
         commonPitfalls: [
@@ -336,7 +336,7 @@ export async function POST(request: NextRequest) {
             name: 'Form I-140',
             required: true,
             description: 'Petition for immigrant worker',
-            validityMonths: null,
+            validityMonths: null
           }
         ],
         processingTime: '12-18 meses',
@@ -354,7 +354,7 @@ export async function POST(request: NextRequest) {
           {
             criterion: 'Field expertise',
             description: 'National or international acclaim',
-            required: true,
+            required: true
           }
         ],
         commonPitfalls: [
@@ -375,7 +375,7 @@ export async function POST(request: NextRequest) {
             name: 'USCIS Official Page',
             url: 'https://www.uscis.gov/working-in-the-united-states/permanent-workers/employment-based-immigration-first-preference-eb-1'
           }
-        ],
+        ]
       }
     ]
 
@@ -419,5 +419,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

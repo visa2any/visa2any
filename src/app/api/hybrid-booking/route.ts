@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     // Configurações padrão se não fornecidas
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       fallbackEnabled: true,
       urgency: 'normal',
       maxRetries: 3,
-      ...options,
+      ...options
     }
 
     // Log da tentativa de agendamento
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         attempts: result.attempts,
         warnings: result.warnings,
         recommendations: this.generateRecommendations(result.attempts),
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
   } catch (error) {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Buscar vagas disponíveis em todos os métodos
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Parâmetros country e visaType são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     // Buscar vagas em todos os métodos
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Métodos auxiliares para recomendações
@@ -144,51 +144,51 @@ function generateRecommendations(attempts: any[]): string[] {
   const hasScrapingFailure = failedMethods.includes('scraping')
 
   if (hasOfficialFailure) {
-    recommendations.push('APIs oficiais indisponíveis - considere tentar novamente em algumas horas'),
+    recommendations.push('APIs oficiais indisponíveis - considere tentar novamente em algumas horas')
   }
 
   if (hasPartnerFailure) {
-    recommendations.push('Parceiros indisponíveis - verifique se há saldo/créditos suficientes'),
+    recommendations.push('Parceiros indisponíveis - verifique se há saldo/créditos suficientes')
   }
 
   if (hasScrapingFailure) {
-    recommendations.push('Web scraping bloqueado - sites podem ter anti-bot ativo'),
+    recommendations.push('Web scraping bloqueado - sites podem ter anti-bot ativo')
   }
 
   if (attempts.length === 0) {
-    recommendations.push('Nenhum método disponível - verifique configurações de API'),
+    recommendations.push('Nenhum método disponível - verifique configurações de API')
   }
 
   if (recommendations.length === 0) {
     recommendations.push('Tente novamente com urgência "express" para mais opções')
-    recommendations.push('Entre em contato com suporte para agendamento manual'),
+    recommendations.push('Entre em contato com suporte para agendamento manual')
   }
 
-  return recommendations,
+  return recommendations
 }
 
 function generateAvailabilityRecommendations(results: any): string[] {
   const recommendations: string[] = []
 
   if (results.official.length > 0) {
-    recommendations.push('✅ Use APIs oficiais para melhor confiabilidade'),
+    recommendations.push('✅ Use APIs oficiais para melhor confiabilidade')
   }
 
   if (results.partners.length > 0 && results.official.length === 0) {
-    recommendations.push('💰 Parceiros disponíveis - agendamento pago mas confiável'),
+    recommendations.push('💰 Parceiros disponíveis - agendamento pago mas confiável')
   }
 
   if (results.scraping.length > 0 && results.official.length === 0 && results.partners.length === 0) {
-    recommendations.push('⚠️ Apenas web scraping disponível - dados podem estar desatualizados'),
+    recommendations.push('⚠️ Apenas web scraping disponível - dados podem estar desatualizados')
   }
 
   if (results.consolidated.length === 0) {
-    recommendations.push('❌ Nenhuma vaga encontrada - tente outros períodos ou consulados'),
+    recommendations.push('❌ Nenhuma vaga encontrada - tente outros períodos ou consulados')
   }
 
   if (results.consolidated.length > 10) {
-    recommendations.push('✨ Muitas opções disponíveis - escolha o melhor horário'),
+    recommendations.push('✨ Muitas opções disponíveis - escolha o melhor horário')
   }
 
-  return recommendations,
+  return recommendations
 }

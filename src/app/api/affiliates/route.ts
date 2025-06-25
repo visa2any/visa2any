@@ -10,7 +10,7 @@ function generateReferralCode(name: string): string {
   const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase()
   const namePrefix = cleanName.substring(0, 4)
   const timestamp = Date.now().toString().slice(-4)
-  return `${namePrefix}${timestamp}`,
+  return `${namePrefix}${timestamp}`
 }
 
 // GET - Listar afiliados (Admin)
@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'all') {
-      where.status = status,
+      where.status = status
     }
     
     if (tier && tier !== 'all') {
-      where.tier = tier,
+      where.tier = tier
     }
     
     if (search) {
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
         { referralCode: { contains: search, mode: 'insensitive' } }
-      ],
+      ]
     }
 
     // Buscar afiliados
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // POST - Criar novo afiliado
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     if (!name || !email) {
       return NextResponse.json({
         error: 'Nome e email são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Verificar se email já existe
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
     if (existingAffiliate) {
       return NextResponse.json({
         error: 'Email já cadastrado',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Gerar código de referência único
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       if (!existing) break
       
       attempts++
-      referralCode = generateReferralCode(name) + attempts,
+      referralCode = generateReferralCode(name) + attempts
     }
 
     // Criar afiliado
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // PUT - Atualizar afiliado (Admin)
@@ -207,7 +207,7 @@ export async function PUT(request: NextRequest) {
     if (!id) {
       return NextResponse.json({
         error: 'ID do afiliado é obrigatório',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const affiliate = await prisma.affiliate.update({
@@ -229,5 +229,5 @@ export async function PUT(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }

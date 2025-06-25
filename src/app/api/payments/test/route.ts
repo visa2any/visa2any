@@ -21,5 +21,5 @@ export async function POST(request: NextRequest) {
       error: 'Erro na API de teste',
       details: error instanceof Error ? error.message : 'Erro desconhecido',
     }, { status: 500 }),
-  },
+  }
 }

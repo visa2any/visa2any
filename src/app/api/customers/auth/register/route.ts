@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (!name || !email || !password) {
       return NextResponse.json({
         error: 'Nome, email e senha são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Verificar se já existe cliente com este email
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (existingCustomer) {
       return NextResponse.json({
         error: 'Já existe uma conta com este email',
-      }, { status: 409 }),
+      }, { status: 409 })
     }
 
     // Hash da senha
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
         error: 'Erro de configuração do servidor',
-      }, { status: 500 }),
+      }, { status: 500 })
     }
     
     const token = jwt.sign(
@@ -98,5 +98,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           error: `Missing required field: ${field}`,
         }, { status: 400 }),
-      },
+      }
     }
 
     // Salvar dados temporariamente (poderia ser Redis, DB, etc.)
@@ -37,11 +37,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Internal server error',
     }, { status: 500 }),
-  },
+  }
 }
 
 export async function GET() {
   return NextResponse.json({
     message: 'Vaga Express API - Use POST to prepare subscription',
-  }),
+  })
 }

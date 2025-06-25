@@ -25,7 +25,7 @@ export async function GET(,
           error: 'Post não encontrado',
         },
         { status: 404 }
-      ),
+      )
     }
 
     // Incrementar views
@@ -72,7 +72,7 @@ export async function GET(,
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 export async function PUT(,
@@ -94,7 +94,7 @@ export async function PUT(,
           error: 'Post não encontrado',
         },
         { status: 404 }
-      ),
+      )
     }
 
     // Atualizar post
@@ -121,7 +121,7 @@ export async function PUT(,
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 export async function DELETE(,
@@ -142,7 +142,7 @@ export async function DELETE(,
           error: 'Post não encontrado',
         },
         { status: 404 }
-      ),
+      )
     }
 
     // Soft delete - marcar como não publicado
@@ -166,5 +166,5 @@ export async function DELETE(,
       },
       { status: 500 }
     ),
-  },
+  }
 }

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/whatsapp/status - Reconectar WhatsApp
@@ -54,5 +54,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }

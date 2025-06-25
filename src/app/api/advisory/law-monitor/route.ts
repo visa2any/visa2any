@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Configurar alertas se necessário
     if (validatedData.clientId) {
-      await setupLawChangeAlerts(validatedData),
+      await setupLawChangeAlerts(validatedData)
     }
 
     return NextResponse.json({
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro no monitoramento legal:', error)
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET /api/advisory/law-monitor/changes - Obter mudanças recentes
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     const changes = await getLawChanges(country, days, visaType ?? undefined)
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Verificar mudanças recentes nas leis
@@ -109,7 +109,7 @@ async function checkRecentLawChanges(country: string, visaType?: string) {
   // - Web scraping de sites oficiais
   // - Serviços de monitoramento legal
   
-  return mockChanges,
+  return mockChanges
 }
 
 // Obter mudanças nas leis por país
@@ -140,9 +140,9 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         impact: 'medium',
         source: 'IRCC',
         category: 'selection_criteria',
-        affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class'],
+        affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class']
       }
-    ],
+    ]
   }
 
   // Filtrar por tipo de visto se especificado
@@ -158,7 +158,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
   return filteredChanges.filter(change => {
     const changeDate = new Date(change.date)
     return changeDate >= startDate,
-  }),
+  })
 }
 
 // Analisar mudanças nas leis
@@ -174,7 +174,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
       upcoming: 0,
       future: 0,
     },
-    recommendations: [] as string[],
+    recommendations: [] as string[]
   }
 
   // Analisar cada mudança
@@ -186,7 +186,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     if (change.affectedPrograms) {
       change.affectedPrograms.forEach((program: string) => {
         analysis.affectedPrograms.add(program),
-      }),
+      })
     }
     
     // Analisar timeline
@@ -213,18 +213,18 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
   // Gerar recomendações baseadas na análise
   if (analysis.impactLevel === 'high') {
     analysis.recommendations.push('Revisar estratégia de aplicação imediatamente')
-    analysis.recommendations.push('Considerar acelerar timeline de aplicação'),
+    analysis.recommendations.push('Considerar acelerar timeline de aplicação')
   }
   
   if (analysis.timeline.immediate > 0) {
-    analysis.recommendations.push('Verificar compliance com mudanças já em vigor'),
+    analysis.recommendations.push('Verificar compliance com mudanças já em vigor')
   }
   
   if (analysis.timeline.upcoming > 0) {
-    analysis.recommendations.push('Preparar-se para mudanças que entram em vigor nos próximos 90 dias'),
+    analysis.recommendations.push('Preparar-se para mudanças que entram em vigor nos próximos 90 dias')
   }
 
-  return analysis,
+  return analysis
 }
 
 // Configurar alertas de mudanças legais
@@ -249,7 +249,7 @@ async function setupLawChangeAlerts(data: any) {
     },
   })
   
-  return { success: true },
+  return { success: true }
 }
 
 // Gerar recomendações baseadas em mudanças legais
@@ -265,7 +265,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       action: 'Review new requirements and ensure compliance',
       timeline: 'Immediate',
       details: 'Requirements have changed - verify your application meets new criteria',
-    }),
+    })
   }
   
   const investmentChanges = changes.filter(c => c.category === 'investment_amounts')
@@ -276,7 +276,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       action: 'Review investment strategy',
       timeline: 'Before application',
       details: 'Investment amounts have changed - adjust financial planning accordingly',
-    }),
+    })
   }
   
   const languageChanges = changes.filter(c => c.category === 'language_requirements')
@@ -287,7 +287,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       action: 'Update language testing strategy',
       timeline: '2-3 months',
       details: 'Language requirements have been updated - may need to retake tests',
-    }),
+    })
   }
   
   // Recomendações gerais baseadas no nível de impacto
@@ -298,8 +298,8 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       action: 'Schedule emergency consultation',
       timeline: 'Within 48 hours',
       details: 'Significant changes detected - expert review recommended',
-    }),
+    })
   }
   
-  return recommendations,
+  return recommendations
 }

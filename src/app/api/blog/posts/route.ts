@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros do Prisma
     const where: any = {
-      published: true,
+      published: true
     }
 
     // Filtro de busca por texto melhorado
@@ -51,32 +51,32 @@ export async function GET(request: NextRequest) {
             { country: { contains: word, mode: 'insensitive' } }
           ),
         },
-      },
+      }
     }
 
     // Filtros específicos
     if (category !== 'Todos') {
-      where.category = category,
+      where.category = category
     }
 
     if (difficulty !== 'Todos') {
-      where.difficulty = difficulty,
+      where.difficulty = difficulty
     }
 
     if (type !== 'Todos') {
-      where.type = type,
+      where.type = type
     }
 
     if (featured) {
-      where.featured = true,
+      where.featured = true
     }
 
     if (trending) {
-      where.trending = true,
+      where.trending = true
     }
 
     if (urgent) {
-      where.urgent = true,
+      where.urgent = true
     }
 
     // Ordenação
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
         break
       case 'liked':
         orderBy = { likes: 'desc' }
-        break,
+        break
     }
 
     // Buscar posts
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
         offset: 0,
       },
     }),
-  },
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
           error: 'Campos obrigatórios: title, excerpt, content, category, author',
         },
         { status: 400 }
-      ),
+      )
     }
 
     // Criar post
@@ -201,5 +201,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }

@@ -11,7 +11,7 @@ export async function PATCH(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Here you would update the message status in the database
@@ -19,7 +19,7 @@ export async function PATCH(,
     const updatedMessage = {
       id: messageId,
       status: 'read',
-      readAt: new Date().toISOString(),
+      readAt: new Date().toISOString()
     }
 
     // Simulate database update delay
@@ -36,5 +36,5 @@ export async function PATCH(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

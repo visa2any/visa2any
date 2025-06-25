@@ -15,7 +15,7 @@ export async function GET(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Mock timeline data for the client
@@ -150,7 +150,7 @@ export async function GET(,
         metadata: {
           oldValue: 'DOCUMENTS_PENDING',
           newValue: 'IN_PROCESS',
-        },
+        }
       }
     ]
 
@@ -170,5 +170,5 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

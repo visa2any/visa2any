@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (secret !== process.env.N8N_WEBHOOK_SECRET) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Log incoming webhook
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Unknown webhook type:', type),
+        console.log('Unknown webhook type:', type)
     }
 
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 async function handleLegalChange(data: any) {
@@ -99,7 +99,7 @@ async function handleLegalChange(data: any) {
         },
       }),
     },
-  },
+  }
 }
 
 async function handleConsularSlot(data: any) {
@@ -160,7 +160,7 @@ async function handleConsularSlot(data: any) {
         status: 'PENDING',
       },
     }),
-  },
+  }
 }
 
 async function handleDocumentValidation(data: any) {
@@ -180,7 +180,7 @@ async function handleDocumentValidation(data: any) {
           validatedBy: 'N8N_AUTOMATION',
         },
       },
-    }),
+    })
   }
 
   // Log validation
@@ -226,7 +226,7 @@ async function handleDocumentValidation(data: any) {
         },
       }),
     },
-  },
+  }
 }
 
 async function handleClientRiskAlert(data: any) {
@@ -282,7 +282,7 @@ async function handleClientRiskAlert(data: any) {
         },
       },
     }),
-  },
+  }
 }
 
 async function handleAutomationCompleted(data: any) {
@@ -314,5 +314,5 @@ async function handleAutomationCompleted(data: any) {
         lastContactAt: new Date(),
       },
     }),
-  },
+  }
 }

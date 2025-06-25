@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos trackingId, customerName e customerEmail são obrigatórios' },
             { status: 400 }
-          ),
+          )
         }
 
         const bookingResult = await notificationService.sendBookingCreated(data)
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos trackingId e paymentUrl são obrigatórios' },
             { status: 400 }
-          ),
+          )
         }
 
         const paymentSent = await notificationService.sendPaymentLink(trackingId, paymentUrl, pixCode)
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos trackingId e status são obrigatórios' },
             { status: 400 }
-          ),
+          )
         }
 
         const updateSent = await notificationService.sendBookingUpdate(updateTrackingId, status)
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos trackingId e appointmentDetails são obrigatórios' },
             { status: 400 }
-          ),
+          )
         }
 
         const completedSent = await notificationService.sendBookingCompleted(
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: send_booking_created, send_payment_link, send_payment_confirmation, send_booking_update, ou send_booking_completed' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Verificar configuração e enviar testes
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
           serviceLevel: 'premium',
           country: 'usa',
           visaType: 'tourist',
-          amount: 45.00,
+          amount: 45.00
         }
 
         const testResult = await notificationService.sendBookingCreated(testData)
@@ -209,7 +209,7 @@ export async function GET(request: NextRequest) {
               {
                 name: 'booking_completed',
                 description: 'Agendamento concluído',
-                variables: ['appointmentDetails', 'confirmationCode'],
+                variables: ['appointmentDetails', 'confirmationCode']
               }
             ],
             email: [
@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
               {
                 name: 'booking_completed_email',
                 description: 'Email de agendamento concluído',
-                type: 'HTML template',
+                type: 'HTML template'
               }
             ],
           },
@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: config, test, templates, ou stats' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -271,5 +271,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

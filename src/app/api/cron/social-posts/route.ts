@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
-      ),
+      )
     }
 
     console.log('🤖 Iniciando processamento de posts agendados...')
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET para verificar status
@@ -49,5 +49,5 @@ export async function GET() {
     description: 'Processa posts agendados para redes sociais',
     schedule: 'A cada 5 minutos',
     lastRun: new Date().toISOString(),
-  }),
+  })
 }

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         name: 'Preparação para Entrevista',
         price: 497,
         description: 'Treinamento para entrevista consular',
-      },
+      }
     }
 
     const product = upsellProducts[offerId as keyof typeof upsellProducts]
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Produto não encontrado' },
         { status: 404 }
-      ),
+      )
     }
 
     // Simular criação de ordem de pagamento
@@ -62,5 +62,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

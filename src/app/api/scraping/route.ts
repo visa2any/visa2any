@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
         message: 'Targets de scraping listados',
-      }),
+      })
     }
 
     if (action === 'slots' && targetId) {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         source: result.source,
         warning: 'Dados obtidos via web scraping - podem estar desatualizados',
         disclaimer: 'Este serviço é apenas para fins informativos',
-      }),
+      })
     }
 
     return NextResponse.json(
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST - Configurar scraping
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campos targetId e enabled são obrigatórios' },
           { status: 400 }
-        ),
+        )
       }
 
       if (enabled && !legalConfirmation) {
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
             required: 'Envie legalConfirmation: true para confirmar',
           },
           { status: 400 }
-        ),
+        )
       }
 
       const success = webScrapingService.setTargetEnabled(targetId, enabled, legalConfirmation)
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           { error: 'Falha ao configurar target' },
           { status: 400 }
         ),
-      },
+      }
     }
 
     if (action === 'start_monitoring') {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campo targetIds deve ser um array não vazio' },
           { status: 400 }
-        ),
+        )
       }
 
       // Iniciar monitoramento em background
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         },
         message: 'Monitoramento iniciado',
         warning: 'Monitoramento contínuo pode ser detectado pelos sites',
-      }),
+      })
     }
 
     return NextResponse.json(
@@ -129,5 +129,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

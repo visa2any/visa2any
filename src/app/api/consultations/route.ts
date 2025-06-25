@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -34,15 +34,15 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'ALL') {
-      where.status = status,
+      where.status = status
     }
     
     if (type && type !== 'ALL') {
-      where.type = type,
+      where.type = type
     }
 
     if (clientId) {
-      where.clientId = clientId,
+      where.clientId = clientId
     }
 
     // Buscar consultorias
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/consultations - Criar nova consultoria
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const body = await request.json()
     
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Se for consultoria humana, verificar se consultor existe
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { status: 404 }
         ),
-      },
+      }
     }
 
     // Criar consultoria
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
       await prisma.client.update({
         where: { id: validatedData.clientId },
         data: { status: 'CONSULTATION_SCHEDULED' },
-      }),
+      })
     }
 
     // Log da criação
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar consultoria:', error)
@@ -199,5 +199,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

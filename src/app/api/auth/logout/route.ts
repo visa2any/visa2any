@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
                 logoutTimestamp: new Date().toISOString(),
               },
             },
-          }),
-        },
+          })
+        }
       } catch (tokenError) {
         // Token inválido, mas continua com logout
-      },
+      }
     }
 
     // Criar resposta de sucesso
@@ -73,5 +73,5 @@ export async function POST(request: NextRequest) {
     })
 
     return response,
-  },
+  }
 }

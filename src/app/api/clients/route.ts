@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'ALL') {
-      where.status = status,
+      where.status = status
     }
     
     if (search) {
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } }
-      ],
+      ]
     }
 
     // Buscar clientes com paginação
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/clients - Criar novo cliente
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const body = await request.json()
     
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Criar cliente
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar cliente:', error)
@@ -191,5 +191,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

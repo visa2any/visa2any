@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       if (result.trackingId) {
         await notificationService.sendPaymentConfirmation(result.trackingId)
         await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved'),
-      },
+      }
     }
     
     return NextResponse.json({
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro ao processar webhook' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Verificar webhook (para testes)
@@ -43,5 +43,5 @@ export async function GET() {
     url: '/api/payments/webhook',
     methods: ['POST'],
     description: 'Endpoint para receber notificações de pagamento do Mercado Pago',
-  }),
+  })
 }

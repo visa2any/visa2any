@@ -28,15 +28,15 @@ export async function POST(request: NextRequest) {
       default:
         return NextResponse.json({
           error: 'Ação não reconhecida',
-        }, { status: 400 }),
-    },
+        }, { status: 400 })
+    }
   } catch (error) {
     console.error('Erro na API Vaga Express:', error)
     return NextResponse.json({
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
           const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
           return NextResponse.json({
             orders: orders.slice(-10) // Últimos 10 pedidos
-          }),
+          })
         }
 
       case 'statistics':
@@ -63,12 +63,12 @@ export async function GET(request: NextRequest) {
       default:
         return NextResponse.json({
           error: 'Tipo não especificado',
-        }, { status: 400 }),
-    },
+        }, { status: 400 })
+    }
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao buscar dados',
       details: error instanceof Error ? error.message : String(error),
     }, { status: 500 }),
-  },
+  }
 }

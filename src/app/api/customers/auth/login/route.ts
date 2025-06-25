@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, RATE_LIMITS.auth)
   
   if (!rateLimitResult.success) {
-    return createRateLimitResponse(rateLimitResult.resetTime),
+    return createRateLimitResponse(rateLimitResult.resetTime)
   }
   try {
     const body = await request.json()
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     if (!email || !password) {
       return NextResponse.json({
         error: 'Email e senha são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Buscar cliente por email
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     if (!customer) {
       return NextResponse.json({
         error: 'Credenciais inválidas',
-      }, { status: 401 }),
+      }, { status: 401 })
     }
 
     // Verificar senha
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     if (!passwordMatch) {
       return NextResponse.json({
         error: 'Credenciais inválidas',
-      }, { status: 401 }),
+      }, { status: 401 })
     }
 
     // Gerar token JWT
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
         error: 'Erro de configuração do servidor',
-      }, { status: 500 }),
+      }, { status: 500 })
     }
     
     const token = jwt.sign(
@@ -101,5 +101,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }

@@ -54,7 +54,7 @@ Agende agora: {schedulingLink}
 
 Ana Silva
 Visa2Any
-      `,
+      `
     }
   ],
 
@@ -131,7 +131,7 @@ Quero agendar sua consultoria: {consultationLink}
 
 Ana Silva
 Consultora Sênior
-      `,
+      `
     }
   ],
 
@@ -204,9 +204,9 @@ Mais de 10.000 pessoas já evitaram reprovações com esse material!
 Dica #3 chega em breve...
 
 Equipe Visa2Any
-      `,
+      `
     }
-  ],
+  ]
 }
 
 export async function POST(request: NextRequest) {
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
     if (!sequence || !email || !name) {
       return NextResponse.json({
         error: 'Dados obrigatórios faltando',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const templates = EMAIL_TEMPLATES[sequence as keyof typeof EMAIL_TEMPLATES]
@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
     if (!templates) {
       return NextResponse.json({
         error: 'Sequência de email não encontrada',
-      }, { status: 404 }),
+      }, { status: 404 })
     }
 
     // Calcular score se não fornecido
@@ -269,7 +269,7 @@ export async function POST(request: NextRequest) {
         sequence,
         clientId,
         templateIndex: templates.indexOf(template),
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Erro interno do servidor',
     }, { status: 500 }),
-  },
+  }
 }
 
 function processTemplate(template: string, variables: Record<string, any>): string {
@@ -293,7 +293,7 @@ function processTemplate(template: string, variables: Record<string, any>): stri
     processed = processed.replace(regex, String(value)),
   })
   
-  return processed,
+  return processed
 }
 
 function calculateScoreFromResponses(responses: any): number {
@@ -307,9 +307,9 @@ function calculateScoreFromResponses(responses: any): number {
       'Pós-graduação': 15,
       'Superior completo': 12,
       'Superior incompleto': 8,
-      'Ensino médio': 5,
+      'Ensino médio': 5
     }
-    score += educationScores[responses.education] || 5,
+    score += educationScores[responses.education] || 5
   }
 
   if (responses.budget) {
@@ -317,21 +317,21 @@ function calculateScoreFromResponses(responses: any): number {
       'Acima de R$ 500.000': 15,
       'R$ 300.000 - R$ 500.000': 12,
       'R$ 100.000 - R$ 300.000': 8,
-      'R$ 50.000 - R$ 100.000': 5,
+      'R$ 50.000 - R$ 100.000': 5
     }
-    score += budgetScores[responses.budget] || 2,
+    score += budgetScores[responses.budget] || 2
   }
 
   if (responses.urgency) {
     const urgencyScores: Record<string, number> = {
       'Extremamente urgente (preciso sair já)': 10,
       'Muito urgente (próximos 3 meses)': 8,
-      'Urgente (próximos 6 meses)': 6,
+      'Urgente (próximos 6 meses)': 6
     }
-    score += urgencyScores[responses.urgency] || 3,
+    score += urgencyScores[responses.urgency] || 3
   }
 
-  return Math.min(score, 100),
+  return Math.min(score, 100)
 }
 
 async function scheduleEmail(emailData: {
@@ -357,7 +357,7 @@ async function scheduleEmail(emailData: {
 
     // Se o delay for 0 (imediato), enviar agora
     if (emailData.sendAt <= new Date()) {
-      await sendEmailNow(emailData),
+      await sendEmailNow(emailData)
     }
 
     // Salvar na base para controle
@@ -372,12 +372,12 @@ async function scheduleEmail(emailData: {
           content: `Email agendado: ${emailData.subject}`,
           completedAt: new Date(),
         },
-      }),
+      })
     }
 
   } catch (error) {
     console.error('Erro ao agendar email:', error),
-  },
+  }
 }
 
 async function sendEmailNow(emailData: {
@@ -417,10 +417,10 @@ async function sendEmailNow(emailData: {
           content: `Email enviado: ${emailData.subject}`,
           completedAt: new Date(),
         },
-      }),
+      })
     }
 
   } catch (error) {
     console.error('Erro ao enviar email:', error),
-  },
+  }
 }

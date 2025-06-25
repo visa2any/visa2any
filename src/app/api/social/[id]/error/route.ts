@@ -31,5 +31,5 @@ export async function PATCH(,
       { error: 'Erro ao registrar falha' },
       { status: 500 }
     ),
-  },
+  }
 }

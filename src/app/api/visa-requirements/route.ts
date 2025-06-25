@@ -49,11 +49,11 @@ export async function GET(request: NextRequest) {
     const where: any = { isActive: true }
     
     if (country) {
-      where.country = { contains: country },
+      where.country = { contains: country }
     }
     
     if (visaType) {
-      where.visaType = { contains: visaType },
+      where.visaType = { contains: visaType }
     }
     
     if (search) {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
         { country: { contains: search } },
         { visaType: { contains: search } },
         { visaSubtype: { contains: search } }
-      ],
+      ]
     }
 
     // Buscar requisitos
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST /api/visa-requirements - Criar requisitos de visto
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Criar requisitos
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao criar requisitos:', error)
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT /api/visa-requirements - Atualizar requisitos
@@ -208,7 +208,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     const validatedData = visaRequirementSchema.partial().parse(updateData)
@@ -245,5 +245,5 @@ export async function PUT(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

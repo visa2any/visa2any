@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: title, excerpt, content, category' },
         { status: 400 }
-      ),
+      )
     }
 
     // Verificar se já existe um post com o mesmo título
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Post com este título já existe' },
         { status: 409 }
-      ),
+      )
     }
 
     // Criar novo post no banco
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Endpoint para verificar status do sistema
@@ -112,7 +112,7 @@ export async function GET() {
       { error: 'Erro ao verificar status' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função auxiliar para calcular tempo de leitura
@@ -120,7 +120,7 @@ function calculateReadTime(content: string): string {
   const wordsPerMinute = 200
   const words = content.split(' ').length
   const minutes = Math.ceil(words / wordsPerMinute)
-  return `${minutes} min`,
+  return `${minutes} min`
 }
 
 // Endpoint para atualizar posts existentes
@@ -133,7 +133,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID do post é obrigatório' },
         { status: 400 }
-      ),
+      )
     }
 
     const updatedPost = await prisma.blogPost.update({
@@ -156,5 +156,5 @@ export async function PUT(request: NextRequest) {
       { error: 'Erro ao atualizar post' },
       { status: 500 }
     ),
-  },
+  }
 }

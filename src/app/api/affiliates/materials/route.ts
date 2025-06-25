@@ -270,7 +270,7 @@ Código especial: {{REFERRAL_CODE}}
     `,
     downloadUrl: '/downloads/guia-visto-eua.pdf',
     imageUrl: '/images/guides/ebook-visto-eua.jpg',
-    isActive: true,
+    isActive: true
   }
 ]
 
@@ -286,11 +286,11 @@ export async function GET(request: NextRequest) {
     const where: any = { isActive: true }
     
     if (type) {
-      where.type = type,
+      where.type = type
     }
     
     if (category) {
-      where.category = category,
+      where.category = category
     }
 
     // Se affiliateId for fornecido, incluir materiais específicos do afiliado
@@ -326,7 +326,7 @@ export async function GET(request: NextRequest) {
           views: Math.floor(Math.random() * 1000),
           downloads: Math.floor(Math.random() * 500),
         })),
-      }),
+      })
     }
 
     return NextResponse.json({
@@ -340,7 +340,7 @@ export async function GET(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // POST - Criar novo material
@@ -365,7 +365,7 @@ export async function POST(request: NextRequest) {
     if (!type || !title || !description) {
       return NextResponse.json({
         error: 'Tipo, título e descrição são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const material = await prisma.affiliateMaterial.create({
@@ -395,7 +395,7 @@ export async function POST(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // PUT - Atualizar material
@@ -407,7 +407,7 @@ export async function PUT(request: NextRequest) {
     if (!id) {
       return NextResponse.json({
         error: 'ID do material é obrigatório',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const material = await prisma.affiliateMaterial.update({
@@ -429,5 +429,5 @@ export async function PUT(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }

@@ -28,7 +28,7 @@ export async function GET(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
@@ -54,7 +54,7 @@ export async function GET(,
     if (!consultation) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     return NextResponse.json({
@@ -67,7 +67,7 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PATCH /api/consultations/[id] - Atualizar campo específico (inline edit)
@@ -79,7 +79,7 @@ export async function PATCH(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
@@ -95,7 +95,7 @@ export async function PATCH(,
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Preparar dados para atualização
@@ -107,12 +107,12 @@ export async function PATCH(,
         updateData.scheduledAt = new Date(validatedData.scheduledAt),
       } else {
         updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z'),
-      },
+      }
     }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date(),
+      updateData.completedAt = new Date()
     }
 
     // Atualizar consultoria
@@ -155,7 +155,7 @@ export async function PATCH(,
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao atualizar consultoria:', error)
@@ -163,7 +163,7 @@ export async function PATCH(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT /api/consultations/[id] - Atualizar consultoria
@@ -175,7 +175,7 @@ export async function PUT(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
@@ -192,23 +192,23 @@ export async function PUT(,
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Preparar dados para atualização
     const updateData: any = { ...validatedData }
     
     if (validatedData.scheduledAt) {
-      updateData.scheduledAt = new Date(validatedData.scheduledAt),
+      updateData.scheduledAt = new Date(validatedData.scheduledAt)
     }
     
     if (validatedData.completedAt) {
-      updateData.completedAt = new Date(validatedData.completedAt),
+      updateData.completedAt = new Date(validatedData.completedAt)
     }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date(),
+      updateData.completedAt = new Date()
     }
 
     // Atualizar consultoria
@@ -240,7 +240,7 @@ export async function PUT(,
       } else if (validatedData.score && validatedData.score < 40) {
         newClientStatus = 'QUALIFIED' // Precisa de mais trabalho
       } else {
-        newClientStatus = 'DOCUMENTS_PENDING',
+        newClientStatus = 'DOCUMENTS_PENDING'
       }
 
       await prisma.client.update({
@@ -249,7 +249,7 @@ export async function PUT(,
           status: newClientStatus,
           score: validatedData.score || existingConsultation.client.score,
         },
-      }),
+      })
     }
 
     // Log da atualização
@@ -278,7 +278,7 @@ export async function PUT(,
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro ao atualizar consultoria:', error)
@@ -286,7 +286,7 @@ export async function PUT(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // DELETE /api/consultations/[id] - Deletar consultoria
@@ -298,7 +298,7 @@ export async function DELETE(,
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado'),
+      return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
@@ -310,7 +310,7 @@ export async function DELETE(,
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Deletar consultoria
@@ -342,5 +342,5 @@ export async function DELETE(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

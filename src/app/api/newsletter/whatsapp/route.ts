@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Nome, telefone e aceite dos termos são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     // Validar formato do telefone
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },
         { status: 400 }
-      ),
+      )
     }
 
     // Verificar se já existe
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Este número já está cadastrado na nossa newsletter' },
         { status: 409 }
-      ),
+      )
     }
 
     // Criar novo assinante
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Enviar mensagem de boas-vindas via WhatsApp
     try {
-      await sendWelcomeMessage(phone, name),
+      await sendWelcomeMessage(phone, name)
     } catch (error) {
       console.error('Erro ao enviar mensagem de boas-vindas:', error)
       // Não falhar o cadastro se a mensagem não for enviada
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função para enviar mensagem de boas-vindas
@@ -112,10 +112,10 @@ _Para cancelar, responda SAIR_`
   })
 
   if (!whatsappResponse.ok) {
-    throw new Error('Falha ao enviar mensagem de boas-vindas'),
+    throw new Error('Falha ao enviar mensagem de boas-vindas')
   }
 
-  return true,
+  return true
 }
 
 // GET - Listar assinantes (admin only)
@@ -135,7 +135,7 @@ export async function GET() {
         })
         return acc,
       }, {} as Record<string, number>),
-      recent: subscribers.slice(0, 10),
+      recent: subscribers.slice(0, 10)
     }
 
     return NextResponse.json({
@@ -156,5 +156,5 @@ export async function GET() {
       { error: 'Erro ao listar assinantes' },
       { status: 500 }
     ),
-  },
+  }
 }

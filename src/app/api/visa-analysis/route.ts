@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, RATE_LIMITS.analysis)
   
   if (!rateLimitResult.success) {
-    return createRateLimitResponse(rateLimitResult.resetTime),
+    return createRateLimitResponse(rateLimitResult.resetTime)
   }
   
   try {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
     // Buscar requisitos para o país/visto
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (requirements.length === 0) {
       return NextResponse.json({
         error: 'Não encontramos informações sobre vistos para este país ainda.',
-      }, { status: 404 }),
+      }, { status: 404 })
     }
 
     // Analisar elegibilidade para cada tipo de visto
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro na análise de elegibilidade:', error)
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // Função principal de análise de elegibilidade
@@ -184,7 +184,7 @@ async function analyzeEligibility(profile: any, requirement: any) {
     
     default:
       return analyzeGenericEligibility(profile, requirement),
-  },
+  }
 }
 
 // Análise específica para Canadá (Express Entry)
@@ -201,7 +201,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   } else if (profile.age <= 39) {
     ageScore = 105,
   } else if (profile.age <= 45) {
-    ageScore = 95 - (profile.age - 39) * 5,
+    ageScore = 95 - (profile.age - 39) * 5
   }
   totalScore += ageScore
   feedback.push(`Idade: ${ageScore}/110 pontos`)
@@ -227,7 +227,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
       educationScore = 98
       break,
     default:
-      educationScore = 28,
+      educationScore = 28
   }
   totalScore += educationScore
   feedback.push(`Educação: ${educationScore}/150 pontos`)
@@ -244,7 +244,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   } else if (englishLevel >= 6) {
     languageScore = 74,
   } else {
-    blockers.push('Nível de inglês insuficiente (mínimo CLB 7)'),
+    blockers.push('Nível de inglês insuficiente (mínimo CLB 7)')
   }
   totalScore += languageScore
   feedback.push(`Inglês: ${languageScore}/136 pontos`)
@@ -260,7 +260,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   } else if (profile.workExperience >= 1) {
     experienceScore = 40,
   } else {
-    blockers.push('Experiência profissional insuficiente (mínimo 1 ano)'),
+    blockers.push('Experiência profissional insuficiente (mínimo 1 ano)')
   }
   totalScore += experienceScore
   feedback.push(`Experiência: ${experienceScore}/80 pontos`)
@@ -270,7 +270,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   if (profile.funds < requiredFunds) {
     blockers.push(`Fundos insuficientes (requerido: CAD $${requiredFunds})`),
   } else {
-    feedback.push('✅ Fundos suficientes comprovados'),
+    feedback.push('✅ Fundos suficientes comprovados')
   }
 
   // Cálculo final (CRS to percentage)
@@ -282,7 +282,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
     blockers,
     eligible: blockers.length === 0 && totalScore >= 67,
     estimatedDrawScore: 480 // Score típico dos últimos draws
-  },
+  }
 }
 
 // Análise específica para Austrália
@@ -300,7 +300,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
   } else if (profile.age >= 40 && profile.age <= 44) {
     ageScore = 15,
   } else if (profile.age >= 45) {
-    blockers.push('Idade acima do limite (máximo 44 anos)'),
+    blockers.push('Idade acima do limite (máximo 44 anos)')
   }
   totalScore += ageScore
 
@@ -314,7 +314,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
   } else if (englishLevel >= 6) {
     englishScore = 0,
   } else {
-    blockers.push('IELTS insuficiente (mínimo 6.0 cada banda)'),
+    blockers.push('IELTS insuficiente (mínimo 6.0 cada banda)')
   }
   totalScore += englishScore
 
@@ -327,7 +327,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
   } else if (profile.workExperience >= 3) {
     experienceScore = 10,
   } else {
-    blockers.push('Experiência insuficiente (mínimo 3 anos)'),
+    blockers.push('Experiência insuficiente (mínimo 3 anos)')
   }
   totalScore += experienceScore
 
@@ -347,7 +347,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
       educationScore = 15
       break,
     default:
-      educationScore = 10,
+      educationScore = 10
   }
   totalScore += educationScore
 
@@ -359,7 +359,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
     blockers,
     eligible,
     minimumRequired: 65,
-  },
+  }
 }
 
 // Análise específica para Portugal (D7)
@@ -376,13 +376,13 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
     blockers.push(`Rendimento insuficiente (mínimo €${minimumIncome}/mês)`)
     score -= 40,
   } else {
-    feedback.push('✅ Rendimento suficiente comprovado'),
+    feedback.push('✅ Rendimento suficiente comprovado')
   }
 
   // Idade (preferencial mas não obrigatório)
   if (profile.age > 65) {
     score -= 10
-    feedback.push('Idade acima da faixa preferencial'),
+    feedback.push('Idade acima da faixa preferencial')
   }
 
   // Sem criminalidade (assumido)
@@ -395,7 +395,7 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
     feedback,
     blockers,
     eligible,
-  },
+  }
 }
 
 // Análise específica para EUA (EB-1A)
@@ -413,7 +413,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     feedback.push('Experiência sólida para EB-1A'),
   } else {
     score = 60
-    feedback.push('Experiência adequada, mas evidências extraordinárias necessárias'),
+    feedback.push('Experiência adequada, mas evidências extraordinárias necessárias')
   }
 
   // Educação avançada ajuda
@@ -421,7 +421,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     score += 15
     feedback.push('PhD é vantajoso para EB-1A'),
   } else if (profile.education.toLowerCase().includes('masters')) {
-    score += 10,
+    score += 10
   }
 
   // EB-1A é complexo e requer evidências específicas
@@ -433,7 +433,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     feedback,
     blockers,
     eligible: score >= 70 && blockers.length === 0,
-  },
+  }
 }
 
 // Análise genérica para outros países
@@ -445,7 +445,7 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
   // Análise básica baseada em critérios comuns
   if (profile.age > 50) {
     score -= 10
-    feedback.push('Idade pode ser um fator limitante'),
+    feedback.push('Idade pode ser um fator limitante')
   }
 
   if (profile.workExperience >= 3) {
@@ -453,17 +453,17 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
     feedback.push('Experiência profissional adequada'),
   } else {
     score -= 20
-    feedback.push('Experiência profissional limitada'),
+    feedback.push('Experiência profissional limitada')
   }
 
   if (profile.education.toLowerCase().includes('bacharel') || 
       profile.education.toLowerCase().includes('graduação')) {
-    score += 10,
+    score += 10
   }
 
   if (profile.funds > 20000) {
     score += 10
-    feedback.push('Situação financeira adequada'),
+    feedback.push('Situação financeira adequada')
   }
 
   return {
@@ -471,7 +471,7 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
     feedback,
     blockers,
     eligible: score >= 60,
-  },
+  }
 }
 
 // Gerar recomendação baseada na análise
@@ -488,7 +488,7 @@ function generateRecommendation(analysis: any): string {
     return `Perfil com potencial para ${analysis.country}, mas requer preparação. Foque em melhorar os critérios principais antes de aplicar.`,
   } else {
     return `Perfil atual não atende aos requisitos mínimos para ${analysis.country}. Recomendamos buscar alternativas ou melhorar qualificações.`,
-  },
+  }
 }
 
 // Estimar timeline baseado no país e tipo de visto
@@ -505,10 +505,10 @@ function estimateTimeline(analysis: any): string {
   } else if (country.includes('austral')) {
     return '8-12 meses',
   } else if (country.includes('estados unidos')) {
-    return '12-24 meses',
+    return '12-24 meses'
   }
   
-  return '6-12 meses',
+  return '6-12 meses'
 }
 
 // Gerar próximos passos
@@ -521,15 +521,15 @@ function generateNextSteps(analysis: any): string[] {
   
   // Adicionar steps específicos baseado nos blockers
   if (blockers.some((b: string) => b.includes('inglês') || b.includes('IELTS'))) {
-    steps.push('Melhore seu nível de inglês e faça o teste IELTS/CELPIP'),
+    steps.push('Melhore seu nível de inglês e faça o teste IELTS/CELPIP')
   }
   
   if (blockers.some((b: string) => b.includes('experiência'))) {
-    steps.push('Acumule mais experiência profissional qualificada'),
+    steps.push('Acumule mais experiência profissional qualificada')
   }
   
   if (blockers.some((b: string) => b.includes('fundos') || b.includes('rendimento'))) {
-    steps.push('Organize comprovação financeira adequada'),
+    steps.push('Organize comprovação financeira adequada')
   }
   
   if (score >= 70) {
@@ -537,10 +537,10 @@ function generateNextSteps(analysis: any): string[] {
     steps.push('Inicie processo de validação de credenciais'),
   } else {
     steps.push('Foque em melhorar os pontos fracos identificados')
-    steps.push('Considere estratégias alternativas'),
+    steps.push('Considere estratégias alternativas')
   }
   
-  return steps,
+  return steps
 }
 
 // Determinar nível de recomendação
@@ -548,5 +548,5 @@ function getRecommendationLevel(score: number): string {
   if (score >= 85) return 'ALTA'
   if (score >= 70) return 'MÉDIA-ALTA'
   if (score >= 50) return 'MÉDIA'
-  return 'BAIXA',
+  return 'BAIXA'
 }

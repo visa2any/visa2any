@@ -15,7 +15,7 @@ const complianceCheckSchema = z.object({
     uploadDate: z.string(),
     expiryDate: z.string().optional(),
     issuingCountry: z.string().optional(),
-    metadata: z.record(z.any()).optional(),
+    metadata: z.record(z.any()).optional()
   })),
   checkType: z.enum([
     'pre_submission',
@@ -23,7 +23,7 @@ const complianceCheckSchema = z.object({
     'document_validity',
     'completeness_check',
     'authenticity_verification'
-  ]),
+  ])
 })
 
 // POST /api/advisory/compliance - Verificar compliance
@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
           complianceScore: complianceResult.overallScore,
           complianceLevel: complianceResult.complianceLevel,
           issuesCount: complianceResult.issues.length,
-          passedCount: complianceResult.passed.length,
-        },
-      },
+          passedCount: complianceResult.passed.length
+        }
+      }
     })
 
     return NextResponse.json({
@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
         compliance: complianceResult,
         report: detailedReport,
         recommendations: generateComplianceRecommendations(complianceResult),
-        nextSteps: generateComplianceNextSteps(complianceResult, validatedData.checkType),
-      },
+        nextSteps: generateComplianceNextSteps(complianceResult, validatedData.checkType)
+      }
     })
 
   } catch (error) {
@@ -84,18 +84,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors,
+          details: error.errors
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro na verificação de compliance:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
-  },
+    )
+  }
 }
 
 // GET /api/advisory/compliance/requirements - Obter requisitos por país/visto
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     const requirements = await getComplianceRequirements(country, visaType, detailed)
@@ -120,8 +120,8 @@ export async function GET(request: NextRequest) {
         country: country,
         visaType: visaType,
         requirements: requirements,
-        lastUpdated: new Date().toISOString(),
-      },
+        lastUpdated: new Date().toISOString()
+      }
     })
 
   } catch (error) {
@@ -129,8 +129,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
-  },
+    )
+  }
 }
 
 // Obter requisitos de compliance por país/visto
@@ -149,8 +149,8 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               format: 'PDF scan',
               resolution: '300 DPI minimum',
               color: 'Color scan required',
-              pages: 'All pages including blank ones',
-            },
+              pages: 'All pages including blank ones'
+            }
           },
           {
             type: 'language_test',
@@ -161,8 +161,8 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'IELTS': 'CLB 7 (6.0 each band)',
               'CELPIP': 'CLB 7 (7 each skill)',
               'TEF': 'CLB 7 equivalent',
-              'TCF': 'CLB 7 equivalent',
-            },
+              'TCF': 'CLB 7 equivalent'
+            }
           },
           {
             type: 'education_assessment',
@@ -172,8 +172,8 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             requirements: {
               transcripts: 'Official sealed transcripts',
               diplomas: 'Original or certified copies',
-              translation: 'If not in English/French',
-            },
+              translation: 'If not in English/French'
+            }
           },
           {
             type: 'work_experience',
@@ -185,7 +185,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Hours per week',
               'Annual salary',
               'Contact information'
-            ],
+            ]
           },
           {
             type: 'proof_of_funds',
@@ -196,7 +196,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Average balance maintained',
               'No large deposits without explanation',
               'Liquid funds only'
-            ],
+            ]
           }
         ],
         optional: [
@@ -204,28 +204,28 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             type: 'job_offer',
             name: 'Oferta de emprego',
             points: '50-200 CRS points',
-            requirements: ['LMIA or LMIA-exempt', 'NOC A, B, or 0'],
+            requirements: ['LMIA or LMIA-exempt', 'NOC A, B, or 0']
           },
           {
             type: 'french_test',
             name: 'Teste de francês',
             points: 'Up to 50 additional points',
-            acceptedTests: ['TEF', 'TCF'],
+            acceptedTests: ['TEF', 'TCF']
           }
         ],
         embassySpecific: {
           processingTimes: '6-8 months',
           interviewRequired: 'Rarely',
           medicalExam: 'Country-specific',
-          biometrics: 'Required',
-        },
+          biometrics: 'Required'
+        }
       },
       'WORK': {
         mandatory: [
           {
             type: 'lmia',
             name: 'LMIA ou LMIA-exempt job offer',
-            validity: 'Valid at time of application',
+            validity: 'Valid at time of application'
           },
           {
             type: 'employment_contract',
@@ -235,10 +235,10 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Detailed job description',
               'Salary and benefits',
               'Work location'
-            ],
+            ]
           }
-        ],
-      },
+        ]
+      }
     },
     
     'Australia': {
@@ -252,8 +252,8 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             requirements: {
               qualifications: 'Relevant to nominated occupation',
               experience: 'Closely related work experience',
-              documentation: 'Comprehensive evidence package',
-            },
+              documentation: 'Comprehensive evidence package'
+            }
           },
           {
             type: 'english_test',
@@ -263,16 +263,16 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             minimumScores: {
               'IELTS': 'Competent English (6.0 each band)',
               'PTE': '50 each component',
-              'TOEFL': '12 L, 13 R, 21 W, 18 S',
-            },
+              'TOEFL': '12 L, 13 R, 21 W, 18 S'
+            }
           },
           {
             type: 'age_evidence',
             name: 'Comprovante de idade',
-            requirement: 'Under 45 years at time of invitation',
+            requirement: 'Under 45 years at time of invitation'
           }
-        ],
-      },
+        ]
+      }
     },
     
     'Portugal': {
@@ -288,7 +288,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Job creation',
               'Research activities',
               'Investment funds'
-            ],
+            ]
           },
           {
             type: 'criminal_record',
@@ -298,15 +298,15 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Country of residence',
               'Country of nationality',
               'Any country lived 1+ years (last 5 years)'
-            ],
+            ]
           },
           {
             type: 'health_insurance',
             name: 'Seguro saúde',
             coverage: 'Valid in Portugal',
-            minimum: '€30,000 coverage',
+            minimum: '€30,000 coverage'
           }
-        ],
+        ]
       },
       'WORK': {
         mandatory: [
@@ -317,7 +317,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Approved by ACT',
               'Minimum wage compliance',
               'Valid for at least 1 year'
-            ],
+            ]
           },
           {
             type: 'accommodation_proof',
@@ -326,11 +326,11 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Rental contract',
               'Property ownership',
               'Accommodation declaration'
-            ],
+            ]
           }
-        ],
-      },
-    },
+        ]
+      }
+    }
   }
 
   const countryReqs = requirementsDatabase[country]
@@ -339,15 +339,15 @@ async function getComplianceRequirements(country: string, visaType: string, deta
       mandatory: [],
       optional: [],
       note: 'Requirements not available - contact specialist',
-      lastUpdated: new Date().toISOString(),
-    },
+      lastUpdated: new Date().toISOString()
+    }
   }
 
   return {
     ...countryReqs[visaType],
     lastUpdated: new Date().toISOString(),
-    source: 'Official embassy requirements',
-  },
+    source: 'Official embassy requirements'
+  }
 }
 
 // Realizar verificação de compliance
@@ -363,8 +363,8 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     breakdown: {
       mandatory: { completed: 0, total: 0, score: 0 },
       optional: { completed: 0, total: 0, score: 0 },
-      technical: { score: 0, issues: 0 },
-    },
+      technical: { score: 0, issues: 0 }
+    }
   }
 
   // Verificar documentos obrigatórios
@@ -383,14 +383,14 @@ async function performComplianceCheck(documents: any[], requirements: any, check
           type: req.type,
           name: req.name,
           severity: 'critical',
-          description: `Required document missing: ${req.name}`,
+          description: `Required document missing: ${req.name}`
         })
         result.issues.push({
           type: 'missing_document',
           severity: 'critical',
           document: req.name,
-          message: `Missing required document: ${req.name}`,
-        }),
+          message: `Missing required document: ${req.name}`
+        })
       } else {
         // Verificar cada documento correspondente
         for (const doc of matchingDocs) {
@@ -400,11 +400,11 @@ async function performComplianceCheck(documents: any[], requirements: any, check
             result.passed.push({
               type: doc.type,
               name: req.name,
-              status: 'compliant',
+              status: 'compliant'
             })
-            result.breakdown.mandatory.completed++,
+            result.breakdown.mandatory.completed++
           } else {
-            result.issues.push(...docCheck.issues),
+            result.issues.push(...docCheck.issues)
           }
           
           // Verificar validade
@@ -418,22 +418,22 @@ async function performComplianceCheck(documents: any[], requirements: any, check
                 type: 'expired_document',
                 severity: 'critical',
                 document: doc.fileName,
-                message: `Document expired on ${expiryDate.toLocaleDateString()}`,
-              }),
+                message: `Document expired on ${expiryDate.toLocaleDateString()}`
+              })
             } else if (expiryDate < sixMonthsFromNow) {
               result.expiring.push({
                 type: doc.type,
                 name: doc.fileName,
                 expiryDate: doc.expiryDate,
-                daysUntilExpiry: Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
-              }),
-            },
-          },
-        },
-      },
+                daysUntilExpiry: Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+              })
+            }
+          }
+        }
+      }
     }
     
-    result.breakdown.mandatory.score = (result.breakdown.mandatory.completed / result.breakdown.mandatory.total) * 100,
+    result.breakdown.mandatory.score = (result.breakdown.mandatory.completed / result.breakdown.mandatory.total) * 100
   }
 
   // Verificar documentos opcionais
@@ -449,14 +449,14 @@ async function performComplianceCheck(documents: any[], requirements: any, check
           type: req.type,
           name: req.name,
           status: 'bonus',
-          benefit: req.points || req.benefit,
-        }),
-      },
+          benefit: req.points || req.benefit
+        })
+      }
     }
     
     if (result.breakdown.optional.total > 0) {
-      result.breakdown.optional.score = (result.breakdown.optional.completed / result.breakdown.optional.total) * 100,
-    },
+      result.breakdown.optional.score = (result.breakdown.optional.completed / result.breakdown.optional.total) * 100
+    }
   }
 
   // Calcular score geral
@@ -470,14 +470,14 @@ async function performComplianceCheck(documents: any[], requirements: any, check
 
   // Determinar nível de compliance
   if (result.overallScore >= 90 && result.missing.length === 0) {
-    result.complianceLevel = 'compliant',
+    result.complianceLevel = 'compliant'
   } else if (result.overallScore >= 70 && result.issues.filter(i => i.severity === 'critical').length === 0) {
-    result.complianceLevel = 'partial',
+    result.complianceLevel = 'partial'
   } else {
-    result.complianceLevel = 'non_compliant',
+    result.complianceLevel = 'non_compliant'
   }
 
-  return result,
+  return result
 }
 
 // Verificar compliance de documento individual
@@ -485,7 +485,7 @@ async function checkDocumentCompliance(document: any, requirement: any) {
   const check = {
     compliant: true,
     issues: [] as any[],
-    warnings: [] as any[],
+    warnings: [] as any[]
   }
 
   // Verificar especificações técnicas
@@ -498,9 +498,9 @@ async function checkDocumentCompliance(document: any, requirement: any) {
         type: 'format_issue',
         severity: 'medium',
         document: document.fileName,
-        message: `Document should be in ${specs.format} format`,
+        message: `Document should be in ${specs.format} format`
       })
-      check.compliant = false,
+      check.compliant = false
     }
     
     // Verificar resolução (se disponível nos metadados)
@@ -513,14 +513,14 @@ async function checkDocumentCompliance(document: any, requirement: any) {
           type: 'quality_issue',
           severity: 'medium',
           document: document.fileName,
-          message: `Resolution ${docDPI} DPI is below required ${requiredDPI} DPI`,
+          message: `Resolution ${docDPI} DPI is below required ${requiredDPI} DPI`
         })
-        check.compliant = false,
-      },
-    },
+        check.compliant = false
+      }
+    }
   }
 
-  return check,
+  return check
 }
 
 // Gerar relatório detalhado de compliance
@@ -533,7 +533,7 @@ async function generateComplianceReport(result: any, requirements: any, country:
       complianceLevel: result.complianceLevel,
       totalIssues: result.issues.length,
       criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,
-      readinessLevel: getReadinessLevel(result),
+      readinessLevel: getReadinessLevel(result)
     },
     sections: {
       mandatory: {
@@ -541,36 +541,36 @@ async function generateComplianceReport(result: any, requirements: any, country:
         completed: result.breakdown.mandatory.completed,
         total: result.breakdown.mandatory.total,
         score: result.breakdown.mandatory.score,
-        status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete',
+        status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete'
       },
       optional: {
         title: 'Documentos Opcionais',
         completed: result.breakdown.optional.completed,
         total: result.breakdown.optional.total,
         score: result.breakdown.optional.score,
-        benefit: 'Additional points/advantages',
+        benefit: 'Additional points/advantages'
       },
       issues: {
         critical: result.issues.filter((i: any) => i.severity === 'critical'),
         medium: result.issues.filter((i: any) => i.severity === 'medium'),
-        low: result.issues.filter((i: any) => i.severity === 'low'),
+        low: result.issues.filter((i: any) => i.severity === 'low')
       },
       timeline: {
         documentsExpiring: result.expiring,
-        actionRequired: result.issues.filter((i: any) => i.severity === 'critical').length > 0,
-      },
+        actionRequired: result.issues.filter((i: any) => i.severity === 'critical').length > 0
+      }
     },
-    recommendations: generateDetailedRecommendations(result, requirements),
+    recommendations: generateDetailedRecommendations(result, requirements)
   }
 
-  return report,
+  return report
 }
 
 // Determinar nível de prontidão
 function getReadinessLevel(result: any) {
   if (result.complianceLevel === 'compliant') return 'ready_to_submit'
   if (result.complianceLevel === 'partial') return 'needs_minor_fixes'
-  return 'major_work_required',
+  return 'major_work_required'
 }
 
 // Gerar recomendações de compliance
@@ -584,8 +584,8 @@ function generateComplianceRecommendations(result: any) {
       category: 'missing_documents',
       action: `Provide ${result.missing.length} missing required documents`,
       timeline: 'Before submission',
-      documents: result.missing.map((m: any) => m.name),
-    }),
+      documents: result.missing.map((m: any) => m.name)
+    })
   }
   
   // Recomendações para documentos expirando
@@ -595,8 +595,8 @@ function generateComplianceRecommendations(result: any) {
       category: 'expiring_documents', 
       action: `Renew ${result.expiring.length} documents expiring soon`,
       timeline: 'Within 30 days',
-      documents: result.expiring.map((e: any) => `${e.name} (expires ${e.expiryDate})`),
-    }),
+      documents: result.expiring.map((e: any) => `${e.name} (expires ${e.expiryDate})`)
+    })
   }
   
   // Recomendações para problemas de qualidade
@@ -607,11 +607,11 @@ function generateComplianceRecommendations(result: any) {
       category: 'document_quality',
       action: 'Improve document quality (resolution, format)',
       timeline: 'Before submission',
-      details: 'Ensure all scans meet embassy requirements',
-    }),
+      details: 'Ensure all scans meet embassy requirements'
+    })
   }
   
-  return recommendations,
+  return recommendations
 }
 
 // Gerar recomendações detalhadas
@@ -620,7 +620,7 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     immediate: [] as any[],
     shortTerm: [] as any[],
     longTerm: [] as any[],
-    optional: [] as any[],
+    optional: [] as any[]
   }
   
   // Ações imediatas para problemas críticos
@@ -629,8 +629,8 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     recommendations.immediate.push({
       action: `Resolve: ${issue.message}`,
       document: issue.document,
-      timeline: '1-3 days',
-    }),
+      timeline: '1-3 days'
+    })
   })
   
   // Ações de curto prazo
@@ -638,8 +638,8 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     recommendations.shortTerm.push({
       action: 'Renew expiring documents',
       documents: result.expiring.map((e: any) => e.name),
-      timeline: '2-4 weeks',
-    }),
+      timeline: '2-4 weeks'
+    })
   }
   
   // Melhorias opcionais
@@ -647,11 +647,11 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     recommendations.optional.push({
       action: 'Consider providing optional documents for additional points',
       benefit: 'Improved application strength',
-      timeline: 'Before submission',
-    }),
+      timeline: 'Before submission'
+    })
   }
   
-  return recommendations,
+  return recommendations
 }
 
 // Gerar próximos passos
@@ -661,16 +661,16 @@ function generateComplianceNextSteps(result: any, checkType: string) {
   if (result.complianceLevel === 'compliant') {
     steps.push('✅ Ready for submission')
     steps.push('Schedule final review call')
-    steps.push('Prepare submission timeline'),
+    steps.push('Prepare submission timeline')
   } else if (result.complianceLevel === 'partial') {
     steps.push('🔧 Address medium-priority issues')
     steps.push('Verify document formats and quality')
-    steps.push('Schedule compliance review'),
+    steps.push('Schedule compliance review')
   } else {
     steps.push('🚨 Address critical issues immediately')
     steps.push('Gather missing required documents')
-    steps.push('Schedule emergency consultation'),
+    steps.push('Schedule emergency consultation')
   }
   
-  return steps,
+  return steps
 }

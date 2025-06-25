@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
           title: body.items?.[0]?.title || 'Consultoria Express - Visa2Any',
           description: body.items?.[0]?.description || 'Consultoria personalizada para processo de visto',
           unit_price: body.items?.[0]?.unit_price || 297,
-          quantity: 1,
+          quantity: 1
         }
       ],
       // Em produção, sempre enviar dados do cliente
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         default_payment_method_id: null,
         default_card_id: null,
       },
-      statement_descriptor: 'VISA2ANY',
+      statement_descriptor: 'VISA2ANY'
     }
 
     console.log('📋 Dados da preferência:', JSON.stringify(preferenceData, null, 2))
@@ -87,5 +87,5 @@ export async function POST(request: NextRequest) {
       error: 'Erro ao criar pagamento',
       details: error instanceof Error ? error.message : 'Erro desconhecido',
     }, { status: 500 }),
-  },
+  }
 }

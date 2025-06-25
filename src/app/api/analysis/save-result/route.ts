@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     // Criar consultoria IA com o resultado
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     } else if (score >= 60) {
       automationAction = 'medium_score_nurturing',
     } else {
-      automationAction = 'low_score_education',
+      automationAction = 'low_score_education'
     }
 
     // Criar log de automação
@@ -98,5 +98,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

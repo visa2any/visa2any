@@ -32,14 +32,14 @@ export async function POST(request: NextRequest) {
         return getSystemStatus()
         
       default:
-        return NextResponse.json({ error: 'Ação inválida' }, { status: 400 }),
-    },
+        return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
+    }
   } catch (error) {
     return NextResponse.json({ 
       error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
-  },
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function activateWebScraping() {
@@ -47,8 +47,8 @@ async function activateWebScraping() {
     if (webScrapingActive) {
       return NextResponse.json({ 
         message: 'Web scraping já está ativo',
-        status: 'active',
-      }),
+        status: 'active'
+      })
     }
 
     // Ativar web scraping com intervalo de 30 minutos
@@ -59,13 +59,13 @@ async function activateWebScraping() {
         
         if (slots.length > 0) {
           console.log(`✅ Encontrados ${slots.length} slots!`)
-          await webScrapingService.notifySlots(slots),
+          await webScrapingService.notifySlots(slots)
         } else {
-          console.log('⏳ Nenhum slot encontrado desta vez'),
-        },
+          console.log('⏳ Nenhum slot encontrado desta vez')
+        }
       } catch (error) {
-        console.error('Erro no web scraping:', error),
-      },
+        console.error('Erro no web scraping:', error)
+      }
     }, 30 * 60 * 1000) // 30 minutos
 
     webScrapingActive = true
@@ -83,15 +83,15 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Web scraping ativado com sucesso!',
+      message: 'Web scraping ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao ativar web scraping',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
-  },
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function activateEmailMonitoring() {
@@ -99,8 +99,8 @@ async function activateEmailMonitoring() {
     if (emailMonitoringActive) {
       return NextResponse.json({ 
         message: 'Email monitoring já está ativo',
-        status: 'active',
-      }),
+        status: 'active'
+      })
     }
 
     // Ativar email monitoring com intervalo de 15 minutos
@@ -116,11 +116,11 @@ async function activateEmailMonitoring() {
         
         if (allAlerts.length > 0) {
           console.log(`📩 Encontrados ${allAlerts.length} emails relevantes!`)
-          await emailMonitoringService.notifyEmailAlerts(allAlerts),
-        },
+          await emailMonitoringService.notifyEmailAlerts(allAlerts)
+        }
       } catch (error) {
-        console.error('Erro no email monitoring:', error),
-      },
+        console.error('Erro no email monitoring:', error)
+      }
     }, 15 * 60 * 1000) // 15 minutos
 
     emailMonitoringActive = true
@@ -138,15 +138,15 @@ Você receberá alertas quando consulados enviarem emails sobre vagas!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Email monitoring ativado com sucesso!',
+      message: 'Email monitoring ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao ativar email monitoring',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
-  },
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function activateAutomation() {
@@ -167,27 +167,27 @@ Máxima eficiência na detecção de slots!`)
 
     return NextResponse.json({
       success: true,
-      message: 'Browser automation ativado com sucesso!',
+      message: 'Browser automation ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao ativar automation',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
-  },
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
 }
 
 async function deactivateAll() {
   // Parar intervalos
   if (webScrapingInterval) {
     clearInterval(webScrapingInterval)
-    webScrapingInterval = null,
+    webScrapingInterval = null
   }
   
   if (emailInterval) {
     clearInterval(emailInterval)
-    emailInterval = null,
+    emailInterval = null
   }
 
   // Fechar recursos
@@ -203,8 +203,8 @@ async function deactivateAll() {
 
   return NextResponse.json({
     success: true,
-    message: 'Todos os sistemas foram desativados',
-  }),
+    message: 'Todos os sistemas foram desativados'
+  })
 }
 
 function getSystemStatus() {
@@ -212,20 +212,20 @@ function getSystemStatus() {
     webScraping: {
       active: webScrapingActive,
       interval: webScrapingInterval ? '30 minutos' : 'Inativo',
-      cost: 'R$ 2/consulta',
+      cost: 'R$ 2/consulta'
     },
     emailMonitoring: {
       active: emailMonitoringActive,
       interval: emailInterval ? '15 minutos' : 'Inativo', 
-      cost: 'R$ 20/mês',
+      cost: 'R$ 20/mês'
     },
     automation: {
       active: automationActive,
       status: automationActive ? 'Ativo' : 'Inativo',
-      cost: 'R$ 50/mês',
+      cost: 'R$ 50/mês'
     },
-    totalCost: calculateTotalCost(),
-  }),
+    totalCost: calculateTotalCost()
+  })
 }
 
 function calculateTotalCost() {
@@ -234,7 +234,7 @@ function calculateTotalCost() {
   if (automationActive) total += 50
   // Web scraping é por uso (R$ 2/consulta)
   
-  return `R$ ${total}/mês + R$ 2 por consulta web scraping`,
+  return `R$ ${total}/mês + R$ 2 por consulta web scraping`
 }
 
 async function sendActivationNotification(title: string, message: string) {
@@ -250,10 +250,10 @@ async function sendActivationNotification(title: string, message: string) {
       body: JSON.stringify({
         chat_id: chatId,
         text: `${title}\n\n${message}`,
-        parse_mode: 'HTML',
-      }),
-    }),
+        parse_mode: 'HTML'
+      })
+    })
   } catch (error) {
-    console.error('Erro ao enviar notificação:', error),
-  },
+    console.error('Erro ao enviar notificação:', error)
+  }
 }

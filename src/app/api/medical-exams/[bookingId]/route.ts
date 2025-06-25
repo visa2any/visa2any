@@ -19,7 +19,7 @@ export async function GET(,
     } else {
       return NextResponse.json(
         { status: 404 }
-      ),
+      )
     }
 
   } catch (error) {
@@ -28,7 +28,7 @@ export async function GET(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // PUT - Reagendar exame
@@ -45,7 +45,7 @@ export async function PUT(,
       return NextResponse.json(
         { error: 'Campos newDate e newTime são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     const result = await medicalExamService.rescheduleExam(bookingId, newDate, newTime)
@@ -59,7 +59,7 @@ export async function PUT(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
   } catch (error) {
@@ -68,7 +68,7 @@ export async function PUT(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // DELETE - Cancelar exame
@@ -90,7 +90,7 @@ export async function DELETE(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
   } catch (error) {
@@ -99,5 +99,5 @@ export async function DELETE(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

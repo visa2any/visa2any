@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
             'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
-          },
+          }
         }
-      ),
+      )
     }
 
     const body = await request.json()
@@ -60,14 +60,14 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Verificar se usuário está ativo
     if (!user.isActive) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // Verificar senha
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     if (!isPasswordValid) {
       return NextResponse.json(
         { status: 401 }
-      ),
+      )
     }
 
     // ✅ Verificar se JWT secret está configurado
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
     }
 
     // Gerar JWT token com configurações de segurança melhoradas
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       { 
         expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)
         issuer: 'visa2any-api',
-        audience: 'visa2any-client',
+        audience: 'visa2any-client'
       }
     )
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       name: user.name,
       email: user.email,
       role: user.role,
-      isActive: user.isActive,
+      isActive: user.isActive
     }
 
     // Log do login (skip if fails)
@@ -130,9 +130,9 @@ export async function POST(request: NextRequest) {
             loginTimestamp: new Date().toISOString(),
           },
         },
-      }),
+      })
     } catch (logError) {
-      console.warn('Failed to log login:', logError),
+      console.warn('Failed to log login:', logError)
     }
 
     // Configurar cookie httpOnly
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
           details: error.errors,
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro no login:', error)
@@ -182,5 +182,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

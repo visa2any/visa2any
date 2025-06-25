@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (affiliateId) {
-      where.affiliateId = affiliateId,
+      where.affiliateId = affiliateId
     }
     
     if (status && status !== 'all') {
-      where.status = status,
+      where.status = status
     }
 
     // Buscar comissões
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     const paymentStats = stats.reduce((acc, stat) => {
       acc[stat.status] = {
         count: stat._count.id,
-        amount: stat._sum.amount || 0,
+        amount: stat._sum.amount || 0
       }
       return acc,
     }, {} as Record<string, { count: number; amount: number }>)
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // POST - Processar pagamento em lote
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     if (!commissionIds || !Array.isArray(commissionIds) || commissionIds.length === 0) {
       return NextResponse.json({
         error: 'IDs de comissões são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Buscar comissões pendentes
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     if (commissions.length === 0) {
       return NextResponse.json({
         error: 'Nenhuma comissão pendente encontrada',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Agrupar comissões por afiliado
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
           affiliate: commission.affiliate,
           commissions: [],
           totalAmount: 0,
-        },
+        }
       }
       acc[affiliateId].commissions.push(commission)
       acc[affiliateId].totalAmount += commission.amount
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      payments.push(payment),
+      payments.push(payment)
     }
 
     // TODO: Integrar com sistema de pagamento (PIX, transferência, etc.)
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }
 
 // PUT - Atualizar status de pagamento
@@ -224,32 +224,32 @@ export async function PUT(request: NextRequest) {
     if (!paymentId || !status) {
       return NextResponse.json({
         error: 'ID do pagamento e status são obrigatórios',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     const validStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']
     if (!validStatuses.includes(status)) {
       return NextResponse.json({
         error: 'Status inválido',
-      }, { status: 400 }),
+      }, { status: 400 })
     }
 
     // Atualizar pagamento
     const updateData: any = {
       status,
-      notes,
+      notes
     }
 
     if (status === 'COMPLETED') {
       updateData.processedAt = new Date()
       
       if (transactionId) {
-        updateData.transactionId = transactionId,
+        updateData.transactionId = transactionId
       }
       
       if (receipt) {
         updateData.receipt = receipt,
-      },
+      }
     }
 
     const payment = await prisma.affiliatePayment.update({
@@ -278,7 +278,7 @@ export async function PUT(request: NextRequest) {
         data: {
           paidEarnings: { increment: payment.amount },
         },
-      }),
+      })
     }
 
     // Se pagamento falhou, reverter comissões
@@ -297,7 +297,7 @@ export async function PUT(request: NextRequest) {
         data: {
           pendingEarnings: { increment: payment.amount },
         },
-      }),
+      })
     }
 
     // TODO: Enviar notificação para o afiliado
@@ -314,5 +314,5 @@ export async function PUT(request: NextRequest) {
     }, { status: 500 }),
   } finally {
     await prisma.$disconnect(),
-  },
+  }
 }

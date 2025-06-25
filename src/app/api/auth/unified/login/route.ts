@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
     let result
@@ -20,18 +20,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
       }
       result = await loginAdmin(email, password),
     } else {
       // Login para cliente (pode não ter senha na primeira vez)
-      result = await loginCustomer(email, password),
+      result = await loginCustomer(email, password)
     }
 
     if (!result.success) {
       return NextResponse.json(
         { status: result.error === 'NEEDS_PASSWORD_SETUP' ? 202 : 401 }
-      ),
+      )
     }
 
     // Criar cookie de autenticação
@@ -57,5 +57,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

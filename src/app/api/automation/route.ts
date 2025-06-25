@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos country e visaType são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     switch (action) {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser "search_slots" ou "start_monitoring"' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Status do monitoramento
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
               target: 'TLS Contact',
               reliability: '70%',
               interval: '35 min',
-              status: 'Ativo',
+              status: 'Ativo'
             }
           ],
           totalSupported: 5,
@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: status, supported_countries, ou costs' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -205,5 +205,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

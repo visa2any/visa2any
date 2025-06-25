@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos applicantInfo.fullName e consularInfo.country são obrigatórios' },
             { status: 400 }
-          ),
+          )
         }
 
         const result = await costEffectiveSolutions.manualAssistedBooking(bookingRequest)
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campo countries deve ser um array não vazio' },
             { status: 400 }
-          ),
+          )
         }
 
         const monitoring = await costEffectiveSolutions.setupVacancyMonitoring(countries)
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: manual_booking, setup_monitoring, ou optimized_workflow' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // GET - Listar métodos econômicos e calcular ROI
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
           return NextResponse.json(
             { error: 'Parâmetro method é obrigatório' },
             { status: 400 }
-          ),
+          )
         }
 
         try {
@@ -143,12 +143,12 @@ export async function GET(request: NextRequest) {
               roi: `${roi.roi.toFixed(1)}%`,
             },
             viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável',
-          }),
+          })
         } catch (error) {
           return NextResponse.json(
             { error: `Método '${method}' não encontrado` },
             { status: 400 }
-          ),
+          )
         }
 
       case 'telegram_setup':
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: methods, roi, telegram_setup, ou email_setup' },
           { status: 400 }
-        ),
+        )
     }
 
   } catch (error) {
@@ -195,5 +195,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

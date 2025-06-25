@@ -15,13 +15,13 @@ const advisoryQuerySchema = z.object({
     hasChildren: z.boolean().optional(),
     income: z.string().optional(),
     languages: z.array(z.string()).optional(),
-    currentCountry: z.string().optional(),
+    currentCountry: z.string().optional()
   }),
   documents: z.array(z.object({
     type: z.string(),
     status: z.string(),
     expiryDate: z.string().optional(),
-    issuingCountry: z.string().optional(),
+    issuingCountry: z.string().optional()
   })).optional(),
   queryType: z.enum([
     'eligibility_assessment',
@@ -31,7 +31,7 @@ const advisoryQuerySchema = z.object({
     'compliance_check',
     'embassy_insights',
     'law_updates'
-  ]),
+  ])
 })
 
 // POST /api/advisory/engine - Consultar advisory engine
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise),
+        analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise)
     }
 
     // Gerar recomendações estratégicas
@@ -99,9 +99,9 @@ export async function POST(request: NextRequest) {
           queryType: validatedData.queryType,
           targetCountry: validatedData.profile.targetCountry,
           visaType: validatedData.profile.visaType,
-          responseGenerated: true,
-        },
-      },
+          responseGenerated: true
+        }
+      }
     })
 
     return NextResponse.json({
@@ -112,10 +112,10 @@ export async function POST(request: NextRequest) {
         expertise: {
           source: countryExpertise.source,
           lastUpdated: countryExpertise.lastUpdated,
-          confidenceLevel: countryExpertise.confidenceLevel,
+          confidenceLevel: countryExpertise.confidenceLevel
         },
-        nextSteps: generateNextSteps(analysisResult, validatedData.profile),
-      },
+        nextSteps: generateNextSteps(analysisResult, validatedData.profile)
+      }
     })
 
   } catch (error) {
@@ -123,18 +123,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors,
+          details: error.errors
         },
         { status: 400 }
-      ),
+      )
     }
 
     console.error('Erro no advisory engine:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
-  },
+    )
+  }
 }
 
 // GET /api/advisory/engine/countries - Listar países suportados
@@ -149,8 +149,8 @@ export async function GET(request: NextRequest) {
       data: {
         countries: supportedCountries,
         totalSupported: supportedCountries.length,
-        lastUpdated: new Date().toISOString(),
-      },
+        lastUpdated: new Date().toISOString()
+      }
     })
 
   } catch (error) {
@@ -158,8 +158,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
-  },
+    )
+  }
 }
 
 // Obter expertise específica do país/visto
@@ -168,7 +168,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
     source: 'internal_database',
     lastUpdated: new Date().toISOString(),
     confidenceLevel: 0.95,
-    data: {} as any,
+    data: {} as any
   }
 
   // Base de conhecimento por país
@@ -199,8 +199,8 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
         embassyInsights: {
           fastTrackOptions: ['Provincial Nominee Programs', 'Canadian Experience Class'],
           seasonalVariations: 'Higher draws in Q4',
-          currentPriorities: 'Healthcare workers, IT professionals, trades',
-        },
+          currentPriorities: 'Healthcare workers, IT professionals, trades'
+        }
       },
       'WORK': {
         system: 'LMIA + Work Permit',
@@ -210,8 +210,8 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Educational credentials',
           'Work experience proof',
           'Language proficiency'
-        ],
-      },
+        ]
+      }
     },
     
     'Australia': {
@@ -240,9 +240,9 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
         embassyInsights: {
           fastTrackOptions: ['State nomination', 'Regional visas'],
           seasonalVariations: 'July program year start',
-          currentPriorities: 'Engineers, nurses, IT specialists',
-        },
-      },
+          currentPriorities: 'Engineers, nurses, IT specialists'
+        }
+      }
     },
     
     'Portugal': {
@@ -261,7 +261,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Job creation investments',
           'EU residency pathway',
           'Family reunification benefits'
-        ],
+        ]
       },
       'WORK': {
         system: 'D2 Visa',
@@ -271,8 +271,8 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Accommodation proof',
           'Financial means proof',
           'Criminal background check'
-        ],
-      },
+        ]
+      }
     },
     
     'United States': {
@@ -294,9 +294,9 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
         embassyInsights: {
           fastTrackOptions: ['Premium processing', 'O1 extraordinary ability'],
           seasonalVariations: 'H1B cap season (April)',
-          currentPriorities: 'STEM fields, healthcare',
-        },
-      },
+          currentPriorities: 'STEM fields, healthcare'
+        }
+      }
     },
     
     'Germany': {
@@ -314,27 +314,27 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Regulated profession recognition',
           'IT/Engineering background',
           'EU Blue Card eligibility'
-        ],
-      },
-    },
+        ]
+      }
+    }
   }
 
   const countryData = countryKnowledge[country]
   if (countryData && countryData[visaType]) {
     expertise.data = countryData[visaType]
-    expertise.confidenceLevel = 0.95,
+    expertise.confidenceLevel = 0.95
   } else {
     // Fallback para países não mapeados
     expertise.data = {
       system: 'Standard processing',
       averageProcessingTime: '6-12 months',
       keyRequirements: ['Standard documentation'],
-      note: 'Limited data available - contact specialist',
+      note: 'Limited data available - contact specialist'
     }
-    expertise.confidenceLevel = 0.6,
+    expertise.confidenceLevel = 0.6
   }
 
-  return expertise,
+  return expertise
 }
 
 // Realizar análise de elegibilidade
@@ -345,7 +345,7 @@ async function performEligibilityAssessment(profile: any, expertise: any) {
     breakdown: {} as any,
     blockers: [] as string[],
     strengths: [] as string[],
-    recommendations: [] as string[],
+    recommendations: [] as string[]
   }
 
   const country = profile.targetCountry
@@ -354,13 +354,13 @@ async function performEligibilityAssessment(profile: any, expertise: any) {
 
   // Análise específica por país/visto
   if (country === 'Canada' && visaType === 'SKILLED') {
-    assessment.breakdown = await assessCanadaExpress(profile, expertiseData),
+    assessment.breakdown = await assessCanadaExpress(profile, expertiseData)
   } else if (country === 'Australia' && visaType === 'SKILLED') {
-    assessment.breakdown = await assessAustraliaSkilled(profile, expertiseData),
+    assessment.breakdown = await assessAustraliaSkilled(profile, expertiseData)
   } else if (country === 'Portugal') {
-    assessment.breakdown = await assessPortugal(profile, expertiseData),
+    assessment.breakdown = await assessPortugal(profile, expertiseData)
   } else {
-    assessment.breakdown = await assessGeneric(profile, expertiseData),
+    assessment.breakdown = await assessGeneric(profile, expertiseData)
   }
 
   // Calcular score geral
@@ -372,7 +372,7 @@ async function performEligibilityAssessment(profile: any, expertise: any) {
   else if (assessment.overallScore >= 60) assessment.eligibilityLevel = 'medium'
   else assessment.eligibilityLevel = 'low'
 
-  return assessment,
+  return assessment
 }
 
 // Análise específica para Canadá Express Entry
@@ -382,7 +382,7 @@ async function assessCanadaExpress(profile: any, expertise: any) {
     educationScore: 0,
     languageScore: 0,
     experienceScore: 0,
-    estimatedCRS: 0,
+    estimatedCRS: 0
   }
 
   // Idade (máximo 110 pontos)
@@ -398,7 +398,7 @@ async function assessCanadaExpress(profile: any, expertise: any) {
     'MASTER': 85,
     'BACHELOR': 75,
     'COLLEGE': 60,
-    'HIGH_SCHOOL': 30,
+    'HIGH_SCHOOL': 30
   }
   breakdown.educationScore = educationScores[profile.education] || 40
 
@@ -414,7 +414,7 @@ async function assessCanadaExpress(profile: any, expertise: any) {
   // CRS estimado (simplificado)
   breakdown.estimatedCRS = (breakdown.ageScore + breakdown.educationScore + breakdown.languageScore + breakdown.experienceScore) / 4
 
-  return breakdown,
+  return breakdown
 }
 
 // Análise específica para Austrália
@@ -424,7 +424,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
     educationPoints: 0,
     englishPoints: 0,
     experiencePoints: 0,
-    totalPoints: 0,
+    totalPoints: 0
   }
 
   // Sistema de pontos australiano
@@ -437,7 +437,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
     'DOCTORATE': 20,
     'MASTER': 15,
     'BACHELOR': 15,
-    'TECHNICAL': 10,
+    'TECHNICAL': 10
   }
   breakdown.educationPoints = educationPoints[profile.education] || 0
 
@@ -450,7 +450,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
 
   breakdown.totalPoints = breakdown.agePoints + breakdown.educationPoints + breakdown.englishPoints + breakdown.experiencePoints
 
-  return breakdown,
+  return breakdown
 }
 
 // Análise para Portugal
@@ -459,8 +459,8 @@ async function assessPortugal(profile: any, expertise: any) {
     documentationScore: 85,
     financialScore: profile.income ? 80 : 50,
     timelineScore: 90,
-    complianceScore: 85,
-  },
+    complianceScore: 85
+  }
 }
 
 // Análise genérica
@@ -469,8 +469,8 @@ async function assessGeneric(profile: any, expertise: any) {
     profileScore: 70,
     documentationScore: 60,
     complianceScore: 75,
-    timelineScore: 65,
-  },
+    timelineScore: 65
+  }
 }
 
 // Outras funções (implementação simplificada para demonstração)
@@ -478,16 +478,16 @@ async function analyzeDocumentRequirements(profile: any, documents: any[], exper
   return {
     required: expertise.data.keyRequirements || [],
     missing: [],
-    recommendations: ['Ensure all documents are apostilled', 'Translate to target language'],
-  },
+    recommendations: ['Ensure all documents are apostilled', 'Translate to target language']
+  }
 }
 
 async function estimateProcessingTimeline(profile: any, expertise: any) {
   return {
     estimated: expertise.data.averageProcessingTime || '6-12 months',
     factors: ['Document completeness', 'Embassy workload', 'Seasonal variations'],
-    fastTrackOptions: expertise.data.embassyInsights?.fastTrackOptions || [],
-  },
+    fastTrackOptions: expertise.data.embassyInsights?.fastTrackOptions || []
+  }
 }
 
 async function calculateSuccessProbability(profile: any, documents: any[], expertise: any) {
@@ -495,24 +495,24 @@ async function calculateSuccessProbability(profile: any, documents: any[], exper
     probability: 75,
     confidence: 'medium',
     factors: expertise.data.successFactors || [],
-    risks: expertise.data.commonRejectionReasons || [],
-  },
+    risks: expertise.data.commonRejectionReasons || []
+  }
 }
 
 async function performComplianceCheck(profile: any, documents: any[], expertise: any) {
   return {
     compliant: true,
     issues: [],
-    recommendations: ['Review embassy-specific requirements'],
-  },
+    recommendations: ['Review embassy-specific requirements']
+  }
 }
 
 async function getEmbassySpecificInsights(profile: any, expertise: any) {
   return expertise.data.embassyInsights || {
     insights: ['Contact embassy for latest updates'],
     fastTrackOptions: [],
-    currentPriorities: [],
-  },
+    currentPriorities: []
+  }
 }
 
 async function getRecentLawUpdates(country: string, visaType: string) {
@@ -523,10 +523,10 @@ async function getRecentLawUpdates(country: string, visaType: string) {
         date: '2024-01-15',
         title: 'New language requirements',
         summary: 'Updated minimum language scores',
-        impact: 'medium',
+        impact: 'medium'
       }
-    ],
-  },
+    ]
+  }
 }
 
 async function generateStrategicRecommendations(profile: any, analysis: any, expertise: any) {
@@ -536,16 +536,16 @@ async function generateStrategicRecommendations(profile: any, analysis: any, exp
       category: 'preparation',
       action: 'Complete language testing',
       timeline: '2-3 months',
-      impact: 'high',
+      impact: 'high'
     },
     {
       priority: 'medium', 
       category: 'documentation',
       action: 'Obtain educational credentials assessment',
       timeline: '3-4 months',
-      impact: 'high',
+      impact: 'high'
     }
-  ],
+  ]
 }
 
 function generateNextSteps(analysis: any, profile: any) {
@@ -553,7 +553,7 @@ function generateNextSteps(analysis: any, profile: any) {
     'Schedule consultation to discuss strategy',
     'Begin document preparation',
     'Consider language improvement if needed'
-  ],
+  ]
 }
 
 async function getSupportedCountries(includeStats: boolean) {
@@ -566,8 +566,8 @@ async function getSupportedCountries(includeStats: boolean) {
       ...(includeStats && {
         successRate: '87%',
         averageTimeline: '8 months',
-        clientsSucessful: 1247,
-      }),
+        clientsSucessful: 1247
+      })
     },
     {
       name: 'Australia', 
@@ -577,8 +577,8 @@ async function getSupportedCountries(includeStats: boolean) {
       ...(includeStats && {
         successRate: '82%',
         averageTimeline: '10 months',
-        clientsSucessful: 943,
-      }),
+        clientsSucessful: 943
+      })
     },
     {
       name: 'Portugal',
@@ -588,10 +588,10 @@ async function getSupportedCountries(includeStats: boolean) {
       ...(includeStats && {
         successRate: '94%',
         averageTimeline: '4 months',
-        clientsSucessful: 567,
-      }),
+        clientsSucessful: 567
+      })
     }
   ]
   
-  return countries,
+  return countries
 }

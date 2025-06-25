@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           { error: 'Parâmetro country é obrigatório para buscar clínicas' },
           { status: 400 }
-        ),
+        )
       }
 
       const clinics = await medicalExamService.getApprovedClinics(country, city, state)
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         message: clinics.length > 0 
           ? `${clinics.length} clínicas encontradas para ${country}` 
           : `Nenhuma clínica encontrada para ${country}`,
-      }),
+      })
     }
 
     if (action === 'exams') {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           { error: 'Parâmetro country é obrigatório para buscar exames' },
           { status: 400 }
-        ),
+        )
       }
 
       const exams = medicalExamService.getRequiredExams(country)
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         message: exams.length > 0 
           ? `${exams.length} tipos de exame requeridos para ${country}` 
           : `Nenhum exame específico encontrado para ${country}`,
-      }),
+      })
     }
 
     return NextResponse.json(
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
 
 // POST - Agendar exame médico
@@ -81,14 +81,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos applicantId, clinicId, examTypes, appointmentDate e appointmentTime são obrigatórios' },
         { status: 400 }
-      ),
+      )
     }
 
     if (!Array.isArray(examTypes) || examTypes.length === 0) {
       return NextResponse.json(
         { error: 'examTypes deve ser um array não vazio' },
         { status: 400 }
-      ),
+      )
     }
 
     // Fazer agendamento
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
   } catch (error) {
@@ -124,5 +124,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }

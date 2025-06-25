@@ -15,7 +15,7 @@ export async function DELETE(,
       return NextResponse.json(
         { error: 'Parâmetro consulate é obrigatório' },
         { status: 400 }
-      ),
+      )
     }
 
     const result = await appointmentBookingService.cancelAppointment(appointmentId, consulate)
@@ -31,7 +31,7 @@ export async function DELETE(,
       return NextResponse.json(
       { error: 'Dados inválidos' },
       { status: 400 }
-    ),
+    )
     }
 
   } catch (error) {
@@ -40,5 +40,5 @@ export async function DELETE(,
       { error: 'Erro interno do servidor' },
       { status: 500 }
     ),
-  },
+  }
 }
