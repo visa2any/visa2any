@@ -173,7 +173,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
       immediate: 0,
       upcoming: 0,
       future: 0
-    }
+    },
     recommendations: [] as string[]
   }
 

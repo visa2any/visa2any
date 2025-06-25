@@ -117,9 +117,9 @@ export async function POST(request: NextRequest) {
     // Buscar comissões pendentes
     const commissions = await prisma.affiliateCommission.findMany({
       where: {
-        id: { in: commissionIds }
+        id: { in: commissionIds },
         status: 'PENDING'
-      }
+      },
       include: {
         affiliate: true
       }

@@ -220,11 +220,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         oldTier: 'SILVER',
         newTier: 'GOLD',
         newCommissionRate: 0.25
-      }
+      },
       read: true,
-      createdAt: twoDaysAgo.toISOString()
+      createdAt: twoDaysAgo.toISOString(),
       priority: 'urgent'
-    }
+    },
     {
       id: 'notif_4',
       type: 'bonus',

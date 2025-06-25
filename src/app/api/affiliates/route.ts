@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       company,
       website,
       bio,
-      socialMedia = {}
+      socialMedia = {},
       commissionRate = 0.10,
     } = body
 

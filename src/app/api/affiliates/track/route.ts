@@ -94,9 +94,9 @@ export async function GET(request: NextRequest) {
 
     // Atualizar contador de cliques do afiliado
     await prisma.affiliate.update({
-      where: { id: affiliate.id }
+      where: { id: affiliate.id },
       data: {
-        totalClicks: { increment: 1 }
+        totalClicks: { increment: 1 },
         lastActivity: new Date()
       }
     })
