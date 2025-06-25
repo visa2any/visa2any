@@ -60,9 +60,9 @@ export async function POST(request: NextRequest) {
     // Determinar próxima ação automática baseada no score
     let automationAction = null
     if (score >= 85) {
-      automationAction = 'high_score_followup',
+      automationAction = 'high_score_followup'
     } else if (score >= 60) {
-      automationAction = 'medium_score_nurturing',
+      automationAction = 'medium_score_nurturing'
     } else {
       automationAction = 'low_score_education'
     }

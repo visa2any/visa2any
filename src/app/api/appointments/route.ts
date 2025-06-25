@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const slots = await appointmentBookingService.getAvailableSlots(consulate, visaType, days)
 
     return NextResponse.json({
-      slots
+      slots,
       total: slots.length,
       consulate,
       visaType,

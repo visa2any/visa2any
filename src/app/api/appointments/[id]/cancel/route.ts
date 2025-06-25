@@ -24,14 +24,14 @@ export async function DELETE(
       // TODO: Atualizar status no banco de dados
       
       return NextResponse.json({
-        message: result.message
+        message: result.message,
         cancelledAt: new Date().toISOString()
       })
     } else {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
   } catch (error) {

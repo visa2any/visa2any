@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     // Marcar como analisando
     await prisma.document.update({
-      where: { id: validatedData.documentId }
+      where: { id: validatedData.documentId },
       data: { status: 'ANALYZING' }
     })
 

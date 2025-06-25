@@ -298,7 +298,7 @@ Para qual país você está interessado?`,
 
 **Taxas governamentais à parte*
 
-Qual pacote faz mais sentido para você?`
+Qual pacote faz mais sentido para você?`,
         suggestions: [
           'Consulta Básica - R$ 299',
           'Consulta Premium - R$ 599', 
