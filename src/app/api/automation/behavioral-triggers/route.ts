@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -142,7 +142,7 @@ async function analyzeBehavioralTrigger(data: any) {
           analysis.action = 'exit_intent_offer'
           analysis.message = 'Usuário engajado mas não converteu'
           analysis.priority = 'medium'
-          analysis.delay = 0,
+          analysis.delay = 0
         }
       }
       break
@@ -178,7 +178,7 @@ async function analyzeBehavioralTrigger(data: any) {
           analysis.action = 'high_intent_contact'
           analysis.message = 'Usuário com alta intenção'
           analysis.priority = 'high'
-          analysis.delay = 0,
+          analysis.delay = 0
         }
       }
       break
@@ -194,7 +194,7 @@ async function executeTriggerAction(analysis: any) {
       // Enviar WhatsApp com ajuda sobre preços
       return await sendWhatsAppTrigger('pricing_help', {
         message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊",
-      }),
+      })
     },
 
     email_assessment_recovery: async () => {
@@ -202,32 +202,32 @@ async function executeTriggerAction(analysis: any) {
       return await sendEmailTrigger('assessment_recovery', {
         subject: "Continue sua análise - faltam só 2 minutos! ⏰",
         template: 'assessment_recovery',
-      }),
+      })
     },
 
     cart_recovery_sequence: async () => {
       // Sequência de recuperação de carrinho
-      return await startCartRecoverySequence(),
+      return await startCartRecoverySequence()
     },
 
     exit_intent_offer: async () => {
       // Mostrar oferta de última chance
-      return await triggerExitIntentOffer(),
+      return await triggerExitIntentOffer()
     },
 
     video_completion_offer: async () => {
       // Oferta após assistir vídeo
-      return await sendVideoCompletionOffer(),
+      return await sendVideoCompletionOffer()
     },
 
     form_completion_help: async () => {
       // Ajuda para completar formulário
-      return await sendFormHelp(),
+      return await sendFormHelp()
     },
 
     high_intent_contact: async () => {
       // Contato prioritário para alta intenção
-      return await triggerHighIntentContact(),
+      return await triggerHighIntentContact()
     }
   }
 
@@ -235,9 +235,9 @@ async function executeTriggerAction(analysis: any) {
   if (actionFunction) {
     // Executar com delay se especificado
     if (analysis.delay > 0) {
-      setTimeout(actionFunction, analysis.delay * 1000),
+      setTimeout(actionFunction, analysis.delay * 1000)
     } else {
-      await actionFunction(),
+      await actionFunction()
     },
   }
 }
@@ -258,7 +258,7 @@ async function getAssessmentProgress(clientId?: string) {
     
     return interactions[0] ? { step: 0 } : null
   } catch {
-    return null,
+    return null
   }
 }
 
@@ -275,7 +275,7 @@ async function checkUserConversion(clientId?: string) {
     
     return !!payment
   } catch {
-    return false,
+    return false
   }
 }
 
@@ -295,7 +295,7 @@ async function sendWhatsAppTrigger(type: string, data: any) {
     return { success: true }
   } catch (error) {
     console.error('Erro ao enviar WhatsApp trigger:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -306,7 +306,7 @@ async function sendEmailTrigger(type: string, data: any) {
     return { success: true }
   } catch (error) {
     console.error('Erro ao enviar email trigger:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -317,7 +317,7 @@ async function startCartRecoverySequence() {
     return { success: true }
   } catch (error) {
     console.error('Erro na recuperação de carrinho:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -328,7 +328,7 @@ async function triggerExitIntentOffer() {
     return { success: true }
   } catch (error) {
     console.error('Erro no exit intent:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -338,7 +338,7 @@ async function sendVideoCompletionOffer() {
     return { success: true }
   } catch (error) {
     console.error('Erro na oferta pós-vídeo:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -348,7 +348,7 @@ async function sendFormHelp() {
     return { success: true }
   } catch (error) {
     console.error('Erro na ajuda do formulário:', error)
-    return { success: false },
+    return { success: false }
   }
 }
 
@@ -359,6 +359,6 @@ async function triggerHighIntentContact() {
     return { success: true }
   } catch (error) {
     console.error('Erro no contato prioritário:', error)
-    return { success: false },
+    return { success: false }
   }
 }

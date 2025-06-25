@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
               count: stat._count.status,
               amount: stat._sum.amount || 0
             }
-            return acc,
+            return acc
           }, {} as Record<string, any>),
         },
         pagination: {
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -117,6 +117,7 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
+        { error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -184,7 +185,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -210,21 +211,21 @@ async function generatePaymentLink(payment: any) {
       qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,
       pixKey: generatePixKey(),
       methods: ['PIX', 'Cartão de Crédito', 'Boleto'],
-    },
+    }
   } else if (payment.currency === 'USD') {
     // Stripe para USD
     return {
       provider: 'Stripe',
       url: `${baseUrl}/api/payments/${payment.id}/stripe`,
       methods: ['Credit Card', 'Bank Transfer'],
-    },
+    }
   } else {
     // PayPal para outras moedas
     return {
       provider: 'PayPal',
       url: `${baseUrl}/api/payments/${payment.id}/paypal`,
       methods: ['PayPal', 'Credit Card'],
-    },
+    }
   }
 }
 
@@ -340,6 +341,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    ),
+    )
   }
 }

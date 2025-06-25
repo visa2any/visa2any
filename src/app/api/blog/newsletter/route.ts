@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
         error: 'Erro interno do servidor',
       },
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
       prisma.whatsAppSubscriber.count(),
       prisma.whatsAppSubscriber.count({
         where: { isActive: true },
-      }),
+      })
       prisma.whatsAppSubscriber.count({
         where: {
           isActive: true,
@@ -129,8 +129,8 @@ export async function GET(request: NextRequest) {
       const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
       countries.forEach(country => {
         const countryKey = String(country)
-        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1,
-      }),
+        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
+      })
     })
 
     // Assinantes por fonte
@@ -167,7 +167,7 @@ export async function GET(request: NextRequest) {
         error: 'Erro interno do servidor',
       },
       { status: 500 }
-    ),
+    )
   }
 }
 
