@@ -183,7 +183,7 @@ Sua nova vida te espera! 🌍✈️
 </html>
     `,
     isActive: true
-  }
+  },
 
   // Vídeos
   {

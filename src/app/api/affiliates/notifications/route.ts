@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       message,
       data,
       read: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
       priority
     }
 
