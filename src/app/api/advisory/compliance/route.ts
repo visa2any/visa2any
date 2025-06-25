@@ -219,7 +219,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
           medicalExam: 'Country-specific',
           biometrics: 'Required'
         }
-      }
+      },
       'WORK': {
         mandatory: [
           {

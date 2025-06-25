@@ -26,7 +26,7 @@ const defaultMaterials = [
     imageUrl: '/images/banners/banner-principal.jpg',
     previewUrl: '/materials/preview/banner-principal',
     isActive: true
-  }
+  },
   {
     type: 'BANNER',
     title: 'Banner Visto EUA',
@@ -85,7 +85,7 @@ E muito mais!
 #morarfora #intercambio #imigração #visa2any #vivernoexterior #visto #consultoria #sonhoamericano`,
     imageUrl: '/images/posts/instagram-consultoria.jpg',
     isActive: true
-  }
+  },
   {
     type: 'SOCIAL_POST',
     title: 'Post Facebook - Depoimento',

@@ -196,7 +196,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'French language proficiency',
           'Job offer from Canadian employer'
         ],
-        embassyInsights: {,
+        embassyInsights: {
           fastTrackOptions: ['Provincial Nominee Programs', 'Canadian Experience Class'],
           seasonalVariations: 'Higher draws in Q4',
           currentPriorities: 'Healthcare workers, IT professionals, trades'
@@ -237,7 +237,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Regional nomination',
           'Partner skills bonus'
         ],
-        embassyInsights: {,
+        embassyInsights: {
           fastTrackOptions: ['State nomination', 'Regional visas'],
           seasonalVariations: 'July program year start',
           currentPriorities: 'Engineers, nurses, IT specialists'
@@ -291,7 +291,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Employer issues',
           'Wage requirements not met'
         ],
-        embassyInsights: {,
+        embassyInsights: {
           fastTrackOptions: ['Premium processing', 'O1 extraordinary ability'],
           seasonalVariations: 'H1B cap season (April)',
           currentPriorities: 'STEM fields, healthcare'

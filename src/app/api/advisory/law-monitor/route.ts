@@ -5,9 +5,9 @@ import { z } from 'zod'
 // Schema para monitoramento de mudanças legais
 const lawMonitorSchema = z.object({
   country: z.string(),
-  visaType: z.string().optional()
+  visaType: z.string().optional(),
   alertType: z.enum(['immediate', 'daily', 'weekly']),
-  clientId: z.string().optional()
+  clientId: z.string().optional(),
   keywords: z.array(z.string()).optional()
 })
 
