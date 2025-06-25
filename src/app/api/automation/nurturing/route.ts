@@ -20,8 +20,8 @@ const nurturingSchema = z.object({
   customSchedule: z.array(z.object({
     day: z.number(),
     hour: z.number().optional(),
-    template: z.string()
-  })).optional()
+    template: z.string(),
+  })).optional(),
 })
 
 // POST /api/automation/nurturing - Iniciar sequência de nurturing
@@ -36,15 +36,15 @@ export async function POST(request: NextRequest) {
       include: {
         interactions: {
           orderBy: { createdAt: 'desc' },
-          take: 5
-        }
-      }
+          take: 5,
+        },
+      },
     })
 
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Verificar se já existe sequência ativa
@@ -54,14 +54,14 @@ export async function POST(request: NextRequest) {
         type: 'NURTURING_SEQUENCE',
         executedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
-        }
-      }
+        },
+      },
     })
 
     if (existingSequence) {
       return NextResponse.json({
-        error: 'Sequência já ativa para este cliente'
-      }, { status: 400 })
+        error: 'Sequência já ativa para este cliente',
+      }, { status: 400 }),
     }
 
     // Obter configuração da sequência
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
           sequenceType: validatedData.sequenceType,
           emailsScheduled: scheduledEmails.length,
           duration: personalizedSequence.duration,
-          clientName: client.name
-        }
-      }
+          clientName: client.name,
+        },
+      },
     })
 
     return NextResponse.json({
@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
         sequenceType: validatedData.sequenceType,
         emailsScheduled: scheduledEmails.length,
         duration: `${personalizedSequence.duration} dias`,
-        firstEmail: scheduledEmails[0]?.sendAt
+        firstEmail: scheduledEmails[0]?.sendAt,
       },
-      message: 'Sequência de nurturing iniciada com sucesso'
+      message: 'Sequência de nurturing iniciada com sucesso',
     })
 
   } catch (error) {
@@ -108,17 +108,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao iniciar sequência de nurturing:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // GET /api/automation/nurturing/sequences - Listar sequências ativas
@@ -130,7 +131,7 @@ export async function GET(request: NextRequest) {
     const sequences = await prisma.automationLog.findMany({
       where: {
         type: 'NURTURING_SEQUENCE',
-        ...(clientId && { clientId })
+        ...(clientId && { clientId }),
       },
       orderBy: { executedAt: 'desc' },
       take: 50,
@@ -140,10 +141,10 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             email: true,
-            status: true
-          }
-        }
-      }
+            status: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json({
@@ -153,16 +154,17 @@ export async function GET(request: NextRequest) {
         sequenceType: (seq.details as { sequenceType?: string })?.sequenceType,
         status: seq.success ? 'active' : 'failed',
         createdAt: seq.executedAt,
-        emailsScheduled: (seq.details as { emailsScheduled?: number })?.emailsScheduled || 0
-      }))
+        emailsScheduled: (seq.details as { emailsScheduled?: number })?.emailsScheduled || 0,
+      })),
     })
 
   } catch (error) {
     console.error('Erro ao listar sequências:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Configurações das sequências de nurturing
@@ -179,7 +181,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 7, hour: 16, template: 'soft_sell', subject: 'Pronto para acelerar seu processo?' },
         { day: 10, hour: 13, template: 'urgency', subject: 'Últimas vagas - não perca!' },
         { day: 14, hour: 15, template: 'last_chance', subject: 'Última chance: oferta especial expira hoje' }
-      ]
+      ],
     },
 
     assessment_follow_up: {
@@ -191,7 +193,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 3, hour: 14, template: 'next_steps', subject: 'Próximos passos para seu visto' },
         { day: 5, hour: 10, template: 'consultation_offer', subject: 'Quer acelerar? Fale com especialista' },
         { day: 7, hour: 16, template: 'assessment_final', subject: 'Não deixe sua análise esquecida' }
-      ]
+      ],
     },
 
     cart_abandonment: {
@@ -201,7 +203,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 0, hour: 2, template: 'cart_reminder', subject: 'Esqueceu algo? Seu carrinho está esperando' },
         { day: 1, hour: 12, template: 'cart_discount', subject: '15% OFF para finalizar hoje!' },
         { day: 2, hour: 18, template: 'cart_urgency', subject: 'Último dia: itens saindo do estoque' }
-      ]
+      ],
     },
 
     post_purchase: {
@@ -215,7 +217,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 14, hour: 15, template: 'halfway_check', subject: 'Metade do caminho percorrido!' },
         { day: 21, hour: 13, template: 'final_preparations', subject: 'Preparativos finais' },
         { day: 30, hour: 16, template: 'success_followup', subject: 'Como foi sua experiência?' }
-      ]
+      ],
     },
 
     consultation_prep: {
@@ -224,7 +226,7 @@ function getNurturingSequence(type: string, client: any) {
       emails: [
         { day: 0, hour: 24, template: 'consultation_reminder', subject: 'Sua consultoria é amanhã! 📅' },
         { day: 0, hour: 2, template: 'consultation_prep', subject: 'Como se preparar para consultoria' }
-      ]
+      ],
     },
 
     document_submission: {
@@ -235,11 +237,11 @@ function getNurturingSequence(type: string, client: any) {
         { day: 2, hour: 10, template: 'docs_progress', subject: 'Análise em andamento...' },
         { day: 5, hour: 14, template: 'docs_feedback', subject: 'Feedback dos seus documentos' },
         { day: 7, hour: 16, template: 'docs_completion', subject: 'Documentos aprovados! 🎉' }
-      ]
-    }
+      ],
+    },
   }
 
-  return sequences[type as keyof typeof sequences] || sequences.welcome_lead
+  return sequences[type as keyof typeof sequences] || sequences.welcome_lead,
 }
 
 // Personalizar sequência baseada no perfil do cliente
@@ -253,9 +255,9 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
       variables: {
         ...email.variables,
         target_country: client.targetCountry,
-        country_specific: getCountrySpecificContent(client.targetCountry)
-      }
-    }))
+        country_specific: getCountrySpecificContent(client.targetCountry),
+      },
+    })),
   }
 
   // Personalizar baseado no lead score
@@ -265,7 +267,7 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
     personalized.emails = personalized.emails.map((email: any) => ({
       ...email,
       day: Math.floor(email.day / 2) // Reduzir delay pela metade
-    }))
+    })),
   }
 
   // Personalizar baseado em interações anteriores
@@ -276,11 +278,11 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
       day: personalized.duration + 3,
       hour: 14,
       template: 'advanced_strategies',
-      subject: 'Estratégias avançadas para seu perfil'
-    })
+      subject: 'Estratégias avançadas para seu perfil',
+    }),
   }
 
-  return personalized
+  return personalized,
 }
 
 // Agendar emails da sequência
@@ -301,16 +303,16 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
       subject: email.subject,
       sendAt: sendAt,
       sequenceType: sequence.name,
-      day: email.day
+      day: email.day,
     })
 
     // Simular agendamento (em produção usar scheduler real)
     setTimeout(async () => {
-      await sendScheduledEmail(clientId, email.template, email.subject, email.variables)
-    }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000))
+      await sendScheduledEmail(clientId, email.template, email.subject, email.variables),
+    }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000)),
   }
 
-  return scheduledEmails
+  return scheduledEmails,
 }
 
 // Enviar email agendado
@@ -322,8 +324,8 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       body: JSON.stringify({
         template: template,
         clientId: clientId,
-        variables: variables
-      })
+        variables: variables,
+      }),
     })
 
     const result = await response.json()
@@ -339,9 +341,9 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
           template: template,
           subject: subject,
           emailSent: true,
-          timestamp: new Date().toISOString()
-        }
-      }
+          timestamp: new Date().toISOString(),
+        },
+      },
     })
 
     return result
@@ -359,12 +361,12 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
           error: error?.toString() || 'Unknown error',
           template: template,
           subject: subject,
-          timestamp: new Date().toISOString()
-        }
-      }
+          timestamp: new Date().toISOString(),
+        },
+      },
     })
 
-  }
+  },
 }
 
 // Calcular score do cliente
@@ -381,7 +383,7 @@ function calculateClientScore(client: any): number {
   if (client.targetCountry) score += 15
   if (client.visaType) score += 10
 
-  return Math.min(score, 100)
+  return Math.min(score, 100),
 }
 
 // Conteúdo específico por país
@@ -390,23 +392,23 @@ function getCountrySpecificContent(country: string): any {
     'Canada': {
       tips: 'Dica especial: CRS score é fundamental para Express Entry',
       processing_time: '6-8 meses',
-      success_rate: '85%'
+      success_rate: '85%',
     },
     'Australia': {
       tips: 'Skills Assessment é obrigatório para maioria dos vistos',
       processing_time: '8-12 meses', 
-      success_rate: '78%'
+      success_rate: '78%',
     },
     'Portugal': {
       tips: 'D7 visa é ideal para renda passiva/aposentados',
       processing_time: '2-4 meses',
-      success_rate: '92%'
-    }
+      success_rate: '92%',
+    },
   }
 
   return countryContent[country] || {
     tips: 'Cada país tem suas especificidades',
     processing_time: 'Varia por país',
-    success_rate: '80%+'
-  }
+    success_rate: '80%+',
+  },
 }

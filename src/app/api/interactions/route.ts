@@ -12,7 +12,7 @@ const createInteractionSchema = z.object({
   content: z.string().min(1, 'Conteúdo é obrigatório'),
   response: z.string().optional(),
   scheduledAt: z.string().datetime().optional(),
-  completedAt: z.string().datetime().optional()
+  completedAt: z.string().datetime().optional(),
 })
 
 // GET /api/interactions - Listar interações
@@ -30,11 +30,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (clientId) {
-      where.clientId = clientId
+      where.clientId = clientId,
     }
     
     if (type && type !== 'ALL') {
-      where.type = type
+      where.type = type,
     }
 
     // Buscar interações
@@ -51,10 +51,10 @@ export async function GET(request: NextRequest) {
               name: true, 
               email: true, 
               phone: true,
-              status: true
-            }
-          }
-        }
+              status: true,
+            },
+          },
+        },
       }),
       prisma.interaction.count({ where })
     ])
@@ -69,17 +69,18 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages
-        }
-      }
+          hasMore: page < totalPages,
+        },
+      },
     })
 
   } catch (error) {
     console.error('Erro ao buscar interações:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST /api/interactions - Criar nova interação
@@ -92,13 +93,13 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+      where: { id: validatedData.clientId },
     })
 
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Criar interação
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...validatedData,
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
-        completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null
+        completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null,
       },
       include: {
         client: {
@@ -114,10 +115,10 @@ export async function POST(request: NextRequest) {
             id: true, 
             name: true, 
             email: true,
-            status: true
-          }
-        }
-      }
+            status: true,
+          },
+        },
+      },
     })
 
     // Log da criação
@@ -125,17 +126,17 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'EMAIL',
         action: 'create_interaction',
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      data: interaction
+      data: interaction,
     }, { status: 201 })
 
   } catch (error) {
@@ -143,15 +144,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao criar interação:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -17,13 +17,13 @@ export async function POST(request: NextRequest) {
       // Pagamento aprovado - notificar cliente
       if (result.trackingId) {
         await notificationService.sendPaymentConfirmation(result.trackingId)
-        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved')
-      }
+        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved'),
+      },
     }
     
     return NextResponse.json({
       success: result.success,
-      message: 'Webhook processado com sucesso'
+      message: 'Webhook processado com sucesso',
     })
     
   } catch (error) {
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao processar webhook' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // GET - Verificar webhook (para testes)
@@ -42,6 +42,6 @@ export async function GET() {
     status: 'Online',
     url: '/api/payments/webhook',
     methods: ['POST'],
-    description: 'Endpoint para receber notificações de pagamento do Mercado Pago'
-  })
+    description: 'Endpoint para receber notificações de pagamento do Mercado Pago',
+  }),
 }

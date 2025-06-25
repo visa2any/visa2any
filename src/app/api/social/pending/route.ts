@@ -13,16 +13,16 @@ export async function GET() {
         status: 'SCHEDULED',
         scheduledAt: {
           lte: now // Posts agendados para agora ou no passado
-        }
+        },
       },
       orderBy: { scheduledAt: 'asc' },
-      take: 50
+      take: 50,
     })
 
     return NextResponse.json({
       success: true,
       count: pendingPosts.length,
-      posts: pendingPosts
+      posts: pendingPosts,
     })
 
   } catch (error) {
@@ -30,6 +30,6 @@ export async function GET() {
     return NextResponse.json(
       { error: 'Erro ao buscar posts pendentes' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -1,8 +1,9 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+
 import { headers } from 'next/headers'
 
-const prisma = new PrismaClient()
+
 
 // Função para extrair informações do User-Agent
 function parseUserAgent(userAgent: string) {
@@ -14,7 +15,7 @@ function parseUserAgent(userAgent: string) {
   else if (userAgent.includes('Safari')) browser = 'safari'
   else if (userAgent.includes('Edge')) browser = 'edge'
   
-  return { device, browser }
+  return { device, browser },
 }
 
 // Função para obter informações de geolocalização por IP
@@ -23,19 +24,19 @@ async function getLocationFromIP(ip: string) {
     // Em produção, usar um serviço como ipapi.co ou similar
     // Para desenvolvimento, retornar valores padrão
     if (process.env.NODE_ENV === 'development') {
-      return { country: 'Brazil', city: 'São Paulo' }
+      return { country: 'Brazil', city: 'São Paulo' },
     }
     
     const response = await fetch(`https://ipapi.co/${ip}/json/`)
     const data = await response.json()
     return {
       country: data.country_name || 'Unknown',
-      city: data.city || 'Unknown'
-    }
+      city: data.city || 'Unknown',
+    },
   } catch (error) {
     console.error('Erro ao obter localização:', error)
-    return { country: 'Unknown', city: 'Unknown' }
-  }
+    return { country: 'Unknown', city: 'Unknown' },
+  },
 }
 
 // GET - Redirecionar com tracking
@@ -48,16 +49,16 @@ export async function GET(request: NextRequest) {
     const source = url.searchParams.get('source')
 
     if (!referralCode) {
-      return NextResponse.redirect(new URL(targetUrl, request.url))
+      return NextResponse.redirect(new URL(targetUrl, request.url)),
     }
 
     // Buscar afiliado pelo código de referência
     const affiliate = await prisma.affiliate.findUnique({
-      where: { referralCode }
+      where: { referralCode },
     })
 
     if (!affiliate || affiliate.status !== 'ACTIVE') {
-      return NextResponse.redirect(new URL(targetUrl, request.url))
+      return NextResponse.redirect(new URL(targetUrl, request.url)),
     }
 
     // Obter informações do request
@@ -87,8 +88,8 @@ export async function GET(request: NextRequest) {
         device,
         browser,
         source,
-        campaign
-      }
+        campaign,
+      },
     })
 
     // Atualizar contador de cliques do afiliado
@@ -96,8 +97,8 @@ export async function GET(request: NextRequest) {
       where: { id: affiliate.id },
       data: {
         totalClicks: { increment: 1 },
-        lastActivity: new Date()
-      }
+        lastActivity: new Date(),
+      },
     })
 
     // Definir cookie para tracking de conversão
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60, // 30 dias
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'lax',
     })
 
     return response
@@ -114,10 +115,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro no tracking de afiliado:', error)
     const targetUrl = request.nextUrl.searchParams.get('url') || '/'
-    return NextResponse.redirect(new URL(targetUrl, request.url))
+    return NextResponse.redirect(new URL(targetUrl, request.url)),
   } finally {
-    await prisma.$disconnect()
-  }
+    await prisma.$disconnect(),
+  },
 }
 
 // POST - Registrar conversão
@@ -134,33 +135,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Código de referência e ID do cliente são obrigatórios' },
         { status: 400 }
-      )
+      ),
     }
 
     // Buscar afiliado
     const affiliate = await prisma.affiliate.findUnique({
-      where: { referralCode }
+      where: { referralCode },
     })
 
     if (!affiliate) {
       return NextResponse.json(
         { error: 'Afiliado não encontrado' },
         { status: 404 }
-      )
+      ),
     }
 
     // Verificar se já existe uma conversão para este cliente
     const existingReferral = await prisma.affiliateReferral.findFirst({
       where: {
         affiliateId: affiliate.id,
-        clientId
-      }
+        clientId,
+      },
     })
 
     if (existingReferral) {
       return NextResponse.json({
-        data: { message: 'Conversão já registrada', referralId: existingReferral.id }
-      })
+        data: { message: 'Conversão já registrada', referralId: existingReferral.id },
+      }),
     }
 
     // Calcular comissão
@@ -178,8 +179,8 @@ export async function POST(request: NextRequest) {
         conversionValue,
         commissionRate,
         commissionValue,
-        convertedAt: new Date()
-      }
+        convertedAt: new Date(),
+      },
     })
 
     // Criar comissão
@@ -194,8 +195,8 @@ export async function POST(request: NextRequest) {
         status: 'PENDING',
         type: conversionType,
         description: `Comissão por ${conversionType}`,
-        dueDate
-      }
+        dueDate,
+      },
     })
 
     // Atualizar estatísticas do afiliado
@@ -210,8 +211,8 @@ export async function POST(request: NextRequest) {
         totalEarnings: { increment: commissionValue },
         pendingEarnings: { increment: commissionValue },
         conversionRate,
-        lastActivity: new Date()
-      }
+        lastActivity: new Date(),
+      },
     })
 
     // Marcar clique como convertido se existir
@@ -219,25 +220,25 @@ export async function POST(request: NextRequest) {
       where: {
         affiliateId: affiliate.id,
         referralCode,
-        converted: false
+        converted: false,
       },
       data: {
         converted: true,
-        conversionValue
-      }
+        conversionValue,
+      },
     })
 
     return NextResponse.json({ 
       referralId: referral.id,
-      commissionValue 
+      commissionValue ,
     })
 
   } catch (error) {
     console.error('Erro ao registrar conversão:', error)
     return NextResponse.json({ 
-      error: 'Erro interno do servidor' 
-    }, { status: 500 })
+      error: 'Erro interno do servidor' ,
+    }, { status: 500 }),
   } finally {
-    await prisma.$disconnect()
-  }
+    await prisma.$disconnect(),
+  },
 }

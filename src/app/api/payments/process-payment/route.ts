@@ -4,7 +4,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago'
 // Configurar MercadoPago
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
 if (!accessToken) {
-  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
+  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado'),
 }
 
 const client = new MercadoPagoConfig({
@@ -24,15 +24,15 @@ export async function POST(request: NextRequest) {
     if (!selectedPaymentMethod || !formData || !preferenceId) {
       return NextResponse.json({
         error: 'Dados obrigatórios ausentes',
-        details: 'selectedPaymentMethod, formData e preferenceId são obrigatórios'
-      }, { status: 400 })
+        details: 'selectedPaymentMethod, formData e preferenceId são obrigatórios',
+      }, { status: 400 }),
     }
 
     if (!formData.transaction_amount || formData.transaction_amount <= 0) {
       return NextResponse.json({
         error: 'Valor inválido',
-        details: 'transaction_amount deve ser maior que zero'
-      }, { status: 400 })
+        details: 'transaction_amount deve ser maior que zero',
+      }, { status: 400 }),
     }
 
     // Criar dados do pagamento com base no método selecionado
@@ -47,17 +47,17 @@ export async function POST(request: NextRequest) {
     if (selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') {
       // PIX (pode vir como 'pix' ou 'bank_transfer' do MercadoPago Bricks)
       paymentData.payment_method_id = 'pix'
-      console.log('🎯 Processando PIX com payment_method_id:', paymentData.payment_method_id)
+      console.log('🎯 Processando PIX com payment_method_id:', paymentData.payment_method_id),
     } else if (formData.token) {
       // Cartão de crédito/débito
       paymentData.token = formData.token
       paymentData.installments = formData.installments || 1
       paymentData.issuer_id = formData.issuer_id
-      console.log('💳 Processando cartão')
+      console.log('💳 Processando cartão'),
     } else if (selectedPaymentMethod === 'bolbradesco' || selectedPaymentMethod === 'pec') {
       // Boleto
       paymentData.payment_method_id = selectedPaymentMethod
-      console.log('🎫 Processando boleto')
+      console.log('🎫 Processando boleto'),
     }
 
     // Adicionar dados do pagador se disponíveis
@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
         email: formData.payer.email,
         first_name: formData.payer.first_name,
         last_name: formData.payer.last_name,
-        identification: formData.payer.identification
-      }
+        identification: formData.payer.identification,
+      },
     }
 
     console.log('📋 Dados do pagamento:', JSON.stringify(paymentData, null, 2))
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     if ((selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer')) {
       console.log('🎯 PIX - Dados de interação:', result.point_of_interaction)
       console.log('🎯 PIX - QR Code:', result.point_of_interaction?.transaction_data?.qr_code ? 'Presente' : 'Ausente')
-      console.log('🎯 PIX - QR Code Base64:', result.point_of_interaction?.transaction_data?.qr_code_base64 ? 'Presente' : 'Ausente')
+      console.log('🎯 PIX - QR Code Base64:', result.point_of_interaction?.transaction_data?.qr_code_base64 ? 'Presente' : 'Ausente'),
     }
 
     return NextResponse.json({
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       error: 'Erro ao processar pagamento',
       details: error instanceof Error ? error.message : 'Erro desconhecido',
       errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-      paymentData: JSON.stringify(paymentData, null, 2)
-    }, { status: 500 })
-  }
+      paymentData: JSON.stringify(paymentData, null, 2),
+    }, { status: 500 }),
+  },
 }

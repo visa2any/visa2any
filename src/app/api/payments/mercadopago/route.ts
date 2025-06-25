@@ -35,18 +35,18 @@ export async function POST(request: NextRequest) {
           name: body.customer.name,
           email: body.customer.email,
           phone: body.customer.phone ? {
-            number: body.customer.phone.replace(/\D/g, '')
+            number: body.customer.phone.replace(/\D/g, ''),
           } : undefined,
           identification: body.customer.cpf ? {
             type: 'CPF',
-            number: body.customer.cpf.replace(/\D/g, '')
-          } : undefined
-        }
+            number: body.customer.cpf.replace(/\D/g, ''),
+          } : undefined,
+        },
       } : {}),
       back_urls: {
         success: body.back_urls?.success || `${process.env.NEXTAUTH_URL}/payment/success`,
         failure: body.back_urls?.failure || `${process.env.NEXTAUTH_URL}/payment/failure`,
-        pending: body.back_urls?.pending || `${process.env.NEXTAUTH_URL}/payment/pending`
+        pending: body.back_urls?.pending || `${process.env.NEXTAUTH_URL}/payment/pending`,
       },
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
       external_reference: body.external_reference || `visa2any-${Date.now()}`,
@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
         installments: body.installments || 12,
         default_installments: body.installments || 1,
         default_payment_method_id: null,
-        default_card_id: null
+        default_card_id: null,
       },
-      statement_descriptor: 'VISA2ANY'
+      statement_descriptor: 'VISA2ANY',
     }
 
     console.log('📋 Dados da preferência:', JSON.stringify(preferenceData, null, 2))
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       init_point: result.init_point,
       sandbox_init_point: result.sandbox_init_point,
       checkout_url: result.init_point,
-      public_key: process.env.MERCADOPAGO_PUBLIC_KEY
+      public_key: process.env.MERCADOPAGO_PUBLIC_KEY,
     })
 
   } catch (error) {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       error: 'Erro ao criar pagamento',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : 'Erro desconhecido',
+    }, { status: 500 }),
+  },
 }

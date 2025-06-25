@@ -1,9 +1,10 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
-export async function GET(
+
+
+export async function GET(,
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -21,8 +22,8 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            email: true
-          }
+            email: true,
+          },
         },
         replies: {
           include: {
@@ -30,18 +31,18 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
+                email: true,
+              },
+            },
           },
           orderBy: {
-            createdAt: 'asc'
-          }
-        }
+            createdAt: 'asc',
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
 
     // Formattar os comentários para incluir informações do autor
@@ -67,22 +68,22 @@ export async function GET(
         updatedAt: reply.updatedAt,
         author: {
           name: reply.user.name,
-          avatar: null
-        }
-      }))
+          avatar: null,
+        },
+      })),
     }))
 
     return NextResponse.json({
-      comments: formattedComments
+      comments: formattedComments,
     })
 
   } catch (error) {
     console.error('❌ Erro ao buscar comentários:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

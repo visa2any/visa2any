@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { appointmentBookingService } from '@/lib/appointment-booking'
 
 // DELETE - Cancelar agendamento
-export async function DELETE(
+export async function DELETE(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -15,7 +15,7 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Parâmetro consulate é obrigatório' },
         { status: 400 }
-      )
+      ),
     }
 
     const result = await appointmentBookingService.cancelAppointment(appointmentId, consulate)
@@ -25,12 +25,13 @@ export async function DELETE(
       
       return NextResponse.json({
         message: result.message,
-        cancelledAt: new Date().toISOString()
-      })
+        cancelledAt: new Date().toISOString(),
+      }),
     } else {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
   } catch (error) {
@@ -38,6 +39,6 @@ export async function DELETE(
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

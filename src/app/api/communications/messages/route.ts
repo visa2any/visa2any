@@ -1,7 +1,8 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,8 +29,8 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           responseTime: 120,
-          sentiment: 'positive'
-        }
+          sentiment: 'positive',
+        },
       },
       {
         id: '2',
@@ -47,8 +48,8 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           templateUsed: 'boas-vindas',
-          responseTime: 15
-        }
+          responseTime: 15,
+        },
       },
       {
         id: '3',
@@ -69,12 +70,12 @@ export async function GET(request: NextRequest) {
             name: 'documentos-visto-canadense.pdf',
             type: 'application/pdf',
             size: 245678,
-            url: '/files/documentos-visto-canadense.pdf'
+            url: '/files/documentos-visto-canadense.pdf',
           }
         ],
         metadata: {
-          templateUsed: 'documentos-pendentes'
-        }
+          templateUsed: 'documentos-pendentes',
+        },
       },
       {
         id: '4',
@@ -92,8 +93,8 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           duration: 1800,
-          callType: 'follow-up'
-        }
+          callType: 'follow-up',
+        },
       },
       {
         id: '5',
@@ -111,8 +112,8 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           sentiment: 'neutral',
-          requiresResponse: true
-        }
+          requiresResponse: true,
+        },
       }
     ]
 
@@ -120,11 +121,11 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (clientId) {
-      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
+      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId),
     }
 
     if (type && type !== 'all') {
-      filteredMessages = filteredMessages.filter(msg => msg.type === type)
+      filteredMessages = filteredMessages.filter(msg => msg.type === type),
     }
 
     // Limit results
@@ -132,15 +133,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       messages: filteredMessages,
-      total: filteredMessages.length
+      total: filteredMessages.length,
     })
 
   } catch (error) {
     console.error('Messages fetch error:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 export async function POST(request: NextRequest) {
@@ -166,8 +168,8 @@ export async function POST(request: NextRequest) {
       priority: 'medium',
       attachments: attachments || [],
       metadata: {
-        sentAt: new Date().toISOString()
-      }
+        sentAt: new Date().toISOString(),
+      },
     }
 
     // Simulate sending delay
@@ -175,13 +177,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: newMessage,
-      messageId: newMessage.id
+      messageId: newMessage.id,
     })
 
   } catch (error) {
     console.error('Message send error:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -1,17 +1,18 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limiter'
 
-const prisma = new PrismaClient()
+
 
 export async function POST(request: NextRequest) {
   // Aplicar rate limiting para login
   const rateLimitResult = rateLimit(request, RATE_LIMITS.auth)
   
   if (!rateLimitResult.success) {
-    return createRateLimitResponse(rateLimitResult.resetTime)
+    return createRateLimitResponse(rateLimitResult.resetTime),
   }
   try {
     const body = await request.json()
@@ -19,8 +20,8 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json({
-        error: 'Email e senha são obrigatórios'
-      }, { status: 400 })
+        error: 'Email e senha são obrigatórios',
+      }, { status: 400 }),
     }
 
     // Buscar cliente por email
@@ -29,15 +30,15 @@ export async function POST(request: NextRequest) {
       include: {
         consultations: {
           take: 1,
-          orderBy: { createdAt: 'desc' }
-        }
-      }
+          orderBy: { createdAt: 'desc' },
+        },
+      },
     })
 
     if (!customer) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'
-      }, { status: 401 })
+        error: 'Credenciais inválidas',
+      }, { status: 401 }),
     }
 
     // Verificar senha
@@ -45,8 +46,8 @@ export async function POST(request: NextRequest) {
     
     if (!passwordMatch) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'
-      }, { status: 401 })
+        error: 'Credenciais inválidas',
+      }, { status: 401 }),
     }
 
     // Gerar token JWT
@@ -54,15 +55,15 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor'
-      }, { status: 500 })
+        error: 'Erro de configuração do servidor',
+      }, { status: 500 }),
     }
     
     const token = jwt.sign(
       { 
         customerId: customer.id, 
         email: customer.email,
-        type: 'customer'
+        type: 'customer',
       },
       jwtSecret,
       { expiresIn: '7d' }
@@ -79,9 +80,9 @@ export async function POST(request: NextRequest) {
         status: customer.status,
         destinationCountry: customer.destinationCountry,
         visaType: customer.visaType,
-        eligibilityScore: customer.eligibilityScore
+        eligibilityScore: customer.eligibilityScore,
       },
-      token
+      token,
     })
 
     // Definir cookie httpOnly
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
+      path: '/',
     })
 
     return response
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no login do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
+      error: 'Erro interno do servidor',
+    }, { status: 500 }),
+  },
 }

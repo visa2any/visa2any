@@ -8,20 +8,20 @@ export async function GET() {
       include: {
         logs: {
           orderBy: { createdAt: 'desc' },
-          take: 5
-        }
+          take: 5,
+        },
       },
       orderBy: [
         { priority: 'desc' },
         { name: 'asc' }
-      ]
+      ],
     })
 
     return NextResponse.json({
       success: true,
       sources,
       total: sources.length,
-      active: sources.filter(s => s.isActive).length
+      active: sources.filter(s => s.isActive).length,
     })
 
   } catch (error) {
@@ -29,8 +29,8 @@ export async function GET() {
     return NextResponse.json(
       { error: 'Erro ao buscar fontes' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST - Adicionar nova fonte
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       flag,
       keywords,
       priority,
-      checkInterval
+      checkInterval,
     } = body
 
     // Validação
@@ -54,19 +54,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: name, url, type, category' },
         { status: 400 }
-      )
+      ),
     }
 
     // Verificar se URL já existe
     const existingSource = await prisma.newsSource.findUnique({
-      where: { url }
+      where: { url },
     })
 
     if (existingSource) {
       return NextResponse.json(
         { error: 'Fonte com esta URL já existe' },
         { status: 409 }
-      )
+      ),
     }
 
     const newSource = await prisma.newsSource.create({
@@ -79,14 +79,14 @@ export async function POST(request: NextRequest) {
         flag: flag || '🌍',
         keywords: keywords || [],
         priority: priority || 1,
-        checkInterval: checkInterval || 60
-      }
+        checkInterval: checkInterval || 60,
+      },
     })
 
     return NextResponse.json({
       success: true,
       source: newSource,
-      message: 'Fonte adicionada com sucesso'
+      message: 'Fonte adicionada com sucesso',
     })
 
   } catch (error) {
@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao criar fonte' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // PUT - Atualizar fonte existente
@@ -108,21 +108,21 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID da fonte é obrigatório' },
         { status: 400 }
-      )
+      ),
     }
 
     const updatedSource = await prisma.newsSource.update({
       where: { id },
       data: {
         ...updateData,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
       success: true,
       source: updatedSource,
-      message: 'Fonte atualizada com sucesso'
+      message: 'Fonte atualizada com sucesso',
     })
 
   } catch (error) {
@@ -130,8 +130,8 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao atualizar fonte' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // DELETE - Remover fonte
@@ -144,22 +144,22 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID da fonte é obrigatório' },
         { status: 400 }
-      )
+      ),
     }
 
     // Primeiro deletar logs relacionados
     await prisma.autoNewsLog.deleteMany({
-      where: { sourceId: id }
+      where: { sourceId: id },
     })
 
     // Depois deletar a fonte
     await prisma.newsSource.delete({
-      where: { id }
+      where: { id },
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Fonte removida com sucesso'
+      message: 'Fonte removida com sucesso',
     })
 
   } catch (error) {
@@ -167,6 +167,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao deletar fonte' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

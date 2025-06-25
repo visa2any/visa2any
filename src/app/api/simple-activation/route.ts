@@ -7,7 +7,7 @@ const getSystemState = () => ({
   automation: !!(process.env.WHATSAPP_TOKEN && process.env.TELEGRAM_BOT_TOKEN),
   paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY),
   hybridBooking: true, // Sempre ativo para agendamento híbrido
-  lastActivation: new Date().toISOString()
+  lastActivation: new Date().toISOString(),
 })
 
 export async function POST(request: NextRequest) {
@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
         if (!process.env.ENABLE_REAL_MONITORING) {
           return NextResponse.json({
             message: 'Monitoramento real não habilitado',
-            error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar'
-          })
+            error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar',
+          }),
         }
         
         // Enviar notificação Telegram sobre ativação real
@@ -40,22 +40,22 @@ Sistema pronto para produção!`)
         return NextResponse.json({
           message: 'Sistema híbrido ativo!',
           system: 'hybrid-booking',
-          active: true
+          active: true,
         })
         
       default:
         return NextResponse.json({
-          error: 'Ação não reconhecida'
-        }, { status: 400 })
+          error: 'Ação não reconhecida',
+        }, { status: 400 }),
     }
     
   } catch (error) {
     console.error('Erro na API de ativação:', error)
     return NextResponse.json({ 
       error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }
 
 export async function GET(request: NextRequest) {
@@ -71,9 +71,9 @@ export async function GET(request: NextRequest) {
       whatsapp: !!process.env.WHATSAPP_TOKEN,
       email: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST),
       payment: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY),
-      database: !!process.env.DATABASE_URL
-    }
-  })
+      database: !!process.env.DATABASE_URL,
+    },
+  }),
 }
 
 function calculateMonthlyCost(state: any): number {
@@ -85,7 +85,7 @@ function calculateMonthlyCost(state: any): number {
       total += 5 // Resend: $1/mês para até 3000 emails
     } else {
       total += 0 // SMTP próprio = gratuito
-    }
+    },
   }
   
   if (state.paymentProcessing) {
@@ -97,7 +97,7 @@ function calculateMonthlyCost(state: any): number {
   }
   
   // Híbrido = apenas taxas de transação
-  return total
+  return total,
 }
 
 async function sendTelegramNotification(title: string, message: string) {
@@ -106,7 +106,7 @@ async function sendTelegramNotification(title: string, message: string) {
 
   if (!token || !chatId) {
     console.log('Token ou Chat ID não configurados - notificação não enviada')
-    return
+    return,
   }
 
   try {
@@ -116,16 +116,16 @@ async function sendTelegramNotification(title: string, message: string) {
       body: JSON.stringify({
         chat_id: chatId,
         text: `${title}\n\n${message}`,
-        parse_mode: 'HTML'
-      })
+        parse_mode: 'HTML',
+      }),
     })
 
     if (response.ok) {
-      console.log('Notificação Telegram enviada com sucesso')
+      console.log('Notificação Telegram enviada com sucesso'),
     } else {
-      console.error('Erro ao enviar notificação Telegram:', await response.text())
-    }
+      console.error('Erro ao enviar notificação Telegram:', await response.text()),
+    },
   } catch (error) {
-    console.error('Erro ao enviar notificação:', error)
-  }
+    console.error('Erro ao enviar notificação:', error),
+  },
 }

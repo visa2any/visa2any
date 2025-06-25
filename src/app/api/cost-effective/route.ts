@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos applicantInfo.fullName e consularInfo.country são obrigatórios' },
             { status: 400 }
-          )
+          ),
         }
 
         const result = await costEffectiveSolutions.manualAssistedBooking(bookingRequest)
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
             '✅ 100% legal e seguro',
             '✅ Acompanhamento humano',
             '✅ Alta taxa de sucesso'
-          ]
+          ],
         })
 
       case 'setup_monitoring':
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campo countries deve ser um array não vazio' },
             { status: 400 }
-          )
+          ),
         }
 
         const monitoring = await costEffectiveSolutions.setupVacancyMonitoring(countries)
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
           targets: monitoring.targets,
           message: `Monitoramento configurado para ${countries.length} países`,
           cost: 'GRATUITO',
-          instructions: 'Sistema monitora automaticamente e notifica quando encontrar vagas'
+          instructions: 'Sistema monitora automaticamente e notifica quando encontrar vagas',
         })
 
       case 'optimized_workflow':
@@ -71,14 +71,14 @@ export async function POST(request: NextRequest) {
           workflow: workflow.workflow,
           totalTime: workflow.totalTime,
           cost: `R$ ${workflow.cost}`,
-          efficiency: 'Processo otimizado para máxima eficiência'
+          efficiency: 'Processo otimizado para máxima eficiência',
         })
 
       default:
         return NextResponse.json(
           { error: 'Action deve ser: manual_booking, setup_monitoring, ou optimized_workflow' },
           { status: 400 }
-        )
+        ),
     }
 
   } catch (error) {
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // GET - Listar métodos econômicos e calcular ROI
@@ -105,14 +105,14 @@ export async function GET(request: NextRequest) {
           success: true,
           methods: methods.map(method => ({
             ...method,
-            costDescription: `Setup: R$ ${method.cost.setup} | Mensal: R$ ${method.cost.monthly} | Por transação: R$ ${method.cost.perTransaction}`
+            costDescription: `Setup: R$ ${method.cost.setup} | Mensal: R$ ${method.cost.monthly} | Por transação: R$ ${method.cost.perTransaction}`,
           })),
           recommendation: 'Para começar imediatamente, use "Agendamento Manual Assistido"',
           bestOption: {
             immediate: 'manual_assisted',
             scalable: 'api_monitoring',
-            cheapest: 'telegram_bots'
-          }
+            cheapest: 'telegram_bots',
+          },
         })
 
       case 'roi':
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
           return NextResponse.json(
             { error: 'Parâmetro method é obrigatório' },
             { status: 400 }
-          )
+          ),
         }
 
         try {
@@ -140,15 +140,15 @@ export async function GET(request: NextRequest) {
               monthlyCost: `R$ ${roi.monthlyCost}`,
               monthlyRevenue: `R$ ${roi.monthlyRevenue}`,
               profit: `R$ ${roi.profit}`,
-              roi: `${roi.roi.toFixed(1)}%`
+              roi: `${roi.roi.toFixed(1)}%`,
             },
-            viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável'
-          })
+            viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável',
+          }),
         } catch (error) {
           return NextResponse.json(
             { error: `Método '${method}' não encontrado` },
             { status: 400 }
-          )
+          ),
         }
 
       case 'telegram_setup':
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
             'Múltiplos canais monitorados',
             'Comandos personalizados',
             'Zero custo operacional'
-          ]
+          ],
         })
 
       case 'email_setup':
@@ -179,14 +179,14 @@ export async function GET(request: NextRequest) {
           instructions: emailSetup.instructions,
           cost: 'R$ 20/mês',
           roi: 'Altíssimo (quase gratuito)',
-          providers: emailSetup.emailConfig.providers
+          providers: emailSetup.emailConfig.providers,
         })
 
       default:
         return NextResponse.json(
           { error: 'Action deve ser: methods, roi, telegram_setup, ou email_setup' },
           { status: 400 }
-        )
+        ),
     }
 
   } catch (error) {
@@ -194,6 +194,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

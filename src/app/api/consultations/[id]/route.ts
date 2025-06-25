@@ -16,11 +16,11 @@ const updateConsultationSchema = z.object({
   timeline: z.string().optional(),
   nextSteps: z.string().optional(),
   notes: z.string().optional(),
-  consultantId: z.string().optional()
+  consultantId: z.string().optional(),
 })
 
 // GET /api/consultations/[id] - Buscar consultoria específica
-export async function GET(
+export async function GET(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -28,7 +28,7 @@ export async function GET(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const { id } = params
 
@@ -38,39 +38,40 @@ export async function GET(
         client: {
           include: {
             documents: {
-              orderBy: { uploadedAt: 'desc' }
-            }
-          }
+              orderBy: { uploadedAt: 'desc' },
+            },
+          },
         },
         consultant: {
-          select: { id: true, name: true, email: true, role: true }
+          select: { id: true, name: true, email: true, role: true },
         },
         documents: {
-          orderBy: { uploadedAt: 'desc' }
-        }
-      }
+          orderBy: { uploadedAt: 'desc' },
+        },
+      },
     })
 
     if (!consultation) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     return NextResponse.json({
-      data: consultation
+      data: consultation,
     })
 
   } catch (error) {
     console.error('Erro ao buscar consultoria:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // PATCH /api/consultations/[id] - Atualizar campo específico (inline edit)
-export async function PATCH(
+export async function PATCH(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -78,7 +79,7 @@ export async function PATCH(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const { id } = params
     const body = await request.json()
@@ -88,13 +89,13 @@ export async function PATCH(
 
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
-      where: { id }
+      where: { id },
     })
 
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Preparar dados para atualização
@@ -103,15 +104,15 @@ export async function PATCH(
     if (validatedData.scheduledAt) {
       // Handle both ISO string and datetime-local format
       if (validatedData.scheduledAt.includes('T')) {
-        updateData.scheduledAt = new Date(validatedData.scheduledAt)
+        updateData.scheduledAt = new Date(validatedData.scheduledAt),
       } else {
-        updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z')
-      }
+        updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z'),
+      },
     }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date()
+      updateData.completedAt = new Date(),
     }
 
     // Atualizar consultoria
@@ -120,12 +121,12 @@ export async function PATCH(
       data: updateData,
       include: {
         client: {
-          select: { id: true, name: true, email: true }
+          select: { id: true, name: true, email: true },
         },
         consultant: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     })
 
     // Log da atualização
@@ -133,17 +134,17 @@ export async function PATCH(
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'inline_edit',
-        clientId: existingConsultation.clientId
+        clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      data: updatedConsultation
+      data: updatedConsultation,
     })
 
   } catch (error) {
@@ -151,21 +152,22 @@ export async function PATCH(
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // PUT /api/consultations/[id] - Atualizar consultoria
-export async function PUT(
+export async function PUT(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -173,7 +175,7 @@ export async function PUT(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const { id } = params
     const body = await request.json()
@@ -184,29 +186,29 @@ export async function PUT(
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
       where: { id },
-      include: { client: true }
+      include: { client: true },
     })
 
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Preparar dados para atualização
     const updateData: any = { ...validatedData }
     
     if (validatedData.scheduledAt) {
-      updateData.scheduledAt = new Date(validatedData.scheduledAt)
+      updateData.scheduledAt = new Date(validatedData.scheduledAt),
     }
     
     if (validatedData.completedAt) {
-      updateData.completedAt = new Date(validatedData.completedAt)
+      updateData.completedAt = new Date(validatedData.completedAt),
     }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date()
+      updateData.completedAt = new Date(),
     }
 
     // Atualizar consultoria
@@ -219,13 +221,13 @@ export async function PUT(
             id: true, 
             name: true, 
             email: true, 
-            status: true 
-          }
+            status: true ,
+          },
         },
         consultant: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     })
 
     // Atualizar status do cliente baseado no resultado da consultoria
@@ -234,20 +236,20 @@ export async function PUT(
 
       // Lógica para determinar próximo status do cliente
       if (validatedData.score && validatedData.score >= 70) {
-        newClientStatus = 'IN_PROCESS'
+        newClientStatus = 'IN_PROCESS',
       } else if (validatedData.score && validatedData.score < 40) {
         newClientStatus = 'QUALIFIED' // Precisa de mais trabalho
       } else {
-        newClientStatus = 'DOCUMENTS_PENDING'
+        newClientStatus = 'DOCUMENTS_PENDING',
       }
 
       await prisma.client.update({
         where: { id: existingConsultation.clientId },
         data: { 
           status: newClientStatus,
-          score: validatedData.score || existingConsultation.client.score
-        }
-      })
+          score: validatedData.score || existingConsultation.client.score,
+        },
+      }),
     }
 
     // Log da atualização
@@ -255,17 +257,17 @@ export async function PUT(
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'update_consultation',
-        clientId: existingConsultation.clientId
+        clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      data: updatedConsultation
+      data: updatedConsultation,
     })
 
   } catch (error) {
@@ -273,21 +275,22 @@ export async function PUT(
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // DELETE /api/consultations/[id] - Deletar consultoria
-export async function DELETE(
+export async function DELETE(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -295,24 +298,24 @@ export async function DELETE(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const { id } = params
 
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
-      where: { id }
+      where: { id },
     })
 
     if (!existingConsultation) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Deletar consultoria
     await prisma.consultation.delete({
-      where: { id }
+      where: { id },
     })
 
     // Log da deleção
@@ -320,23 +323,24 @@ export async function DELETE(
       data: {
         type: 'CONSULTATION_DELETED',
         action: 'delete_consultation',
-        clientId: existingConsultation.clientId
+        clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      message: 'Consultoria deletada com sucesso'
+      message: 'Consultoria deletada com sucesso',
     })
 
   } catch (error) {
     console.error('Erro ao deletar consultoria:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

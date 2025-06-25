@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Nome, telefone e aceite dos termos são obrigatórios' },
         { status: 400 }
-      )
+      ),
     }
 
     // Validar formato do telefone
@@ -20,19 +20,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },
         { status: 400 }
-      )
+      ),
     }
 
     // Verificar se já existe
     const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
-      where: { phone }
+      where: { phone },
     })
 
     if (existingSubscriber) {
       return NextResponse.json(
         { error: 'Este número já está cadastrado na nossa newsletter' },
         { status: 409 }
-      )
+      ),
     }
 
     // Criar novo assinante
@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
         phone,
         countries: countries || ['Global'],
         isActive: true,
-        source: 'blog_newsletter'
-      }
+        source: 'blog_newsletter',
+      },
     })
 
     // Enviar mensagem de boas-vindas via WhatsApp
     try {
-      await sendWelcomeMessage(phone, name)
+      await sendWelcomeMessage(phone, name),
     } catch (error) {
       console.error('Erro ao enviar mensagem de boas-vindas:', error)
       // Não falhar o cadastro se a mensagem não for enviada
@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
         id: subscriber.id,
         name: subscriber.name,
         phone: subscriber.phone,
-        countries: subscriber.countries
-      }
+        countries: subscriber.countries,
+      },
     })
 
   } catch (error) {
@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Função para enviar mensagem de boas-vindas
@@ -107,15 +107,15 @@ _Para cancelar, responda SAIR_`
     body: JSON.stringify({
       to: phone,
       message: message,
-      type: 'newsletter_welcome'
-    })
+      type: 'newsletter_welcome',
+    }),
   })
 
   if (!whatsappResponse.ok) {
-    throw new Error('Falha ao enviar mensagem de boas-vindas')
+    throw new Error('Falha ao enviar mensagem de boas-vindas'),
   }
 
-  return true
+  return true,
 }
 
 // GET - Listar assinantes (admin only)
@@ -124,18 +124,18 @@ export async function GET() {
     const subscribers = await prisma.whatsAppSubscriber.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' },
-      take: 100
+      take: 100,
     })
 
     const stats = {
       total: subscribers.length,
       byCountry: subscribers.reduce((acc, sub) => {
         sub.countries.forEach(country => {
-          acc[country] = (acc[country] || 0) + 1
+          acc[country] = (acc[country] || 0) + 1,
         })
-        return acc
+        return acc,
       }, {} as Record<string, number>),
-      recent: subscribers.slice(0, 10)
+      recent: subscribers.slice(0, 10),
     }
 
     return NextResponse.json({
@@ -146,8 +146,8 @@ export async function GET() {
         name: sub.name,
         phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),
         countries: sub.countries,
-        createdAt: sub.createdAt
-      }))
+        createdAt: sub.createdAt,
+      })),
     })
 
   } catch (error) {
@@ -155,6 +155,6 @@ export async function GET() {
     return NextResponse.json(
       { error: 'Erro ao listar assinantes' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

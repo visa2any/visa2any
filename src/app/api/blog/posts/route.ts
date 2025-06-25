@@ -1,7 +1,8 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros do Prisma
     const where: any = {
-      published: true
+      published: true,
     }
 
     // Filtro de busca por texto melhorado
@@ -48,34 +49,34 @@ export async function GET(request: NextRequest) {
             { title: { contains: word, mode: 'insensitive' } },
             { excerpt: { contains: word, mode: 'insensitive' } },
             { country: { contains: word, mode: 'insensitive' } }
-          )
-        }
-      }
+          ),
+        },
+      },
     }
 
     // Filtros específicos
     if (category !== 'Todos') {
-      where.category = category
+      where.category = category,
     }
 
     if (difficulty !== 'Todos') {
-      where.difficulty = difficulty
+      where.difficulty = difficulty,
     }
 
     if (type !== 'Todos') {
-      where.type = type
+      where.type = type,
     }
 
     if (featured) {
-      where.featured = true
+      where.featured = true,
     }
 
     if (trending) {
-      where.trending = true
+      where.trending = true,
     }
 
     if (urgent) {
-      where.urgent = true
+      where.urgent = true,
     }
 
     // Ordenação
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
         break
       case 'liked':
         orderBy = { likes: 'desc' }
-        break
+        break,
     }
 
     // Buscar posts
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest) {
       where,
       orderBy,
       take: limit,
-      skip: offset
+      skip: offset,
     })
 
     // Buscar total para paginação
@@ -110,7 +111,7 @@ export async function GET(request: NextRequest) {
     // Converter tags JSON para array
     const postsWithTags = posts.map(post => ({
       ...post,
-      tags: Array.isArray(post.tags) ? post.tags : []
+      tags: Array.isArray(post.tags) ? post.tags : [],
     }))
 
     return NextResponse.json({
@@ -121,8 +122,8 @@ export async function GET(request: NextRequest) {
         current: Math.floor(offset / limit) + 1,
         total: Math.ceil(total / limit),
         limit,
-        offset
-      }
+        offset,
+      },
     })
 
   } catch (error) {
@@ -137,10 +138,10 @@ export async function GET(request: NextRequest) {
         current: 1,
         total: 0,
         limit: 50,
-        offset: 0
-      }
-    })
-  }
+        offset: 0,
+      },
+    }),
+  },
 }
 
 export async function POST(request: NextRequest) {
@@ -153,10 +154,10 @@ export async function POST(request: NextRequest) {
     if (!title || !excerpt || !content || !category || !author) {
       return NextResponse.json(
         {
-          error: 'Campos obrigatórios: title, excerpt, content, category, author'
+          error: 'Campos obrigatórios: title, excerpt, content, category, author',
         },
         { status: 400 }
-      )
+      ),
     }
 
     // Criar post
@@ -182,23 +183,23 @@ export async function POST(request: NextRequest) {
         sourceUrl: body.sourceUrl,
         sponsored: body.sponsored || false,
         published: body.published !== false // default true
-      }
+      },
     })
 
     return NextResponse.json({
       post: {
         ...post,
-        tags: Array.isArray(post.tags) ? post.tags : []
-      }
+        tags: Array.isArray(post.tags) ? post.tags : [],
+      },
     })
 
   } catch (error) {
     console.error('❌ Erro ao criar post:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

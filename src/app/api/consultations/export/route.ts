@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 }),
     }
 
     // Buscar todas as consultorias
@@ -19,19 +19,19 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             email: true,
-            phone: true
-          }
+            phone: true,
+          },
         },
         consultant: {
           select: {
             name: true,
-            email: true
-          }
-        }
+            email: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
 
     // Gerar CSV
@@ -80,12 +80,12 @@ export async function GET(request: NextRequest) {
     return new NextResponse(finalCsv, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="consultorias-${new Date().toISOString().split('T')[0]}.csv"`
-      }
+        'Content-Disposition': `attachment; filename="consultorias-${new Date().toISOString().split('T')[0]}.csv"`,
+      },
     })
 
   } catch (error) {
     console.error('Erro no export de consultorias:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
-  }
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 }),
+  },
 }

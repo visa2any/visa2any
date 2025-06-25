@@ -10,33 +10,33 @@ export async function POST(request: NextRequest) {
         await vagaExpressIntegration.processVagaExpressOrder(data)
         return NextResponse.json({
           message: 'Pedido processado e monitoramento ativado!',
-          orderId: `VE-${Date.now()}`
+          orderId: `VE-${Date.now()}`,
         })
 
       case 'simulate_vaga':
         await vagaExpressIntegration.simulateVagaForCustomer(data.orderId, data.vagaDetails)
         return NextResponse.json({
-          message: 'Vaga simulada para cliente!'
+          message: 'Vaga simulada para cliente!',
         })
 
       case 'get_statistics':
         const stats = await vagaExpressIntegration.getOrderStatistics()
         return NextResponse.json({
-          statistics: stats
+          statistics: stats,
         })
 
       default:
         return NextResponse.json({
-          error: 'Ação não reconhecida'
-        }, { status: 400 })
-    }
+          error: 'Ação não reconhecida',
+        }, { status: 400 }),
+    },
   } catch (error) {
     console.error('Erro na API Vaga Express:', error)
     return NextResponse.json({
       error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }
 
 export async function GET(request: NextRequest) {
@@ -51,24 +51,24 @@ export async function GET(request: NextRequest) {
           const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
           return NextResponse.json({
             orders: orders.slice(-10) // Últimos 10 pedidos
-          })
+          }),
         }
 
       case 'statistics':
         const stats = await vagaExpressIntegration.getOrderStatistics()
         return NextResponse.json({
-          statistics: stats
+          statistics: stats,
         })
 
       default:
         return NextResponse.json({
-          error: 'Tipo não especificado'
-        }, { status: 400 })
-    }
+          error: 'Tipo não especificado',
+        }, { status: 400 }),
+    },
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao buscar dados',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }

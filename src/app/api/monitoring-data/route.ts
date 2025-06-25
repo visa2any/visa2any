@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ 
           stats: {
             ...stats,
-            application: appStats
-          }
+            application: appStats,
+          },
         })
 
       case 'all':
@@ -35,18 +35,18 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           channels: allChannels,
           alerts: allAlerts,
-          stats: allStats
+          stats: allStats,
         })
 
       default:
-        return NextResponse.json({ error: 'Tipo de dados não especificado' }, { status: 400 })
-    }
+        return NextResponse.json({ error: 'Tipo de dados não especificado' }, { status: 400 }),
+    },
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao buscar dados de monitoramento',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }
 
 export async function POST(request: NextRequest) {
@@ -71,23 +71,23 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
           success: true, 
           message: 'Vaga simulada criada', 
-          alert: simulatedAlert 
+          alert: simulatedAlert ,
         })
 
       case 'refresh':
         await monitoringDataService.refresh()
         return NextResponse.json({ 
           success: true, 
-          message: 'Dados atualizados com sucesso' 
+          message: 'Dados atualizados com sucesso' ,
         })
 
       default:
-        return NextResponse.json({ error: 'Ação não reconhecida' }, { status: 400 })
-    }
+        return NextResponse.json({ error: 'Ação não reconhecida' }, { status: 400 }),
+    },
   } catch (error) {
     return NextResponse.json({
       error: 'Erro ao processar ação',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }

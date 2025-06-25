@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       type,
       sourceUrl,
       urgent,
-      trending
+      trending,
     } = body
 
     // Validação básica
@@ -25,19 +25,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: title, excerpt, content, category' },
         { status: 400 }
-      )
+      ),
     }
 
     // Verificar se já existe um post com o mesmo título
     const existingPost = await prisma.blogPost.findFirst({
-      where: { title }
+      where: { title },
     })
 
     if (existingPost) {
       return NextResponse.json(
         { error: 'Post com este título já existe' },
         { status: 409 }
-      )
+      ),
     }
 
     // Criar novo post no banco
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
         views: 0,
         likes: 0,
         comments: 0,
-        featured: urgent || trending || false
-      }
+        featured: urgent || trending || false,
+      },
     })
 
     // Log da atividade
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       post: newPost,
-      message: 'Artigo criado automaticamente com sucesso'
+      message: 'Artigo criado automaticamente com sucesso',
     })
 
   } catch (error) {
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Endpoint para verificar status do sistema
@@ -95,15 +95,15 @@ export async function GET() {
         publishDate: true,
         author: true,
         urgent: true,
-        trending: true
-      }
+        trending: true,
+      },
     })
 
     return NextResponse.json({
       status: 'active',
       message: 'Sistema de auto-posting funcionando',
       recentPosts,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
 
   } catch (error) {
@@ -111,8 +111,8 @@ export async function GET() {
     return NextResponse.json(
       { error: 'Erro ao verificar status' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Função auxiliar para calcular tempo de leitura
@@ -120,7 +120,7 @@ function calculateReadTime(content: string): string {
   const wordsPerMinute = 200
   const words = content.split(' ').length
   const minutes = Math.ceil(words / wordsPerMinute)
-  return `${minutes} min`
+  return `${minutes} min`,
 }
 
 // Endpoint para atualizar posts existentes
@@ -133,21 +133,21 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID do post é obrigatório' },
         { status: 400 }
-      )
+      ),
     }
 
     const updatedPost = await prisma.blogPost.update({
       where: { id },
       data: {
         ...updateData,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
       success: true,
       post: updatedPost,
-      message: 'Post atualizado com sucesso'
+      message: 'Post atualizado com sucesso',
     })
 
   } catch (error) {
@@ -155,6 +155,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao atualizar post' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -11,8 +11,9 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     const result = await createCustomerAccount({
@@ -24,20 +25,21 @@ export async function POST(request: NextRequest) {
       targetCountry,
       source,
       product,
-      amount
+      amount,
     })
 
     if (!result.success) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     // Criar cookie de autenticação automática
     const response = NextResponse.json({
       user: result.user,
       token: result.token,
-      message: 'Conta criada e login automático realizado'
+      message: 'Conta criada e login automático realizado',
     })
 
     // Configurar cookie httpOnly
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
+      path: '/',
     })
 
     return response
@@ -54,7 +56,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na criação automática de conta:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

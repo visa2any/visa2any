@@ -10,7 +10,7 @@ const sendWhatsAppSchema = z.object({
   clientId: z.string().optional(),
   template: z.string().optional(),
   variables: z.record(z.any()).optional(),
-  mediaUrl: z.string().url().optional()
+  mediaUrl: z.string().url().optional(),
 })
 
 // POST /api/notifications/whatsapp - Enviar WhatsApp
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       message: validatedData.message,
       clientId: validatedData.clientId,
       template: validatedData.template,
-      variables: validatedData.variables
+      variables: validatedData.variables,
     })
 
     // Log do envio
@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
         action: 'send_whatsapp',
         success: whatsAppResult.success,
         clientId: validatedData.clientId || null,
-        error: whatsAppResult.error || null
+        error: whatsAppResult.error || null,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
-      }
+      },
     })
 
     return NextResponse.json({
@@ -51,9 +51,9 @@ export async function POST(request: NextRequest) {
         messageId: whatsAppResult.messageId,
         sent: whatsAppResult.success,
         queued: whatsAppResult.queued || false,
-        to: validatedData.to
+        to: validatedData.to,
       },
-      message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso'
+      message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso',
     })
 
   } catch (error) {
@@ -61,17 +61,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao enviar WhatsApp:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // GET /api/notifications/whatsapp/status - Obter status do WhatsApp
@@ -83,15 +84,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: {
         status,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
 
   } catch (error) {
     console.error('Erro ao buscar status:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 

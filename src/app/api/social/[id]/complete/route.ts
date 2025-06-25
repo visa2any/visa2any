@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function PATCH(
+export async function PATCH(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -16,14 +16,14 @@ export async function PATCH(
         status: status === 'published' ? 'PUBLISHED' : status.toUpperCase(),
         publishedAt: status === 'published' ? new Date() : undefined,
         engagement: engagement || undefined,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
       success: true,
       message: 'Status atualizado com sucesso',
-      socialPost
+      socialPost,
     })
 
   } catch (error) {
@@ -31,6 +31,6 @@ export async function PATCH(
     return NextResponse.json(
       { error: 'Erro ao atualizar status' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

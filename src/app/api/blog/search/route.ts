@@ -1,7 +1,8 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
+
 
 export const dynamic = 'force-dynamic'
 
@@ -14,16 +15,16 @@ export async function GET(request: NextRequest) {
     if (!query.trim()) {
       return NextResponse.json({
         results: [],
-        suggestions: []
-      })
+        suggestions: [],
+      }),
     }
 
     // Se for para sugestões, retornar resultados mais rápidos
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
-        suggestions
-      })
+        suggestions,
+      }),
     }
 
     // Busca completa com ranking de relevância
@@ -31,18 +32,18 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       results,
-      total: results.length
+      total: results.length,
     })
 
   } catch (error) {
     console.error('❌ Erro na busca:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 async function generateSuggestions(query: string) {
@@ -55,15 +56,15 @@ async function generateSuggestions(query: string) {
         published: true,
         title: {
           contains: searchTerm,
-          mode: 'insensitive'
-        }
+          mode: 'insensitive',
+        },
       },
       select: {
         title: true,
         category: true,
-        country: true
+        country: true,
       },
-      take: 5
+      take: 5,
     })
 
     // Buscar países únicos que contenham o termo
@@ -72,15 +73,15 @@ async function generateSuggestions(query: string) {
         published: true,
         country: {
           contains: searchTerm,
-          mode: 'insensitive'
-        }
+          mode: 'insensitive',
+        },
       },
       select: {
         country: true,
-        flag: true
+        flag: true,
       },
       distinct: ['country'],
-      take: 3
+      take: 3,
     })
 
     // Buscar categorias que contenham o termo
@@ -89,14 +90,14 @@ async function generateSuggestions(query: string) {
         published: true,
         category: {
           contains: searchTerm,
-          mode: 'insensitive'
-        }
+          mode: 'insensitive',
+        },
       },
       select: {
-        category: true
+        category: true,
       },
       distinct: ['category'],
-      take: 3
+      take: 3,
     })
 
     const suggestions = []
@@ -107,8 +108,8 @@ async function generateSuggestions(query: string) {
         type: 'post',
         text: post.title,
         category: post.category,
-        icon: '📄'
-      })
+        icon: '📄',
+      }),
     })
 
     // Adicionar sugestões de países
@@ -118,9 +119,9 @@ async function generateSuggestions(query: string) {
           type: 'country',
           text: `${country.flag || '🌍'} ${country.country}`,
           category: 'País',
-          icon: country.flag || '🌍'
-        })
-      }
+          icon: country.flag || '🌍',
+        }),
+      },
     })
 
     // Adicionar sugestões de categorias
@@ -129,16 +130,16 @@ async function generateSuggestions(query: string) {
         type: 'category',
         text: cat.category,
         category: 'Categoria',
-        icon: '📂'
-      })
+        icon: '📂',
+      }),
     })
 
     return suggestions.slice(0, 8) // Limitar a 8 sugestões
 
   } catch (error) {
     console.error('Erro ao gerar sugestões:', error)
-    return []
-  }
+    return [],
+  },
 }
 
 async function performAdvancedSearch(query: string) {
@@ -166,7 +167,7 @@ async function performAdvancedSearch(query: string) {
             { excerpt: { contains: word, mode: 'insensitive' } },
             { country: { contains: word, mode: 'insensitive' } }
           ])
-        ]
+        ],
       },
       select: {
         id: true,
@@ -187,8 +188,8 @@ async function performAdvancedSearch(query: string) {
         urgent: true,
         tags: true,
         country: true,
-        flag: true
-      }
+        flag: true,
+      },
     })
 
     // Calcular score de relevância para cada post
@@ -201,24 +202,24 @@ async function performAdvancedSearch(query: string) {
       // Score por match exato no título (alta relevância)
       if (titleLower.includes(queryLower)) {
         score += 100
-        if (titleLower.startsWith(queryLower)) score += 50
+        if (titleLower.startsWith(queryLower)) score += 50,
       }
 
       // Score por match no resumo
       if (excerptLower.includes(queryLower)) {
-        score += 50
+        score += 50,
       }
 
       // Score por país
       if (post.country && post.country.toLowerCase().includes(queryLower)) {
-        score += 30
+        score += 30,
       }
 
       // Score por palavras individuais
       searchWords.forEach(word => {
         if (titleLower.includes(word)) score += 20
         if (excerptLower.includes(word)) score += 10
-        if (post.country && post.country.toLowerCase().includes(word)) score += 15
+        if (post.country && post.country.toLowerCase().includes(word)) score += 15,
       })
 
       // Boost para posts especiais
@@ -234,8 +235,8 @@ async function performAdvancedSearch(query: string) {
         ...post,
         score,
         tags: Array.isArray(post.tags) ? post.tags : [],
-        relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low'
-      }
+        relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low',
+      },
     })
 
     // Ordenar por score e remover duplicatas
@@ -247,6 +248,6 @@ async function performAdvancedSearch(query: string) {
 
   } catch (error) {
     console.error('Erro na busca avançada:', error)
-    return []
-  }
+    return [],
+  },
 }

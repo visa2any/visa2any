@@ -1,9 +1,10 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
-export async function GET(
+
+
+export async function GET(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -12,8 +13,9 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     // Mock timeline data for the client
@@ -27,8 +29,8 @@ export async function GET(
         author: 'Ana Silva',
         metadata: {
           oldValue: 'LEAD',
-          newValue: 'QUALIFIED'
-        }
+          newValue: 'QUALIFIED',
+        },
       },
       {
         id: '2',
@@ -39,8 +41,8 @@ export async function GET(
         author: 'Sistema',
         metadata: {
           communicationType: 'whatsapp',
-          content: 'Olá, quais documentos preciso enviar para o visto americano?'
-        }
+          content: 'Olá, quais documentos preciso enviar para o visto americano?',
+        },
       },
       {
         id: '3',
@@ -55,9 +57,9 @@ export async function GET(
             name: 'passaporte-joao-silva.pdf',
             type: 'application/pdf',
             url: '/documents/passaporte-joao-silva.pdf',
-            size: 1024576
-          }
-        }
+            size: 1024576,
+          },
+        },
       },
       {
         id: '4',
@@ -69,8 +71,8 @@ export async function GET(
         metadata: {
           duration: 60,
           consultationType: 'inicial',
-          notes: 'Cliente tem bom perfil para visto EB-1A. Precisa reunir mais evidências de reconhecimento.'
-        }
+          notes: 'Cliente tem bom perfil para visto EB-1A. Precisa reunir mais evidências de reconhecimento.',
+        },
       },
       {
         id: '5',
@@ -82,8 +84,8 @@ export async function GET(
         metadata: {
           amount: 250,
           paymentMethod: 'cartao_credito',
-          transactionId: 'TXN_12345'
-        }
+          transactionId: 'TXN_12345',
+        },
       },
       {
         id: '6',
@@ -92,7 +94,7 @@ export async function GET(
         description: 'Cliente tem experiência internacional relevante. Sugerir visto O-1 como alternativa.',
         timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
         author: 'Carlos Santos',
-        metadata: {}
+        metadata: {},
       },
       {
         id: '7',
@@ -104,8 +106,8 @@ export async function GET(
         metadata: {
           priority: 'high',
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'pending'
-        }
+          status: 'pending',
+        },
       },
       {
         id: '8',
@@ -121,9 +123,9 @@ export async function GET(
             name: 'lista-documentos-complementares.pdf',
             type: 'application/pdf',
             url: '/documents/lista-documentos-complementares.pdf',
-            size: 512000
-          }
-        }
+            size: 512000,
+          },
+        },
       },
       {
         id: '9',
@@ -135,8 +137,8 @@ export async function GET(
         metadata: {
           oldValue: '75',
           newValue: '87',
-          reason: 'Documentos acadêmicos aprovados'
-        }
+          reason: 'Documentos acadêmicos aprovados',
+        },
       },
       {
         id: '10',
@@ -147,8 +149,8 @@ export async function GET(
         author: 'Carlos Santos',
         metadata: {
           oldValue: 'DOCUMENTS_PENDING',
-          newValue: 'IN_PROCESS'
-        }
+          newValue: 'IN_PROCESS',
+        },
       }
     ]
 
@@ -159,13 +161,14 @@ export async function GET(
 
     return NextResponse.json({
       timeline: sortedTimeline,
-      total: sortedTimeline.length
+      total: sortedTimeline.length,
     })
 
   } catch (error) {
     console.error('Timeline fetch error:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

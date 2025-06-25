@@ -13,28 +13,28 @@ export async function POST(request: NextRequest) {
       'vip-upgrade': {
         name: 'Upgrade VIP',
         price: 3497,
-        description: 'Serviço premium com garantia de aprovação'
+        description: 'Serviço premium com garantia de aprovação',
       },
       'priority-processing': {
         name: 'Processamento Prioritário',
         price: 697,
-        description: 'Acelere seu processo em 50%'
+        description: 'Acelere seu processo em 50%',
       },
       'consultation-boost': {
         name: 'Consultoria Estratégica',
         price: 397,
-        description: 'Aumente seu score de elegibilidade'
+        description: 'Aumente seu score de elegibilidade',
       },
       'followup-service': {
         name: 'Seguro de Aprovação',
         price: 997,
-        description: 'Acompanhamento até aprovação final'
+        description: 'Acompanhamento até aprovação final',
       },
       'interview-prep': {
         name: 'Preparação para Entrevista',
         price: 497,
-        description: 'Treinamento para entrevista consular'
-      }
+        description: 'Treinamento para entrevista consular',
+      },
     }
 
     const product = upsellProducts[offerId as keyof typeof upsellProducts]
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Produto não encontrado' },
         { status: 404 }
-      )
+      ),
     }
 
     // Simular criação de ordem de pagamento
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Redirecionando para pagamento',
       paymentUrl,
-      product
+      product,
     })
 
   } catch (error) {
@@ -61,6 +61,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

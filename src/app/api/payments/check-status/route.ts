@@ -4,7 +4,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago'
 // Configurar MercadoPago
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
 if (!accessToken) {
-  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
+  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado'),
 }
 
 const client = new MercadoPagoConfig({
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
 
     if (!paymentId) {
       return NextResponse.json({
-        error: 'payment_id é obrigatório'
-      }, { status: 400 })
+        error: 'payment_id é obrigatório',
+      }, { status: 400 }),
     }
 
     console.log('🔍 Verificando status do pagamento:', paymentId)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       id: result.id,
       status: result.status,
       status_detail: result.status_detail,
-      payment_method: result.payment_method_id
+      payment_method: result.payment_method_id,
     })
 
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       date_created: result.date_created,
       date_approved: result.date_approved,
       payer_email: result.payer?.email,
-      external_reference: result.external_reference
+      external_reference: result.external_reference,
     })
 
   } catch (error) {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       error: 'Erro ao verificar status do pagamento',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : 'Erro desconhecido',
+    }, { status: 500 }),
+  },
 }

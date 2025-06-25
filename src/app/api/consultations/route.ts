@@ -10,7 +10,7 @@ const createConsultationSchema = z.object({
   scheduledAt: z.string().datetime().optional(),
   duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas
   consultantId: z.string().optional(),
-  notes: z.string().optional()
+  notes: z.string().optional(),
 })
 
 // GET /api/consultations - Listar consultorias
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -34,15 +34,15 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'ALL') {
-      where.status = status
+      where.status = status,
     }
     
     if (type && type !== 'ALL') {
-      where.type = type
+      where.type = type,
     }
 
     if (clientId) {
-      where.clientId = clientId
+      where.clientId = clientId,
     }
 
     // Buscar consultorias
@@ -61,13 +61,13 @@ export async function GET(request: NextRequest) {
               phone: true,
               targetCountry: true,
               visaType: true,
-              status: true
-            }
+              status: true,
+            },
           },
           consultant: {
-            select: { id: true, name: true, email: true, role: true }
-          }
-        }
+            select: { id: true, name: true, email: true, role: true },
+          },
+        },
       }),
       prisma.consultation.count({ where })
     ])
@@ -82,17 +82,18 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages
-        }
-      }
+          hasMore: page < totalPages,
+        },
+      },
     })
 
   } catch (error) {
     console.error('Erro ao buscar consultorias:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST /api/consultations - Criar nova consultoria
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
+      return createAuthError('Acesso não autorizado'),
     }
     const body = await request.json()
     
@@ -110,26 +111,26 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+      where: { id: validatedData.clientId },
     })
 
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Se for consultoria humana, verificar se consultor existe
     if (validatedData.consultantId) {
       const consultant = await prisma.user.findUnique({
-        where: { id: validatedData.consultantId }
+        where: { id: validatedData.consultantId },
       })
 
       if (!consultant) {
         return NextResponse.json(
           { status: 404 }
-        )
-      }
+        ),
+      },
     }
 
     // Criar consultoria
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
         ...validatedData,
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
         duration: validatedData.duration || 60, // Default 1 hora
-        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
+        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS',
       },
       include: {
         client: {
@@ -147,21 +148,21 @@ export async function POST(request: NextRequest) {
             name: true, 
             email: true, 
             targetCountry: true,
-            visaType: true
-          }
+            visaType: true,
+          },
         },
         consultant: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     })
 
     // Atualizar status do cliente se necessário
     if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
       await prisma.client.update({
         where: { id: validatedData.clientId },
-        data: { status: 'CONSULTATION_SCHEDULED' }
-      })
+        data: { status: 'CONSULTATION_SCHEDULED' },
+      }),
     }
 
     // Log da criação
@@ -169,17 +170,17 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'CONSULTATION_CREATED',
         action: 'create_consultation',
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      data: consultation
+      data: consultation,
     }, { status: 201 })
 
   } catch (error) {
@@ -187,15 +188,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao criar consultoria:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

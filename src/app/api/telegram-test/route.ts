@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
     const token = process.env.TELEGRAM_BOT_TOKEN
     
     if (!token) {
-      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
+      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 }),
     }
 
     // Buscar updates do Telegram
@@ -30,10 +30,10 @@ export async function GET(request: NextRequest) {
             firstName,
             username,
             text,
-            date: new Date(update.message.date * 1000).toLocaleString()
-          })
-        }
-      })
+            date: new Date(update.message.date * 1000).toLocaleString(),
+          }),
+        },
+      }),
     }
 
     return NextResponse.json({
@@ -42,15 +42,15 @@ export async function GET(request: NextRequest) {
       totalUpdates: data.result?.length || 0,
       uniqueChatIds: Array.from(chatIds),
       messages: messages.slice(-5), // Últimas 5 mensagens
-      rawData: data
+      rawData: data,
     })
 
   } catch (error) {
     return NextResponse.json({ 
       error: 'Erro ao buscar dados do Telegram',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }
 
 export async function POST(request: NextRequest) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const token = process.env.TELEGRAM_BOT_TOKEN
     
     if (!token) {
-      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
+      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 }),
     }
 
     // Enviar mensagem de teste
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         chat_id: chatId,
-        text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅'
-      })
+        text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅',
+      }),
     })
 
     const data = await response.json()
@@ -80,13 +80,13 @@ export async function POST(request: NextRequest) {
       success: data.ok,
       data,
       sentTo: chatId,
-      message: message || 'Mensagem de teste'
+      message: message || 'Mensagem de teste',
     })
 
   } catch (error) {
     return NextResponse.json({ 
       error: 'Erro ao enviar mensagem',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }

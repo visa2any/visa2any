@@ -46,20 +46,20 @@ export async function GET(request: NextRequest) {
       emergency: bookings.filter(b => b.urgency === 'EMERGENCY').length,
       totalRevenue: bookings
         .filter(b => b.status === 'COMPLETED')
-        .reduce((sum, b) => sum + (b.payment?.paidAmount || 0), 0)
+        .reduce((sum, b) => sum + (b.payment?.paidAmount || 0), 0),
     }
 
     return NextResponse.json({
       bookings,
-      stats
+      stats,
     })
 
   } catch (error) {
     console.error('Erro ao buscar agendamentos híbridos:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
+      error: 'Erro interno do servidor',
+    }, { status: 500 }),
+  },
 }
 
 export async function POST(request: NextRequest) {
@@ -81,16 +81,16 @@ export async function POST(request: NextRequest) {
       
       default:
         return NextResponse.json({
-          error: 'Ação não reconhecida'
-        }, { status: 400 })
+          error: 'Ação não reconhecida',
+        }, { status: 400 }),
     }
 
   } catch (error) {
     console.error('Erro na ação de agendamento:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
+      error: 'Erro interno do servidor',
+    }, { status: 500 }),
+  },
 }
 
 // Atualizar status do agendamento
@@ -98,7 +98,7 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
   try {
     const updateData: any = {
       status,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     // Se marcando como concluído, adicionar data de conclusão
@@ -106,13 +106,13 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
       updateData.completedAt = new Date()
       
       if (appointmentDetails) {
-        updateData.appointmentDetails = appointmentDetails
-      }
+        updateData.appointmentDetails = appointmentDetails,
+      },
     }
 
     // Se marcando como em progresso, registrar início
     if (status === 'IN_PROGRESS') {
-      updateData.startedAt = new Date()
+      updateData.startedAt = new Date(),
     }
 
     // Como hybridBooking não existe no schema, vamos simular resposta
@@ -135,15 +135,15 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
 
     return NextResponse.json({
       booking,
-      message: `Status atualizado para ${status}`
+      message: `Status atualizado para ${status}`,
     })
 
   } catch (error) {
     console.error('Erro ao atualizar status:', error)
     return NextResponse.json({
-      error: 'Erro ao atualizar status'
-    }, { status: 500 })
-  }
+      error: 'Erro ao atualizar status',
+    }, { status: 500 }),
+  },
 }
 
 // Atribuir consultor
@@ -161,15 +161,15 @@ async function assignConsultant(bookingId: string, consultantId: string) {
 
     return NextResponse.json({
       booking,
-      message: 'Consultor atribuído com sucesso'
+      message: 'Consultor atribuído com sucesso',
     })
 
   } catch (error) {
     console.error('Erro ao atribuir consultor:', error)
     return NextResponse.json({
-      error: 'Erro ao atribuir consultor'
-    }, { status: 500 })
-  }
+      error: 'Erro ao atribuir consultor',
+    }, { status: 500 }),
+  },
 }
 
 // Adicionar nota ao agendamento
@@ -182,8 +182,8 @@ async function addBookingNote(bookingId: string, note: string) {
 
     if (!booking) {
       return NextResponse.json({
-        error: 'Agendamento não encontrado'
-      }, { status: 404 })
+        error: 'Agendamento não encontrado',
+      }, { status: 404 }),
     }
 
     const currentNotes = booking.notes || []
@@ -205,15 +205,15 @@ async function addBookingNote(bookingId: string, note: string) {
 
     return NextResponse.json({
       booking: updatedBooking,
-      message: 'Nota adicionada com sucesso'
+      message: 'Nota adicionada com sucesso',
     })
 
   } catch (error) {
     console.error('Erro ao adicionar nota:', error)
     return NextResponse.json({
-      error: 'Erro ao adicionar nota'
-    }, { status: 500 })
-  }
+      error: 'Erro ao adicionar nota',
+    }, { status: 500 }),
+  },
 }
 
 // Estender prazo
@@ -226,8 +226,8 @@ async function extendDeadline(bookingId: string, hours: number) {
 
     if (!booking) {
       return NextResponse.json({
-        error: 'Agendamento não encontrado'
-      }, { status: 404 })
+        error: 'Agendamento não encontrado',
+      }, { status: 404 }),
     }
 
     const currentDeadline = new Date(booking.deadline)
@@ -244,15 +244,15 @@ async function extendDeadline(bookingId: string, hours: number) {
 
     return NextResponse.json({
       booking: updatedBooking,
-      message: `Prazo estendido em ${hours} horas`
+      message: `Prazo estendido em ${hours} horas`,
     })
 
   } catch (error) {
     console.error('Erro ao estender prazo:', error)
     return NextResponse.json({
-      error: 'Erro ao estender prazo'
-    }, { status: 500 })
-  }
+      error: 'Erro ao estender prazo',
+    }, { status: 500 }),
+  },
 }
 
 // Notificar cliente sobre mudança de status
@@ -327,7 +327,7 @@ Infelizmente não conseguimos realizar seu agendamento:
 📞 Nossa equipe entrará em contato em breve para resolver.
 
 💬 Dúvidas? Responda esta mensagem.`
-        break
+        break,
     }
 
     if (message) {
@@ -336,12 +336,12 @@ Infelizmente não conseguimos realizar seu agendamento:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: booking.client.phone,
-          message: message
-        })
-      })
+          message: message,
+        }),
+      }),
     }
 
   } catch (error) {
-    console.error('Erro ao notificar cliente:', error)
-  }
+    console.error('Erro ao notificar cliente:', error),
+  },
 }

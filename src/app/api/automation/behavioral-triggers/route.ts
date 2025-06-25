@@ -25,9 +25,9 @@ const behavioralTriggerSchema = z.object({
     formFields: z.array(z.string()).optional(),
     videoProgress: z.number().optional(),
     userAgent: z.string().optional(),
-    referrer: z.string().optional()
+    referrer: z.string().optional(),
   }).optional(),
-  timestamp: z.string().optional()
+  timestamp: z.string().optional(),
 })
 
 // POST /api/automation/behavioral-triggers - Processar trigger comportamental
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const triggerAnalysis = await analyzeBehavioralTrigger(validatedData)
     
     if (triggerAnalysis.shouldTrigger) {
-      await executeTriggerAction(triggerAnalysis)
+      await executeTriggerAction(triggerAnalysis),
     }
 
     // Log do trigger
@@ -58,17 +58,17 @@ export async function POST(request: NextRequest) {
           priority: triggerAnalysis.priority,
           page: validatedData.data?.page,
           timeSpent: validatedData.data?.timeSpent,
-          scrollDepth: validatedData.data?.scrollDepth
-        }
-      }
+          scrollDepth: validatedData.data?.scrollDepth,
+        },
+      },
     })
 
     return NextResponse.json({
       data: {
         triggered: triggerAnalysis.shouldTrigger,
         action: triggerAnalysis.action,
-        message: triggerAnalysis.message
-      }
+        message: triggerAnalysis.message,
+      },
     })
 
   } catch (error) {
@@ -76,17 +76,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao processar trigger comportamental:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Analisar trigger comportamental e decidir ação
@@ -96,7 +97,7 @@ async function analyzeBehavioralTrigger(data: any) {
     action: '',
     message: '',
     priority: 'low' as 'low' | 'medium' | 'high',
-    delay: 0
+    delay: 0,
   }
 
   switch (data.event) {
@@ -141,8 +142,8 @@ async function analyzeBehavioralTrigger(data: any) {
           analysis.action = 'exit_intent_offer'
           analysis.message = 'Usuário engajado mas não converteu'
           analysis.priority = 'medium'
-          analysis.delay = 0
-        }
+          analysis.delay = 0,
+        },
       }
       break
 
@@ -177,13 +178,13 @@ async function analyzeBehavioralTrigger(data: any) {
           analysis.action = 'high_intent_contact'
           analysis.message = 'Usuário com alta intenção'
           analysis.priority = 'high'
-          analysis.delay = 0
-        }
+          analysis.delay = 0,
+        },
       }
-      break
+      break,
   }
 
-  return analysis
+  return analysis,
 }
 
 // Executar ação do trigger
@@ -192,53 +193,53 @@ async function executeTriggerAction(analysis: any) {
     whatsapp_pricing_help: async () => {
       // Enviar WhatsApp com ajuda sobre preços
       return await sendWhatsAppTrigger('pricing_help', {
-        message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊"
-      })
+        message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊",
+      }),
     },
 
     email_assessment_recovery: async () => {
       // Email para recuperar assessment
       return await sendEmailTrigger('assessment_recovery', {
         subject: "Continue sua análise - faltam só 2 minutos! ⏰",
-        template: 'assessment_recovery'
-      })
+        template: 'assessment_recovery',
+      }),
     },
 
     cart_recovery_sequence: async () => {
       // Sequência de recuperação de carrinho
-      return await startCartRecoverySequence()
+      return await startCartRecoverySequence(),
     },
 
     exit_intent_offer: async () => {
       // Mostrar oferta de última chance
-      return await triggerExitIntentOffer()
+      return await triggerExitIntentOffer(),
     },
 
     video_completion_offer: async () => {
       // Oferta após assistir vídeo
-      return await sendVideoCompletionOffer()
+      return await sendVideoCompletionOffer(),
     },
 
     form_completion_help: async () => {
       // Ajuda para completar formulário
-      return await sendFormHelp()
+      return await sendFormHelp(),
     },
 
     high_intent_contact: async () => {
       // Contato prioritário para alta intenção
-      return await triggerHighIntentContact()
-    }
+      return await triggerHighIntentContact(),
+    },
   }
 
   const actionFunction = actions[analysis.action as keyof typeof actions]
   if (actionFunction) {
     // Executar com delay se especificado
     if (analysis.delay > 0) {
-      setTimeout(actionFunction, analysis.delay * 1000)
+      setTimeout(actionFunction, analysis.delay * 1000),
     } else {
-      await actionFunction()
-    }
-  }
+      await actionFunction(),
+    },
+  },
 }
 
 // Funções auxiliares
@@ -249,16 +250,16 @@ async function getAssessmentProgress(clientId?: string) {
     const interactions = await prisma.interaction.findMany({
       where: { 
         clientId,
-        type: 'AUTOMATED_EMAIL'
+        type: 'AUTOMATED_EMAIL',
       },
       orderBy: { createdAt: 'desc' },
-      take: 1
+      take: 1,
     })
     
-    return interactions[0] ? { step: 0 } : null
+    return interactions[0] ? { step: 0 } : null,
   } catch {
-    return null
-  }
+    return null,
+  },
 }
 
 async function checkUserConversion(clientId?: string) {
@@ -268,14 +269,14 @@ async function checkUserConversion(clientId?: string) {
     const payment = await prisma.payment.findFirst({
       where: { 
         clientId,
-        status: 'COMPLETED'
-      }
+        status: 'COMPLETED',
+      },
     })
     
-    return !!payment
+    return !!payment,
   } catch {
-    return false
-  }
+    return false,
+  },
 }
 
 async function getSessionActions(sessionId?: string) {
@@ -283,81 +284,81 @@ async function getSessionActions(sessionId?: string) {
   return {
     pageViews: 7,
     hasConverted: false,
-    timeSpent: 780
-  }
+    timeSpent: 780,
+  },
 }
 
 async function sendWhatsAppTrigger(type: string, data: any) {
   try {
     // Implementar envio de WhatsApp com base no comportamento
     console.log(`📱 WhatsApp Trigger: ${type}`, data)
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro ao enviar WhatsApp trigger:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function sendEmailTrigger(type: string, data: any) {
   try {
     // Implementar envio de email com base no comportamento
     console.log(`📧 Email Trigger: ${type}`, data)
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro ao enviar email trigger:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function startCartRecoverySequence() {
   try {
     console.log('🛒 Iniciando sequência de recuperação de carrinho...')
     // Implementar sequência de emails/WhatsApp para carrinho abandonado
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro na recuperação de carrinho:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function triggerExitIntentOffer() {
   try {
     console.log('🚪 Trigger: Exit Intent Offer')
     // Implementar popup/modal de última chance
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro no exit intent:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function sendVideoCompletionOffer() {
   try {
     console.log('🎥 Oferta pós-vídeo enviada')
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro na oferta pós-vídeo:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function sendFormHelp() {
   try {
     console.log('📝 Ajuda para formulário enviada')
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro na ajuda do formulário:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }
 
 async function triggerHighIntentContact() {
   try {
     console.log('🎯 Contato de alta prioridade disparado')
     // Notificar equipe de vendas para contato imediato
-    return { success: true }
+    return { success: true },
   } catch (error) {
     console.error('Erro no contato prioritário:', error)
-    return { success: false }
-  }
+    return { success: false },
+  },
 }

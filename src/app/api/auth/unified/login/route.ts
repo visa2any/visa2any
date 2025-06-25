@@ -7,8 +7,9 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     let result
@@ -17,25 +18,26 @@ export async function POST(request: NextRequest) {
       // Login para admin/staff
       if (!password) {
         return NextResponse.json(
-          { status: 400 }
-        )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
       }
-      result = await loginAdmin(email, password)
+      result = await loginAdmin(email, password),
     } else {
       // Login para cliente (pode não ter senha na primeira vez)
-      result = await loginCustomer(email, password)
+      result = await loginCustomer(email, password),
     }
 
     if (!result.success) {
       return NextResponse.json(
         { status: result.error === 'NEEDS_PASSWORD_SETUP' ? 202 : 401 }
-      )
+      ),
     }
 
     // Criar cookie de autenticação
     const response = NextResponse.json({
       user: result.user,
-      token: result.token
+      token: result.token,
     })
 
     // Configurar cookie httpOnly
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
+      path: '/',
     })
 
     return response
@@ -52,7 +54,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no login unificado:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

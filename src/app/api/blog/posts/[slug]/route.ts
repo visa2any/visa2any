@@ -1,9 +1,10 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
-export async function GET(
+
+
+export async function GET(,
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -14,17 +15,17 @@ export async function GET(
     const post = await prisma.blogPost.findFirst({
       where: {
         id: slug,
-        published: true
-      }
+        published: true,
+      },
     })
 
     if (!post) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado'
+          error: 'Post não encontrado',
         },
         { status: 404 }
-      )
+      ),
     }
 
     // Incrementar views
@@ -32,9 +33,9 @@ export async function GET(
       where: { id: slug },
       data: {
         views: {
-          increment: 1
-        }
-      }
+          increment: 1,
+        },
+      },
     })
 
     // Buscar posts relacionados (mesma categoria, exceto o atual)
@@ -42,12 +43,12 @@ export async function GET(
       where: {
         category: post.category,
         id: { not: post.id },
-        published: true
+        published: true,
       },
       take: 4,
       orderBy: {
-        publishDate: 'desc'
-      }
+        publishDate: 'desc',
+      },
     })
 
     return NextResponse.json({
@@ -58,8 +59,8 @@ export async function GET(
       },
       relatedPosts: relatedPosts.map(p => ({
         ...p,
-        tags: Array.isArray(p.tags) ? p.tags : []
-      }))
+        tags: Array.isArray(p.tags) ? p.tags : [],
+      })),
     })
 
   } catch (error) {
@@ -67,14 +68,14 @@ export async function GET(
     console.error('Slug solicitado:', slug)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
-export async function PUT(
+export async function PUT(,
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -84,16 +85,16 @@ export async function PUT(
 
     // Verificar se o post existe
     const existingPost = await prisma.blogPost.findFirst({
-      where: { id: slug }
+      where: { id: slug },
     })
 
     if (!existingPost) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado'
+          error: 'Post não encontrado',
         },
         { status: 404 }
-      )
+      ),
     }
 
     // Atualizar post
@@ -101,29 +102,29 @@ export async function PUT(
       where: { id: slug },
       data: {
         ...body,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
       post: {
         ...updatedPost,
-        tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : []
-      }
+        tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : [],
+      },
     })
 
   } catch (error) {
     console.error('❌ Erro ao atualizar post:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
-export async function DELETE(
+export async function DELETE(,
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -132,16 +133,16 @@ export async function DELETE(
 
     // Verificar se o post existe
     const existingPost = await prisma.blogPost.findFirst({
-      where: { id: slug }
+      where: { id: slug },
     })
 
     if (!existingPost) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado'
+          error: 'Post não encontrado',
         },
         { status: 404 }
-      )
+      ),
     }
 
     // Soft delete - marcar como não publicado
@@ -149,21 +150,21 @@ export async function DELETE(
       where: { id: slug },
       data: {
         published: false,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
-      message: 'Post removido com sucesso'
+      message: 'Post removido com sucesso',
     })
 
   } catch (error) {
     console.error('❌ Erro ao remover post:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Parâmetros consulate e visaType são obrigatórios' },
         { status: 400 }
-      )
+      ),
     }
 
     const slots = await appointmentBookingService.getAvailableSlots(consulate, visaType, days)
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       visaType,
       message: slots.length > 0 
         ? `${slots.length} vagas encontradas` 
-        : 'Nenhuma vaga disponível no período'
+        : 'Nenhuma vaga disponível no período',
     })
 
   } catch (error) {
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST - Fazer agendamento
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: `Campo ${field} é obrigatório` },
           { status: 400 }
-        )
-      }
+        ),
+      },
     }
 
     // Validação dos dados do requerente
@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: `Campo applicantInfo.${field} é obrigatório` },
           { status: 400 }
-        )
-      }
+        ),
+      },
     }
 
     // Tentar fazer o agendamento
@@ -78,18 +78,18 @@ export async function POST(request: NextRequest) {
           date: bookingResult.date,
           time: bookingResult.time,
           location: bookingResult.location,
-          instructions: bookingResult.instructions
+          instructions: bookingResult.instructions,
         },
-        message: 'Agendamento realizado com sucesso!'
-      })
+        message: 'Agendamento realizado com sucesso!',
+      }),
     } else {
       return NextResponse.json(
         { 
           error: bookingResult.error,
-          message: 'Não foi possível realizar o agendamento'
+          message: 'Não foi possível realizar o agendamento',
         },
         { status: 400 }
-      )
+      ),
     }
 
   } catch (error) {
@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // PUT - Reagendar
@@ -111,7 +111,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' },
         { status: 400 }
-      )
+      ),
     }
 
     const result = await appointmentBookingService.rescheduleAppointment(
@@ -128,14 +128,15 @@ export async function PUT(request: NextRequest) {
           confirmationCode: result.confirmationCode,
           date: result.date,
           time: result.time,
-          location: result.location
+          location: result.location,
         },
-        message: 'Agendamento reagendado com sucesso!'
-      })
+        message: 'Agendamento reagendado com sucesso!',
+      }),
     } else {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
   } catch (error) {
@@ -143,6 +144,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

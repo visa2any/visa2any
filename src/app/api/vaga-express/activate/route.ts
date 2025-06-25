@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
     
     if (webhookSecret !== 'visa2any_webhook_secret_2024') {
       return NextResponse.json({
-        error: 'Invalid webhook secret'
-      }, { status: 401 })
+        error: 'Invalid webhook secret',
+      }, { status: 401 }),
     }
 
     // Dados do pagamento confirmado
@@ -30,14 +30,14 @@ export async function POST(request: NextRequest) {
       currentAppointmentDate,
       preferredDateStart,
       preferredDateEnd,
-      urgencyLevel
+      urgencyLevel,
     } = body
 
     // Validar que pagamento foi aprovado
     if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
       return NextResponse.json({
-        error: 'Payment not completed'
-      }, { status: 400 })
+        error: 'Payment not completed',
+      }, { status: 400 }),
     }
 
     // Preparar dados para webhook N8N
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       preferredDateEnd: preferredDateEnd || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
       urgencyLevel: urgencyLevel || 'HIGH',
       purchaseSource: 'WEBSITE',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     }
 
     // Enviar para webhook N8N que ativa o Vaga Express
@@ -70,13 +70,13 @@ export async function POST(request: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Webhook-Secret': 'visa2any_webhook_secret_2024'
+          'X-Webhook-Secret': 'visa2any_webhook_secret_2024',
         },
-        body: JSON.stringify(n8nWebhookData)
+        body: JSON.stringify(n8nWebhookData),
       })
 
       if (!n8nResponse.ok) {
-        throw new Error(`N8N webhook failed: ${n8nResponse.statusText}`)
+        throw new Error(`N8N webhook failed: ${n8nResponse.statusText}`),
       }
 
       const n8nResult = await n8nResponse.json()
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       plan,
       clientName,
       amount,
-      status: 'ACTIVE'
+      status: 'ACTIVE',
     })
 
     // Aqui salvaria no SQLite usando as tabelas do vaga_express_tables.sql
@@ -106,20 +106,20 @@ export async function POST(request: NextRequest) {
         plan,
         status: 'ACTIVE',
         monitoringStarted: true,
-        estimatedActivationTime: '30 minutes'
-      }
+        estimatedActivationTime: '30 minutes',
+      },
     })
 
   } catch (error) {
     console.error('Erro ao ativar Vaga Express:', error)
     return NextResponse.json({
-      error: 'Internal server error'
-    }, { status: 500 })
-  }
+      error: 'Internal server error',
+    }, { status: 500 }),
+  },
 }
 
 export async function GET() {
   return NextResponse.json({
-    message: 'Vaga Express Activation API - Use POST with payment confirmation'
-  })
+    message: 'Vaga Express Activation API - Use POST with payment confirmation',
+  }),
 }

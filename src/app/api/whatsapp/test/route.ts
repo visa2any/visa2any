@@ -9,19 +9,19 @@ export async function GET(request: NextRequest) {
       info: {
         integrated: true,
         backend: 'Next.js',
-        status: 'Pronto para integração com Baileys'
-      }
+        status: 'Pronto para integração com Baileys',
+      },
     })
 
   } catch (error) {
     return NextResponse.json(
       { 
         error: 'Erro na API de teste',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST /api/whatsapp/test - Testar envio simulado
@@ -32,8 +32,9 @@ export async function POST(request: NextRequest) {
 
     if (!phone || !message) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     // Simular envio bem-sucedido
@@ -51,18 +52,18 @@ export async function POST(request: NextRequest) {
         phone,
         sent: true,
         backend: 'Next.js integrado',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      message: 'Mensagem enviada com sucesso (simulação)'
+      message: 'Mensagem enviada com sucesso (simulação)',
     })
 
   } catch (error) {
     return NextResponse.json(
       { 
         error: 'Erro no teste de envio',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

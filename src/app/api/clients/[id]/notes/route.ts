@@ -1,9 +1,10 @@
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
-export async function POST(
+
+
+export async function POST(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -14,14 +15,16 @@ export async function POST(
 
     if (!clientId) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     // Create note record
@@ -32,7 +35,7 @@ export async function POST(
       content: content.trim(),
       author: 'Current User', // In a real app, get from session
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }
 
     // Here you would save the note to the database
@@ -48,27 +51,28 @@ export async function POST(
       timestamp: new Date().toISOString(),
       author: 'Current User',
       metadata: {
-        noteId: noteId
-      }
+        noteId: noteId,
+      },
     }
 
     return NextResponse.json({
       message: 'Note added successfully',
       data: {
         note: newNote,
-        timelineEntry: timelineEntry
-      }
+        timelineEntry: timelineEntry,
+      },
     })
 
   } catch (error) {
     console.error('Add note error:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
-export async function GET(
+export async function GET(,
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -77,8 +81,9 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json(
-        { status: 400 }
-      )
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
     }
 
     // Mock notes data
@@ -89,7 +94,7 @@ export async function GET(
         content: 'Cliente tem experiência internacional relevante. Sugerir visto O-1 como alternativa.',
         author: 'Carlos Santos',
         createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: 'note_2',
@@ -97,19 +102,20 @@ export async function GET(
         content: 'Documentação acadêmica está completa. Próximo passo é reunir cartas de recomendação.',
         author: 'Ana Silva',
         createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       }
     ]
 
     return NextResponse.json({
       notes: mockNotes,
-      total: mockNotes.length
+      total: mockNotes.length,
     })
 
   } catch (error) {
     console.error('Get notes error:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

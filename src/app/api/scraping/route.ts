@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
         targets,
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
-        message: 'Targets de scraping listados'
-      })
+        message: 'Targets de scraping listados',
+      }),
     }
 
     if (action === 'slots' && targetId) {
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
         lastUpdated: result.lastUpdated,
         source: result.source,
         warning: 'Dados obtidos via web scraping - podem estar desatualizados',
-        disclaimer: 'Este serviço é apenas para fins informativos'
-      })
+        disclaimer: 'Este serviço é apenas para fins informativos',
+      }),
     }
 
     return NextResponse.json(
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST - Configurar scraping
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campos targetId e enabled são obrigatórios' },
           { status: 400 }
-        )
+        ),
       }
 
       if (enabled && !legalConfirmation) {
@@ -69,10 +69,10 @@ export async function POST(request: NextRequest) {
           { 
             error: 'Confirmação legal necessária para habilitar scraping',
             warning: 'Web scraping pode violar ToS dos sites. Você assume total responsabilidade legal.',
-            required: 'Envie legalConfirmation: true para confirmar'
+            required: 'Envie legalConfirmation: true para confirmar',
           },
           { status: 400 }
-        )
+        ),
       }
 
       const success = webScrapingService.setTargetEnabled(targetId, enabled, legalConfirmation)
@@ -83,14 +83,14 @@ export async function POST(request: NextRequest) {
           targetId,
           enabled,
           message: `Target ${enabled ? 'habilitado' : 'desabilitado'} com sucesso`,
-          warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined
-        })
+          warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined,
+        }),
       } else {
         return NextResponse.json(
           { error: 'Falha ao configurar target' },
           { status: 400 }
-        )
-      }
+        ),
+      },
     }
 
     if (action === 'start_monitoring') {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campo targetIds deve ser um array não vazio' },
           { status: 400 }
-        )
+        ),
       }
 
       // Iniciar monitoramento em background
@@ -111,11 +111,11 @@ export async function POST(request: NextRequest) {
         monitoring: {
           targets: targetIds,
           interval: intervalMinutes || 30,
-          status: 'started'
+          status: 'started',
         },
         message: 'Monitoramento iniciado',
-        warning: 'Monitoramento contínuo pode ser detectado pelos sites'
-      })
+        warning: 'Monitoramento contínuo pode ser detectado pelos sites',
+      }),
     }
 
     return NextResponse.json(
@@ -128,6 +128,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

@@ -2,24 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 interface PaymentRequest {
-  clientId: string
-  country: string
-  consulate: string
-  availableDates: string[]
-  plan: 'BASIC' | 'PREMIUM' | 'VIP'
-  urgency: 'NORMAL' | 'URGENT' | 'EMERGENCY'
+  clientId: string,
+  country: string,
+  consulate: string,
+  availableDates: string[],
+  plan: 'BASIC' | 'PREMIUM' | 'VIP',
+  urgency: 'NORMAL' | 'URGENT' | 'EMERGENCY',
 }
 
 interface ConsularFees {
   [key: string]: {
-    visaFee: number
+    visaFee: number,
     serviceFee: number
     biometricFee?: number
-    additionalFees?: number
-    currency: string
+    additionalFees?: number,
+    currency: string,
     paymentMethods: string[]
-    officialPaymentUrl?: string
-  }
+    officialPaymentUrl?: string,
+  },
 }
 
 // Tabela completa de taxas consulares atualizadas
@@ -57,14 +57,14 @@ const CONSULAR_FEES: ConsularFees = {
     currency: 'BRL',
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
-  }
+  },
 }
 
 // Multiplicadores por plano
 const PLAN_MULTIPLIERS = {
   'BASIC': 1.0,
   'PREMIUM': 2.2,
-  'VIP': 3.0
+  'VIP': 3.0,
 }
 
 // Desconto PIX
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
     if (!countryFees) {
       return NextResponse.json({
         error: 'País não suportado no momento',
-        supportedCountries: Object.keys(CONSULAR_FEES)
-      }, { status: 400 })
+        supportedCountries: Object.keys(CONSULAR_FEES),
+      }, { status: 400 }),
     }
 
     // 2. Calcular custos detalhados
@@ -94,17 +94,17 @@ export async function POST(request: NextRequest) {
         visaFee: countryFees.visaFee,
         serviceFee: baseFee,
         biometricFee: countryFees.biometricFee || 0,
-        additionalFees: countryFees.additionalFees || 0
+        additionalFees: countryFees.additionalFees || 0,
       },
       subtotal: countryFees.visaFee + baseFee + (countryFees.biometricFee || 0) + (countryFees.additionalFees || 0),
       discounts: {
-        pix: Math.round((countryFees.visaFee + baseFee) * PIX_DISCOUNT)
+        pix: Math.round((countryFees.visaFee + baseFee) * PIX_DISCOUNT),
       },
       total: {
         withoutDiscount: 0,
-        withPixDiscount: 0
+        withPixDiscount: 0,
       },
-      currency: countryFees.currency
+      currency: countryFees.currency,
     }
 
     costs.total.withoutDiscount = costs.subtotal
@@ -117,14 +117,14 @@ export async function POST(request: NextRequest) {
         id: true,
         name: true,
         email: true,
-        phone: true
-      }
+        phone: true,
+      },
     })
 
     if (!client) {
       return NextResponse.json({
-        error: 'Cliente não encontrado'
-      }, { status: 404 })
+        error: 'Cliente não encontrado',
+      }, { status: 404 }),
     }
 
     // 4. Criar registro de cobrança híbrida
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
         costs: costs,
         status: 'PENDING',
         expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     })
 
     // 5. Gerar links de pagamento
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
       plan: data.plan,
       urgency: data.urgency,
       costs: costs,
-      availableDates: data.availableDates
+      availableDates: data.availableDates,
     })
 
     // 7. Notificar cliente sobre cobrança
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       paymentLinks: paymentLinks,
       expiresIn: 30,
       country: data.country,
-      consulate: data.consulate
+      consulate: data.consulate,
     })
 
     return NextResponse.json({
@@ -174,23 +174,23 @@ export async function POST(request: NextRequest) {
         costs: costs,
         paymentLinks: paymentLinks,
         expiresAt: payment.expiresAt,
-        officialPaymentUrl: countryFees.officialPaymentUrl
+        officialPaymentUrl: countryFees.officialPaymentUrl,
       },
       client: {
         name: client.name,
-        email: client.email
+        email: client.email,
       },
       consultantNotified: true,
-      message: 'Cobrança criada e notificações enviadas'
+      message: 'Cobrança criada e notificações enviadas',
     })
 
   } catch (error) {
     console.error('Erro na cobrança híbrida:', error)
     return NextResponse.json({
       error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 })
-  }
+      details: error instanceof Error ? error.message : String(error),
+    }, { status: 500 }),
+  },
 }
 
 export async function GET(request: NextRequest) {
@@ -208,21 +208,21 @@ export async function GET(request: NextRequest) {
             select: {
               name: true,
               email: true,
-              phone: true
-            }
-          }
-        }
+              phone: true,
+            },
+          },
+        },
       })
 
       if (!payment) {
         return NextResponse.json({
-          error: 'Pagamento não encontrado'
-        }, { status: 404 })
+          error: 'Pagamento não encontrado',
+        }, { status: 404 }),
       }
 
       return NextResponse.json({
-        payment
-      })
+        payment,
+      }),
     }
 
     if (clientId) {
@@ -235,27 +235,27 @@ export async function GET(request: NextRequest) {
           client: {
             select: {
               name: true,
-              email: true
-            }
-          }
-        }
+              email: true,
+            },
+          },
+        },
       })
 
       return NextResponse.json({
-        payments
-      })
+        payments,
+      }),
     }
 
     return NextResponse.json({
-      error: 'paymentId ou clientId obrigatório'
+      error: 'paymentId ou clientId obrigatório',
     }, { status: 400 })
 
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
+      error: 'Erro interno do servidor',
+    }, { status: 500 }),
+  },
 }
 
 // Gerar links de pagamento para diferentes métodos
@@ -263,7 +263,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
   const links = {
     pix: null as string | null,
     card: null as string | null,
-    boleto: null as string | null
+    boleto: null as string | null,
   }
 
   try {
@@ -274,7 +274,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       title: 'Vaga Express - Agendamento de Visto (PIX)',
       description: `${client.name} - Taxa consular + serviço (5% desconto PIX)`,
       paymentMethods: ['pix'],
-      discount: costs.discounts.pix
+      discount: costs.discounts.pix,
     })
     links.pix = pixPreference?.init_point || null
 
@@ -285,7 +285,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       title: 'Vaga Express - Agendamento de Visto (Cartão)',
       description: `${client.name} - Taxa consular + serviço`,
       paymentMethods: ['credit_card', 'debit_card'],
-      installments: 12
+      installments: 12,
     })
     links.card = cardPreference?.init_point || null
 
@@ -295,15 +295,15 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       amount: costs.total.withoutDiscount,
       title: 'Vaga Express - Agendamento de Visto (Boleto)',
       description: `${client.name} - Taxa consular + serviço`,
-      paymentMethods: ['ticket']
+      paymentMethods: ['ticket'],
     })
     links.boleto = boletoPreference?.init_point || null
 
   } catch (error) {
-    console.error('Erro ao gerar links de pagamento:', error)
+    console.error('Erro ao gerar links de pagamento:', error),
   }
 
-  return links
+  return links,
 }
 
 // Criar preferência no MercadoPago
@@ -313,7 +313,7 @@ async function createMercadoPagoPreference(options: any) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
       },
       body: JSON.stringify({
         items: [{
@@ -321,37 +321,37 @@ async function createMercadoPagoPreference(options: any) {
           description: options.description,
           quantity: 1,
           currency_id: 'BRL',
-          unit_price: options.amount
+          unit_price: options.amount,
         }],
         external_reference: options.paymentId,
         payment_methods: {
           excluded_payment_types: options.paymentMethods ? [] : ['credit_card', 'debit_card', 'ticket', 'digital_wallet'],
           included_payment_types: options.paymentMethods || undefined,
-          installments: options.installments || 1
+          installments: options.installments || 1,
         },
         back_urls: {
           success: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/success?id=${options.paymentId}`,
           failure: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/failure?id=${options.paymentId}`,
-          pending: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/pending?id=${options.paymentId}`
+          pending: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/pending?id=${options.paymentId}`,
         },
         auto_return: 'approved',
         notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/hybrid-booking`,
         metadata: {
           payment_id: options.paymentId,
-          discount: options.discount || 0
-        }
-      })
+          discount: options.discount || 0,
+        },
+      }),
     })
 
     if (!response.ok) {
-      throw new Error(`MercadoPago API error: ${response.status}`)
+      throw new Error(`MercadoPago API error: ${response.status}`),
     }
 
-    return await response.json()
+    return await response.json(),
   } catch (error) {
     console.error('Erro MercadoPago:', error)
-    return null
-  }
+    return null,
+  },
 }
 
 // Notificar consultor via Telegram
@@ -359,13 +359,13 @@ async function notifyConsultant(data: any) {
   const urgencyEmoji = {
     'NORMAL': '⏰',
     'URGENT': '🚨',
-    'EMERGENCY': '🔥'
+    'EMERGENCY': '🔥',
   }
 
   const planEmoji = {
     'BASIC': '🥉',
     'PREMIUM': '🥈',
-    'VIP': '🥇'
+    'VIP': '🥇',
   }
 
   const message = `${urgencyEmoji[data.urgency]} COBRANÇA HÍBRIDA GERADA
@@ -403,12 +403,12 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML'
-      })
-    })
+        parse_mode: 'HTML',
+      }),
+    }),
   } catch (error) {
-    console.error('Erro ao notificar consultor:', error)
-  }
+    console.error('Erro ao notificar consultor:', error),
+  },
 }
 
 // Notificar cliente sobre cobrança
@@ -451,8 +451,8 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: client.phone,
-        message: whatsappMessage
-      })
+        message: whatsappMessage,
+      }),
     })
 
     // Enviar email com detalhes completos
@@ -470,12 +470,12 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
           costs: data.costs,
           paymentLinks: data.paymentLinks,
           paymentId: data.paymentId,
-          expiresIn: data.expiresIn
-        }
-      })
+          expiresIn: data.expiresIn,
+        },
+      }),
     })
 
   } catch (error) {
-    console.error('Erro ao notificar cliente:', error)
-  }
+    console.error('Erro ao notificar cliente:', error),
+  },
 }

@@ -18,6 +18,12 @@
     "backup:create": "node -e \"require('./src/lib/backup-system').backupSystem.createDatabaseBackup().then(console.log)\"",
     "backup:export": "node -e \"require('./src/lib/backup-system').backupSystem.createDataExport().then(console.log)\"",
     "check:services": "node check-services.js",
+    "validate": "node quick-validate.js",
+    "validate:full": "node validate-all.js",
+    "fix:auto": "node auto-fix-errors.js",
+    "fix:logs": "node fix-automation-logs.js",
+    "type-check": "npx tsc --noEmit",
+    "pre-commit": "npm run validate && npm run type-check",
     "status": "node check-services.js",
     "restart:services": "node restart-all-services.js"
   },

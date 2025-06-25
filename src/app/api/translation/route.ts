@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         languages,
         total: Object.keys(languages).length,
-        message: 'Idiomas suportados recuperados com sucesso'
-      })
+        message: 'Idiomas suportados recuperados com sucesso',
+      }),
     }
 
     if (action === 'translators') {
@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
         total: translators.length,
         message: translators.length > 0 
           ? `${translators.length} tradutores encontrados` 
-          : 'Nenhum tradutor disponível para os idiomas especificados'
-      })
+          : 'Nenhum tradutor disponível para os idiomas especificados',
+      }),
     }
 
     return NextResponse.json(
@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST - Traduzir texto ou documento
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' },
           { status: 400 }
-        )
+        ),
       }
 
       const result = await translationService.translateText(translationRequest)
@@ -80,17 +80,18 @@ export async function POST(request: NextRequest) {
             provider: result.provider,
             cost: result.cost,
             isOfficial: result.isOfficialTranslation,
-            certificationNumber: result.certificationNumber
+            certificationNumber: result.certificationNumber,
           },
           message: result.isOfficialTranslation 
             ? 'Solicitação de tradução oficial enviada com sucesso'
-            : 'Texto traduzido com sucesso'
-        })
+            : 'Texto traduzido com sucesso',
+        }),
       } else {
         return NextResponse.json(
-          { status: 400 }
-        )
-      }
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
+      },
     }
 
     if (type === 'document') {
@@ -104,8 +105,8 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: `Campo ${field} é obrigatório para tradução de documento` },
             { status: 400 }
-          )
-        }
+          ),
+        },
       }
 
       const result = await translationService.translateDocument(documentRequest)
@@ -121,16 +122,17 @@ export async function POST(request: NextRequest) {
               fileName: documentRequest.fileName,
               pageCount: documentRequest.pageCount,
               isOfficial: documentRequest.isOfficial,
-              priority: documentRequest.priority
-            }
+              priority: documentRequest.priority,
+            },
           },
-          message: 'Documento enviado para tradução com sucesso'
-        })
+          message: 'Documento enviado para tradução com sucesso',
+        }),
       } else {
         return NextResponse.json(
-          { status: 400 }
-        )
-      }
+      { error: 'Dados inválidos' },
+      { status: 400 }
+    ),
+      },
     }
 
     return NextResponse.json(
@@ -143,6 +145,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

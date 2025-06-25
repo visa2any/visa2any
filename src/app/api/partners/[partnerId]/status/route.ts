@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { partnerIntegrationService } from '@/lib/partner-integrations'
 
 // GET - Verificar status de aplicação via parceiro
-export async function GET(
+export async function GET(,
   request: NextRequest,
   { params }: { params: { partnerId: string } }
 ) {
@@ -15,7 +15,7 @@ export async function GET(
       return NextResponse.json(
         { error: 'Parâmetro reference é obrigatório' },
         { status: 400 }
-      )
+      ),
     }
 
     const status = await partnerIntegrationService.checkStatus(partnerId, reference)
@@ -27,7 +27,7 @@ export async function GET(
       status: status.status,
       details: status.details,
       nextSteps: status.nextSteps,
-      lastChecked: new Date().toISOString()
+      lastChecked: new Date().toISOString(),
     })
 
   } catch (error) {
@@ -35,6 +35,6 @@ export async function GET(
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }

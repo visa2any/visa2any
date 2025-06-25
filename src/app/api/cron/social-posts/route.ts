@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
-      )
+      ),
     }
 
     console.log('🤖 Iniciando processamento de posts agendados...')
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Posts agendados processados com sucesso',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
 
   } catch (error) {
@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Erro no processamento de posts agendados',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // GET para verificar status
@@ -48,6 +48,6 @@ export async function GET() {
     status: 'active',
     description: 'Processa posts agendados para redes sociais',
     schedule: 'A cada 5 minutos',
-    lastRun: new Date().toISOString()
-  })
+    lastRun: new Date().toISOString(),
+  }),
 }

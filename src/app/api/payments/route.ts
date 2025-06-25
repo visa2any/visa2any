@@ -9,7 +9,7 @@ const createPaymentSchema = z.object({
   currency: z.string().default('BRL'),
   description: z.string().min(1, 'Descrição é obrigatória'),
   paymentMethod: z.string().optional(),
-  dueDate: z.string().datetime().optional()
+  dueDate: z.string().datetime().optional(),
 })
 
 // GET /api/payments - Listar pagamentos
@@ -27,11 +27,11 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (clientId) {
-      where.clientId = clientId
+      where.clientId = clientId,
     }
     
     if (status && status !== 'ALL') {
-      where.status = status
+      where.status = status,
     }
 
     // Buscar pagamentos
@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
               id: true, 
               name: true, 
               email: true,
-              phone: true
-            }
-          }
-        }
+              phone: true,
+            },
+          },
+        },
       }),
       prisma.payment.count({ where })
     ])
@@ -59,14 +59,14 @@ export async function GET(request: NextRequest) {
     const stats = await prisma.payment.aggregate({
       where: clientId ? { clientId } : {},
       _sum: { amount: true },
-      _count: { id: true }
+      _count: { id: true },
     })
 
     const statusStats = await prisma.payment.groupBy({
       by: ['status'],
       _count: { status: true },
       _sum: { amount: true },
-      where: clientId ? { clientId } : {}
+      where: clientId ? { clientId } : {},
     })
 
     const totalPages = Math.ceil(total / limit)
@@ -80,27 +80,28 @@ export async function GET(request: NextRequest) {
           byStatus: statusStats.reduce((acc, stat) => {
             acc[stat.status] = {
               count: stat._count.status,
-              amount: stat._sum.amount || 0
+              amount: stat._sum.amount || 0,
             }
-            return acc
-          }, {} as Record<string, any>)
+            return acc,
+          }, {} as Record<string, any>),
         },
         pagination: {
           page,
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages
-        }
-      }
+          hasMore: page < totalPages,
+        },
+      },
     })
 
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // POST /api/payments - Criar pagamento
@@ -111,13 +112,13 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+      where: { id: validatedData.clientId },
     })
 
     if (!client) {
       return NextResponse.json(
         { status: 404 }
-      )
+      ),
     }
 
     // Gerar ID de transação único
@@ -129,7 +130,7 @@ export async function POST(request: NextRequest) {
         ...validatedData,
         transactionId,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
-        status: 'PENDING'
+        status: 'PENDING',
       },
       include: {
         client: {
@@ -137,10 +138,10 @@ export async function POST(request: NextRequest) {
             id: true, 
             name: true, 
             email: true,
-            phone: true
-          }
-        }
-      }
+            phone: true,
+          },
+        },
+      },
     })
 
     // Log da criação
@@ -148,13 +149,13 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'PAYMENT_CREATED',
         action: 'create_payment',
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
         },
         success: true,
-      }
+      },
     })
 
     // Gerar link de pagamento (simulado)
@@ -163,9 +164,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         ...payment,
-        paymentLink
+        paymentLink,
       },
-      message: 'Pagamento criado com sucesso'
+      message: 'Pagamento criado com sucesso',
     }, { status: 201 })
 
   } catch (error) {
@@ -173,24 +174,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
+          details: error.errors,
         },
         { status: 400 }
-      )
+      ),
     }
 
     console.error('Erro ao criar pagamento:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
 
 // Função para gerar ID de transação
 function generateTransactionId(): string {
   const timestamp = Date.now().toString()
   const random = Math.random().toString(36).substring(2, 10)
-  return `TXN_${timestamp}_${random}`.toUpperCase()
+  return `TXN_${timestamp}_${random}`.toUpperCase(),
 }
 
 // Função para gerar link de pagamento (simulado)
@@ -207,28 +209,28 @@ async function generatePaymentLink(payment: any) {
       url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,
       qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,
       pixKey: generatePixKey(),
-      methods: ['PIX', 'Cartão de Crédito', 'Boleto']
-    }
+      methods: ['PIX', 'Cartão de Crédito', 'Boleto'],
+    },
   } else if (payment.currency === 'USD') {
     // Stripe para USD
     return {
       provider: 'Stripe',
       url: `${baseUrl}/api/payments/${payment.id}/stripe`,
-      methods: ['Credit Card', 'Bank Transfer']
-    }
+      methods: ['Credit Card', 'Bank Transfer'],
+    },
   } else {
     // PayPal para outras moedas
     return {
       provider: 'PayPal',
       url: `${baseUrl}/api/payments/${payment.id}/paypal`,
-      methods: ['PayPal', 'Credit Card']
-    }
-  }
+      methods: ['PayPal', 'Credit Card'],
+    },
+  },
 }
 
 // Gerar chave PIX simulada
 function generatePixKey(): string {
-  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`
+  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`,
 }
 
 // POST /api/payments/packages - Criar pacotes de pagamento pré-definidos
@@ -253,7 +255,7 @@ export async function PUT(request: NextRequest) {
             'Lista de documentos necessários',
             'Suporte por email 48h'
           ],
-          popular: false
+          popular: false,
         },
         {
           id: 'premium_consultation',
@@ -269,7 +271,7 @@ export async function PUT(request: NextRequest) {
             'Acompanhamento por 30 dias',
             'Suporte prioritário'
           ],
-          popular: true
+          popular: true,
         },
         {
           id: 'vip_full_service',
@@ -287,7 +289,7 @@ export async function PUT(request: NextRequest) {
             'Consultor dedicado'
           ],
           popular: false,
-          guarantee: true
+          guarantee: true,
         },
         // Pacotes internacionais
         {
@@ -303,7 +305,7 @@ export async function PUT(request: NextRequest) {
             'Required documents list',
             '48h email support'
           ],
-          popular: false
+          popular: false,
         },
         {
           id: 'international_premium',
@@ -319,23 +321,25 @@ export async function PUT(request: NextRequest) {
             '30-day follow-up',
             'Priority support'
           ],
-          popular: true
+          popular: true,
         }
       ]
 
       return NextResponse.json({
-        data: { packages }
-      })
+        data: { packages },
+      }),
     }
 
     return NextResponse.json(
+      { error: 'Dados inválidos' },
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro ao processar planos:', error)
     return NextResponse.json(
+      { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
+    ),
+  },
 }
