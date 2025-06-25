@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar documento
     const document = await prisma.document.findUnique({
-      where: { id: validatedData.documentId }
+      where: { id: validatedData.documentId },
       include: {
         client: {
           select: {

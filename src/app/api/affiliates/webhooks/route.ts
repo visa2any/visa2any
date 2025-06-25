@@ -297,7 +297,7 @@ async function sendWebhookEvent(
             'X-Webhook-Signature': `sha256=${signature}`,
             'X-Webhook-Event': eventType,
             'User-Agent': 'Visa2Any-Webhooks/1.0',
-          }
+          },
           body: payload,
           signal: AbortSignal.timeout(10000)
         })

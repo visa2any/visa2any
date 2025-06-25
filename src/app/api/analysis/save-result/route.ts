@@ -7,9 +7,9 @@ export async function POST(request: NextRequest) {
 
     if (!clientId || !score) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
     // Criar consultoria IA com o resultado

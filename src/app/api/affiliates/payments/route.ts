@@ -284,7 +284,7 @@ export async function PUT(request: NextRequest) {
     // Se pagamento falhou, reverter comissões
     if (status === 'FAILED' || status === 'CANCELLED') {
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId }
+        where: { paymentId },
         data: {
           status: 'PENDING',
           paymentId: null

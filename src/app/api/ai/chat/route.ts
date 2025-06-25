@@ -131,7 +131,7 @@ async function processSofiaMessage(message: string, clientContext: any, context:
   const response = await generateSofiaResponse(intent, message, clientContext, context)
   
   return {
-    message: response.message
+    message: response.message,
     intent: intent.name,
     confidence: intent.confidence,
     suggestions: response.suggestions,
