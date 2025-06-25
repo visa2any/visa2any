@@ -333,7 +333,14 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       data: {
         type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
-        clientId: clientId
+        clientId: clientId,
+        success: true,
+        details: {
+          template: template,
+          subject: subject,
+          emailSent: true,
+          timestamp: new Date().toISOString()
+        }
       }
     })
 
@@ -347,7 +354,13 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
         type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
         clientId: clientId,
-        success: false
+        success: false,
+        details: {
+          error: error?.toString() || 'Unknown error',
+          template: template,
+          subject: subject,
+          timestamp: new Date().toISOString()
+        }
       }
     })
 
