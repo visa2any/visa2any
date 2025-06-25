@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-      })
+      }),
       prisma.affiliate.count({ where })
     ])
 

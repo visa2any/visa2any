@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        message: 'Notificações atualizadas'
+        message: 'Notificações atualizadas',
         unreadCount,
       }
     })

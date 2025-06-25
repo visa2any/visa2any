@@ -70,9 +70,9 @@ export async function GET(request: NextRequest) {
 
     if (!country) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
     const changes = await getLawChanges(country, days, visaType ?? undefined)

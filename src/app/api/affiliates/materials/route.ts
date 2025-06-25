@@ -216,7 +216,7 @@ Sua nova vida te espera!"
     imageUrl: '/images/videos/depoimento-maria.jpg',
     previewUrl: '/materials/preview/video-depoimento',
     isActive: true
-  }
+  },
 
   // Guias/E-books
   {

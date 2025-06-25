@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
           },
           payment: true
         }
-      })
+      }),
       prisma.affiliateCommission.count({ where })
     ])
 
