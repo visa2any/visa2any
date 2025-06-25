@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     if (!consulate || !visaType) {
       return NextResponse.json(
-        { error: 'Parâmetros consulate e visaType são obrigatórios' }
+        { error: 'Parâmetros consulate e visaType são obrigatórios' },
         { status: 400 }
       )
     }

@@ -39,10 +39,10 @@ export async function POST(request: NextRequest) {
     if (document.analysis && !validatedData.forceReanalysis) {
       return NextResponse.json({
         data: {
-          documentId: document.id
+          documentId: document.id,
           analysis: document.analysis,
           cached: true
-        }
+        },
         message: 'Análise recuperada do cache'
       })
     }

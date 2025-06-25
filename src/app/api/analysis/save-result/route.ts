@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Atualizar score do cliente
     await prisma.client.update({
-      where: { id: clientId }
+      where: { id: clientId },
       data: {
         score,
         status: score >= 80 ? 'QUALIFIED' : 'LEAD'

@@ -163,7 +163,7 @@ function detectIntent(message: string) {
     for (const pattern of intentData.patterns) {
       const regex = new RegExp(pattern, 'i')
       if (regex.test(lowercaseMessage)) {
-        score += 2,
+        score += 2
       }
     }
     

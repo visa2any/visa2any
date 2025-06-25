@@ -13,7 +13,7 @@ export async function DELETE(
 
     if (!consulate) {
       return NextResponse.json(
-        { error: 'Parâmetro consulate é obrigatório' }
+        { error: 'Parâmetro consulate é obrigatório' },
         { status: 400 }
       )
     }
