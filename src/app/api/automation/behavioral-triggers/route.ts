@@ -48,7 +48,16 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'BEHAVIORAL_TRIGGER',
         action: `trigger_${validatedData.event}`,
-        clientId: validatedData.clientId || null
+        clientId: validatedData.clientId || null,
+        success: true,
+        details: {
+          event: validatedData.event,
+          shouldTrigger: triggerAnalysis.shouldTrigger,
+          triggerReason: triggerAnalysis.reason,
+          page: validatedData.data?.page,
+          timeSpent: validatedData.data?.timeSpent,
+          scrollDepth: validatedData.data?.scrollDepth
+        }
       }
     })
 
