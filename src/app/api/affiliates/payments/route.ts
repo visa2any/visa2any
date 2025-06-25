@@ -274,7 +274,7 @@ export async function PUT(request: NextRequest) {
 
       // Atualizar saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId }
+        where: { id: payment.affiliateId },
         data: {
           paidEarnings: { increment: payment.amount }
         }

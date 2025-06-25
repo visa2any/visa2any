@@ -255,8 +255,8 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
 
   } catch (error) {
     return { 
-      success: false
-      message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}` ,
+      success: false,
+      message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
     }
   }
 }

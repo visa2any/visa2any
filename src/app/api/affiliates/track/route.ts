@@ -229,8 +229,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ 
-      referralId: referral.id
-      commissionValue ,
+      referralId: referral.id,
+      commissionValue
     })
 
   } catch (error) {

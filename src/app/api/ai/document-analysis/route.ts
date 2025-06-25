@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 // Schema para análise de documento
 const documentAnalysisSchema = z.object({
-  documentId: z.string().min(1, 'ID do documento é obrigatório')
+  documentId: z.string().min(1, 'ID do documento é obrigatório'),
   forceReanalysis: z.boolean().default(false)
 })
 
