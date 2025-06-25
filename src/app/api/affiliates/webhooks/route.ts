@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoint
+        ...endpoint,
         secret: undefined, // Não retornar o secret
         testResult,
       }

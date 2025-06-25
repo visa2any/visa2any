@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        payments
+        payments,
         message: `${payments.length} pagamento(s) criado(s) com sucesso`,
       }
     })

@@ -4,12 +4,12 @@ import { z } from 'zod'
 
 // Schema para mensagem do chat
 const chatMessageSchema = z.object({
-  message: z.string().min(1, 'Mensagem é obrigatória')
-  clientId: z.string().optional()
-  conversationId: z.string().optional()
+  message: z.string().min(1, 'Mensagem é obrigatória'),
+  clientId: z.string().optional(),
+  conversationId: z.string().optional(),
   context: z.object({
-    targetCountry: z.string().optional()
-    visaType: z.string().optional()
+    targetCountry: z.string().optional(),
+    visaType: z.string().optional(),
     currentStep: z.string().optional()
   }).optional()
 })

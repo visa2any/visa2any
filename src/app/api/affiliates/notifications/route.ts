@@ -262,9 +262,9 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         clientName: 'João Santos',
         conversionType: 'VISA_PROCESS',
         dueDate: '2024-07-15'
-      }
+      },
       read: true,
-      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
       priority: 'medium'
     }
   ]

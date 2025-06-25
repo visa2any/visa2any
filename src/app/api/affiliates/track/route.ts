@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     // Verificar se já existe uma conversão para este cliente
     const existingReferral = await prisma.affiliateReferral.findFirst({
       where: {
-        affiliateId: affiliate.id
+        affiliateId: affiliate.id,
         clientId,
       }
     })
