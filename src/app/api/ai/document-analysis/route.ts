@@ -4,8 +4,8 @@ import { z } from 'zod'
 
 // Schema para análise de documento
 const documentAnalysisSchema = z.object({
-  documentId: z.string().min(1, 'ID do documento é obrigatório'),
-  forceReanalysis: z.boolean().default(false),
+  documentId: z.string().min(1, 'ID do documento é obrigatório')
+  forceReanalysis: z.boolean().default(false)
 })
 
 // POST /api/ai/document-analysis - Analisar documento com IA
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar documento
     const document = await prisma.document.findUnique({
-      where: { id: validatedData.documentId },
+      where: { id: validatedData.documentId }
       include: {
         client: {
           select: {
@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
             name: true,
             targetCountry: true,
             visaType: true,
-          },
-        },
-      },
+          }
+        }
+      }
     })
 
     if (!document) {
@@ -39,18 +39,18 @@ export async function POST(request: NextRequest) {
     if (document.analysis && !validatedData.forceReanalysis) {
       return NextResponse.json({
         data: {
-          documentId: document.id,
+          documentId: document.id
           analysis: document.analysis,
           cached: true,
-        },
+        }
         message: 'Análise recuperada do cache',
       })
     }
 
     // Marcar como analisando
     await prisma.document.update({
-      where: { id: validatedData.documentId },
-      data: { status: 'ANALYZING' },
+      where: { id: validatedData.documentId }
+      data: { status: 'ANALYZING' }
     })
 
     // Fazer análise com IA
@@ -58,15 +58,15 @@ export async function POST(request: NextRequest) {
 
     // Atualizar documento com resultado
     const updatedDocument = await prisma.document.update({
-      where: { id: validatedData.documentId },
+      where: { id: validatedData.documentId }
       data: {
-        status: analysisResult.isValid ? 'VALID' : (analysisResult.needsReview ? 'NEEDS_REVIEW' : 'INVALID'),
+        status: analysisResult.isValid ? 'VALID' : (analysisResult.needsReview ? 'NEEDS_REVIEW' : 'INVALID')
         isValid: analysisResult.isValid,
         ocrText: analysisResult.ocrText,
         analysis: analysisResult.analysis,
         validationNotes: analysisResult.validationNotes,
-        validatedAt: new Date(),
-      },
+        validatedAt: new Date()
+      }
     })
 
     // Log da análise
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
           documentType: document.type,
           confidence: analysisResult.confidence,
           processingTime: analysisResult.processingTime,
-        },
-      },
+        }
+      }
     })
 
     // Se documento foi aprovado, verificar se pode prosseguir com próximo passo
@@ -92,10 +92,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        documentId: document.id,
+        documentId: document.id
         analysis: analysisResult,
         document: updatedDocument,
-      },
+      }
       message: 'Análise concluída com sucesso',
     })
 
@@ -103,29 +103,29 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro na análise de documento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // GET /api/ai/document-analysis/[id] - Obter análise de documento
-export async function GET(,
+export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const document = await prisma.document.findUnique({
-      where: { id: params.id },
+      where: { id: params.id }
       include: {
         client: {
           select: {
@@ -133,9 +133,9 @@ export async function GET(,
             name: true,
             targetCountry: true,
             visaType: true,
-          },
-        },
-      },
+          }
+        }
+      }
     })
 
     if (!document) {
@@ -146,21 +146,21 @@ export async function GET(,
 
     return NextResponse.json({
       data: {
-        documentId: document.id,
+        documentId: document.id
         ocrText: document.ocrText,
         analysis: document.analysis,
         isValid: document.isValid,
         validationNotes: document.validationNotes,
         validatedAt: document.validatedAt,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar análise:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -187,36 +187,36 @@ async function performAdvancedDocumentAnalysis(document: any) {
     const processingTime = Date.now() - startTime
     
     return {
-      isValid: analysisResult.isValid && countryValidation.isValid && !fraudDetection.hasCriticalIssues,
+      isValid: analysisResult.isValid && countryValidation.isValid && !fraudDetection.hasCriticalIssues
       needsReview: analysisResult.needsReview || countryValidation.needsReview || fraudDetection.hasWarnings,
-      confidence: Math.min(analysisResult.confidence, countryValidation.confidence),
+      confidence: Math.min(analysisResult.confidence, countryValidation.confidence)
       ocrText: ocrResult.text,
       analysis: {
         ocr: ocrResult,
         typeSpecific: analysisResult,
         countryValidation: countryValidation,
         fraudDetection: fraudDetection,
-        recommendations: generateRecommendations(analysisResult, countryValidation, fraudDetection),
+        recommendations: generateRecommendations(analysisResult, countryValidation, fraudDetection)
         processingTime: processingTime,
-      },
-      validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection),
+      }
+      validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection)
       processingTime: processingTime
     }
     
   } catch (error) {
     console.error('Erro na análise avançada:', error)
     return {
-      isValid: false,
+      isValid: false
       needsReview: true,
       confidence: 0,
       ocrText: '',
       analysis: {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
         processingTime: Date.now() - startTime,
-      },
+      }
       validationNotes: 'Erro durante análise automática. Revisão manual necessária.',
       processingTime: Date.now() - startTime,
-    },
+    }
   }
 }
 
@@ -255,7 +255,7 @@ Reitor: Prof. Dr. João Santos`,
 
     'BANK_STATEMENT': `BANCO DO BRASIL S.A.
 EXTRATO BANCÁRIO,
-Titular: ${document.client?.name || 'MARIA SILVA'},
+Titular: ${document.client?.name || 'MARIA SILVA'}
 Conta: 12345-6
 Período: 01/01/2024 a 31/03/2024
 Saldo Inicial: R$ 45.000,00
@@ -278,11 +278,11 @@ São Paulo, 20 de dezembro de 2023`
   const text = mockTexts[document.type] || `Document content for ${document.fileName}`
   
   return {
-    text: text,
+    text: text
     confidence: 0.95,
     language: 'pt',
     pages: 1,
-    extractedFields: extractFieldsFromText(text, document.type),
+    extractedFields: extractFieldsFromText(text, document.type)
   }
 }
 
@@ -351,7 +351,7 @@ async function analyzePassport(document: any, ocrResult: any) {
     if (expiryDate < sixMonthsFromNow) {
       issues.push('Passaporte expira em menos de 6 meses')
       confidence -= 0.3,
-    },
+    }
   } else {
     issues.push('Data de expiração não identificada')
     confidence -= 0.2
@@ -364,9 +364,9 @@ async function analyzePassport(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length === 0 || issues.every(issue => !issue.includes('expira')),
-    needsReview: issues.length > 0,
-    confidence: Math.max(confidence, 0.1),
+    isValid: issues.length === 0 || issues.every(issue => !issue.includes('expira'))
+    needsReview: issues.length > 0
+    confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
     recommendations: issues.length > 0 ? ['Renovar passaporte se próximo do vencimento'] : [],
@@ -395,9 +395,9 @@ async function analyzeDiploma(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length < 2,
+    isValid: issues.length < 2
     needsReview: issues.length > 0,
-    confidence: Math.max(confidence, 0.1),
+    confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se precisa de validação/apostilamento'],
@@ -415,7 +415,7 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
     if (balance < 10000) {
       issues.push('Saldo pode ser insuficiente para alguns países')
       confidence -= 0.2,
-    },
+    }
   } else {
     issues.push('Saldo final não identificado')
     confidence -= 0.3
@@ -427,9 +427,9 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length === 0 || !issues.some(i => i.includes('não identificado')),
-    needsReview: issues.length > 0,
-    confidence: Math.max(confidence, 0.1),
+    isValid: issues.length === 0 || !issues.some(i => i.includes('não identificado'))
+    needsReview: issues.length > 0
+    confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se período está adequado (mínimo 3 meses)'],
@@ -458,9 +458,9 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length < 2,
+    isValid: issues.length < 2
     needsReview: issues.length > 0,
-    confidence: Math.max(confidence, 0.1),
+    confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se atende tempo mínimo de experiência'],
@@ -470,10 +470,10 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
 // Análises genéricas para outros tipos
 async function analyzeBirthCertificate(document: any, ocrResult: any) {
   return {
-    isValid: true,
+    isValid: true
     needsReview: false,
     confidence: 0.8,
-    extractedData: {},
+    extractedData: {}
     issues: [],
     recommendations: ['Verificar se precisa de apostilamento'],
   }
@@ -481,10 +481,10 @@ async function analyzeBirthCertificate(document: any, ocrResult: any) {
 
 async function analyzePoliceClearance(document: any, ocrResult: any) {
   return {
-    isValid: true,
+    isValid: true
     needsReview: false,
     confidence: 0.8,
-    extractedData: {},
+    extractedData: {}
     issues: [],
     recommendations: ['Verificar validade (máximo 12 meses)'],
   }
@@ -492,10 +492,10 @@ async function analyzePoliceClearance(document: any, ocrResult: any) {
 
 async function analyzeGenericDocument(document: any, ocrResult: any) {
   return {
-    isValid: true,
+    isValid: true
     needsReview: true,
     confidence: 0.6,
-    extractedData: {},
+    extractedData: {}
     issues: ['Tipo de documento requer análise manual'],
     recommendations: ['Solicitar revisão de especialista'],
   }
@@ -505,7 +505,7 @@ async function analyzeGenericDocument(document: any, ocrResult: any) {
 async function validateAgainstCountryRequirements(document: any, analysisResult: any) {
   if (!document.client?.targetCountry) {
     return {
-      isValid: true,
+      isValid: true
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['País de destino não especificado'],
@@ -515,14 +515,14 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   // Buscar requisitos específicos
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
-      country: { contains: document.client.targetCountry },
+      country: { contains: document.client.targetCountry }
       isActive: true,
-    },
+    }
   })
   
   if (!requirements) {
     return {
-      isValid: true,
+      isValid: true
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['Requisitos específicos não encontrados'],
@@ -534,7 +534,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   
   if (!relevantDoc) {
     return {
-      isValid: true,
+      isValid: true
       needsReview: false,
       confidence: 0.8,
       countrySpecificIssues: [],
@@ -552,13 +552,13 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       requiredValidUntil.setMonth(requiredValidUntil.getMonth() + relevantDoc.validityMonths)
       
       if (expiryDate < requiredValidUntil) {
-        issues.push(`Passaporte deve ser válido por pelo menos ${relevantDoc.validityMonths} meses`),
-      },
+        issues.push(`Passaporte deve ser válido por pelo menos ${relevantDoc.validityMonths} meses`)
+      }
     }
   }
   
   return {
-    isValid: issues.length === 0,
+    isValid: issues.length === 0
     needsReview: issues.length > 0,
     confidence: issues.length === 0 ? 0.9 : 0.6,
     countrySpecificIssues: issues,
@@ -582,7 +582,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     const clientName = document.client.name.toUpperCase()
     
     if (extractedName.includes(clientName.split(' ')[0]) === false) {
-      warnings.push('Nome no documento pode não corresponder ao cliente'),
+      warnings.push('Nome no documento pode não corresponder ao cliente')
     }
   }
   
@@ -602,7 +602,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
   }
   
   return {
-    hasWarnings: warnings.length > 0,
+    hasWarnings: warnings.length > 0
     hasCriticalIssues: criticalIssues.length > 0,
     warnings: warnings,
     criticalIssues: criticalIssues,
@@ -664,7 +664,7 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
   try {
     // Buscar todos os documentos do cliente
     const clientDocuments = await prisma.document.findMany({
-      where: { clientId, status: 'VALID' },
+      where: { clientId, status: 'VALID' }
     })
     
     // Verificar se tem documentos essenciais
@@ -677,8 +677,8 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
       const existingConsultation = await prisma.consultation.findFirst({
         where: { 
           clientId,
-          status: { in: ['SCHEDULED', 'IN_PROGRESS'] },
-        },
+          status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
+        }
       })
       
       if (!existingConsultation) {
@@ -690,7 +690,7 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
             clientId: clientId,
             scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
             notes: 'Consultoria agendada automaticamente após validação de documentos essenciais',
-          },
+          }
         })
         
         // Enviar notificação
@@ -699,6 +699,6 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
     }
     
   } catch (error) {
-    console.error('Erro ao verificar próximos passos:', error),
+    console.error('Erro ao verificar próximos passos:', error)
   }
 }

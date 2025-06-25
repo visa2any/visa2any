@@ -23,14 +23,14 @@ export async function POST(request: NextRequest) {
     // Validar dados essenciais
     if (!selectedPaymentMethod || !formData || !preferenceId) {
       return NextResponse.json({
-        error: 'Dados obrigatórios ausentes',
+        error: 'Dados obrigatórios ausentes'
         details: 'selectedPaymentMethod, formData e preferenceId são obrigatórios',
       }, { status: 400 })
     }
 
     if (!formData.transaction_amount || formData.transaction_amount <= 0) {
       return NextResponse.json({
-        error: 'Valor inválido',
+        error: 'Valor inválido'
         details: 'transaction_amount deve ser maior que zero',
       }, { status: 400 })
     }
@@ -47,13 +47,13 @@ export async function POST(request: NextRequest) {
     if (selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') {
       // PIX (pode vir como 'pix' ou 'bank_transfer' do MercadoPago Bricks)
       paymentData.payment_method_id = 'pix'
-      console.log('🎯 Processando PIX com payment_method_id:', paymentData.payment_method_id),
+      console.log('🎯 Processando PIX com payment_method_id:', paymentData.payment_method_id)
     } else if (formData.token) {
       // Cartão de crédito/débito
       paymentData.token = formData.token
       paymentData.installments = formData.installments || 1
       paymentData.issuer_id = formData.issuer_id
-      console.log('💳 Processando cartão'),
+      console.log('💳 Processando cartão')
     } else if (selectedPaymentMethod === 'bolbradesco' || selectedPaymentMethod === 'pec') {
       // Boleto
       paymentData.payment_method_id = selectedPaymentMethod
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      payment_id: result.id,
+      payment_id: result.id
       status: result.status,
       status_detail: result.status_detail,
       payment_method: result.payment_method?.id || selectedPaymentMethod,
@@ -101,10 +101,10 @@ export async function POST(request: NextRequest) {
     console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
     
     return NextResponse.json({
-      error: 'Erro ao processar pagamento',
+      error: 'Erro ao processar pagamento'
       details: error instanceof Error ? error.message : 'Erro desconhecido',
       errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-      paymentData: JSON.stringify(paymentData, null, 2),
-    }, { status: 500 }),
+      paymentData: JSON.stringify(paymentData, null, 2)
+    }, { status: 500 })
   }
 }

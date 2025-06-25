@@ -5,12 +5,12 @@ import { z } from 'zod'
 
 // Schema para envio de WhatsApp
 const sendWhatsAppSchema = z.object({
-  to: z.string().min(10, 'Número de telefone é obrigatório'),
-  message: z.string().min(1, 'Mensagem é obrigatória'),
-  clientId: z.string().optional(),
-  template: z.string().optional(),
-  variables: z.record(z.any()).optional(),
-  mediaUrl: z.string().url().optional(),
+  to: z.string().min(10, 'Número de telefone é obrigatório')
+  message: z.string().min(1, 'Mensagem é obrigatória')
+  clientId: z.string().optional()
+  template: z.string().optional()
+  variables: z.record(z.any()).optional()
+  mediaUrl: z.string().url().optional()
 })
 
 // POST /api/notifications/whatsapp - Enviar WhatsApp
@@ -40,19 +40,19 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId || null,
         error: whatsAppResult.error || null,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
       data: {
-        messageId: whatsAppResult.messageId,
+        messageId: whatsAppResult.messageId
         sent: whatsAppResult.success,
         queued: whatsAppResult.queued || false,
         to: validatedData.to,
-      },
+      }
       message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso',
     })
 
@@ -60,18 +60,18 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao enviar WhatsApp:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -83,17 +83,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        status,
-        timestamp: new Date().toISOString(),
-      },
+        status
+        timestamp: new Date().toISOString()
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar status:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 

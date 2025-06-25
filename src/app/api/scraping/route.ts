@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       const targets = webScrapingService.getAvailableTargets()
       
       return NextResponse.json({
-        success: true,
+        success: true
         targets,
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       const result = await webScrapingService.scrapeAvailableSlots(targetId)
       
       return NextResponse.json({
-        success: result.success,
+        success: result.success
         slots: result.slots,
         error: result.error,
         lastUpdated: result.lastUpdated,
@@ -37,16 +37,16 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Parâmetro action deve ser "targets" ou "slots" (com targetId)' },
+      { error: 'Parâmetro action deve ser "targets" ou "slots" (com targetId)' }
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro na API de scraping:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     if (action === 'configure') {
       if (!targetId || typeof enabled !== 'boolean') {
         return NextResponse.json(
-          { error: 'Campos targetId e enabled são obrigatórios' },
+          { error: 'Campos targetId e enabled são obrigatórios' }
           { status: 400 }
         )
       }
@@ -67,10 +67,10 @@ export async function POST(request: NextRequest) {
       if (enabled && !legalConfirmation) {
         return NextResponse.json(
           { 
-            error: 'Confirmação legal necessária para habilitar scraping',
+            error: 'Confirmação legal necessária para habilitar scraping'
             warning: 'Web scraping pode violar ToS dos sites. Você assume total responsabilidade legal.',
             required: 'Envie legalConfirmation: true para confirmar',
-          },
+          }
           { status: 400 }
         )
       }
@@ -79,17 +79,17 @@ export async function POST(request: NextRequest) {
       
       if (success) {
         return NextResponse.json({
-          success: true,
+          success: true
           targetId,
           enabled,
           message: `Target ${enabled ? 'habilitado' : 'desabilitado'} com sucesso`,
           warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined,
-        }),
+        })
       } else {
         return NextResponse.json(
-          { error: 'Falha ao configurar target' },
+          { error: 'Falha ao configurar target' }
           { status: 400 }
-        ),
+        )
       }
     }
 
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       
       if (!Array.isArray(targetIds) || targetIds.length === 0) {
         return NextResponse.json(
-          { error: 'Campo targetIds deve ser um array não vazio' },
+          { error: 'Campo targetIds deve ser um array não vazio' }
           { status: 400 }
         )
       }
@@ -107,27 +107,27 @@ export async function POST(request: NextRequest) {
       webScrapingService.startMonitoring(targetIds, intervalMinutes || 30)
       
       return NextResponse.json({
-        success: true,
+        success: true
         monitoring: {
           targets: targetIds,
           interval: intervalMinutes || 30,
           status: 'started',
-        },
+        }
         message: 'Monitoramento iniciado',
         warning: 'Monitoramento contínuo pode ser detectado pelos sites',
       })
     }
 
     return NextResponse.json(
-      { error: 'Action deve ser "configure" ou "start_monitoring"' },
+      { error: 'Action deve ser "configure" ou "start_monitoring"' }
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro na configuração de scraping:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

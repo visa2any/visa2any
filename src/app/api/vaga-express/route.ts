@@ -9,33 +9,33 @@ export async function POST(request: NextRequest) {
       case 'process_order':
         await vagaExpressIntegration.processVagaExpressOrder(data)
         return NextResponse.json({
-          message: 'Pedido processado e monitoramento ativado!',
+          message: 'Pedido processado e monitoramento ativado!'
           orderId: `VE-${Date.now()}`,
         })
 
       case 'simulate_vaga':
         await vagaExpressIntegration.simulateVagaForCustomer(data.orderId, data.vagaDetails)
         return NextResponse.json({
-          message: 'Vaga simulada para cliente!',
+          message: 'Vaga simulada para cliente!'
         })
 
       case 'get_statistics':
         const stats = await vagaExpressIntegration.getOrderStatistics()
         return NextResponse.json({
-          statistics: stats,
+          statistics: stats
         })
 
       default:
         return NextResponse.json({
-          error: 'Ação não reconhecida',
+          error: 'Ação não reconhecida'
         }, { status: 400 })
     }
   } catch (error) {
     console.error('Erro na API Vaga Express:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }
 
@@ -57,18 +57,18 @@ export async function GET(request: NextRequest) {
       case 'statistics':
         const stats = await vagaExpressIntegration.getOrderStatistics()
         return NextResponse.json({
-          statistics: stats,
+          statistics: stats
         })
 
       default:
         return NextResponse.json({
-          error: 'Tipo não especificado',
+          error: 'Tipo não especificado'
         }, { status: 400 })
     }
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao buscar dados',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
+      error: 'Erro ao buscar dados'
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }

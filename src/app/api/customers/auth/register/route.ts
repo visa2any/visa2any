@@ -19,12 +19,12 @@ export async function POST(request: NextRequest) {
 
     // Verificar se já existe cliente com este email
     const existingCustomer = await prisma.client.findUnique({
-      where: { email },
+      where: { email }
     })
 
     if (existingCustomer) {
       return NextResponse.json({
-        error: 'Já existe uma conta com este email',
+        error: 'Já existe uma conta com este email'
       }, { status: 409 })
     }
 
@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
         status: 'LEAD',
         isActive: true,
         eligibilityScore: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+        createdAt: new Date()
+        updatedAt: new Date()
+      }
     })
 
     // Gerar token JWT
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor',
+        error: 'Erro de configuração do servidor'
       }, { status: 500 })
     }
     
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         customerId: customer.id, 
         email: customer.email,
         type: 'customer',
-      },
+      }
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         phone: customer.phone,
         status: customer.status,
         eligibilityScore: customer.eligibilityScore,
-      },
+      }
       token,
     })
 
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no registro do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }

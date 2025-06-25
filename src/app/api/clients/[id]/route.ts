@@ -5,21 +5,21 @@ import { z } from 'zod'
 
 // Schema para atualizar cliente
 const updateClientSchema = z.object({
-  name: z.string().min(2).optional(),
-  email: z.string().email().optional(),
-  phone: z.string().optional(),
-  country: z.string().optional(),
-  nationality: z.string().optional(),
-  age: z.number().min(0).max(120).optional(),
-  profession: z.string().optional(),
-  education: z.string().optional(),
-  targetCountry: z.string().optional(),
-  visaType: z.string().optional(),
-  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional(),
-  score: z.number().min(0).max(100).optional(),
-  notes: z.string().optional(),
-  source: z.string().optional(),
-  assignedUserId: z.string().optional(),
+  name: z.string().min(2).optional()
+  email: z.string().email().optional()
+  phone: z.string().optional()
+  country: z.string().optional()
+  nationality: z.string().optional()
+  age: z.number().min(0).max(120).optional()
+  profession: z.string().optional()
+  education: z.string().optional()
+  targetCountry: z.string().optional()
+  visaType: z.string().optional()
+  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional()
+  score: z.number().min(0).max(100).optional()
+  notes: z.string().optional()
+  source: z.string().optional()
+  assignedUserId: z.string().optional()
 })
 
 // GET /api/clients/[id] - Buscar cliente específico
@@ -36,35 +36,35 @@ export async function GET(,
     const { id } = params
 
     const client = await prisma.client.findUnique({
-      where: { id },
+      where: { id }
       include: {
         assignedUser: {
-          select: { id: true, name: true, email: true, role: true },
-        },
+          select: { id: true, name: true, email: true, role: true }
+        }
         consultations: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           include: {
             consultant: {
-              select: { id: true, name: true, email: true },
-            },
-          },
-        },
+              select: { id: true, name: true, email: true }
+            }
+          }
+        }
         payments: {
-          orderBy: { createdAt: 'desc' },
-        },
+          orderBy: { createdAt: 'desc' }
+        }
         documents: {
-          orderBy: { uploadedAt: 'desc' },
+          orderBy: { uploadedAt: 'desc' }
           include: {
             uploadedBy: {
-              select: { id: true, name: true },
-            },
-          },
-        },
+              select: { id: true, name: true }
+            }
+          }
+        }
         interactions: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 50 // Últimas 50 interações
-        },
-      },
+        }
+      }
     })
 
     if (!client) {
@@ -74,20 +74,20 @@ export async function GET(,
     }
 
     return NextResponse.json({
-      data: client,
+      data: client
     })
 
   } catch (error) {
     console.error('Erro ao buscar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // PATCH /api/clients/[id] - Atualizar campo específico (inline edit)
-export async function PATCH(,
+export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -105,7 +105,7 @@ export async function PATCH(,
 
     // Verificar se cliente existe
     const existingClient = await prisma.client.findUnique({
-      where: { id },
+      where: { id }
     })
 
     if (!existingClient) {
@@ -116,13 +116,13 @@ export async function PATCH(,
 
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
-      where: { id },
-      data: validatedData,
+      where: { id }
+      data: validatedData
       include: {
         assignedUser: {
-          select: { id: true, name: true, email: true },
-        },
-      },
+          select: { id: true, name: true, email: true }
+        }
+      }
     })
 
     // Log da atualização
@@ -132,38 +132,38 @@ export async function PATCH(,
         action: 'inline_edit',
         clientId: id,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
-      data: updatedClient,
+      data: updatedClient
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // PUT /api/clients/[id] - Atualizar cliente completo
-export async function PUT(,
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -181,7 +181,7 @@ export async function PUT(,
 
     // Verificar se cliente existe
     const existingClient = await prisma.client.findUnique({
-      where: { id },
+      where: { id }
     })
 
     if (!existingClient) {
@@ -192,13 +192,13 @@ export async function PUT(,
 
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
-      where: { id },
-      data: validatedData,
+      where: { id }
+      data: validatedData
       include: {
         assignedUser: {
-          select: { id: true, name: true, email: true },
-        },
-      },
+          select: { id: true, name: true, email: true }
+        }
+      }
     })
 
     // Log da atualização
@@ -208,38 +208,38 @@ export async function PUT(,
         action: 'update_client',
         clientId: id,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
-      data: updatedClient,
+      data: updatedClient
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // DELETE /api/clients/[id] - Deletar cliente
-export async function DELETE(,
+export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -253,7 +253,7 @@ export async function DELETE(,
 
     // Verificar se cliente existe
     const existingClient = await prisma.client.findUnique({
-      where: { id },
+      where: { id }
     })
 
     if (!existingClient) {
@@ -264,31 +264,31 @@ export async function DELETE(,
 
     // Deletar cliente (cascade irá deletar relacionamentos)
     await prisma.client.delete({
-      where: { id },
+      where: { id }
     })
 
     // Log da deleção
     await prisma.automationLog.create({
       data: {
-        type: 'CLIENT_DELETED',
+        type: 'CLIENT_DELETED'
         action: 'delete_client',
         success: true,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
-      message: 'Cliente deletado com sucesso',
+      message: 'Cliente deletado com sucesso'
     })
 
   } catch (error) {
     console.error('Erro ao deletar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

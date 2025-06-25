@@ -5,22 +5,22 @@ import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limi
 
 // Schema para análise de elegibilidade
 const eligibilityAnalysisSchema = z.object({
-  clientId: z.string().min(1, 'Cliente é obrigatório'),
-  targetCountry: z.string().min(1, 'País de destino é obrigatório'),
-  visaType: z.string().optional(),
+  clientId: z.string().min(1, 'Cliente é obrigatório')
+  targetCountry: z.string().min(1, 'País de destino é obrigatório')
+  visaType: z.string().optional()
   profile: z.object({
-    age: z.number().min(18).max(80),
-    education: z.string(),
-    workExperience: z.number().min(0),
+    age: z.number().min(18).max(80)
+    education: z.string()
+    workExperience: z.number().min(0)
     language: z.object({
-      english: z.number().min(0).max(10).optional(),
-      french: z.number().min(0).max(10).optional(),
-      portuguese: z.number().min(0).max(10).optional(),
-    }).optional(),
-    maritalStatus: z.string().optional(),
-    funds: z.number().min(0),
-    currentCountry: z.string(),
-  }),
+      english: z.number().min(0).max(10).optional()
+      french: z.number().min(0).max(10).optional()
+      portuguese: z.number().min(0).max(10).optional()
+    }).optional()
+    maritalStatus: z.string().optional()
+    funds: z.number().min(0)
+    currentCountry: z.string()
+  })
 })
 
 // POST /api/visa-analysis - Analisar elegibilidade
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId },
+      where: { id: validatedData.clientId }
     })
 
     if (!client) {
@@ -50,17 +50,17 @@ export async function POST(request: NextRequest) {
     // Buscar requisitos para o país/visto
     const requirements = await prisma.visaRequirement.findMany({
       where: {
-        country: { contains: validatedData.targetCountry, mode: 'insensitive' },
+        country: { contains: validatedData.targetCountry, mode: 'insensitive' }
         isActive: true,
         ...(validatedData.visaType && {
-          visaType: { contains: validatedData.visaType, mode: 'insensitive' },
-        }),
-      },
+          visaType: { contains: validatedData.visaType, mode: 'insensitive' }
+        })
+      }
     })
 
     if (requirements.length === 0) {
       return NextResponse.json({
-        error: 'Não encontramos informações sobre vistos para este país ainda.',
+        error: 'Não encontramos informações sobre vistos para este país ainda.'
       }, { status: 404 })
     }
 
@@ -69,9 +69,9 @@ export async function POST(request: NextRequest) {
       requirements.map(async (requirement) => {
         const analysis = await analyzeEligibility(validatedData.profile, requirement)
         return {
-          ...requirement,
+          ...requirement
           analysis,
-        },
+        }
       })
     )
 
@@ -89,25 +89,25 @@ export async function POST(request: NextRequest) {
           profileAnalyzed: validatedData.profile,
           visaOptions: analyses,
           bestOption: analyses[0],
-          analysisDate: new Date().toISOString(),
-        },
+          analysisDate: new Date().toISOString()
+        }
         score: analyses[0]?.analysis.totalScore || 0,
-        recommendation: generateRecommendation(analyses[0]),
-        timeline: estimateTimeline(analyses[0]),
-        nextSteps: generateNextSteps(analyses[0]),
-        completedAt: new Date(),
-      },
+        recommendation: generateRecommendation(analyses[0])
+        timeline: estimateTimeline(analyses[0])
+        nextSteps: generateNextSteps(analyses[0])
+        completedAt: new Date()
+      }
     })
 
     // Atualizar cliente com informações
     await prisma.client.update({
-      where: { id: validatedData.clientId },
+      where: { id: validatedData.clientId }
       data: {
         targetCountry: validatedData.targetCountry,
         visaType: analyses[0]?.visaType,
         score: analyses[0]?.analysis.totalScore || 0,
         status: analyses[0]?.analysis.totalScore >= 70 ? 'QUALIFIED' : 'LEAD',
-      },
+      }
     })
 
     // Log da análise
@@ -117,23 +117,23 @@ export async function POST(request: NextRequest) {
         action: 'analyze_eligibility',
         clientId: validatedData.clientId,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
       data: {
-        consultation,
+        consultation
         analyses: analyses.slice(0, 3), // Top 3 opções
         summary: {
           bestOption: analyses[0],
           totalOptionsAnalyzed: analyses.length,
-          recommendationLevel: getRecommendationLevel(analyses[0]?.analysis.totalScore || 0),
-        },
-      },
+          recommendationLevel: getRecommendationLevel(analyses[0]?.analysis.totalScore || 0)
+        }
+      }
       message: 'Análise de elegibilidade concluída com sucesso',
     })
 
@@ -141,18 +141,18 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro na análise de elegibilidade:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -183,7 +183,7 @@ async function analyzeEligibility(profile: any, requirement: any) {
       return analyzeUSAEligibility(profile, requirement)
     
     default:
-      return analyzeGenericEligibility(profile, requirement),
+      return analyzeGenericEligibility(profile, requirement)
   }
 }
 
@@ -268,7 +268,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   // Fundos suficientes
   const requiredFunds = 13310 // CAD para pessoa solteira
   if (profile.funds < requiredFunds) {
-    blockers.push(`Fundos insuficientes (requerido: CAD $${requiredFunds})`),
+    blockers.push(`Fundos insuficientes (requerido: CAD $${requiredFunds})`)
   } else {
     feedback.push('✅ Fundos suficientes comprovados')
   }
@@ -277,8 +277,8 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   const percentageScore = Math.min((totalScore / 470) * 100, 100)
 
   return {
-    totalScore: Math.round(percentageScore),
-    feedback,
+    totalScore: Math.round(percentageScore)
+    feedback
     blockers,
     eligible: blockers.length === 0 && totalScore >= 67,
     estimatedDrawScore: 480 // Score típico dos últimos draws
@@ -354,7 +354,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
   const eligible = blockers.length === 0 && totalScore >= 65
 
   return {
-    totalScore: Math.min((totalScore / 100) * 100, 100),
+    totalScore: Math.min((totalScore / 100) * 100, 100)
     feedback,
     blockers,
     eligible,
@@ -391,7 +391,7 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
   const eligible = blockers.length === 0
 
   return {
-    totalScore: Math.max(score, 0),
+    totalScore: Math.max(score, 0)
     feedback,
     blockers,
     eligible,
@@ -410,7 +410,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     score = 20,
   } else if (profile.workExperience >= 10) {
     score = 80
-    feedback.push('Experiência sólida para EB-1A'),
+    feedback.push('Experiência sólida para EB-1A')
   } else {
     score = 60
     feedback.push('Experiência adequada, mas evidências extraordinárias necessárias')
@@ -419,7 +419,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
   // Educação avançada ajuda
   if (profile.education.toLowerCase().includes('phd')) {
     score += 15
-    feedback.push('PhD é vantajoso para EB-1A'),
+    feedback.push('PhD é vantajoso para EB-1A')
   } else if (profile.education.toLowerCase().includes('masters')) {
     score += 10
   }
@@ -429,7 +429,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
   feedback.push('Considere consulta especializada para avaliar chances reais')
 
   return {
-    totalScore: Math.min(score, 100),
+    totalScore: Math.min(score, 100)
     feedback,
     blockers,
     eligible: score >= 70 && blockers.length === 0,
@@ -450,7 +450,7 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
 
   if (profile.workExperience >= 3) {
     score += 15
-    feedback.push('Experiência profissional adequada'),
+    feedback.push('Experiência profissional adequada')
   } else {
     score -= 20
     feedback.push('Experiência profissional limitada')
@@ -467,7 +467,7 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
   }
 
   return {
-    totalScore: Math.max(Math.min(score, 100), 0),
+    totalScore: Math.max(Math.min(score, 100), 0)
     feedback,
     blockers,
     eligible: score >= 60,
@@ -481,13 +481,13 @@ function generateRecommendation(analysis: any): string {
   const score = analysis.analysis.totalScore
   
   if (score >= 85) {
-    return `Excelente perfil para ${analysis.country}! Você tem grandes chances de sucesso. Recomendamos prosseguir com a aplicação.`,
+    return `Excelente perfil para ${analysis.country}! Você tem grandes chances de sucesso. Recomendamos prosseguir com a aplicação.`
   } else if (score >= 70) {
-    return `Bom perfil para ${analysis.country}. Algumas melhorias podem aumentar suas chances. Considere otimizar os pontos fracos identificados.`,
+    return `Bom perfil para ${analysis.country}. Algumas melhorias podem aumentar suas chances. Considere otimizar os pontos fracos identificados.`
   } else if (score >= 50) {
     return `Perfil com potencial para ${analysis.country}, mas requer preparação. Foque em melhorar os critérios principais antes de aplicar.`,
   } else {
-    return `Perfil atual não atende aos requisitos mínimos para ${analysis.country}. Recomendamos buscar alternativas ou melhorar qualificações.`,
+    return `Perfil atual não atende aos requisitos mínimos para ${analysis.country}. Recomendamos buscar alternativas ou melhorar qualificações.`
   }
 }
 
@@ -499,11 +499,11 @@ function estimateTimeline(analysis: any): string {
   const score = analysis.analysis.totalScore
   
   if (country.includes('portugal')) {
-    return '2-4 meses',
+    return '2-4 meses'
   } else if (country.includes('canad')) {
-    return score >= 80 ? '6-8 meses' : '8-12 meses',
+    return score >= 80 ? '6-8 meses' : '8-12 meses'
   } else if (country.includes('austral')) {
-    return '8-12 meses',
+    return '8-12 meses'
   } else if (country.includes('estados unidos')) {
     return '12-24 meses'
   }
@@ -534,7 +534,7 @@ function generateNextSteps(analysis: any): string[] {
   
   if (score >= 70) {
     steps.push('Agende consultoria especializada')
-    steps.push('Inicie processo de validação de credenciais'),
+    steps.push('Inicie processo de validação de credenciais')
   } else {
     steps.push('Foque em melhorar os pontos fracos identificados')
     steps.push('Considere estratégias alternativas')

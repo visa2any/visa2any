@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório',
+        error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
 
@@ -55,17 +55,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        notifications,
+        notifications
         unreadCount,
         total: notifications.length,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       type,
       title,
       message,
-      data = {},
+      data = {}
       priority = 'medium',
     } = body
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       message,
       data,
       read: false,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
       priority
     }
 
@@ -119,14 +119,14 @@ export async function POST(request: NextRequest) {
     // }
 
     return NextResponse.json({
-      data: notification,
+      data: notification
     })
 
   } catch (error) {
     console.error('Erro ao criar notificação:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -138,7 +138,7 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório',
+        error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
 
@@ -146,13 +146,13 @@ export async function PUT(request: NextRequest) {
 
     if (markAllAsRead) {
       // Marcar todas como lidas
-      notifications.forEach(n => n.read = true),
+      notifications.forEach(n => n.read = true)
     } else if (notificationIds && Array.isArray(notificationIds)) {
       // Marcar específicas como lidas
       notifications.forEach(n => {
         if (notificationIds.includes(n.id)) {
-          n.read = true,
-        },
+          n.read = true
+        }
       })
     }
 
@@ -162,16 +162,16 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        message: 'Notificações atualizadas',
+        message: 'Notificações atualizadas'
         unreadCount,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao atualizar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -183,7 +183,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
 
   return [
     {
-      id: 'notif_1',
+      id: 'notif_1'
       type: 'conversion',
       title: '🎉 Nova Conversão!',
       message: 'Parabéns! Você acabou de gerar uma nova conversão no valor de R$ 89,55 através do seu link de Consultoria EUA.',
@@ -192,11 +192,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         commissionValue: 13.43,
         conversionType: 'CONSULTATION',
         clientName: 'Maria Silva',
-      },
+      }
       read: false,
-      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString()
       priority: 'high',
-    },
+    }
     {
       id: 'notif_2',
       type: 'payment',
@@ -206,11 +206,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         amount: 1450.75,
         paymentMethod: 'PIX',
         transactionId: 'TXN123456789',
-      },
+      }
       read: false,
-      createdAt: yesterday.toISOString(),
+      createdAt: yesterday.toISOString()
       priority: 'high',
-    },
+    }
     {
       id: 'notif_3',
       type: 'tier_promotion',
@@ -220,11 +220,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         oldTier: 'SILVER',
         newTier: 'GOLD',
         newCommissionRate: 0.25,
-      },
+      }
       read: true,
-      createdAt: twoDaysAgo.toISOString(),
+      createdAt: twoDaysAgo.toISOString()
       priority: 'urgent',
-    },
+    }
     {
       id: 'notif_4',
       type: 'bonus',
@@ -234,11 +234,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         bonusAmount: 250.00,
         reason: 'Meta mensal superada',
         month: 'Junho',
-      },
+      }
       read: true,
-      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
       priority: 'medium',
-    },
+    }
     {
       id: 'notif_5',
       type: 'system',
@@ -247,11 +247,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         newMaterials: 8,
         categories: ['banners', 'email_templates'],
-      },
+      }
       read: false,
-      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString()
       priority: 'low',
-    },
+    }
     {
       id: 'notif_6',
       type: 'commission',
@@ -262,9 +262,9 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         clientName: 'João Santos',
         conversionType: 'VISA_PROCESS',
         dueDate: '2024-07-15',
-      },
+      }
       read: true,
-      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()
       priority: 'medium'
     }
   ]
@@ -284,8 +284,8 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
   // Simular envio da notificação
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification),
+    headers: { 'Content-Type': 'application/json' }
+    body: JSON.stringify(notification)
   })
 }
 
@@ -301,8 +301,8 @@ async function sendPaymentNotification(affiliateId: string, paymentData: any) {
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification),
+    headers: { 'Content-Type': 'application/json' }
+    body: JSON.stringify(notification)
   })
 }
 
@@ -318,7 +318,7 @@ async function sendTierPromotionNotification(affiliateId: string, tierData: any)
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification),
+    headers: { 'Content-Type': 'application/json' }
+    body: JSON.stringify(notification)
   })
 }

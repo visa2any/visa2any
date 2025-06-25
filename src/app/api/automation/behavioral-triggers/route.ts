@@ -4,8 +4,8 @@ import { z } from 'zod'
 
 // Schema para triggers comportamentais
 const behavioralTriggerSchema = z.object({
-  clientId: z.string().optional(),
-  sessionId: z.string().optional(),
+  clientId: z.string().optional()
+  sessionId: z.string().optional()
   event: z.enum([
     'page_view',
     'time_spent',
@@ -17,17 +17,17 @@ const behavioralTriggerSchema = z.object({
     'cart_abandon',
     'video_watch',
     'download_attempt'
-  ]),
+  ])
   data: z.object({
-    page: z.string().optional(),
-    timeSpent: z.number().optional(),
-    scrollDepth: z.number().optional(),
-    formFields: z.array(z.string()).optional(),
-    videoProgress: z.number().optional(),
-    userAgent: z.string().optional(),
-    referrer: z.string().optional(),
-  }).optional(),
-  timestamp: z.string().optional(),
+    page: z.string().optional()
+    timeSpent: z.number().optional()
+    scrollDepth: z.number().optional()
+    formFields: z.array(z.string()).optional()
+    videoProgress: z.number().optional()
+    userAgent: z.string().optional()
+    referrer: z.string().optional()
+  }).optional()
+  timestamp: z.string().optional()
 })
 
 // POST /api/automation/behavioral-triggers - Processar trigger comportamental
@@ -59,32 +59,32 @@ export async function POST(request: NextRequest) {
           page: validatedData.data?.page,
           timeSpent: validatedData.data?.timeSpent,
           scrollDepth: validatedData.data?.scrollDepth,
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
       data: {
-        triggered: triggerAnalysis.shouldTrigger,
+        triggered: triggerAnalysis.shouldTrigger
         action: triggerAnalysis.action,
         message: triggerAnalysis.message,
-      },
+      }
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao processar trigger comportamental:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 // Analisar trigger comportamental e decidir ação
 async function analyzeBehavioralTrigger(data: any) {
   const analysis = {
-    shouldTrigger: false,
+    shouldTrigger: false
     action: '',
     message: '',
     priority: 'low' as 'low' | 'medium' | 'high',
@@ -195,7 +195,7 @@ async function executeTriggerAction(analysis: any) {
       return await sendWhatsAppTrigger('pricing_help', {
         message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊",
       })
-    },
+    }
 
     email_assessment_recovery: async () => {
       // Email para recuperar assessment
@@ -203,27 +203,27 @@ async function executeTriggerAction(analysis: any) {
         subject: "Continue sua análise - faltam só 2 minutos! ⏰",
         template: 'assessment_recovery',
       })
-    },
+    }
 
     cart_recovery_sequence: async () => {
       // Sequência de recuperação de carrinho
       return await startCartRecoverySequence()
-    },
+    }
 
     exit_intent_offer: async () => {
       // Mostrar oferta de última chance
       return await triggerExitIntentOffer()
-    },
+    }
 
     video_completion_offer: async () => {
       // Oferta após assistir vídeo
       return await sendVideoCompletionOffer()
-    },
+    }
 
     form_completion_help: async () => {
       // Ajuda para completar formulário
       return await sendFormHelp()
-    },
+    }
 
     high_intent_contact: async () => {
       // Contato prioritário para alta intenção
@@ -238,7 +238,7 @@ async function executeTriggerAction(analysis: any) {
       setTimeout(actionFunction, analysis.delay * 1000)
     } else {
       await actionFunction()
-    },
+    }
   }
 }
 
@@ -249,10 +249,10 @@ async function getAssessmentProgress(clientId?: string) {
   try {
     const interactions = await prisma.interaction.findMany({
       where: { 
-        clientId,
+        clientId
         type: 'AUTOMATED_EMAIL',
-      },
-      orderBy: { createdAt: 'desc' },
+      }
+      orderBy: { createdAt: 'desc' }
       take: 1,
     })
     
@@ -268,9 +268,9 @@ async function checkUserConversion(clientId?: string) {
   try {
     const payment = await prisma.payment.findFirst({
       where: { 
-        clientId,
+        clientId
         status: 'COMPLETED',
-      },
+      }
     })
     
     return !!payment
@@ -282,7 +282,7 @@ async function checkUserConversion(clientId?: string) {
 async function getSessionActions(sessionId?: string) {
   // Em produção, usar analytics ou session tracking
   return {
-    pageViews: 7,
+    pageViews: 7
     hasConverted: false,
     timeSpent: 780,
   }

@@ -30,7 +30,7 @@ const CONSULAR_FEES: ConsularFees = {
     currency: 'BRL',
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment'
-  },
+  }
   'CANADA': {
     visaFee: 380, // CAD 100 ≈ R$ 380
     serviceFee: 200,
@@ -39,7 +39,7 @@ const CONSULAR_FEES: ConsularFees = {
     currency: 'BRL',
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees'
-  },
+  }
   'REINO_UNIDO': {
     visaFee: 650, // GBP 100 ≈ R$ 650
     serviceFee: 180,
@@ -48,7 +48,7 @@ const CONSULAR_FEES: ConsularFees = {
     currency: 'BRL',
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment'
-  },
+  }
   'FRANCA': {
     visaFee: 480, // EUR 80 ≈ R$ 480
     serviceFee: 160,
@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
     
     if (!countryFees) {
       return NextResponse.json({
-        error: 'País não suportado no momento',
-        supportedCountries: Object.keys(CONSULAR_FEES),
+        error: 'País não suportado no momento'
+        supportedCountries: Object.keys(CONSULAR_FEES)
       }, { status: 400 })
     }
 
@@ -95,15 +95,15 @@ export async function POST(request: NextRequest) {
         serviceFee: baseFee,
         biometricFee: countryFees.biometricFee || 0,
         additionalFees: countryFees.additionalFees || 0,
-      },
-      subtotal: countryFees.visaFee + baseFee + (countryFees.biometricFee || 0) + (countryFees.additionalFees || 0),
+      }
+      subtotal: countryFees.visaFee + baseFee + (countryFees.biometricFee || 0) + (countryFees.additionalFees || 0)
       discounts: {
-        pix: Math.round((countryFees.visaFee + baseFee) * PIX_DISCOUNT),
-      },
+        pix: Math.round((countryFees.visaFee + baseFee) * PIX_DISCOUNT)
+      }
       total: {
         withoutDiscount: 0,
         withPixDiscount: 0,
-      },
+      }
       currency: countryFees.currency
     }
 
@@ -112,18 +112,18 @@ export async function POST(request: NextRequest) {
 
     // 3. Buscar dados do cliente
     const client = await prisma.client.findUnique({
-      where: { id: data.clientId },
+      where: { id: data.clientId }
       select: {
         id: true,
         name: true,
         email: true,
         phone: true,
-      },
+      }
     })
 
     if (!client) {
       return NextResponse.json({
-        error: 'Cliente não encontrado',
+        error: 'Cliente não encontrado'
       }, { status: 404 })
     }
 
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
         costs: costs,
         status: 'PENDING',
         expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
-        createdAt: new Date(),
-      },
+        createdAt: new Date()
+      }
     })
 
     // 5. Gerar links de pagamento
@@ -170,16 +170,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       payment: {
-        id: payment.id,
+        id: payment.id
         costs: costs,
         paymentLinks: paymentLinks,
         expiresAt: payment.expiresAt,
         officialPaymentUrl: countryFees.officialPaymentUrl,
-      },
+      }
       client: {
         name: client.name,
         email: client.email,
-      },
+      }
       consultantNotified: true,
       message: 'Cobrança criada e notificações enviadas',
     })
@@ -187,9 +187,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na cobrança híbrida:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }
 
@@ -202,59 +202,59 @@ export async function GET(request: NextRequest) {
     if (paymentId) {
       // Buscar pagamento específico
       const payment = await prisma.hybridPayment.findUnique({
-        where: { id: paymentId },
+        where: { id: paymentId }
         include: {
           client: {
             select: {
               name: true,
               email: true,
               phone: true,
-            },
-          },
-        },
+            }
+          }
+        }
       })
 
       if (!payment) {
         return NextResponse.json({
-          error: 'Pagamento não encontrado',
+          error: 'Pagamento não encontrado'
         }, { status: 404 })
       }
 
       return NextResponse.json({
-        payment,
+        payment
       })
     }
 
     if (clientId) {
       // Buscar pagamentos do cliente
       const payments = await prisma.hybridPayment.findMany({
-        where: { clientId },
-        orderBy: { createdAt: 'desc' },
+        where: { clientId }
+        orderBy: { createdAt: 'desc' }
         take: 10,
         include: {
           client: {
             select: {
               name: true,
               email: true,
-            },
-          },
-        },
+            }
+          }
+        }
       })
 
       return NextResponse.json({
-        payments,
+        payments
       })
     }
 
     return NextResponse.json({
-      error: 'paymentId ou clientId obrigatório',
+      error: 'paymentId ou clientId obrigatório'
     }, { status: 400 })
 
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -314,7 +314,7 @@ async function createMercadoPagoPreference(options: any) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
-      },
+      }
       body: JSON.stringify({
         items: [{
           title: options.title,
@@ -328,19 +328,19 @@ async function createMercadoPagoPreference(options: any) {
           excluded_payment_types: options.paymentMethods ? [] : ['credit_card', 'debit_card', 'ticket', 'digital_wallet'],
           included_payment_types: options.paymentMethods || undefined,
           installments: options.installments || 1,
-        },
+        }
         back_urls: {
           success: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/success?id=${options.paymentId}`,
           failure: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/failure?id=${options.paymentId}`,
           pending: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/pending?id=${options.paymentId}`,
-        },
+        }
         auto_return: 'approved',
         notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/hybrid-booking`,
         metadata: {
           payment_id: options.paymentId,
           discount: options.discount || 0,
-        },
-      }),
+        }
+      })
     })
 
     if (!response.ok) {
@@ -350,7 +350,7 @@ async function createMercadoPagoPreference(options: any) {
     return await response.json()
   } catch (error) {
     console.error('Erro MercadoPago:', error)
-    return null,
+    return null
   }
 }
 
@@ -399,15 +399,15 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
   try {
     await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
         parse_mode: 'HTML',
-      }),
+      })
     })
   } catch (error) {
-    console.error('Erro ao notificar consultor:', error),
+    console.error('Erro ao notificar consultor:', error)
   }
 }
 
@@ -448,17 +448,17 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
   try {
     await fetch('/api/notifications/whatsapp', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: client.phone,
         message: whatsappMessage,
-      }),
+      })
     })
 
     // Enviar email com detalhes completos
     await fetch('/api/notifications/email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: client.email,
         subject: `🎯 Vaga Encontrada - Pagamento Necessário`,
@@ -471,11 +471,11 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
           paymentLinks: data.paymentLinks,
           paymentId: data.paymentId,
           expiresIn: data.expiresIn,
-        },
-      }),
+        }
+      })
     })
 
   } catch (error) {
-    console.error('Erro ao notificar cliente:', error),
+    console.error('Erro ao notificar cliente:', error)
   }
 }

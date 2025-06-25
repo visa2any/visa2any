@@ -11,31 +11,31 @@ export async function POST(request: NextRequest) {
 
     if (!email || !name || !responses) {
       return NextResponse.json({
-        error: 'Dados obrigatórios faltando',
+        error: 'Dados obrigatórios faltando'
       }, { status: 400 })
     }
 
     // Verificar se já existe cliente com este email
     let client = await prisma.client.findUnique({
-      where: { email },
+      where: { email }
     })
 
     if (client) {
       // Atualizar cliente existente com dados da qualificação
       client = await prisma.client.update({
-        where: { id: client.id },
+        where: { id: client.id }
         data: {
           name: name,
           phone: phone || client.phone,
           eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses),
+          leadQualificationData: JSON.stringify(responses)
           leadScore: score,
-          leadCategory: category.toUpperCase(),
-          leadPriority: priority.toUpperCase(),
+          leadCategory: category.toUpperCase()
+          leadPriority: priority.toUpperCase()
           status: score >= 75 ? 'QUALIFIED' : 'LEAD',
-          updatedAt: new Date(),
-        },
-      }),
+          updatedAt: new Date()
+        }
+      })
     } else {
       // Criar novo cliente
       client = await prisma.client.create({
@@ -44,17 +44,17 @@ export async function POST(request: NextRequest) {
           email,
           phone: phone || null,
           eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses),
+          leadQualificationData: JSON.stringify(responses)
           leadScore: score,
-          leadCategory: category.toUpperCase(),
-          leadPriority: priority.toUpperCase(),
+          leadCategory: category.toUpperCase()
+          leadPriority: priority.toUpperCase()
           status: score >= 75 ? 'QUALIFIED' : 'LEAD',
           isActive: true,
           destinationCountry: responses.country || null,
           visaType: responses['visa-type'] || null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+          createdAt: new Date()
+          updatedAt: new Date()
+        }
       })
     }
 
@@ -67,19 +67,19 @@ export async function POST(request: NextRequest) {
         direction: 'inbound',
         subject: 'Lead Qualification',
         content: `Lead qualification completed with score ${score}/100`,
-        completedAt: new Date(),
-      },
+        completedAt: new Date()
+      }
     })
 
     // Criar tarefas automáticas baseadas na categoria do lead
     if (category === 'hot') {
       // Lead quente - contato imediato
       await createFollowUpTask(client.id, 'IMMEDIATE_CALL', 'Ligar imediatamente - Lead quente', 1)
-      await createFollowUpTask(client.id, 'SCHEDULE_CONSULTATION', 'Agendar consultoria premium', 2),
+      await createFollowUpTask(client.id, 'SCHEDULE_CONSULTATION', 'Agendar consultoria premium', 2)
     } else if (category === 'warm') {
       // Lead morno - email personalizado + análise IA
       await createFollowUpTask(client.id, 'PERSONALIZED_EMAIL', 'Enviar email personalizado', 1)
-      await createFollowUpTask(client.id, 'OFFER_AI_ANALYSIS', 'Oferecer análise IA gratuita', 2),
+      await createFollowUpTask(client.id, 'OFFER_AI_ANALYSIS', 'Oferecer análise IA gratuita', 2)
     } else {
       // Lead frio - nurturing com conteúdo
       await createFollowUpTask(client.id, 'SEND_LEAD_MAGNETS', 'Enviar materiais educativos', 1)
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     await triggerEmailAutomation(client, category, responses)
 
     return NextResponse.json({
-      message: 'Qualificação processada com sucesso',
+      message: 'Qualificação processada com sucesso'
       client: {
         id: client.id,
         name: client.name,
@@ -99,14 +99,14 @@ export async function POST(request: NextRequest) {
         category,
         priority,
         nextAction,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao processar qualificação:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -136,7 +136,7 @@ async function createFollowUpTask(clientId: string, type: string, description: s
     console.log(`Tarefa criada: ${type} para cliente ${clientId} com prazo ${dueDate}`)
     
   } catch (error) {
-    console.error('Erro ao criar tarefa de follow-up:', error),
+    console.error('Erro ao criar tarefa de follow-up:', error)
   }
 }
 
@@ -157,33 +157,33 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
     if (category === 'hot') {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
           sequence: 'hot_lead_immediate',
           ...automationData,
-        }),
-      }),
+        })
+      })
     } else if (category === 'warm') {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
           sequence: 'warm_lead_nurturing',
           ...automationData,
-        }),
-      }),
+        })
+      })
     } else {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
           sequence: 'cold_lead_education',
           ...automationData,
-        }),
+        })
       })
     }
 
   } catch (error) {
-    console.error('Erro ao trigger automação de email:', error),
+    console.error('Erro ao trigger automação de email:', error)
   }
 }

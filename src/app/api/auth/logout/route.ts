@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
                 userId: decoded.userId,
                 email: decoded.email,
                 role: decoded.role,
-                logoutTimestamp: new Date().toISOString(),
-              },
-            },
+                logoutTimestamp: new Date().toISOString()
+              }
+            }
           })
         }
       } catch (tokenError) {
@@ -72,6 +72,6 @@ export async function POST(request: NextRequest) {
       maxAge: 0,
     })
 
-    return response,
+    return response
   }
 }

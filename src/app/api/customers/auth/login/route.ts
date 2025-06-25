@@ -20,24 +20,24 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json({
-        error: 'Email e senha são obrigatórios',
+        error: 'Email e senha são obrigatórios'
       }, { status: 400 })
     }
 
     // Buscar cliente por email
     const customer = await prisma.client.findUnique({
-      where: { email },
+      where: { email }
       include: {
         consultations: {
           take: 1,
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+          orderBy: { createdAt: 'desc' }
+        }
+      }
     })
 
     if (!customer) {
       return NextResponse.json({
-        error: 'Credenciais inválidas',
+        error: 'Credenciais inválidas'
       }, { status: 401 })
     }
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     
     if (!passwordMatch) {
       return NextResponse.json({
-        error: 'Credenciais inválidas',
+        error: 'Credenciais inválidas'
       }, { status: 401 })
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor',
+        error: 'Erro de configuração do servidor'
       }, { status: 500 })
     }
     
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         customerId: customer.id, 
         email: customer.email,
         type: 'customer',
-      },
+      }
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         destinationCountry: customer.destinationCountry,
         visaType: customer.visaType,
         eligibilityScore: customer.eligibilityScore,
-      },
+      }
       token,
     })
 
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no login do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }

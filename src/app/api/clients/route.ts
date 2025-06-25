@@ -5,18 +5,18 @@ import { z } from 'zod'
 
 // Schema de validação para criar cliente
 const createClientSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
-  country: z.string().optional(),
-  nationality: z.string().optional(),
-  age: z.number().optional(),
-  profession: z.string().optional(),
-  education: z.string().optional(),
-  targetCountry: z.string().optional(),
-  visaType: z.string().optional(),
-  source: z.string().optional(),
-  notes: z.string().optional(),
+  name: z.string().min(1, 'Nome é obrigatório')
+  email: z.string().email('Email inválido')
+  phone: z.string().optional()
+  country: z.string().optional()
+  nationality: z.string().optional()
+  age: z.number().optional()
+  profession: z.string().optional()
+  education: z.string().optional()
+  targetCountry: z.string().optional()
+  visaType: z.string().optional()
+  source: z.string().optional()
+  notes: z.string().optional()
 })
 
 // GET /api/clients - Listar clientes
@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
     
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } }
+        { email: { contains: search, mode: 'insensitive' } }
         { phone: { contains: search, mode: 'insensitive' } }
       ]
     }
@@ -56,11 +56,11 @@ export async function GET(request: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' }
         include: {
           assignedUser: {
-            select: { id: true, name: true, email: true },
-          },
+            select: { id: true, name: true, email: true }
+          }
           consultations: {
             select: { 
               id: true, 
@@ -68,28 +68,28 @@ export async function GET(request: NextRequest) {
               status: true, 
               scheduledAt: true,
               score: true
-            },
-            orderBy: { createdAt: 'desc' },
+            }
+            orderBy: { createdAt: 'desc' }
             take: 1,
-          },
+          }
           payments: {
             select: { 
               id: true, 
               amount: true, 
               status: true, 
               createdAt: true
-            },
-            orderBy: { createdAt: 'desc' },
-          },
+            }
+            orderBy: { createdAt: 'desc' }
+          }
           _count: {
             select: {
               consultations: true,
               documents: true,
               interactions: true,
-            },
-          },
-        },
-      }),
+            }
+          }
+        }
+      })
       prisma.client.count({ where })
     ])
 
@@ -99,21 +99,21 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        clients,
+        clients
         pagination: {
           page,
           limit,
           total,
           totalPages,
           hasMore,
-        },
-      },
+        }
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar clientes:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -134,12 +134,12 @@ export async function POST(request: NextRequest) {
 
     // Verificar se email já existe
     const existingClient = await prisma.client.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email }
     })
 
     if (existingClient) {
       return NextResponse.json(
-        { error: 'Email já cadastrado' },
+        { error: 'Email já cadastrado' }
         { status: 400 }
       )
     }
@@ -147,14 +147,14 @@ export async function POST(request: NextRequest) {
     // Criar cliente
     const client = await prisma.client.create({
       data: {
-        ...validatedData,
+        ...validatedData
         status: 'LEAD',
-      },
+      }
       include: {
         assignedUser: {
-          select: { id: true, name: true, email: true },
-        },
-      },
+          select: { id: true, name: true, email: true }
+        }
+      }
     })
 
     // Log da criação
@@ -164,31 +164,31 @@ export async function POST(request: NextRequest) {
         action: 'create_client',
         clientId: client.id,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
-      data: client,
+      data: client
     }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao criar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

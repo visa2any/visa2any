@@ -20,30 +20,30 @@ export async function GET(request: NextRequest) {
       where: {
         executedAt: {
           gte: new Date(Date.now() - 5 * 60 * 1000) // Last 5 minutes
-        },
+        }
         type: {
           in: [
-            'EMAIL_SENT',
+            'EMAIL_SENT'
             'WHATSAPP_SENT', 
             'ANALYSIS_COMPLETED',
             'DOCUMENT_VALIDATED',
             'PAYMENT_CONFIRMED',
             'CLIENT_STATUS_CHANGED'
           ],
-        },
-      },
+        }
+      }
       include: {
         client: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
-      },
+          }
+        }
+      }
       orderBy: {
         executedAt: 'desc',
-      },
+      }
       take: 10,
     })
 
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       switch (log.type) {
         case 'EMAIL_SENT':
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'success' as const,
             title: 'Email enviado',
             message: `Email enviado para ${log.client?.name || 'cliente'}`,
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
         case 'WHATSAPP_SENT':
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'success' as const,
             title: 'WhatsApp enviado',
             message: `Mensagem WhatsApp enviada para ${log.client?.name || 'cliente'}`,
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
         case 'ANALYSIS_COMPLETED':
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'success' as const,
             title: 'Análise concluída',
             message: `Análise de elegibilidade concluída para ${log.client?.name || 'cliente'}`,
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         case 'DOCUMENT_VALIDATED':
           const details = log.details as { documentName?: string }
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'success' as const,
             title: 'Documento validado',
             message: `Documento ${details?.documentName || 'novo'} foi validado`,
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 
         case 'PAYMENT_CONFIRMED':
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'success' as const,
             title: 'Pagamento confirmado',
             message: `Pagamento recebido de ${log.client?.name || 'cliente'}`,
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
         case 'CLIENT_STATUS_CHANGED':
           const statusDetails = log.details as { newStatus?: string }
           return {
-            ...baseNotification,
+            ...baseNotification
             type: 'info' as const,
             title: 'Status atualizado',
             message: `Status do cliente ${log.client?.name || 'cliente'} foi atualizado para ${statusDetails?.newStatus || 'novo status'}`,
@@ -122,13 +122,13 @@ export async function GET(request: NextRequest) {
 
         default:
           return {
-            ...baseNotification,
+            ...baseNotification
             title: 'Nova atividade',
             message: `Nova atividade registrada no sistema`,
             actionUrl: `/admin`,
             actionLabel: 'Ver dashboard',
-          },
-      },
+          }
+      }
     })
 
     // Also check for pending tasks that need attention
@@ -137,14 +137,14 @@ export async function GET(request: NextRequest) {
         status: 'SCHEDULED',
         scheduledAt: {
           lte: new Date(Date.now() + 60 * 60 * 1000) // Next hour
-        },
-      },
+        }
+      }
     })
 
     const pendingDocuments = await prisma.document.count({
       where: {
         status: 'PENDING',
-      },
+      }
     })
 
     // Add system notifications for pending items
@@ -175,9 +175,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar notificações do sistema:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -200,14 +200,14 @@ export async function POST(request: NextRequest) {
     console.log(`User ${user.id} marked notifications as read:`, notificationIds)
 
     return NextResponse.json({
-      message: 'Notificações marcadas como lidas',
+      message: 'Notificações marcadas como lidas'
     })
 
   } catch (error) {
     console.error('Erro ao marcar notificações como lidas:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

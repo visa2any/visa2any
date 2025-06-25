@@ -21,42 +21,42 @@ export async function POST(request: NextRequest) {
             required: true,
             description: 'Passaporte com validade mínima de 6 meses',
             validityMonths: 6,
-          },
+          }
           {
             type: 'DIPLOMA',
             name: 'Diploma universitário',
             required: true,
             description: 'Diploma reconhecido de ensino superior',
             validityMonths: null,
-          },
+          }
           {
             type: 'TRANSCRIPT',
             name: 'Histórico escolar',
             required: true,
             description: 'Histórico completo com notas',
             validityMonths: null,
-          },
+          }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Comprovante de experiência',
             required: true,
             description: 'Mínimo 1 ano de experiência qualificada',
             validityMonths: null,
-          },
+          }
           {
             type: 'BANK_STATEMENT',
             name: 'Comprovante financeiro',
             required: true,
             description: 'CAD $13,310 para pessoa solteira',
             validityMonths: 3,
-          },
+          }
           {
             type: 'MEDICAL_EXAM',
             name: 'Exame médico',
             required: true,
             description: 'Exame em clínica aprovada',
             validityMonths: 12,
-          },
+          }
           {
             type: 'POLICE_CLEARANCE',
             name: 'Antecedentes criminais',
@@ -70,28 +70,28 @@ export async function POST(request: NextRequest) {
           government: 1365,
           service: 2500,
           currency: 'CAD',
-        },
+        }
         eligibilityCriteria: [
           {
             criterion: 'Idade',
             description: 'Idade entre 18-45 anos (pontuação máxima aos 20-29)',
             required: true,
-          },
+          }
           {
             criterion: 'Educação',
             description: 'Mínimo ensino médio completo',
             required: true,
-          },
+          }
           {
             criterion: 'Experiência',
             description: 'Mínimo 1 ano de experiência qualificada',
             required: true,
-          },
+          }
           {
             criterion: 'Idioma',
             description: 'CLB 7 em inglês ou francês',
             required: true,
-          },
+          }
           {
             criterion: 'Recursos financeiros',
             description: 'Comprovação de fundos suficientes',
@@ -116,13 +116,13 @@ export async function POST(request: NextRequest) {
           {
             name: 'Site oficial do Express Entry',
             url: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html'
-          },
+          }
           {
             name: 'Calculadora CRS',
             url: 'https://www.cic.gc.ca/english/immigrate/skilled/crs-tool.asp'
           }
         ],
-      },
+      }
 
       // AUSTRÁLIA
       {
@@ -136,28 +136,28 @@ export async function POST(request: NextRequest) {
             required: true,
             description: 'Passaporte com validade mínima de 6 meses',
             validityMonths: 6,
-          },
+          }
           {
             type: 'DIPLOMA',
             name: 'Qualificações educacionais',
             required: true,
             description: 'Diploma reconhecido pelo governo australiano',
             validityMonths: null,
-          },
+          }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Evidência de experiência',
             required: true,
             description: 'Mínimo 3 anos em ocupação qualificada',
             validityMonths: null,
-          },
+          }
           {
             type: 'MEDICAL_EXAM',
             name: 'Exame médico',
             required: true,
             description: 'Health examination by panel physician',
             validityMonths: 12,
-          },
+          }
           {
             type: 'POLICE_CLEARANCE',
             name: 'Character assessment',
@@ -171,23 +171,23 @@ export async function POST(request: NextRequest) {
           government: 4640,
           service: 3000,
           currency: 'AUD',
-        },
+        }
         eligibilityCriteria: [
           {
             criterion: 'Idade',
             description: 'Menos de 45 anos',
             required: true,
-          },
+          }
           {
             criterion: 'Inglês',
             description: 'IELTS 6.0 cada banda (mínimo)',
             required: true,
-          },
+          }
           {
             criterion: 'Skills Assessment',
             description: 'Avaliação positiva da profissão',
             required: true,
-          },
+          }
           {
             criterion: 'EOI Points',
             description: 'Mínimo 65 pontos no SkillSelect',
@@ -212,13 +212,13 @@ export async function POST(request: NextRequest) {
           {
             name: 'Department of Home Affairs',
             url: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189'
-          },
+          }
           {
             name: 'SkillSelect',
             url: 'https://www.skillselect.gov.au/'
           }
         ],
-      },
+      }
 
       // PORTUGAL
       {
@@ -232,28 +232,28 @@ export async function POST(request: NextRequest) {
             required: true,
             description: 'Passaporte válido por mais de 3 meses',
             validityMonths: 3,
-          },
+          }
           {
             type: 'BANK_STATEMENT',
             name: 'Comprovativo de rendimentos',
             required: true,
             description: 'Rendimento mínimo de €760/mês',
             validityMonths: 3,
-          },
+          }
           {
             type: 'POLICE_CLEARANCE',
             name: 'Registo criminal',
             required: true,
             description: 'Certidão de antecedentes do país de origem',
             validityMonths: 12,
-          },
+          }
           {
             type: 'MEDICAL_EXAM',
             name: 'Atestado médico',
             required: true,
             description: 'Declaração médica de sanidade física e mental',
             validityMonths: 6,
-          },
+          }
           {
             type: 'OTHER',
             name: 'Comprovativo de alojamento',
@@ -267,18 +267,18 @@ export async function POST(request: NextRequest) {
           government: 320,
           service: 1500,
           currency: 'EUR',
-        },
+        }
         eligibilityCriteria: [
           {
             criterion: 'Rendimento',
             description: 'Rendimento mínimo de €760 mensais',
             required: true,
-          },
+          }
           {
             criterion: 'Alojamento',
             description: 'Comprovativo de habitação em Portugal',
             required: true,
-          },
+          }
           {
             criterion: 'Seguro',
             description: 'Seguro de saúde válido',
@@ -303,13 +303,13 @@ export async function POST(request: NextRequest) {
           {
             name: 'SEF - Serviço de Estrangeiros e Fronteiras',
             url: 'https://www.sef.pt/pt/pages/homepage.aspx'
-          },
+          }
           {
             name: 'Portal do Cidadão',
             url: 'https://www.portaldocidadao.pt/'
           }
         ],
-      },
+      }
 
       // ESTADOS UNIDOS
       {
@@ -323,14 +323,14 @@ export async function POST(request: NextRequest) {
             required: true,
             description: 'Valid passport for 6+ months',
             validityMonths: 6,
-          },
+          }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Evidence of extraordinary ability',
             required: true,
             description: 'Awards, publications, media coverage',
             validityMonths: null,
-          },
+          }
           {
             type: 'OTHER',
             name: 'Form I-140',
@@ -344,13 +344,13 @@ export async function POST(request: NextRequest) {
           government: 1435,
           service: 8000,
           currency: 'USD',
-        },
+        }
         eligibilityCriteria: [
           {
             criterion: 'Extraordinary ability',
             description: '3 of 10 criteria must be met',
             required: true,
-          },
+          }
           {
             criterion: 'Field expertise',
             description: 'National or international acclaim',
@@ -385,9 +385,9 @@ export async function POST(request: NextRequest) {
         prisma.visaRequirement.create({
           data: {
             ...requirement,
-            lastUpdated: new Date(),
+            lastUpdated: new Date()
             isActive: true,
-          },
+          }
         })
       )
     )
@@ -399,25 +399,25 @@ export async function POST(request: NextRequest) {
         action: 'seed_visa_requirements',
         success: true,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
       data: {
-        created: created.length,
+        created: created.length
         requirements: created,
-      },
+      }
       message: `${created.length} requisitos de visto criados com sucesso`,
     })
 
   } catch (error) {
     console.error('Erro ao popular base de conhecimento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

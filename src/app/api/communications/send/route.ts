@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     if (!type || !content || !clientId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     let client
     try {
       client = await prisma.client.findUnique({
-        where: { id: clientId },
-        select: { id: true, name: true, email: true, phone: true },
+        where: { id: clientId }
+        select: { id: true, name: true, email: true, phone: true }
       })
     } catch (error) {
       // If client not found in database, use mock data
@@ -63,21 +63,21 @@ export async function POST(request: NextRequest) {
         break,
       default:
         return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
 
     if (!deliveryResult.success) {
       return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
     }
 
     // Create communication record
     const communicationRecord = {
-      id: deliveryResult.messageId,
+      id: deliveryResult.messageId
       clientId,
       client,
       type,
@@ -85,14 +85,14 @@ export async function POST(request: NextRequest) {
       content: processedContent,
       subject,
       status: deliveryResult.status,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
       assignedTo: 'Current User',
       tags: template ? [template] : [],
       priority,
       attachments: [],
       metadata: {
         templateUsed: template,
-        sentAt: new Date().toISOString(),
+        sentAt: new Date().toISOString()
         channel: type,
       }
     }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     // await saveCommunicationRecord(communicationRecord)
 
     return NextResponse.json({
-      messageId: deliveryResult.messageId,
+      messageId: deliveryResult.messageId
       status: deliveryResult.status,
       communication: communicationRecord,
     })
@@ -109,9 +109,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Send message error:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -121,7 +121,7 @@ async function sendWhatsApp(phone: string, message: string) {
   await new Promise(resolve => setTimeout(resolve, 1000))
   
   return {
-    messageId: `wa_${Date.now()}`,
+    messageId: `wa_${Date.now()}`
     status: 'sent',
   }
 }
@@ -131,7 +131,7 @@ async function sendEmail(email: string, subject: string, content: string) {
   await new Promise(resolve => setTimeout(resolve, 800))
   
   return {
-    messageId: `email_${Date.now()}`,
+    messageId: `email_${Date.now()}`
     status: 'sent',
   }
 }
@@ -141,7 +141,7 @@ async function sendSMS(phone: string, message: string) {
   await new Promise(resolve => setTimeout(resolve, 500))
   
   return {
-    messageId: `sms_${Date.now()}`,
+    messageId: `sms_${Date.now()}`
     status: 'sent',
   }
 }

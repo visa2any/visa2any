@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       const languages = translationService.getSupportedLanguages()
       
       return NextResponse.json({
-        languages,
+        languages
         total: Object.keys(languages).length,
         message: 'Idiomas suportados recuperados com sucesso',
       })
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       )
       
       return NextResponse.json({
-        translators,
+        translators
         total: translators.length,
         message: translators.length > 0 
           ? `${translators.length} tradutores encontrados` 
@@ -36,16 +36,16 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Parâmetro action deve ser "languages" ou "translators"' },
+      { error: 'Parâmetro action deve ser "languages" ou "translators"' }
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro ao buscar informações de tradução:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       // Validação
       if (!translationRequest.text || !translationRequest.sourceLanguage || !translationRequest.targetLanguage) {
         return NextResponse.json(
-          { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' },
+          { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' }
           { status: 400 }
         )
       }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       if (result.success) {
         return NextResponse.json({
           translation: {
-            originalText: translationRequest.text,
+            originalText: translationRequest.text
             translatedText: result.translatedText,
             sourceLanguage: translationRequest.sourceLanguage,
             targetLanguage: translationRequest.targetLanguage,
@@ -81,16 +81,16 @@ export async function POST(request: NextRequest) {
             cost: result.cost,
             isOfficial: result.isOfficialTranslation,
             certificationNumber: result.certificationNumber,
-          },
+          }
           message: result.isOfficialTranslation 
             ? 'Solicitação de tradução oficial enviada com sucesso'
             : 'Texto traduzido com sucesso',
-        }),
+        })
       } else {
         return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
-    ),
+    )
       }
     }
 
@@ -103,9 +103,9 @@ export async function POST(request: NextRequest) {
       for (const field of requiredFields) {
         if (!documentRequest[field as keyof DocumentForTranslation]) {
           return NextResponse.json(
-            { error: `Campo ${field} é obrigatório para tradução de documento` },
+            { error: `Campo ${field} é obrigatório para tradução de documento` }
             { status: 400 }
-          ),
+          )
         }
       }
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       if (result.success) {
         return NextResponse.json({
           documentTranslation: {
-            translationId: result.translationId,
+            translationId: result.translationId
             estimatedCost: result.estimatedCost,
             estimatedDelivery: result.estimatedDelivery,
             translator: result.translator,
@@ -123,28 +123,28 @@ export async function POST(request: NextRequest) {
               pageCount: documentRequest.pageCount,
               isOfficial: documentRequest.isOfficial,
               priority: documentRequest.priority,
-            },
-          },
+            }
+          }
           message: 'Documento enviado para tradução com sucesso',
-        }),
+        })
       } else {
         return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
-    ),
+    )
       }
     }
 
     return NextResponse.json(
-      { error: 'Parâmetro type deve ser "text" ou "document"' },
+      { error: 'Parâmetro type deve ser "text" ou "document"' }
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro na tradução:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

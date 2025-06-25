@@ -11,13 +11,13 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
 
     const result = await createCustomerAccount({
-      name,
+      name
       email,
       phone,
       country,
@@ -30,14 +30,14 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
 
     // Criar cookie de autenticação automática
     const response = NextResponse.json({
-      user: result.user,
+      user: result.user
       token: result.token,
       message: 'Conta criada e login automático realizado',
     })
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na criação automática de conta:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

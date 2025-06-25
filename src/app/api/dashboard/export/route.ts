@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
     const [clients, consultations, payments] = await Promise.all([
       prisma.client.findMany({
         where: {
-          createdAt: { gte: startDate },
-        },
+          createdAt: { gte: startDate }
+        }
         select: {
           id: true,
           name: true,
@@ -32,35 +32,35 @@ export async function GET(request: NextRequest) {
           status: true,
           createdAt: true,
           assignedUserId: true,
-        },
-      }),
+        }
+      })
       prisma.consultation.findMany({
         where: {
-          createdAt: { gte: startDate },
-        },
+          createdAt: { gte: startDate }
+        }
         include: {
           client: {
-            select: { name: true, email: true },
-          },
-        },
-      }),
+            select: { name: true, email: true }
+          }
+        }
+      })
       prisma.payment.findMany({
         where: {
-          createdAt: { gte: startDate },
-        },
+          createdAt: { gte: startDate }
+        }
         select: {
           amount: true,
           currency: true,
           status: true,
           createdAt: true,
-        },
+        }
       })
     ])
 
     // Gerar CSV
     const csvRows = [
       // Header
-      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(','),
+      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(',')
       
       // Clientes
       ...clients.map(client => [
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         client.status,
         '',
         'Novo cliente cadastrado'
-      ].join(',')),
+      ].join(','))
       
       // Consultorias
       ...consultations.map(consultation => [
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         consultation.status,
         '',
         `Consultoria ${consultation.type}`
-      ].join(',')),
+      ].join(','))
       
       // Pagamentos
       ...payments.map(payment => [
@@ -103,11 +103,11 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro no export:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 }),
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }

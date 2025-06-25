@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     if (!payment_id || !status) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -25,33 +25,33 @@ export async function POST(request: NextRequest) {
       const payment = await prisma.payment.findFirst({
         where: { 
           OR: [
-            { transactionId: payment_id },
+            { transactionId: payment_id }
             { id: external_reference }
-          ],
-        },
+          ]
+        }
         include: {
           client: true,
-        },
+        }
       })
 
       if (payment) {
         // Atualizar pagamento
         await prisma.payment.update({
-          where: { id: payment.id },
+          where: { id: payment.id }
           data: {
             status: status === 'approved' ? 'COMPLETED' : 'FAILED',
             transactionId: payment_id,
             paidAt: status === 'approved' ? new Date() : null,
-          },
+          }
         })
 
         // Se pagamento aprovado, atualizar status do cliente
         if (status === 'approved') {
           await prisma.client.update({
-            where: { id: payment.clientId },
+            where: { id: payment.clientId }
             data: {
               status: 'IN_PROCESS' // Cliente que pagou entra em processo
-            },
+            }
           })
 
           // Criar interaction de pagamento confirmado
@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
               direction: 'outbound',
               subject: 'Pagamento Confirmado - Acesso Liberado',
               content: `Pagamento de R$ ${payment.amount} confirmado. ID: ${payment_id}`,
-              completedAt: new Date(),
-            },
+              completedAt: new Date()
+            }
           })
 
           console.log('✅ Pagamento confirmado:', {
@@ -76,13 +76,13 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json({
-          message: 'Pagamento processado com sucesso',
+          message: 'Pagamento processado com sucesso'
           data: {
             paymentId: payment.id,
             clientId: payment.clientId,
             status: status === 'approved' ? 'COMPLETED' : 'FAILED',
-          },
-        }),
+          }
+        })
       }
     }
 
@@ -94,14 +94,14 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      message: 'Confirmação recebida mas pagamento não encontrado no sistema',
+      message: 'Confirmação recebida mas pagamento não encontrado no sistema'
     })
 
   } catch (error) {
     console.error('Erro ao confirmar pagamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

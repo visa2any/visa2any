@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     // Validação
     if (!name || !phone || !terms) {
       return NextResponse.json(
-        { error: 'Nome, telefone e aceite dos termos são obrigatórios' },
+        { error: 'Nome, telefone e aceite dos termos são obrigatórios' }
         { status: 400 }
       )
     }
@@ -18,19 +18,19 @@ export async function POST(request: NextRequest) {
     const phoneRegex = /^\+[1-9]\d{1,14}$/
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
-        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },
+        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' }
         { status: 400 }
       )
     }
 
     // Verificar se já existe
     const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
-      where: { phone },
+      where: { phone }
     })
 
     if (existingSubscriber) {
       return NextResponse.json(
-        { error: 'Este número já está cadastrado na nossa newsletter' },
+        { error: 'Este número já está cadastrado na nossa newsletter' }
         { status: 409 }
       )
     }
@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
     // Criar novo assinante
     const subscriber = await prisma.whatsAppSubscriber.create({
       data: {
-        name,
+        name
         phone,
         countries: countries || ['Global'],
         isActive: true,
         source: 'blog_newsletter',
-      },
+      }
     })
 
     // Enviar mensagem de boas-vindas via WhatsApp
@@ -58,22 +58,22 @@ export async function POST(request: NextRequest) {
     console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Cadastro realizado com sucesso! Você receberá uma mensagem de confirmação em breve.',
       subscriber: {
         id: subscriber.id,
         name: subscriber.name,
         phone: subscriber.phone,
         countries: subscriber.countries,
-      },
+      }
     })
 
   } catch (error) {
     console.error('[WHATSAPP NEWSLETTER] Erro:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -103,12 +103,12 @@ _Para cancelar, responda SAIR_`
   
   const whatsappResponse = await fetch('http://localhost:3000/api/whatsapp/send', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' }
     body: JSON.stringify({
       to: phone,
       message: message,
       type: 'newsletter_welcome',
-    }),
+    })
   })
 
   if (!whatsappResponse.ok) {
@@ -122,9 +122,9 @@ _Para cancelar, responda SAIR_`
 export async function GET() {
   try {
     const subscribers = await prisma.whatsAppSubscriber.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
+      where: { isActive: true }
+      orderBy: { createdAt: 'desc' }
+      take: 100
     })
 
     const stats = {
@@ -133,28 +133,28 @@ export async function GET() {
         sub.countries.forEach(country => {
           acc[country] = (acc[country] || 0) + 1,
         })
-        return acc,
-      }, {} as Record<string, number>),
+        return acc
+      }, {} as Record<string, number>)
       recent: subscribers.slice(0, 10)
     }
 
     return NextResponse.json({
-      success: true,
+      success: true
       stats,
       subscribers: subscribers.map(sub => ({
         id: sub.id,
         name: sub.name,
-        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),
+        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4')
         countries: sub.countries,
         createdAt: sub.createdAt,
-      })),
+      }))
     })
 
   } catch (error) {
     console.error('[WHATSAPP NEWSLETTER] Erro ao listar:', error)
     return NextResponse.json(
-      { error: 'Erro ao listar assinantes' },
+      { error: 'Erro ao listar assinantes' }
       { status: 500 }
-    ),
+    )
   }
 }

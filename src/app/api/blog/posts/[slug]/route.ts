@@ -16,51 +16,51 @@ export async function GET(,
       where: {
         id: slug,
         published: true,
-      },
+      }
     })
 
     if (!post) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado',
-        },
+          error: 'Post não encontrado'
+        }
         { status: 404 }
       )
     }
 
     // Incrementar views
     await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
         views: {
           increment: 1,
-        },
-      },
+        }
+      }
     })
 
     // Buscar posts relacionados (mesma categoria, exceto o atual)
     const relatedPosts = await prisma.blogPost.findMany({
       where: {
         category: post.category,
-        id: { not: post.id },
+        id: { not: post.id }
         published: true,
-      },
+      }
       take: 4,
       orderBy: {
         publishDate: 'desc',
-      },
+      }
     })
 
     return NextResponse.json({
       post: {
-        ...post,
+        ...post
         tags: Array.isArray(post.tags) ? post.tags : [],
         views: post.views + 1 // Mostrar a view incrementada
-      },
+      }
       relatedPosts: relatedPosts.map(p => ({
         ...p,
         tags: Array.isArray(p.tags) ? p.tags : [],
-      })),
+      }))
     })
 
   } catch (error) {
@@ -68,10 +68,10 @@ export async function GET(,
     console.error('Slug solicitado:', slug)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor',
-      },
+        error: 'Erro interno do servidor'
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -85,42 +85,42 @@ export async function PUT(,
 
     // Verificar se o post existe
     const existingPost = await prisma.blogPost.findFirst({
-      where: { id: slug },
+      where: { id: slug }
     })
 
     if (!existingPost) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado',
-        },
+          error: 'Post não encontrado'
+        }
         { status: 404 }
       )
     }
 
     // Atualizar post
     const updatedPost = await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
         ...body,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     })
 
     return NextResponse.json({
       post: {
-        ...updatedPost,
+        ...updatedPost
         tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : [],
-      },
+      }
     })
 
   } catch (error) {
     console.error('❌ Erro ao atualizar post:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor',
-      },
+        error: 'Erro interno do servidor'
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -133,38 +133,38 @@ export async function DELETE(,
 
     // Verificar se o post existe
     const existingPost = await prisma.blogPost.findFirst({
-      where: { id: slug },
+      where: { id: slug }
     })
 
     if (!existingPost) {
       return NextResponse.json(
         {
-          error: 'Post não encontrado',
-        },
+          error: 'Post não encontrado'
+        }
         { status: 404 }
       )
     }
 
     // Soft delete - marcar como não publicado
     await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
         published: false,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     })
 
     return NextResponse.json({
-      message: 'Post removido com sucesso',
+      message: 'Post removido com sucesso'
     })
 
   } catch (error) {
     console.error('❌ Erro ao remover post:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor',
-      },
+        error: 'Erro interno do servidor'
+      }
       { status: 500 }
-    ),
+    )
   }
 }

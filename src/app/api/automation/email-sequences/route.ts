@@ -11,7 +11,7 @@ const EMAIL_TEMPLATES = {
       delay: 0, // Imediato
       subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',
       template: `
-Olá {name},
+Olá {name}
 
 Acabei de analisar sua qualificação e tenho ÓTIMAS notícias! 🎉
 
@@ -35,12 +35,12 @@ Ana Silva
 Consultora Sênior Visa2Any
 📱 +55 11 99999-9999
       `,
-    },
+    }
     {
       delay: 60, // 1 hora depois se não respondeu
       subject: '⏰ {name}, restam apenas algumas horas...',
       template: `
-{name},
+{name}
 
 Notei que você ainda não agendou sua consultoria VIP.
 
@@ -63,7 +63,7 @@ Visa2Any
       delay: 0,
       subject: '✨ {name}, sua análise está pronta!',
       template: `
-Olá {name},
+Olá {name}
 
 Sua qualificação para {destinationCountry} foi analisada!
 
@@ -85,7 +85,7 @@ Clique aqui para começar: {aiAnalysisLink}
 Att,
 Equipe Visa2Any
       `,
-    },
+    }
     {
       delay: 1440, // 24 horas
       subject: '📚 {name}, baixe nossos guias exclusivos',
@@ -108,12 +108,12 @@ PS: Tudo 100% gratuito, sem pegadinha!
 
 Equipe Visa2Any
       `,
-    },
+    }
     {
       delay: 4320, // 3 dias
       subject: '🎯 {name}, vamos criar sua estratégia?',
       template: `
-{name},
+{name}
 
 Espero que os materiais tenham sido úteis!
 
@@ -159,7 +159,7 @@ Nos próximos dias vou te enviar mais dicas valiosas!
 Att,
 Equipe Visa2Any
       `,
-    },
+    }
     {
       delay: 2880, // 2 dias
       subject: '💡 {name}, dica #1: Por onde começar',
@@ -182,12 +182,12 @@ Próxima dica chegará em 2 dias.
 
 Equipe Visa2Any
       `,
-    },
+    }
     {
       delay: 7200, // 5 dias
       subject: '🔍 {name}, dica #2: Evite estes erros fatais',
       template: `
-{name},
+{name}
 
 Os 3 erros que mais reprovam vistos:
 
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     if (!sequence || !email || !name) {
       return NextResponse.json({
-        error: 'Dados obrigatórios faltando',
+        error: 'Dados obrigatórios faltando'
       }, { status: 400 })
     }
 
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
     
     if (!templates) {
       return NextResponse.json({
-        error: 'Sequência de email não encontrada',
+        error: 'Sequência de email não encontrada'
       }, { status: 404 })
     }
 
@@ -268,20 +268,20 @@ export async function POST(request: NextRequest) {
         sendAt,
         sequence,
         clientId,
-        templateIndex: templates.indexOf(template),
+        templateIndex: templates.indexOf(template)
       })
     }
 
     return NextResponse.json({
-      message: `Sequência ${sequence} ativada para ${email}`,
+      message: `Sequência ${sequence} ativada para ${email}`
       emailsScheduled: templates.length,
     })
 
   } catch (error) {
     console.error('Erro ao processar sequência de emails:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -290,7 +290,7 @@ function processTemplate(template: string, variables: Record<string, any>): stri
   
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`\\{${key}\\}`, 'g')
-    processed = processed.replace(regex, String(value)),
+    processed = processed.replace(regex, String(value))
   })
   
   return processed
@@ -370,13 +370,13 @@ async function scheduleEmail(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email agendado: ${emailData.subject}`,
-          completedAt: new Date(),
-        },
+          completedAt: new Date()
+        }
       })
     }
 
   } catch (error) {
-    console.error('Erro ao agendar email:', error),
+    console.error('Erro ao agendar email:', error)
   }
 }
 
@@ -394,16 +394,16 @@ async function sendEmailNow(emailData: {
     // Simular envio por enquanto
     const response = await fetch('/api/notifications/email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: emailData.to,
         subject: emailData.subject,
-        html: emailData.body.replace(/\n/g, '<br>'),
+        html: emailData.body.replace(/\n/g, '<br>')
         template: 'automation',
         variables: {
           content: emailData.body,
-        },
-      }),
+        }
+      })
     })
 
     if (emailData.clientId) {
@@ -415,12 +415,12 @@ async function sendEmailNow(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email enviado: ${emailData.subject}`,
-          completedAt: new Date(),
-        },
+          completedAt: new Date()
+        }
       })
     }
 
   } catch (error) {
-    console.error('Erro ao enviar email:', error),
+    console.error('Erro ao enviar email:', error)
   }
 }

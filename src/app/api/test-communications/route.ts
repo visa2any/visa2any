@@ -6,11 +6,11 @@ export async function GET(request: NextRequest) {
   const phone = searchParams.get('phone') || '5511999999999'
 
   const results = {
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
     tests: [],
     summary: {
-      email: { configured: false, working: false },
-      whatsapp: { configured: false, working: false },
+      email: { configured: false, working: false }
+      whatsapp: { configured: false, working: false }
     }
   }
 
@@ -30,17 +30,17 @@ export async function GET(request: NextRequest) {
     if (hasEmailConfig) {
       const emailResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
           to: email,
           template: 'payment_confirmation',
           variables: {
             payment_amount: 'R$ 197,00',
             payment_plan: 'Teste do Sistema',
-            payment_date: new Date().toLocaleDateString('pt-BR'),
-            transaction_id: 'TEST_' + Date.now(),
-          },
-        }),
+            payment_date: new Date().toLocaleDateString('pt-BR')
+            transaction_id: 'TEST_' + Date.now()
+          }
+        })
       })
       
       const emailResult = await emailResponse.json()
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         status: emailResult.success ? 'success' : 'error',
         message: emailResult.success ? 'Email enviado com sucesso' : emailResult.error,
         details: emailResult.data,
-      }),
+      })
     } else {
       results.tests.push({
         type: 'email',
@@ -72,11 +72,11 @@ export async function GET(request: NextRequest) {
     // Testar envio de WhatsApp
     const whatsappResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: phone,
         message: `🧪 TESTE VISA2ANY\n\nSistema de comunicações funcionando!\n\nData: ${new Date().toLocaleString('pt-BR')}\nTipo: WhatsApp Business API\n\n✅ Teste realizado com sucesso!`,
-      }),
+      })
     })
     
     const whatsappResult = await whatsappResponse.json()
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         clientId: 'test_client',
         amount: 197,
         productId: 'test-product',
-        transactionId: 'TEST_' + Date.now(),
+        transactionId: 'TEST_' + Date.now()
         client: {
           name: 'Cliente Teste',
           email: email,
@@ -124,15 +124,15 @@ export async function GET(request: NextRequest) {
 
     // 4. Retornar resultados
     return NextResponse.json({
-      data: results,
+      data: results
       message: 'Testes de comunicação concluídos',
     })
     
   } catch (error) {
     console.error('Erro geral nos testes:', error)
     return NextResponse.json(
-      { error: 'Erro interno nos testes' },
+      { error: 'Erro interno nos testes' }
       { status: 500 }
-    ),
+    )
   }
 }

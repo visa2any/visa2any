@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
     }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     if (!postId || !action) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -47,10 +47,10 @@ export async function POST(request: NextRequest) {
       const existingLike = await prisma.blogPostLike.findUnique({
         where: {
           userId_postId: {
-            userId,
+            userId
             postId,
-          },
-        },
+          }
+        }
       })
 
       if (!existingLike) {
@@ -58,33 +58,33 @@ export async function POST(request: NextRequest) {
           data: {
             userId,
             postId,
-          },
-        }),
-      },
+          }
+        })
+      }
     } else if (action === 'unlike') {
       await prisma.blogPostLike.deleteMany({
         where: {
           userId,
           postId,
-        },
+        }
       })
     }
 
     // Get updated like count
     const likeCount = await prisma.blogPostLike.count({
-      where: { postId },
+      where: { postId }
     })
 
     return NextResponse.json({
-      likeCount,
+      likeCount
       action,
     })
 
   } catch (error) {
     console.error('Error handling blog like:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

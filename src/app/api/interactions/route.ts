@@ -4,15 +4,15 @@ import { z } from 'zod'
 
 // Schema para criar interação
 const createInteractionSchema = z.object({
-  clientId: z.string().min(1, 'Cliente é obrigatório'),
-  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),
-  channel: z.string().min(1, 'Canal é obrigatório'),
-  direction: z.enum(['inbound', 'outbound']),
-  subject: z.string().optional(),
-  content: z.string().min(1, 'Conteúdo é obrigatório'),
-  response: z.string().optional(),
-  scheduledAt: z.string().datetime().optional(),
-  completedAt: z.string().datetime().optional(),
+  clientId: z.string().min(1, 'Cliente é obrigatório')
+  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER'])
+  channel: z.string().min(1, 'Canal é obrigatório')
+  direction: z.enum(['inbound', 'outbound'])
+  subject: z.string().optional()
+  content: z.string().min(1, 'Conteúdo é obrigatório')
+  response: z.string().optional()
+  scheduledAt: z.string().datetime().optional()
+  completedAt: z.string().datetime().optional()
 })
 
 // GET /api/interactions - Listar interações
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' }
         include: {
           client: {
             select: { 
@@ -52,10 +52,10 @@ export async function GET(request: NextRequest) {
               email: true, 
               phone: true,
               status: true,
-            },
-          },
-        },
-      }),
+            }
+          }
+        }
+      })
       prisma.interaction.count({ where })
     ])
 
@@ -63,23 +63,23 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        interactions,
+        interactions
         pagination: {
           page,
           limit,
           total,
           totalPages,
           hasMore: page < totalPages,
-        },
-      },
+        }
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar interações:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId },
+      where: { id: validatedData.clientId }
     })
 
     if (!client) {
@@ -105,10 +105,10 @@ export async function POST(request: NextRequest) {
     // Criar interação
     const interaction = await prisma.interaction.create({
       data: {
-        ...validatedData,
+        ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
         completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null,
-      },
+      }
       include: {
         client: {
           select: { 
@@ -116,9 +116,9 @@ export async function POST(request: NextRequest) {
             name: true, 
             email: true,
             status: true,
-          },
-        },
-      },
+          }
+        }
+      }
     })
 
     // Log da criação
@@ -128,32 +128,32 @@ export async function POST(request: NextRequest) {
         action: 'create_interaction',
         clientId: validatedData.clientId,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
-      data: interaction,
+      data: interaction
     }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao criar interação:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

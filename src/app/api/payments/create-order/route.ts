@@ -4,19 +4,19 @@ import { z } from 'zod'
 
 // Schema para criar pedido
 const createOrderSchema = z.object({
-  productId: z.string().min(1, 'ID do produto é obrigatório'),
-  productName: z.string().min(1, 'Nome do produto é obrigatório'),
-  quantity: z.number().min(1, 'Quantidade deve ser pelo menos 1'),
-  adults: z.number().min(1, 'Número de adultos deve ser pelo menos 1'),
-  children: z.number().min(0, 'Número de crianças não pode ser negativo'),
-  unitPrice: z.number().min(0, 'Preço unitário não pode ser negativo'),
-  totalAmount: z.number().min(0, 'Valor total não pode ser negativo'),
-  discountAmount: z.number().min(0, 'Valor do desconto não pode ser negativo').optional(),
+  productId: z.string().min(1, 'ID do produto é obrigatório')
+  productName: z.string().min(1, 'Nome do produto é obrigatório')
+  quantity: z.number().min(1, 'Quantidade deve ser pelo menos 1')
+  adults: z.number().min(1, 'Número de adultos deve ser pelo menos 1')
+  children: z.number().min(0, 'Número de crianças não pode ser negativo')
+  unitPrice: z.number().min(0, 'Preço unitário não pode ser negativo')
+  totalAmount: z.number().min(0, 'Valor total não pode ser negativo')
+  discountAmount: z.number().min(0, 'Valor do desconto não pode ser negativo').optional()
   clientInfo: z.object({
-    name: z.string().optional(),
-    email: z.string().email().optional(),
-    phone: z.string().optional(),
-  }).optional(),
+    name: z.string().optional()
+    email: z.string().email().optional()
+    phone: z.string().optional()
+  }).optional()
 })
 
 // POST /api/payments/create-order - Criar pedido
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       try {
         // Tentar encontrar cliente existente
         let client = await prisma.client.findUnique({
-          where: { email: validatedData.clientInfo.email },
+          where: { email: validatedData.clientInfo.email }
         })
 
         // Se não encontrar, criar novo
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
               phone: validatedData.clientInfo.phone,
               status: 'LEAD',
               source: 'checkout',
-            },
+            }
           })
         }
         
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         paymentMethod: 'MERCADO_PAGO',
         description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''} - Total: R$ ${validatedData.totalAmount}`,
         clientId: clientId,
-      },
+      }
     })
 
     // Gerar link de pagamento do Mercado Pago
@@ -83,44 +83,44 @@ export async function POST(request: NextRequest) {
         action: 'create_order',
         clientId: clientId,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
       data: {
-        orderId: payment.id,
+        orderId: payment.id
         paymentUrl: paymentUrl,
         amount: validatedData.totalAmount,
         status: 'pending',
-      },
+      }
     }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao criar pedido:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // Função para criar pagamento no Mercado Pago
 async function createMercadoPagoPayment(orderData: {
-  orderId: string,
+  orderId: string
   title: string,
   quantity: number,
   unitPrice: number,
@@ -147,12 +147,12 @@ async function createMercadoPagoPayment(orderData: {
         success: `${process.env.NEXTAUTH_URL}/success?payment_id=simulated&status=approved&external_reference=${orderData.orderId}`,
         failure: `${process.env.NEXTAUTH_URL}/cliente?payment=failed&order=${orderData.orderId}`,
         pending: `${process.env.NEXTAUTH_URL}/cliente?payment=pending&order=${orderData.orderId}`,
-      },
+      }
       auto_return: 'approved',
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
       external_reference: orderData.orderId,
       expires: true,
-      expiration_date_from: new Date().toISOString(),
+      expiration_date_from: new Date().toISOString()
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
       payment_methods: {
         excluded_payment_methods: [],
@@ -179,6 +179,6 @@ async function createMercadoPagoPayment(orderData: {
   } catch (error) {
     console.error('Erro ao criar pagamento MP:', error)
     // Fallback para checkout interno
-    return null,
+    return null
   }
 }

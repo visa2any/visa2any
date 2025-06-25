@@ -13,7 +13,7 @@ export async function GET(,
 
     if (!reference) {
       return NextResponse.json(
-        { error: 'Parâmetro reference é obrigatório' },
+        { error: 'Parâmetro reference é obrigatório' }
         { status: 400 }
       )
     }
@@ -21,20 +21,20 @@ export async function GET(,
     const status = await partnerIntegrationService.checkStatus(partnerId, reference)
 
     return NextResponse.json({
-      success: true,
+      success: true
       partnerId,
       reference,
       status: status.status,
       details: status.details,
       nextSteps: status.nextSteps,
-      lastChecked: new Date().toISOString(),
+      lastChecked: new Date().toISOString()
     })
 
   } catch (error) {
     console.error('Erro ao verificar status:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

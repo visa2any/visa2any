@@ -11,16 +11,16 @@ export async function PATCH(,
     const { status, error } = body
 
     const socialPost = await prisma.socialPost.update({
-      where: { id },
+      where: { id }
       data: {
         status: 'ERROR',
         error: error || 'Erro desconhecido',
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     })
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Erro registrado com sucesso',
       socialPost,
     })
@@ -28,8 +28,8 @@ export async function PATCH(,
   } catch (dbError) {
     console.error('[SOCIAL ERROR] Erro:', dbError)
     return NextResponse.json(
-      { error: 'Erro ao registrar falha' },
+      { error: 'Erro ao registrar falha' }
       { status: 500 }
-    ),
+    )
   }
 }

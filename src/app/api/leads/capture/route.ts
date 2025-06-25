@@ -4,20 +4,20 @@ import { z } from 'zod'
 
 // Schema para captura de leads
 const leadCaptureSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
-  source: z.string().default('website'),
-  leadMagnet: z.string().optional(),
-  utmSource: z.string().optional(),
-  utmMedium: z.string().optional(),
-  utmCampaign: z.string().optional(),
-  utmContent: z.string().optional(),
-  referrer: z.string().optional(),
-  userAgent: z.string().optional(),
-  ip: z.string().optional(),
-  interests: z.array(z.string()).optional(),
-  notes: z.string().optional(),
+  name: z.string().min(1, 'Nome é obrigatório')
+  email: z.string().email('Email inválido')
+  phone: z.string().optional()
+  source: z.string().default('website')
+  leadMagnet: z.string().optional()
+  utmSource: z.string().optional()
+  utmMedium: z.string().optional()
+  utmCampaign: z.string().optional()
+  utmContent: z.string().optional()
+  referrer: z.string().optional()
+  userAgent: z.string().optional()
+  ip: z.string().optional()
+  interests: z.array(z.string()).optional()
+  notes: z.string().optional()
 })
 
 // POST /api/leads/capture - Capturar lead
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se lead já existe
     let existingClient = await prisma.client.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email }
     })
 
     let client
@@ -41,13 +41,13 @@ export async function POST(request: NextRequest) {
     if (existingClient) {
       // Atualizar lead existente
       client = await prisma.client.update({
-        where: { id: existingClient.id },
+        where: { id: existingClient.id }
         data: {
           name: validatedData.name,
           phone: validatedData.phone || existingClient.phone,
-          lastActivityAt: new Date(),
-        },
-      }),
+          lastActivityAt: new Date()
+        }
+      })
     } else {
       // Criar novo lead
       client = await prisma.client.create({
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
           utmMedium: validatedData.utmMedium,
           utmCampaign: validatedData.utmCampaign,
           utmContent: validatedData.utmContent,
-          lastActivityAt: new Date(),
-        },
+          lastActivityAt: new Date()
+        }
       })
       isNewLead = true
     }
@@ -80,18 +80,18 @@ export async function POST(request: NextRequest) {
     await prisma.interaction.create({
       data: {
         type: 'LEAD_CAPTURE',
-        channel: getChannelFromSource(validatedData.source),
+        channel: getChannelFromSource(validatedData.source)
         direction: 'inbound',
         content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
         response: {
-          userAgent: request.headers.get('user-agent'),
+          userAgent: request.headers.get('user-agent')
           ip: ip,
           referrer: validatedData.referrer,
           leadScore: leadScore,
-        },
+        }
         clientId: client.id,
-        completedAt: new Date(),
-      },
+        completedAt: new Date()
+      }
     })
 
     // Log da captura
@@ -106,8 +106,8 @@ export async function POST(request: NextRequest) {
           leadMagnet: validatedData.leadMagnet,
           leadScore: leadScore,
           country: validatedData.country,
-        },
-      },
+        }
+      }
     })
 
     // Disparar automações baseadas no lead score
@@ -135,11 +135,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        leadId: client.id,
+        leadId: client.id
         leadScore: leadScore,
         isNewLead: isNewLead,
         recommendations: recommendations,
-      },
+      }
       message: responseMessage,
     })
 
@@ -147,18 +147,18 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao capturar lead:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -176,67 +176,67 @@ export async function GET(request: NextRequest) {
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
       // Total de leads
       prisma.client.count({
-        where: { status: 'LEAD' },
-      }),
+        where: { status: 'LEAD' }
+      })
       
       // Novos leads no período
       prisma.client.count({
         where: {
           status: 'LEAD',
-          createdAt: { gte: startDate },
-        },
-      }),
+          createdAt: { gte: startDate }
+        }
+      })
       
       // Leads por fonte
       prisma.client.groupBy({
         by: ['source'],
         where: {
           status: 'LEAD',
-          createdAt: { gte: startDate },
-        },
-        _count: { id: true },
-      }),
+          createdAt: { gte: startDate }
+        }
+        _count: { id: true }
+      })
       
       // Leads por lead magnet
       prisma.interaction.groupBy({
         by: ['details'],
         where: {
           type: 'LEAD_CAPTURE',
-          createdAt: { gte: startDate },
-        },
-        _count: { id: true },
+          createdAt: { gte: startDate }
+        }
+        _count: { id: true }
       })
     ])
 
     return NextResponse.json({
       data: {
         overview: {
-          totalLeads,
+          totalLeads
           newLeads,
           growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0,
-        },
+        }
         leadsBySource: leadsBySource.map(item => ({
           source: item.source,
           count: item._count.id,
-        })),
+        }))
         leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
         period: `${days} dias`,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar estatísticas de leads:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // Calcular score do lead baseado em fatores
 function calculateLeadScore(factors: {
   source?: string
-  leadMagnet?: string,
+  leadMagnet?: string
   hasPhone: boolean
   utmSource?: string
   utmMedium?: string,
@@ -302,14 +302,14 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
     // Enviar email de boas-vindas imediato
     await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         template: 'welcome_lead',
         clientId: clientId,
         variables: {
           lead_magnet: leadMagnet || 'website',
-        },
-      }),
+        }
+      })
     })
 
     // Agendar emails de nurturing
@@ -317,7 +317,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
   } catch (error) {
-    console.error('Erro ao disparar sequência de boas-vindas:', error),
+    console.error('Erro ao disparar sequência de boas-vindas:', error)
   }
 }
 
@@ -331,17 +331,17 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
         action: 'notify_sales_team',
         clientId: clientId,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     // Em produção: enviar notificação Slack/Teams para vendas
     console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
     
   } catch (error) {
-    console.error('Erro ao processar lead de alta prioridade:', error),
+    console.error('Erro ao processar lead de alta prioridade:', error)
   }
 }

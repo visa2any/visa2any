@@ -4,23 +4,23 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(request: NextRequest) {
   try {
     return NextResponse.json({
-      message: 'WhatsApp API está funcionando!',
-      timestamp: new Date().toISOString(),
+      message: 'WhatsApp API está funcionando!'
+      timestamp: new Date().toISOString()
       info: {
         integrated: true,
         backend: 'Next.js',
         status: 'Pronto para integração com Baileys',
-      },
+      }
     })
 
   } catch (error) {
     return NextResponse.json(
       { 
-        error: 'Erro na API de teste',
+        error: 'Erro na API de teste'
         details: error instanceof Error ? error.message : 'Erro desconhecido',
-      },
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     if (!phone || !message) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -48,22 +48,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        messageId,
+        messageId
         phone,
         sent: true,
         backend: 'Next.js integrado',
-        timestamp: new Date().toISOString(),
-      },
+        timestamp: new Date().toISOString()
+      }
       message: 'Mensagem enviada com sucesso (simulação)',
     })
 
   } catch (error) {
     return NextResponse.json(
       { 
-        error: 'Erro no teste de envio',
+        error: 'Erro no teste de envio'
         details: error instanceof Error ? error.message : 'Erro desconhecido',
-      },
+      }
       { status: 500 }
-    ),
+    )
   }
 }

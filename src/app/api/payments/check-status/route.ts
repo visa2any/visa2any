@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     if (!paymentId) {
       return NextResponse.json({
-        error: 'payment_id é obrigatório',
+        error: 'payment_id é obrigatório'
       }, { status: 400 })
     }
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      payment_id: result.id,
+      payment_id: result.id
       status: result.status,
       status_detail: result.status_detail,
       payment_method: result.payment_method_id,
@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
     console.error('❌ Erro ao verificar status do pagamento:', error)
     
     return NextResponse.json({
-      error: 'Erro ao verificar status do pagamento',
+      error: 'Erro ao verificar status do pagamento'
       details: error instanceof Error ? error.message : 'Erro desconhecido',
-    }, { status: 500 }),
+    }, { status: 500 })
   }
 }

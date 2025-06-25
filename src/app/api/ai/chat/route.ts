@@ -4,14 +4,14 @@ import { z } from 'zod'
 
 // Schema para mensagem do chat
 const chatMessageSchema = z.object({
-  message: z.string().min(1, 'Mensagem é obrigatória'),
-  clientId: z.string().optional(),
-  conversationId: z.string().optional(),
+  message: z.string().min(1, 'Mensagem é obrigatória')
+  clientId: z.string().optional()
+  conversationId: z.string().optional()
   context: z.object({
-    targetCountry: z.string().optional(),
-    visaType: z.string().optional(),
-    currentStep: z.string().optional(),
-  }).optional(),
+    targetCountry: z.string().optional()
+    visaType: z.string().optional()
+    currentStep: z.string().optional()
+  }).optional()
 })
 
 // POST /api/ai/chat - Conversar com Sofia IA
@@ -24,16 +24,16 @@ export async function POST(request: NextRequest) {
     let clientContext = null
     if (validatedData.clientId) {
       clientContext = await prisma.client.findUnique({
-        where: { id: validatedData.clientId },
+        where: { id: validatedData.clientId }
         include: {
           consultations: {
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: 'desc' }
             take: 1,
-          },
+          }
           documents: {
-            select: { type: true, status: true },
-          },
-        },
+            select: { type: true, status: true }
+          }
+        }
       })
     }
 
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
           content: validatedData.message,
           response: sofiaResponse.message,
           clientId: validatedData.clientId,
-          completedAt: new Date(),
-        },
+          completedAt: new Date()
+        }
       })
     }
 
@@ -70,37 +70,37 @@ export async function POST(request: NextRequest) {
           message: validatedData.message,
           intent: sofiaResponse.intent,
           confidence: sofiaResponse.confidence,
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
       data: {
-        message: sofiaResponse.message,
+        message: sofiaResponse.message
         intent: sofiaResponse.intent,
         confidence: sofiaResponse.confidence,
         suggestions: sofiaResponse.suggestions,
         actions: sofiaResponse.actions,
         conversationId: sofiaResponse.conversationId,
-      },
+      }
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro no chat com Sofia:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -110,15 +110,15 @@ export async function GET(request: NextRequest) {
     const intents = getSofiaIntents()
 
     return NextResponse.json({
-      data: { intents },
+      data: { intents }
     })
 
   } catch (error) {
     console.error('Erro ao buscar intenções:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -131,12 +131,12 @@ async function processSofiaMessage(message: string, clientContext: any, context:
   const response = await generateSofiaResponse(intent, message, clientContext, context)
   
   return {
-    message: response.message,
+    message: response.message
     intent: intent.name,
     confidence: intent.confidence,
     suggestions: response.suggestions,
     actions: response.actions,
-    conversationId: generateConversationId(),
+    conversationId: generateConversationId()
   }
 }
 
@@ -155,7 +155,7 @@ function detectIntent(message: string) {
     for (const keyword of intentData.keywords) {
       if (lowercaseMessage.includes(keyword.toLowerCase())) {
         score += 1
-        matchedKeywords.push(keyword),
+        matchedKeywords.push(keyword)
       }
     }
     
@@ -175,7 +175,7 @@ function detectIntent(message: string) {
         name: intentName,
         confidence,
         keywords: matchedKeywords,
-      },
+      }
     }
   }
   
@@ -229,7 +229,7 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
               label: 'Iniciar Análise Completa',
               clientId: clientContext.id,
             }],
-          },
+          }
         }
       }
       return {
@@ -298,7 +298,7 @@ Para qual país você está interessado?`,
 
 **Taxas governamentais à parte*
 
-Qual pacote faz mais sentido para você?`,
+Qual pacote faz mais sentido para você?`
         suggestions: [
           'Consulta Básica - R$ 299',
           'Consulta Premium - R$ 599', 
@@ -360,7 +360,7 @@ Para qual país você está pensando?`,
 - Resposta em até 2h
 - Ideal para dúvidas rápidas
 
-Qual opção prefere?`,
+Qual opção prefere?`
         suggestions: [
           'Ligar agora',
           'Agendar consultoria',
@@ -423,7 +423,7 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
           'Falar com especialista'
         ],
         actions: [],
-      },
+      }
   }
 }
 
@@ -434,9 +434,9 @@ async function getDocumentsResponse(country: string, clientName: string) {
   // Buscar requisitos na base de conhecimento
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
-      country: { contains: country },
+      country: { contains: country }
       isActive: true,
-    },
+    }
   })
   
   if (requirements) {
@@ -457,7 +457,7 @@ ${docList}
 - ✅ Checklist personalizado  
 - ✅ Dicas para aumentar aprovação
 
-Quer uma análise completa do seu perfil?`,
+Quer uma análise completa do seu perfil?`
       suggestions: [
         'Fazer análise completa',
         'Ver dicas de aprovação',
@@ -545,7 +545,7 @@ function extractCountryFromMessage(message: string): string | null {
       return country === 'canada' ? 'canadá' : 
              country === 'australia' ? 'austrália' :
              country === 'eua' || country === 'usa' ? 'estados unidos' : 
-             country,
+             country
     }
   }
   
@@ -578,36 +578,36 @@ function getSofiaIntents() {
     greeting: {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
       patterns: ['^(olá|oi|hello|hi)'],
-    },
+    }
     
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
       patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances'],
-    },
+    }
     
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
       patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário'],
-    },
+    }
     
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
       patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo'],
-    },
+    }
     
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
       patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo'],
-    },
+    }
     
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
       patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano'],
-    },
+    }
     
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
       patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora'],
-    },
+    }
   }
 }

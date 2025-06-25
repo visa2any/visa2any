@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     
     if (!query.trim()) {
       return NextResponse.json({
-        results: [],
+        results: []
         suggestions: [],
       })
     }
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
-        suggestions,
+        suggestions
       })
     }
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
-      results,
+      results
       total: results.length,
     })
 
@@ -39,10 +39,10 @@ export async function GET(request: NextRequest) {
     console.error('❌ Erro na busca:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor',
-      },
+        error: 'Erro interno do servidor'
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -57,13 +57,13 @@ async function generateSuggestions(query: string) {
         title: {
           contains: searchTerm,
           mode: 'insensitive',
-        },
-      },
+        }
+      }
       select: {
         title: true,
         category: true,
         country: true,
-      },
+      }
       take: 5,
     })
 
@@ -74,12 +74,12 @@ async function generateSuggestions(query: string) {
         country: {
           contains: searchTerm,
           mode: 'insensitive',
-        },
-      },
+        }
+      }
       select: {
         country: true,
         flag: true,
-      },
+      }
       distinct: ['country'],
       take: 3,
     })
@@ -91,11 +91,11 @@ async function generateSuggestions(query: string) {
         category: {
           contains: searchTerm,
           mode: 'insensitive',
-        },
-      },
+        }
+      }
       select: {
         category: true,
-      },
+      }
       distinct: ['category'],
       take: 3,
     })
@@ -109,7 +109,7 @@ async function generateSuggestions(query: string) {
         text: post.title,
         category: post.category,
         icon: '📄',
-      }),
+      })
     })
 
     // Adicionar sugestões de países
@@ -120,8 +120,8 @@ async function generateSuggestions(query: string) {
           text: `${country.flag || '🌍'} ${country.country}`,
           category: 'País',
           icon: country.flag || '🌍',
-        }),
-      },
+        })
+      }
     })
 
     // Adicionar sugestões de categorias
@@ -131,14 +131,14 @@ async function generateSuggestions(query: string) {
         text: cat.category,
         category: 'Categoria',
         icon: '📂',
-      }),
+      })
     })
 
     return suggestions.slice(0, 8) // Limitar a 8 sugestões
 
   } catch (error) {
     console.error('Erro ao gerar sugestões:', error)
-    return [],
+    return []
   }
 }
 
@@ -152,23 +152,23 @@ async function performAdvancedSearch(query: string) {
         published: true,
         OR: [
           // Busca exata no título (maior relevância)
-          { title: { contains: query, mode: 'insensitive' } },
+          { title: { contains: query, mode: 'insensitive' } }
           // Busca exata no resumo
-          { excerpt: { contains: query, mode: 'insensitive' } },
+          { excerpt: { contains: query, mode: 'insensitive' } }
           // Busca no conteúdo
-          { content: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query, mode: 'insensitive' } }
           // Busca no país
-          { country: { contains: query, mode: 'insensitive' } },
+          { country: { contains: query, mode: 'insensitive' } }
           // Busca no autor
-          { author: { contains: query, mode: 'insensitive' } },
+          { author: { contains: query, mode: 'insensitive' } }
           // Busca individual por palavras
           ...searchWords.flatMap(word => [
-            { title: { contains: word, mode: 'insensitive' } },
-            { excerpt: { contains: word, mode: 'insensitive' } },
+            { title: { contains: word, mode: 'insensitive' } }
+            { excerpt: { contains: word, mode: 'insensitive' } }
             { country: { contains: word, mode: 'insensitive' } }
           ])
         ],
-      },
+      }
       select: {
         id: true,
         title: true,
@@ -189,7 +189,7 @@ async function performAdvancedSearch(query: string) {
         tags: true,
         country: true,
         flag: true,
-      },
+      }
     })
 
     // Calcular score de relevância para cada post
@@ -232,11 +232,11 @@ async function performAdvancedSearch(query: string) {
       score += Math.min(post.likes / 10, 10) // Max 10 pontos por likes
 
       return {
-        ...post,
+        ...post
         score,
         tags: Array.isArray(post.tags) ? post.tags : [],
         relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low',
-      },
+      }
     })
 
     // Ordenar por score e remover duplicatas
@@ -248,6 +248,6 @@ async function performAdvancedSearch(query: string) {
 
   } catch (error) {
     console.error('Erro na busca avançada:', error)
-    return [],
+    return []
   }
 }

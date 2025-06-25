@@ -4,25 +4,25 @@ import { z } from 'zod'
 
 // Schema para avaliação de qualidade
 const qualityAssessmentSchema = z.object({
-  clientId: z.string(),
+  clientId: z.string()
   assessmentType: z.enum([
     'document_review',
     'application_completeness',
     'compliance_check',
     'submission_readiness',
     'full_audit'
-  ]),
+  ])
   scope: z.object({
-    includeDocuments: z.boolean().default(true),
-    includeProfile: z.boolean().default(true),
-    includeStrategy: z.boolean().default(true),
-    includeCompliance: z.boolean().default(true),
-  }).optional(),
+    includeDocuments: z.boolean().default(true)
+    includeProfile: z.boolean().default(true)
+    includeStrategy: z.boolean().default(true)
+    includeCompliance: z.boolean().default(true)
+  }).optional()
   criteria: z.object({
-    documentQuality: z.number().min(0).max(100).default(80),
-    completenessThreshold: z.number().min(0).max(100).default(90),
-    complianceLevel: z.enum(['basic', 'standard', 'strict']).default('standard'),
-  }).optional(),
+    documentQuality: z.number().min(0).max(100).default(80)
+    completenessThreshold: z.number().min(0).max(100).default(90)
+    complianceLevel: z.enum(['basic', 'standard', 'strict']).default('standard')
+  }).optional()
 })
 
 // POST /api/quality/assurance - Realizar avaliação de qualidade
@@ -33,20 +33,20 @@ export async function POST(request: NextRequest) {
 
     // Buscar dados do cliente
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId },
+      where: { id: validatedData.clientId }
       include: {
         documents: {
-          where: { status: { in: ['UPLOADED', 'PROCESSED', 'VERIFIED'] } },
-        },
+          where: { status: { in: ['UPLOADED', 'PROCESSED', 'VERIFIED'] } }
+        }
         consultations: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 5,
-        },
+        }
         interactions: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 20,
-        },
-      },
+        }
+      }
     })
 
     if (!client) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Realizar avaliação de qualidade
     const qualityAssessment = await performQualityAssessment(
-      client,
+      client
       validatedData.assessmentType,
       validatedData.scope,
       validatedData.criteria
@@ -86,40 +86,40 @@ export async function POST(request: NextRequest) {
         action: `quality_${validatedData.assessmentType}`,
         clientId: validatedData.clientId,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
       data: {
-        assessment: qualityAssessment,
+        assessment: qualityAssessment
         report: detailedReport,
         checklist: actionChecklist,
         readinessScore: readinessScore,
-        recommendations: prioritizeRecommendations(qualityAssessment.recommendations),
-        timeline: generateQualityTimeline(qualityAssessment),
-      },
+        recommendations: prioritizeRecommendations(qualityAssessment.recommendations)
+        timeline: generateQualityTimeline(qualityAssessment)
+      }
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro na avaliação de qualidade:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
 
     if (!clientId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - period)
 
     const whereClause: any = {
-      clientId: clientId,
+      clientId: clientId
       type: 'QUALITY_ASSESSMENT',
       createdAt: { gte: startDate }
     }
@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
 
     const assessments = await prisma.automationLog.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
       take: 20,
     })
 
@@ -163,28 +163,28 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: {
         assessments: assessments.map(a => ({
-          id: a.id,
-          type: a.action?.replace('quality_', ''),
+          id: a.id
+          type: a.action?.replace('quality_', '')
           overallScore: a.details?.overallScore || 0,
           readinessLevel: a.details?.readinessLevel,
           criticalIssues: a.details?.criticalIssues || 0,
           createdAt: a.createdAt,
-        })),
+        }))
         trends: trends,
         summary: {
           totalAssessments: assessments.length,
           averageScore: assessments.reduce((sum, a) => sum + (a.details?.overallScore || 0), 0) / assessments.length || 0,
           latestReadinessLevel: assessments[0]?.details?.readinessLevel || 'unknown',
-        },
-      },
+        }
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar histórico de qualidade:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -194,11 +194,11 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     overallScore: 0,
     readinessLevel: 'not_ready' as 'ready' | 'almost_ready' | 'needs_work' | 'not_ready',
     breakdown: {
-      documents: { score: 0, weight: 0.4 },
-      profile: { score: 0, weight: 0.2 },
-      compliance: { score: 0, weight: 0.3 },
-      strategy: { score: 0, weight: 0.1 },
-    },
+      documents: { score: 0, weight: 0.4 }
+      profile: { score: 0, weight: 0.2 }
+      compliance: { score: 0, weight: 0.3 }
+      strategy: { score: 0, weight: 0.1 }
+    }
     issues: [] as any[],
     strengths: [] as any[],
     recommendations: [] as any[],
@@ -315,7 +315,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
     assessment.metrics.expiredDocuments = documents.filter(d => {
       if (!d.expiryDate) return false
       const expiryDate = new Date(d.expiryDate)
-      return expiryDate < sixMonthsFromNow,
+      return expiryDate < sixMonthsFromNow
     })
   }
 
@@ -363,7 +363,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       type: 'low_quality_documents',
       severity: 'medium',
       message: `${assessment.metrics.lowQualityDocuments.length} documents below quality threshold`,
-      details: assessment.metrics.lowQualityDocuments.map(d => d.fileName),
+      details: assessment.metrics.lowQualityDocuments.map(d => d.fileName)
     })
     assessment.recommendations.push({
       priority: 'medium',
@@ -378,7 +378,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       type: 'expiring_documents',
       severity: 'high',
       message: `${assessment.metrics.expiredDocuments.length} documents expired or expiring soon`,
-      details: assessment.metrics.expiredDocuments.map(d => ({ name: d.fileName, expiry: d.expiryDate })),
+      details: assessment.metrics.expiredDocuments.map(d => ({ name: d.fileName, expiry: d.expiryDate }))
     })
     assessment.recommendations.push({
       priority: 'high',
@@ -409,7 +409,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
 // Avaliar perfil do cliente
 function assessClientProfile(client: any) {
   const assessment = {
-    score: 0,
+    score: 0
     issues: [] as any[],
     strengths: [] as any[],
     recommendations: [] as any[],
@@ -520,7 +520,7 @@ async function assessCompliance(client: any, criteria: any) {
     const validationScores = documentsWithValidation.map((d: any) => {
       const validResults = d.ocrData.validationResults.filter((v: any) => v.isValid).length
       const totalResults = d.ocrData.validationResults.length
-      return totalResults > 0 ? (validResults / totalResults) * 100 : 100,
+      return totalResults > 0 ? (validResults / totalResults) * 100 : 100
     })
     
     assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length,
@@ -552,7 +552,7 @@ async function assessCompliance(client: any, criteria: any) {
 // Avaliar estratégia de aplicação
 function assessApplicationStrategy(client: any) {
   const assessment = {
-    score: 0,
+    score: 0
     issues: [] as any[],
     strengths: [] as any[],
     recommendations: [] as any[],
@@ -587,28 +587,28 @@ function determineReadinessLevel(overallScore: number, issues: any[]) {
 async function generateQualityReport(assessment: any, client: any, assessmentType: string) {
   return {
     summary: {
-      overallScore: assessment.overallScore,
+      overallScore: assessment.overallScore
       readinessLevel: assessment.readinessLevel,
       totalIssues: assessment.issues.length,
       criticalIssues: assessment.issues.filter((i: any) => i.severity === 'critical').length,
       recommendations: assessment.recommendations.length,
-    },
+    }
     breakdown: assessment.breakdown,
-    issues: groupIssuesBySeverity(assessment.issues),
+    issues: groupIssuesBySeverity(assessment.issues)
     strengths: assessment.strengths,
     metrics: assessment.metrics,
-    timeline: generateQualityTimeline(assessment),
-    nextSteps: generateQualityNextSteps(assessment, assessmentType),
+    timeline: generateQualityTimeline(assessment)
+    nextSteps: generateQualityNextSteps(assessment, assessmentType)
   }
 }
 
 // Agrupar issues por severidade
 function groupIssuesBySeverity(issues: any[]) {
   return {
-    critical: issues.filter(i => i.severity === 'critical'),
-    high: issues.filter(i => i.severity === 'high'),
-    medium: issues.filter(i => i.severity === 'medium'),
-    low: issues.filter(i => i.severity === 'low'),
+    critical: issues.filter(i => i.severity === 'critical')
+    high: issues.filter(i => i.severity === 'high')
+    medium: issues.filter(i => i.severity === 'medium')
+    low: issues.filter(i => i.severity === 'low')
   }
 }
 
@@ -625,7 +625,7 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
       category: issue.type,
       completed: false,
       dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias
-    }),
+    })
   })
   
   // Ações de alta prioridade
@@ -637,7 +637,7 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
       category: rec.category,
       completed: false,
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 dias
-    }),
+    })
   })
   
   return checklist
@@ -645,7 +645,7 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
 
 function calculateReadinessScore(assessment: any) {
   const readinessLevels = {
-    'ready': 95,
+    'ready': 95
     'almost_ready': 80,
     'needs_work': 60,
     'not_ready': 30
@@ -700,15 +700,15 @@ function generateQualityNextSteps(assessment: any, assessmentType: string) {
   if (assessment.readinessLevel === 'ready') {
     steps.push('✅ Quality assessment passed')
     steps.push('📋 Schedule final review session')
-    steps.push('🚀 Proceed with submission preparation'),
+    steps.push('🚀 Proceed with submission preparation')
   } else if (assessment.readinessLevel === 'almost_ready') {
     steps.push('⚡ Address remaining high-priority issues')
     steps.push('🔍 Perform targeted quality improvements')
-    steps.push('🔄 Schedule follow-up assessment'),
+    steps.push('🔄 Schedule follow-up assessment')
   } else if (assessment.readinessLevel === 'needs_work') {
     steps.push('🔧 Significant improvements needed')
     steps.push('📝 Create detailed improvement plan')
-    steps.push('📞 Schedule consultation for guidance'),
+    steps.push('📞 Schedule consultation for guidance')
   } else {
     steps.push('🚨 Critical issues must be resolved')
     steps.push('🛑 Submission not recommended at this time')
@@ -721,7 +721,7 @@ function generateQualityNextSteps(assessment: any, assessmentType: string) {
 function analyzeQualityTrends(assessments: any[]) {
   if (assessments.length < 2) {
     return {
-      trend: 'insufficient_data',
+      trend: 'insufficient_data'
       scoreChange: 0,
       improvement: false,
     }
@@ -733,7 +733,7 @@ function analyzeQualityTrends(assessments: any[]) {
   const scoreChange = latestScore - previousScore
   
   return {
-    trend: scoreChange > 5 ? 'improving' : scoreChange < -5 ? 'declining' : 'stable',
+    trend: scoreChange > 5 ? 'improving' : scoreChange < -5 ? 'declining' : 'stable'
     scoreChange: scoreChange,
     improvement: scoreChange > 0,
     averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length,

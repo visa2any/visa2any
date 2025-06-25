@@ -13,9 +13,9 @@ export async function GET(,
 
     if (result.success) {
       return NextResponse.json({
-        booking: result.booking,
+        booking: result.booking
         message: 'Status do exame recuperado com sucesso',
-      }),
+      })
     } else {
       return NextResponse.json(
         { status: 404 }
@@ -25,14 +25,14 @@ export async function GET(,
   } catch (error) {
     console.error('Erro ao verificar status do exame:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // PUT - Reagendar exame
-export async function PUT(,
+export async function PUT(
   request: NextRequest,
   { params }: { params: { bookingId: string } }
 ) {
@@ -43,7 +43,7 @@ export async function PUT(,
 
     if (!newDate || !newTime) {
       return NextResponse.json(
-        { error: 'Campos newDate e newTime são obrigatórios' },
+        { error: 'Campos newDate e newTime são obrigatórios' }
         { status: 400 }
       )
     }
@@ -52,12 +52,12 @@ export async function PUT(,
 
     if (result.success) {
       return NextResponse.json({
-        confirmationCode: result.confirmationCode,
+        confirmationCode: result.confirmationCode
         message: result.message,
-      }),
+      })
     } else {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -65,14 +65,14 @@ export async function PUT(,
   } catch (error) {
     console.error('Erro ao reagendar exame:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // DELETE - Cancelar exame
-export async function DELETE(,
+export async function DELETE(
   request: NextRequest,
   { params }: { params: { bookingId: string } }
 ) {
@@ -83,12 +83,12 @@ export async function DELETE(,
 
     if (result.success) {
       return NextResponse.json({
-        message: result.message,
-        cancelledAt: new Date().toISOString(),
-      }),
+        message: result.message
+        cancelledAt: new Date().toISOString()
+      })
     } else {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -96,8 +96,8 @@ export async function DELETE(,
   } catch (error) {
     console.error('Erro ao cancelar exame:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

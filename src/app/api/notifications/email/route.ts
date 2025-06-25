@@ -4,12 +4,12 @@ import { z } from 'zod'
 
 // Schema para envio de email
 const sendEmailSchema = z.object({
-  to: z.string().email('Email é obrigatório'),
-  subject: z.string().min(1, 'Assunto é obrigatório').optional(),
-  message: z.string().min(1, 'Mensagem é obrigatória').optional(),
-  template: z.string().optional(),
-  clientId: z.string().optional(),
-  variables: z.record(z.any()).optional(),
+  to: z.string().email('Email é obrigatório')
+  subject: z.string().min(1, 'Assunto é obrigatório').optional()
+  message: z.string().min(1, 'Mensagem é obrigatória').optional()
+  template: z.string().optional()
+  clientId: z.string().optional()
+  variables: z.record(z.any()).optional()
 })
 
 // Templates de email prontos
@@ -48,7 +48,7 @@ const EMAIL_TEMPLATES = {
         </div>
       </div>
     `,
-  },
+  }
   booking_confirmation: {
     subject: '📅 Agendamento Confirmado - Visa2Any', 
     html: `
@@ -100,14 +100,14 @@ export async function POST(request: NextRequest) {
       if (validatedData.variables) {
         Object.entries(validatedData.variables).forEach(([key, value]) => {
           emailContent.html = emailContent.html.replace(
-            new RegExp(`{${key}}`, 'g'), 
+            new RegExp(`{${key}}`, 'g') 
             String(value)
           )
           emailContent.subject = emailContent.subject.replace(
-            new RegExp(`{${key}}`, 'g'), 
+            new RegExp(`{${key}}`, 'g') 
             String(value)
-          ),
-        }),
+          )
+        })
       }
     }
 
@@ -127,19 +127,19 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId || null,
         error: emailResult.error || null,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
-      },
+        }
+      }
     })
 
     return NextResponse.json({
       data: {
-        messageId: emailResult.messageId,
+        messageId: emailResult.messageId
         sent: emailResult.success,
         provider: emailResult.provider,
         to: validatedData.to,
-      },
+      }
       message: 'Email enviado com sucesso',
     })
 
@@ -147,18 +147,18 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao enviar email:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -171,12 +171,12 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
+        port: parseInt(process.env.SMTP_PORT || '587')
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
-        },
+        }
       })
 
       const result = await transporter.sendMail({
@@ -189,11 +189,11 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       console.log('✅ Email enviado via Hostinger:', result.messageId)
       
       return {
-        messageId: result.messageId,
+        messageId: result.messageId
         provider: 'hostinger_smtp'
       }
     } catch (error) {
-      console.error('❌ Erro SMTP Hostinger:', error),
+      console.error('❌ Erro SMTP Hostinger:', error)
     }
   }
 
@@ -205,7 +205,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         headers: {
           'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
           'Content-Type': 'application/json',
-        },
+        }
         body: JSON.stringify({
           personalizations: [{
             to: [{ email: to }],
@@ -214,22 +214,22 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
           from: {
             email: process.env.FROM_EMAIL || 'info@visa2any.com',
             name: process.env.FROM_NAME || 'Visa2Any',
-          },
+          }
           content: [{
             type: 'text/html',
             value: html,
           }],
-        }),
+        })
       })
 
       if (response.ok) {
         return {
-          messageId: `sg_${Date.now()}`,
+          messageId: `sg_${Date.now()}`
           provider: 'sendgrid',
         }
       }
     } catch (error) {
-      console.error('SendGrid falhou:', error),
+      console.error('SendGrid falhou:', error)
     }
   }
 
@@ -241,7 +241,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   console.log('---')
 
   return {
-    messageId: `sim_${Date.now()}`,
+    messageId: `sim_${Date.now()}`
     provider: 'simulation',
   }
 }

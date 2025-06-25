@@ -8,8 +8,8 @@ import { applyRateLimit } from '@/lib/rate-limit'
 
 // Schema para login
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'Senha é obrigatória'),
+  email: z.string().email('Email inválido')
+  password: z.string().min(1, 'Senha é obrigatória')
 })
 
 // POST /api/auth/login - Login de usuário com rate limiting
@@ -20,20 +20,20 @@ export async function POST(request: NextRequest) {
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { 
-          error: rateLimitResult.error,
+          error: rateLimitResult.error
           rateLimitInfo: {
             limit: rateLimitResult.limit,
             remaining: rateLimitResult.remaining,
             reset: rateLimitResult.reset,
-          },
-        },
+          }
+        }
         { 
           status: 429,
           headers: {
-            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
-            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+            'X-RateLimit-Limit': rateLimitResult.limit.toString()
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString()
+            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString()
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()
           }
         }
       )
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar usuário
     const user = await prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email }
       select: {
         id: true,
         name: true,
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         password: true,
         role: true,
         isActive: true,
-      },
+      }
     })
 
     if (!user) {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
     }
@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
     // Gerar JWT token com configurações de segurança melhoradas
     const token = jwt.sign(
       { 
-        userId: user.id, 
+        userId: user.id 
         email: user.email, 
         role: user.role,
         iat: Math.floor(Date.now() / 1000), // ✅ Issued at
         jti: crypto.randomUUID() // ✅ JWT ID único
-      },
+      }
       jwtSecret,
       { 
         expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)
@@ -127,9 +127,9 @@ export async function POST(request: NextRequest) {
             userId: user.id,
             email: user.email,
             role: user.role,
-            loginTimestamp: new Date().toISOString(),
-          },
-        },
+            loginTimestamp: new Date().toISOString()
+          }
+        }
       })
     } catch (logError) {
       console.warn('Failed to log login:', logError)
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       data: {
         user: userData,
         token,
-      },
+      }
       message: 'Login realizado com sucesso',
     })
 
@@ -167,9 +167,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
@@ -179,8 +179,8 @@ export async function POST(request: NextRequest) {
     const errorStack = error instanceof Error ? error.stack : undefined
     console.error('Error details:', errorMessage, errorStack)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

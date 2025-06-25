@@ -14,22 +14,22 @@ export async function POST(request: NextRequest) {
         name: 'Upgrade VIP',
         price: 3497,
         description: 'Serviço premium com garantia de aprovação',
-      },
+      }
       'priority-processing': {
         name: 'Processamento Prioritário',
         price: 697,
         description: 'Acelere seu processo em 50%',
-      },
+      }
       'consultation-boost': {
         name: 'Consultoria Estratégica',
         price: 397,
         description: 'Aumente seu score de elegibilidade',
-      },
+      }
       'followup-service': {
         name: 'Seguro de Aprovação',
         price: 997,
         description: 'Acompanhamento até aprovação final',
-      },
+      }
       'interview-prep': {
         name: 'Preparação para Entrevista',
         price: 497,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     
     if (!product) {
       return NextResponse.json(
-        { error: 'Produto não encontrado' },
+        { error: 'Produto não encontrado' }
         { status: 404 }
       )
     }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const paymentUrl = `/checkout?product=${offerId}&customer=${customerId}&price=${product.price}`
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Redirecionando para pagamento',
       paymentUrl,
       product,
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Erro ao processar upsell:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

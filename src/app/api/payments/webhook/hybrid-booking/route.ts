@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
       headers: {
         'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
-      },
+      }
     })
 
     if (!paymentResponse.ok) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar registro de pagamento híbrido
     const hybridPayment = await prisma.hybridPayment.findUnique({
-      where: { id: paymentId },
+      where: { id: paymentId }
       include: {
         client: {
           select: {
@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
             name: true,
             email: true,
             phone: true,
-          },
-        },
-      },
+          }
+        }
+      }
     })
 
     if (!hybridPayment) {
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Erro no webhook híbrido:', error)
-    return NextResponse.json({ status: 'error' }, { status: 500 }),
+    return NextResponse.json({ status: 'error' }, { status: 500 })
   }
 }
 
@@ -86,15 +86,15 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
   try {
     // Atualizar status do pagamento
     await prisma.hybridPayment.update({
-      where: { id: hybridPayment.id },
+      where: { id: hybridPayment.id }
       data: {
         status: 'APPROVED',
         paymentMethod: paymentData.payment_method_id,
-        paymentId: paymentData.id.toString(),
+        paymentId: paymentData.id.toString()
         paidAmount: paymentData.transaction_amount,
-        paidAt: new Date(paymentData.date_approved),
-        updatedAt: new Date(),
-      },
+        paidAt: new Date(paymentData.date_approved)
+        updatedAt: new Date()
+      }
     })
 
     // Criar registro de agendamento para consultor
@@ -108,10 +108,10 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
         plan: hybridPayment.plan,
         urgency: hybridPayment.urgency,
         status: 'CONSULTANT_ASSIGNED',
-        assignedAt: new Date(),
-        deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency)),
-        createdAt: new Date(),
-      },
+        assignedAt: new Date()
+        deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))
+        createdAt: new Date()
+      }
     })
 
     // Notificar consultor para agendar
@@ -136,14 +136,14 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       consulate: hybridPayment.consulate,
       plan: hybridPayment.plan,
       paidAmount: paymentData.transaction_amount,
-      paymentMethod: getPaymentMethodName(paymentData.payment_method_id),
+      paymentMethod: getPaymentMethodName(paymentData.payment_method_id)
       bookingId: booking.id,
     })
 
     console.log('Pagamento aprovado processado:', hybridPayment.id)
 
   } catch (error) {
-    console.error('Erro ao processar pagamento aprovado:', error),
+    console.error('Erro ao processar pagamento aprovado:', error)
   }
 }
 
@@ -151,12 +151,12 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
 async function processPendingPayment(hybridPayment: any, paymentData: any) {
   try {
     await prisma.hybridPayment.update({
-      where: { id: hybridPayment.id },
+      where: { id: hybridPayment.id }
       data: {
         status: 'PENDING_PAYMENT',
-        paymentId: paymentData.id.toString(),
-        updatedAt: new Date(),
-      },
+        paymentId: paymentData.id.toString()
+        updatedAt: new Date()
+      }
     })
 
     // Notificar cliente sobre pendência
@@ -181,15 +181,15 @@ ${paymentData.payment_method_id === 'pix' ?
 
     await fetch('/api/notifications/whatsapp', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: hybridPayment.client.phone,
         message: message,
-      }),
+      })
     })
 
   } catch (error) {
-    console.error('Erro ao processar pagamento pendente:', error),
+    console.error('Erro ao processar pagamento pendente:', error)
   }
 }
 
@@ -197,19 +197,19 @@ ${paymentData.payment_method_id === 'pix' ?
 async function processRejectedPayment(hybridPayment: any, paymentData: any) {
   try {
     await prisma.hybridPayment.update({
-      where: { id: hybridPayment.id },
+      where: { id: hybridPayment.id }
       data: {
         status: 'REJECTED',
-        paymentId: paymentData.id.toString(),
+        paymentId: paymentData.id.toString()
         rejectionReason: paymentData.status_detail,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     })
 
     // Notificar cliente sobre rejeição
     const message = `❌ PAGAMENTO NÃO APROVADO
 
-Olá ${hybridPayment.client.name},
+Olá ${hybridPayment.client.name}
 
 Infelizmente seu pagamento não foi aprovado:
 
@@ -231,15 +231,15 @@ Infelizmente seu pagamento não foi aprovado:
 
     await fetch('/api/notifications/whatsapp', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: hybridPayment.client.phone,
         message: message,
-      }),
+      })
     })
 
   } catch (error) {
-    console.error('Erro ao processar pagamento rejeitado:', error),
+    console.error('Erro ao processar pagamento rejeitado:', error)
   }
 }
 
@@ -294,15 +294,15 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
   try {
     await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
         parse_mode: 'HTML',
-      }),
+      })
     })
   } catch (error) {
-    console.error('Erro ao notificar consultor:', error),
+    console.error('Erro ao notificar consultor:', error)
   }
 }
 
@@ -342,14 +342,14 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
   try {
     await fetch('/api/notifications/whatsapp', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: data.client.phone,
         message: message,
-      }),
+      })
     })
   } catch (error) {
-    console.error('Erro ao notificar cliente:', error),
+    console.error('Erro ao notificar cliente:', error)
   }
 }
 
@@ -365,7 +365,7 @@ function getBookingDeadline(urgency: string): number {
 
 function getPaymentMethodName(methodId: string): string {
   const methods: { [key: string]: string } = {
-    'pix': 'PIX',
+    'pix': 'PIX'
     'master': 'Mastercard',
     'visa': 'Visa',
     'elo': 'Elo',
@@ -378,7 +378,7 @@ function getPaymentMethodName(methodId: string): string {
 
 function getRejectionReason(detail: string): string {
   const reasons: { [key: string]: string } = {
-    'cc_rejected_insufficient_amount': 'Saldo/limite insuficiente',
+    'cc_rejected_insufficient_amount': 'Saldo/limite insuficiente'
     'cc_rejected_bad_filled_card_number': 'Número do cartão inválido',
     'cc_rejected_bad_filled_date': 'Data de vencimento inválida',
     'cc_rejected_bad_filled_security_code': 'Código de segurança inválido',

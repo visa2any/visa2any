@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     //         email: true,
     //         phone: true
     //       }
-    //     },
+    //     }
     //     payment: {
     //       select: {
     //         status: true,
@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
     //         paidAt: true
     //       }
     //     }
-    //   },
+    //   }
     //   orderBy: [
     //     {
     //       urgency: 'desc' // EMERGENCY primeiro
-    //     },
+    //     }
     //     {
     //       createdAt: 'asc' // Mais antigos primeiro
     //     }
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      bookings,
+      bookings
       stats
     })
 
@@ -117,7 +117,7 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
 
     // Como hybridBooking não existe no schema, vamos simular resposta
     const booking = {} // await prisma.hybridBooking.update({
-    //   where: { id: bookingId },
+    //   where: { id: bookingId }
     //   data: updateData,
     //   include: {
     //     client: {
@@ -134,7 +134,7 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     // await notifyClientStatusUpdate(booking, status, appointmentDetails)
 
     return NextResponse.json({
-      booking,
+      booking
       message: `Status atualizado para ${status}`
     })
 
@@ -151,16 +151,16 @@ async function assignConsultant(bookingId: string, consultantId: string) {
   try {
     // Como hybridBooking não existe no schema, vamos simular resposta
     const booking = {} // await prisma.hybridBooking.update({
-    //   where: { id: bookingId },
+    //   where: { id: bookingId }
     //   data: {
     //     assignedConsultant: consultantId,
-    //     assignedAt: new Date(),
+    //     assignedAt: new Date()
     //     updatedAt: new Date()
     //   }
     // })
 
     return NextResponse.json({
-      booking,
+      booking
       message: 'Consultor atribuído com sucesso'
     })
 
@@ -188,15 +188,15 @@ async function addBookingNote(bookingId: string, note: string) {
 
     const currentNotes = booking.notes || []
     const newNote = {
-      id: Date.now().toString(),
+      id: Date.now().toString()
       content: note,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
       author: 'Sistema' // TODO: pegar do usuário logado
     }
 
     // Como hybridBooking não existe no schema, vamos simular resposta
     const updatedBooking = {} // await prisma.hybridBooking.update({
-    //   where: { id: bookingId },
+    //   where: { id: bookingId }
     //   data: {
     //     notes: [...currentNotes, newNote],
     //     updatedAt: new Date()
@@ -204,7 +204,7 @@ async function addBookingNote(bookingId: string, note: string) {
     // })
 
     return NextResponse.json({
-      booking: updatedBooking,
+      booking: updatedBooking
       message: 'Nota adicionada com sucesso'
     })
 
@@ -235,7 +235,7 @@ async function extendDeadline(bookingId: string, hours: number) {
 
     // Como hybridBooking não existe no schema, vamos simular resposta
     const updatedBooking = {} // await prisma.hybridBooking.update({
-    //   where: { id: bookingId },
+    //   where: { id: bookingId }
     //   data: {
     //     deadline: newDeadline,
     //     updatedAt: new Date()
@@ -243,7 +243,7 @@ async function extendDeadline(bookingId: string, hours: number) {
     // })
 
     return NextResponse.json({
-      booking: updatedBooking,
+      booking: updatedBooking
       message: `Prazo estendido em ${hours} horas`
     })
 
@@ -312,7 +312,7 @@ ${appointmentDetails ? `
       case 'CANCELLED':
         message = `❌ AGENDAMENTO CANCELADO
 
-Olá ${booking.client.name},
+Olá ${booking.client.name}
 
 Infelizmente não conseguimos realizar seu agendamento:
 
@@ -333,7 +333,7 @@ Infelizmente não conseguimos realizar seu agendamento:
     if (message) {
       await fetch('/api/notifications/whatsapp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
           to: booking.client.phone,
           message: message

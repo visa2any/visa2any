@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized' }
         { status: 401 }
       )
     }
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
     console.log('✅ Processamento de posts agendados concluído')
     
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Posts agendados processados com sucesso',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     })
 
   } catch (error) {
@@ -33,21 +33,21 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(
       { 
-        error: 'Erro no processamento de posts agendados',
+        error: 'Erro no processamento de posts agendados'
         details: error instanceof Error ? error.message : 'Erro desconhecido',
-      },
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // GET para verificar status
 export async function GET() {
   return NextResponse.json({
-    service: 'Social Posts Cron Job',
+    service: 'Social Posts Cron Job'
     status: 'active',
     description: 'Processa posts agendados para redes sociais',
     schedule: 'A cada 5 minutos',
-    lastRun: new Date().toISOString(),
+    lastRun: new Date().toISOString()
   })
 }

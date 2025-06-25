@@ -4,37 +4,37 @@ import { z } from 'zod'
 
 // Schema para análise de lead scoring
 const leadScoringSchema = z.object({
-  clientId: z.string().optional(),
+  clientId: z.string().optional()
   profile: z.object({
     // Dados demográficos
-    age: z.number().optional(),
-    education: z.string().optional(),
-    income: z.string().optional(),
-    maritalStatus: z.string().optional(),
+    age: z.number().optional()
+    education: z.string().optional()
+    income: z.string().optional()
+    maritalStatus: z.string().optional()
     
     // Dados de interesse
-    targetCountry: z.string().optional(),
-    visaType: z.string().optional(),
-    timeframe: z.string().optional(),
+    targetCountry: z.string().optional()
+    visaType: z.string().optional()
+    timeframe: z.string().optional()
     
     // Dados comportamentais
-    source: z.string().optional(),
-    utmSource: z.string().optional(),
-    utmMedium: z.string().optional(),
-    deviceType: z.string().optional(),
+    source: z.string().optional()
+    utmSource: z.string().optional()
+    utmMedium: z.string().optional()
+    deviceType: z.string().optional()
     
     // Engagement
-    pageViews: z.number().optional(),
-    timeOnSite: z.number().optional(),
-    emailOpens: z.number().optional(),
-    clickThroughs: z.number().optional(),
+    pageViews: z.number().optional()
+    timeOnSite: z.number().optional()
+    emailOpens: z.number().optional()
+    clickThroughs: z.number().optional()
     
     // Interações
-    assessmentCompleted: z.boolean().optional(),
-    documentsUploaded: z.number().optional(),
-    consultationBooked: z.boolean().optional(),
-    pricingPageVisits: z.number().optional(),
-  }),
+    assessmentCompleted: z.boolean().optional()
+    documentsUploaded: z.number().optional()
+    consultationBooked: z.boolean().optional()
+    pricingPageVisits: z.number().optional()
+  })
 })
 
 // POST /api/ml/lead-scoring - Calcular lead score avançado
@@ -47,16 +47,16 @@ export async function POST(request: NextRequest) {
     let clientData = null
     if (validatedData.clientId) {
       clientData = await prisma.client.findUnique({
-        where: { id: validatedData.clientId },
+        where: { id: validatedData.clientId }
         include: {
           interactions: {
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: 'desc' }
             take: 20,
-          },
+          }
           documents: true,
           consultations: true,
           payments: true,
-        },
+        }
       })
     }
 
@@ -84,41 +84,41 @@ export async function POST(request: NextRequest) {
         action: 'calculate_lead_score',
         clientId: validatedData.clientId || null,
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action',
-        },
+        }
         success: true,
-      },
+      }
     })
 
     return NextResponse.json({
       data: {
-        leadScore: scoringResult.totalScore,
-        grade: getScoreGrade(scoringResult.totalScore),
+        leadScore: scoringResult.totalScore
+        grade: getScoreGrade(scoringResult.totalScore)
         breakdown: scoringResult.breakdown,
         conversionProbability: conversionProbability,
         estimatedLTV: estimatedLTV,
         recommendedActions: recommendedActions,
-        insights: generateInsights(scoringResult, clientData),
-      },
+        insights: generateInsights(scoringResult, clientData)
+      }
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro no lead scoring:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -134,9 +134,9 @@ export async function GET(request: NextRequest) {
     // Buscar dados de scoring
     const scoringData = await prisma.automationLog.findMany({
       where: {
-        type: 'ML_LEAD_SCORING',
-        createdAt: { gte: startDate },
-      },
+        type: 'ML_LEAD_SCORING'
+        createdAt: { gte: startDate }
+      }
       include: {
         client: {
           select: {
@@ -144,9 +144,9 @@ export async function GET(request: NextRequest) {
             name: true,
             status: true,
             targetCountry: true,
-          },
-        },
-      },
+          }
+        }
+      }
     })
 
     // Analisar distribuição de scores
@@ -161,23 +161,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: {
         overview: {
-          totalScored: scoringData.length,
+          totalScored: scoringData.length
           averageScore: scoreDistribution.average,
           highQualityLeads: scoreDistribution.highQuality,
           modelAccuracy: modelAccuracy,
-        },
+        }
         scoreDistribution: scoreDistribution,
         conversionFactors: conversionFactors,
-        trends: generateTrends(scoringData),
-      },
+        trends: generateTrends(scoringData)
+      }
     })
 
   } catch (error) {
     console.error('Erro em analytics de lead scoring:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -209,9 +209,9 @@ async function calculateAdvancedLeadScore(profile: any, clientData: any) {
   const totalScore = Object.values(breakdown).reduce((sum, score) => sum + score, 0)
 
   return {
-    totalScore: Math.min(totalScore, 100),
+    totalScore: Math.min(totalScore, 100)
     breakdown,
-    factors: identifyKeyFactors(breakdown, profile),
+    factors: identifyKeyFactors(breakdown, profile)
   }
 }
 
@@ -396,7 +396,7 @@ function getRecommendedActions(scoringResult: any): any[] {
 
   if (score >= 80) {
     actions.push({
-      priority: 'URGENT',
+      priority: 'URGENT'
       action: 'immediate_call',
       description: 'Ligar imediatamente - lead quente',
       sla: '15 minutos',
@@ -406,7 +406,7 @@ function getRecommendedActions(scoringResult: any): any[] {
       action: 'premium_offer',
       description: 'Oferecer desconto premium',
       sla: '1 hora',
-    }),
+    })
   } else if (score >= 60) {
     actions.push({
       priority: 'HIGH',
@@ -419,7 +419,7 @@ function getRecommendedActions(scoringResult: any): any[] {
       action: 'nurture_sequence',
       description: 'Iniciar sequência de nurturing premium',
       sla: '4 horas',
-    }),
+    })
   } else if (score >= 40) {
     actions.push({
       priority: 'MEDIUM',
@@ -432,7 +432,7 @@ function getRecommendedActions(scoringResult: any): any[] {
       action: 'retargeting',
       description: 'Adicionar em campanhas de retargeting',
       sla: '48 horas',
-    }),
+    })
   } else {
     actions.push({
       priority: 'LOW',
@@ -499,14 +499,14 @@ function calculateEstimatedLTV(profile: any, scoringResult: any): number {
 async function updateClientScore(clientId: string, scoringResult: any) {
   try {
     await prisma.client.update({
-      where: { id: clientId },
+      where: { id: clientId }
       data: {
         leadScore: scoringResult.totalScore,
-        lastScoredAt: new Date(),
-      },
+        lastScoredAt: new Date()
+      }
     })
   } catch (error) {
-    console.error('Erro ao atualizar score do cliente:', error),
+    console.error('Erro ao atualizar score do cliente:', error)
   }
 }
 
@@ -516,11 +516,11 @@ function generateInsights(scoringResult: any, clientData: any): string[] {
   const score = scoringResult.totalScore
 
   if (score >= 80) {
-    insights.push('🔥 Lead de altíssima qualidade - ação imediata recomendada'),
+    insights.push('🔥 Lead de altíssima qualidade - ação imediata recomendada')
   } else if (score >= 60) {
-    insights.push('⭐ Lead qualificado - alta probabilidade de conversão'),
+    insights.push('⭐ Lead qualificado - alta probabilidade de conversão')
   } else if (score >= 40) {
-    insights.push('💡 Lead com potencial - precisa de nurturing'),
+    insights.push('💡 Lead com potencial - precisa de nurturing')
   } else {
     insights.push('📚 Lead inicial - foque em educação')
   }
@@ -557,9 +557,9 @@ async function calculateModelAccuracy(data: any[]) {
 function analyzeConversionFactors(data: any[]) {
   // Analisar quais fatores mais correlacionam com conversão
   return [
-    { factor: 'Assessment Completed', correlation: 0.85 },
-    { factor: 'Multiple Pricing Visits', correlation: 0.72 },
-    { factor: 'Email Engagement', correlation: 0.68 },
+    { factor: 'Assessment Completed', correlation: 0.85 }
+    { factor: 'Multiple Pricing Visits', correlation: 0.72 }
+    { factor: 'Email Engagement', correlation: 0.68 }
     { factor: 'Time on Site > 10min', correlation: 0.65 }
   ]
 }
@@ -567,7 +567,7 @@ function analyzeConversionFactors(data: any[]) {
 function generateTrends(data: any[]) {
   // Gerar trends de score ao longo do tempo
   return {
-    averageScoreImprovement: '+12%',
+    averageScoreImprovement: '+12%'
     conversionRateImprovement: '+23%',
     topPerformingSource: 'organic',
   }

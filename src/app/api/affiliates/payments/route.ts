@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' }
         include: {
           affiliate: {
             select: {
@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
               name: true,
               email: true,
               referralCode: true,
-            },
-          },
+            }
+          }
           referral: {
             include: {
               client: {
@@ -49,13 +49,13 @@ export async function GET(request: NextRequest) {
                   id: true,
                   name: true,
                   email: true,
-                },
-              },
-            },
-          },
+                }
+              }
+            }
+          }
           payment: true,
-        },
-      }),
+        }
+      })
       prisma.affiliateCommission.count({ where })
     ])
 
@@ -64,11 +64,11 @@ export async function GET(request: NextRequest) {
       by: ['status'],
       _sum: {
         amount: true,
-      },
+      }
       _count: {
         id: true,
-      },
-      where: affiliateId ? { affiliateId } : {},
+      }
+      where: affiliateId ? { affiliateId } : {}
     })
 
     const paymentStats = stats.reduce((acc, stat) => {
@@ -76,29 +76,29 @@ export async function GET(request: NextRequest) {
         count: stat._count.id,
         amount: stat._sum.amount || 0
       }
-      return acc,
+      return acc
     }, {} as Record<string, { count: number; amount: number }>)
 
     return NextResponse.json({
       data: {
-        commissions,
+        commissions
         pagination: {
           page,
           limit,
           total,
-          pages: Math.ceil(total / limit),
-        },
+          pages: Math.ceil(total / limit)
+        }
         stats: paymentStats,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   } finally {
-    await prisma.$disconnect(),
+    await prisma.$disconnect()
   }
 }
 
@@ -110,24 +110,24 @@ export async function POST(request: NextRequest) {
 
     if (!commissionIds || !Array.isArray(commissionIds) || commissionIds.length === 0) {
       return NextResponse.json({
-        error: 'IDs de comissões são obrigatórios',
+        error: 'IDs de comissões são obrigatórios'
       }, { status: 400 })
     }
 
     // Buscar comissões pendentes
     const commissions = await prisma.affiliateCommission.findMany({
       where: {
-        id: { in: commissionIds },
+        id: { in: commissionIds }
         status: 'PENDING',
-      },
+      }
       include: {
         affiliate: true,
-      },
+      }
     })
 
     if (commissions.length === 0) {
       return NextResponse.json({
-        error: 'Nenhuma comissão pendente encontrada',
+        error: 'Nenhuma comissão pendente encontrada'
       }, { status: 400 })
     }
 
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
       }
       acc[affiliateId].commissions.push(commission)
       acc[affiliateId].totalAmount += commission.amount
-      return acc,
+      return acc
     }, {} as Record<string, any>)
 
     // Criar pagamentos para cada afiliado
@@ -168,28 +168,28 @@ export async function POST(request: NextRequest) {
             paymentMethod: paymentMethod,
             commissionCount: group.commissions.length,
             paymentPeriod: 'manual',
-            processedAt: new Date().toISOString(),
-          },
-        },
+            processedAt: new Date().toISOString()
+          }
+        }
       })
 
       // Atualizar comissões para referenciar o pagamento
       await prisma.affiliateCommission.updateMany({
         where: {
-          id: { in: group.commissions.map((c: any) => c.id) },
-        },
+          id: { in: group.commissions.map((c: any) => c.id) }
+        }
         data: {
           status: 'APPROVED',
           paymentId: payment.id,
-        },
+        }
       })
 
       // Atualizar saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: affiliateId },
+        where: { id: affiliateId }
         data: {
-          pendingEarnings: { decrement: group.totalAmount },
-        },
+          pendingEarnings: { decrement: group.totalAmount }
+        }
       })
 
       payments.push(payment)
@@ -200,18 +200,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        payments,
+        payments
         message: `${payments.length} pagamento(s) criado(s) com sucesso`,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao processar pagamentos:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   } finally {
-    await prisma.$disconnect(),
+    await prisma.$disconnect()
   }
 }
 
@@ -223,14 +223,14 @@ export async function PUT(request: NextRequest) {
 
     if (!paymentId || !status) {
       return NextResponse.json({
-        error: 'ID do pagamento e status são obrigatórios',
+        error: 'ID do pagamento e status são obrigatórios'
       }, { status: 400 })
     }
 
     const validStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']
     if (!validStatuses.includes(status)) {
       return NextResponse.json({
-        error: 'Status inválido',
+        error: 'Status inválido'
       }, { status: 400 })
     }
 
@@ -248,55 +248,55 @@ export async function PUT(request: NextRequest) {
       }
       
       if (receipt) {
-        updateData.receipt = receipt,
+        updateData.receipt = receipt
       }
     }
 
     const payment = await prisma.affiliatePayment.update({
-      where: { id: paymentId },
+      where: { id: paymentId }
       data: updateData,
       include: {
         affiliate: true,
         commissions: true,
-      },
+      }
     })
 
     // Se pagamento foi completado, atualizar comissões e afiliado
     if (status === 'COMPLETED') {
       // Marcar comissões como pagas
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId },
+        where: { paymentId }
         data: {
           status: 'PAID',
-          paidAt: new Date(),
-        },
+          paidAt: new Date()
+        }
       })
 
       // Atualizar saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId },
+        where: { id: payment.affiliateId }
         data: {
-          paidEarnings: { increment: payment.amount },
-        },
+          paidEarnings: { increment: payment.amount }
+        }
       })
     }
 
     // Se pagamento falhou, reverter comissões
     if (status === 'FAILED' || status === 'CANCELLED') {
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId },
+        where: { paymentId }
         data: {
           status: 'PENDING',
           paymentId: null,
-        },
+        }
       })
 
       // Reverter saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId },
+        where: { id: payment.affiliateId }
         data: {
-          pendingEarnings: { increment: payment.amount },
-        },
+          pendingEarnings: { increment: payment.amount }
+        }
       })
     }
 
@@ -304,15 +304,15 @@ export async function PUT(request: NextRequest) {
     // await sendPaymentNotification(payment)
 
     return NextResponse.json({
-      data: payment,
+      data: payment
     })
 
   } catch (error) {
     console.error('Erro ao atualizar pagamento:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   } finally {
-    await prisma.$disconnect(),
+    await prisma.$disconnect()
   }
 }

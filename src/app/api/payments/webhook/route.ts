@@ -17,28 +17,28 @@ export async function POST(request: NextRequest) {
       // Pagamento aprovado - notificar cliente
       if (result.trackingId) {
         await notificationService.sendPaymentConfirmation(result.trackingId)
-        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved'),
+        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved')
       }
     }
     
     return NextResponse.json({
-      success: result.success,
+      success: result.success
       message: 'Webhook processado com sucesso',
     })
     
   } catch (error) {
     console.error('Erro no webhook:', error)
     return NextResponse.json(
-      { error: 'Erro ao processar webhook' },
+      { error: 'Erro ao processar webhook' }
       { status: 500 }
-    ),
+    )
   }
 }
 
 // GET - Verificar webhook (para testes)
 export async function GET() {
   return NextResponse.json({
-    webhook: 'Mercado Pago Webhook Endpoint',
+    webhook: 'Mercado Pago Webhook Endpoint'
     status: 'Online',
     url: '/api/payments/webhook',
     methods: ['POST'],

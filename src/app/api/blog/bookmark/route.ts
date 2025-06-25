@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
     }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     if (!postId || !action) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -47,10 +47,10 @@ export async function POST(request: NextRequest) {
       const existingBookmark = await prisma.blogPostBookmark.findUnique({
         where: {
           userId_postId: {
-            userId,
+            userId
             postId,
-          },
-        },
+          }
+        }
       })
 
       if (!existingBookmark) {
@@ -58,27 +58,27 @@ export async function POST(request: NextRequest) {
           data: {
             userId,
             postId,
-          },
-        }),
-      },
+          }
+        })
+      }
     } else if (action === 'remove') {
       await prisma.blogPostBookmark.deleteMany({
         where: {
           userId,
           postId,
-        },
+        }
       })
     }
 
     return NextResponse.json({
-      action,
+      action
     })
 
   } catch (error) {
     console.error('Error handling blog bookmark:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

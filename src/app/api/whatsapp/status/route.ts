@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        service: 'WhatsApp Baileys Integrado',
+        service: 'WhatsApp Baileys Integrado'
         ...status,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
         instructions: status.needsQR ? [
           '1. Execute `npm run dev` no terminal',
           '2. O QR Code aparecerá no console do Next.js',
@@ -19,18 +19,18 @@ export async function GET(request: NextRequest) {
           '4. Escaneie o QR Code',
           '5. Aguarde confirmação de conexão'
         ] : null,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao verificar status do WhatsApp:', error)
     return NextResponse.json(
       { 
-        error: 'Erro ao verificar status do WhatsApp',
+        error: 'Erro ao verificar status do WhatsApp'
         details: error instanceof Error ? error.message : 'Erro desconhecido',
-      },
+      }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -41,18 +41,18 @@ export async function POST(request: NextRequest) {
     const whatsappService = getWhatsAppServiceSimple()
     
     return NextResponse.json({
-      message: 'Reconexão iniciada. Verifique o console para o QR Code.',
-      timestamp: new Date().toISOString(),
+      message: 'Reconexão iniciada. Verifique o console para o QR Code.'
+      timestamp: new Date().toISOString()
     })
 
   } catch (error) {
     console.error('Erro ao reconectar WhatsApp:', error)
     return NextResponse.json(
       { 
-        error: 'Erro ao reconectar WhatsApp',
+        error: 'Erro ao reconectar WhatsApp'
         details: error instanceof Error ? error.message : 'Erro desconhecido',
-      },
+      }
       { status: 500 }
-    ),
+    )
   }
 }

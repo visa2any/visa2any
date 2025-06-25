@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     
     if (webhookSecret !== 'visa2any_webhook_secret_2024') {
       return NextResponse.json({
-        error: 'Invalid webhook secret',
+        error: 'Invalid webhook secret'
       }, { status: 401 })
     }
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     // Validar que pagamento foi aprovado
     if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
       return NextResponse.json({
-        error: 'Payment not completed',
+        error: 'Payment not completed'
       }, { status: 400 })
     }
 
@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
       consulate: consulate || 'US Consulate São Paulo',
       visaType: visaType || 'B1/B2',
       currentAppointmentDate,
-      preferredDateStart: preferredDateStart || new Date().toISOString(),
-      preferredDateEnd: preferredDateEnd || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+      preferredDateStart: preferredDateStart || new Date().toISOString()
+      preferredDateEnd: preferredDateEnd || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
       urgencyLevel: urgencyLevel || 'HIGH',
       purchaseSource: 'WEBSITE',
       createdAt: new Date().toISOString()
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'application/json',
           'X-Webhook-Secret': 'visa2any_webhook_secret_2024',
-        },
-        body: JSON.stringify(n8nWebhookData),
+        }
+        body: JSON.stringify(n8nWebhookData)
       })
 
       if (!n8nResponse.ok) {
@@ -100,26 +100,26 @@ export async function POST(request: NextRequest) {
     // INSERT INTO vaga_express_subscriptions (...)
 
     return NextResponse.json({
-      message: 'Vaga Express activated successfully',
+      message: 'Vaga Express activated successfully'
       data: {
         purchaseId,
         plan,
         status: 'ACTIVE',
         monitoringStarted: true,
         estimatedActivationTime: '30 minutes',
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao ativar Vaga Express:', error)
     return NextResponse.json({
-      error: 'Internal server error',
-    }, { status: 500 }),
+      error: 'Internal server error'
+    }, { status: 500 })
   }
 }
 
 export async function GET() {
   return NextResponse.json({
-    message: 'Vaga Express Activation API - Use POST with payment confirmation',
+    message: 'Vaga Express Activation API - Use POST with payment confirmation'
   })
 }

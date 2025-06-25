@@ -11,17 +11,17 @@ export async function PATCH(,
     const { status, engagement } = body
 
     const socialPost = await prisma.socialPost.update({
-      where: { id },
+      where: { id }
       data: {
-        status: status === 'published' ? 'PUBLISHED' : status.toUpperCase(),
+        status: status === 'published' ? 'PUBLISHED' : status.toUpperCase()
         publishedAt: status === 'published' ? new Date() : undefined,
         engagement: engagement || undefined,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     })
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Status atualizado com sucesso',
       socialPost,
     })
@@ -29,8 +29,8 @@ export async function PATCH(,
   } catch (error) {
     console.error('[SOCIAL COMPLETE] Erro:', error)
     return NextResponse.json(
-      { error: 'Erro ao atualizar status' },
+      { error: 'Erro ao atualizar status' }
       { status: 500 }
-    ),
+    )
   }
 }

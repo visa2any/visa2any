@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   const health = {
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
     environment: process.env.NODE_ENV,
     status: 'healthy',
     services: {} as any,
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   if (process.env.TELEGRAM_BOT_TOKEN) {
     try {
       const telegramResponse = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getMe`, {
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(5000)
       })
       
       health.services.telegram = {
@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
         status: 'error',
         configured: true,
         error: 'Connection failed',
-      },
-    },
+      }
+    }
   } else {
     health.services.telegram = {
       status: 'not_configured',
@@ -60,8 +60,8 @@ export async function GET(request: NextRequest) {
       const whatsappResponse = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}`, {
         headers: {
           'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
-        },
-        signal: AbortSignal.timeout(5000),
+        }
+        signal: AbortSignal.timeout(5000)
       })
       
       health.services.whatsapp = {
@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
         status: 'error',
         configured: true,
         error: 'Connection failed',
-      },
-    },
+      }
+    }
   } else {
     health.services.whatsapp = {
       status: 'not_configured',
@@ -90,8 +90,8 @@ export async function GET(request: NextRequest) {
       const emailResponse = await fetch('https://api.resend.com/domains', {
         headers: {
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-        },
-        signal: AbortSignal.timeout(5000),
+        }
+        signal: AbortSignal.timeout(5000)
       })
       
       health.services.email = {
@@ -105,15 +105,15 @@ export async function GET(request: NextRequest) {
         configured: true,
         provider: 'resend',
         error: 'Connection failed',
-      },
-    },
+      }
+    }
   } else if (process.env.SMTP_HOST) {
     health.services.email = {
       status: 'configured',
       configured: true,
       provider: 'smtp',
       host: process.env.SMTP_HOST,
-    },
+    }
   } else {
     health.services.email = {
       status: 'not_configured',
@@ -128,8 +128,8 @@ export async function GET(request: NextRequest) {
       const mpResponse = await fetch('https://api.mercadopago.com/users/me', {
         headers: {
           'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
-        },
-        signal: AbortSignal.timeout(5000),
+        }
+        signal: AbortSignal.timeout(5000)
       })
       
       health.services.payment = {
@@ -143,14 +143,14 @@ export async function GET(request: NextRequest) {
         configured: true,
         provider: 'mercadopago',
         error: 'Connection failed',
-      },
-    },
+      }
+    }
   } else if (process.env.STRIPE_SECRET_KEY) {
     health.services.payment = {
       status: 'configured',
       configured: true,
       provider: 'stripe',
-    },
+    }
   } else {
     health.services.payment = {
       status: 'not_configured',
@@ -164,15 +164,15 @@ export async function GET(request: NextRequest) {
     nextauth: {
       url: !!process.env.NEXTAUTH_URL,
       secret: !!process.env.NEXTAUTH_SECRET,
-    },
+    }
     features: {
       realMonitoring: process.env.ENABLE_REAL_MONITORING === 'true',
       paymentProcessing: process.env.ENABLE_PAYMENT_PROCESSING !== 'false',
       hybridBooking: process.env.ENABLE_HYBRID_BOOKING !== 'false',
-    },
+    }
     storage: {
-      cloudinary: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY),
-      aws: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY),
+      cloudinary: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY)
+      aws: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
     }
   }
 
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
   const hasCriticalErrors = criticalServices.some(service => {
     if (service === 'database') return health.database.status === 'error'
     if (service === 'payment') return health.services.payment?.status === 'error'
-    return false,
+    return false
   })
 
   if (hasCriticalErrors) {

@@ -13,14 +13,14 @@ export async function GET() {
         status: 'SCHEDULED',
         scheduledAt: {
           lte: now // Posts agendados para agora ou no passado
-        },
-      },
-      orderBy: { scheduledAt: 'asc' },
+        }
+      }
+      orderBy: { scheduledAt: 'asc' }
       take: 50,
     })
 
     return NextResponse.json({
-      success: true,
+      success: true
       count: pendingPosts.length,
       posts: pendingPosts,
     })
@@ -28,8 +28,8 @@ export async function GET() {
   } catch (error) {
     console.error('[SOCIAL PENDING] Erro:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar posts pendentes' },
+      { error: 'Erro ao buscar posts pendentes' }
       { status: 500 }
-    ),
+    )
   }
 }

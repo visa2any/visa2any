@@ -12,13 +12,13 @@ export async function GET() {
         needsResponse: true,
         responded: false,
         escalated: false,
-      },
-      orderBy: { createdAt: 'asc' },
+      }
+      orderBy: { createdAt: 'asc' }
       take: 50,
     })
 
     return NextResponse.json({
-      success: true,
+      success: true
       count: pendingComments.length,
       comments: pendingComments,
     })
@@ -26,8 +26,8 @@ export async function GET() {
   } catch (error) {
     console.error('[COMMENTS PENDING] Erro:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar comentários pendentes' },
+      { error: 'Erro ao buscar comentários pendentes' }
       { status: 500 }
-    ),
+    )
   }
 }

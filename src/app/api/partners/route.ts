@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       const partnersStatus = partnerIntegrationService.getPartnersStatus()
       
       return NextResponse.json({
-        partners: partnersStatus,
+        partners: partnersStatus
         total: partnersStatus.length,
         message: 'Status dos parceiros recuperado com sucesso',
       })
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       const availablePartners = await partnerIntegrationService.getAvailablePartners(country)
       
       return NextResponse.json({
-        partners: availablePartners,
+        partners: availablePartners
         total: availablePartners.length,
         country,
         message: availablePartners.length > 0 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     
     if (!country) {
       return NextResponse.json(
-        { error: 'Parâmetro country é obrigatório' },
+        { error: 'Parâmetro country é obrigatório' }
         { status: 400 }
       )
     }
@@ -49,27 +49,27 @@ export async function GET(request: NextRequest) {
     if (bestPartner) {
       return NextResponse.json({
         recommendedPartner: {
-          id: bestPartner.id,
+          id: bestPartner.id
           name: bestPartner.name,
           features: bestPartner.features,
           reliability: bestPartner.reliability,
           estimatedCost: bestPartner.pricing.perTransaction,
           processingSpeed: `${bestPartner.speed}ms avg response`,
-        },
+        }
         message: 'Melhor parceiro encontrado',
-      }),
+      })
     } else {
       return NextResponse.json({
-        message: 'Nenhum parceiro disponível para esta combinação',
+        message: 'Nenhum parceiro disponível para esta combinação'
       })
     }
 
   } catch (error) {
     console.error('Erro na API de parceiros:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -83,9 +83,9 @@ export async function POST(request: NextRequest) {
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json(
-          { error: `Campo ${field} é obrigatório` },
+          { error: `Campo ${field} é obrigatório` }
           { status: 400 }
-        ),
+        )
       }
     }
 
@@ -94,16 +94,16 @@ export async function POST(request: NextRequest) {
     for (const field of requiredApplicantFields) {
       if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {
         return NextResponse.json(
-          { error: `Campo applicantInfo.${field} é obrigatório` },
+          { error: `Campo applicantInfo.${field} é obrigatório` }
           { status: 400 }
-        ),
+        )
       }
     }
 
     // Validar informações do visto
     if (!body.visaInfo.country || !body.visaInfo.visaType) {
       return NextResponse.json(
-        { error: 'Campos visaInfo.country e visaInfo.visaType são obrigatórios' },
+        { error: 'Campos visaInfo.country e visaInfo.visaType são obrigatórios' }
         { status: 400 }
       )
     }
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
       if (!bestPartner) {
         return NextResponse.json(
-          { error: 'Nenhum parceiro disponível para esta solicitação' },
+          { error: 'Nenhum parceiro disponível para esta solicitação' }
           { status: 400 }
         )
       }
@@ -132,28 +132,28 @@ export async function POST(request: NextRequest) {
     if (result.success) {
       // Calcular custo total com margem
       const totalCost = partnerIntegrationService.calculateTotalCost(
-        result.cost || 0,
+        result.cost || 0
         body.visaInfo.urgency
       )
 
       return NextResponse.json({
         booking: {
-          partnerId: result.partnerId,
+          partnerId: result.partnerId
           partnerReference: result.partnerReference,
           appointmentDetails: result.appointmentDetails,
           cost: result.cost,
           totalCost,
           processingTime: result.processingTime,
           instructions: result.instructions,
-        },
+        }
         message: 'Agendamento realizado via parceiro com sucesso!',
-      }),
+      })
     } else {
       return NextResponse.json(
         { 
-          error: result.error,
+          error: result.error
           partnerId: result.partnerId,
-        },
+        }
         { status: 400 }
       )
     }
@@ -161,8 +161,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no agendamento via parceiro:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

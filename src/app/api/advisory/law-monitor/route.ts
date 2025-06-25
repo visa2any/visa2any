@@ -4,11 +4,11 @@ import { z } from 'zod'
 
 // Schema para monitoramento de mudanças legais
 const lawMonitorSchema = z.object({
-  country: z.string(),
-  visaType: z.string().optional(),
-  alertType: z.enum(['immediate', 'daily', 'weekly']),
-  clientId: z.string().optional(),
-  keywords: z.array(z.string()).optional(),
+  country: z.string()
+  visaType: z.string().optional()
+  alertType: z.enum(['immediate', 'daily', 'weekly'])
+  clientId: z.string().optional()
+  keywords: z.array(z.string()).optional()
 })
 
 // POST /api/advisory/law-monitor - Configurar monitoramento
@@ -30,33 +30,33 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: validatedData.country,
+        country: validatedData.country
         visaType: validatedData.visaType,
         recentChanges: recentChanges,
         monitoring: {
           active: true,
           alertType: validatedData.alertType,
-          lastChecked: new Date().toISOString(),
-        },
-      },
+          lastChecked: new Date().toISOString()
+        }
+      }
     })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro no monitoramento legal:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     if (!country) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -80,21 +80,21 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: country,
+        country: country
         visaType: visaType,
         period: `${days} dias`,
         changes: changes,
         analysis: analysis,
-        recommendations: generateLawChangeRecommendations(changes, analysis),
-      },
+        recommendations: generateLawChangeRecommendations(changes, analysis)
+      }
     })
 
   } catch (error) {
     console.error('Erro ao buscar mudanças legais:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -130,7 +130,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         source: 'IRCC',
         category: 'requirements',
         affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program'],
-      },
+      }
       {
         id: 'ca-2024-002', 
         date: '2024-01-10',
@@ -157,7 +157,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
   // Filtrar por período
   return filteredChanges.filter(change => {
     const changeDate = new Date(change.date)
-    return changeDate >= startDate,
+    return changeDate >= startDate
   })
 }
 
@@ -168,12 +168,12 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     categories: {} as Record<string, number>,
     impact: 'medium',
     impactLevel: 'medium' as 'high' | 'medium' | 'low',
-    affectedPrograms: new Set<string>(),
+    affectedPrograms: new Set<string>()
     timeline: {
       immediate: 0,
       upcoming: 0,
       future: 0,
-    },
+    }
     recommendations: [] as string[]
   }
 
@@ -185,7 +185,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     // Identificar programas afetados
     if (change.affectedPrograms) {
       change.affectedPrograms.forEach((program: string) => {
-        analysis.affectedPrograms.add(program),
+        analysis.affectedPrograms.add(program)
       })
     }
     
@@ -198,8 +198,8 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
       
       if (daysUntilEffective <= 0) analysis.timeline.immediate++
       else if (daysUntilEffective <= 90) analysis.timeline.upcoming++
-      else analysis.timeline.future++,
-    },
+      else analysis.timeline.future++
+    }
   })
 
   // Determinar nível de impacto geral
@@ -245,8 +245,8 @@ async function setupLawChangeAlerts(data: any) {
         alertType: 'law_change_monitoring',
         country: data.country || 'all',
         visaType: data.visaType || 'all',
-      },
-    },
+      }
+    }
   })
   
   return { success: true }

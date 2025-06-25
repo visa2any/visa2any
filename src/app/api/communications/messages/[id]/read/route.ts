@@ -9,7 +9,7 @@ export async function PATCH(,
 
     if (!messageId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
@@ -26,15 +26,15 @@ export async function PATCH(,
     await new Promise(resolve => setTimeout(resolve, 200))
 
     return NextResponse.json({
-      message: 'Message marked as read',
+      message: 'Message marked as read'
       data: updatedMessage,
     })
 
   } catch (error) {
     console.error('Mark message as read error:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

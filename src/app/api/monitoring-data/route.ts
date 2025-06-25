@@ -21,19 +21,19 @@ export async function GET(request: NextRequest) {
         const appStats = monitoring.getStats()
         return NextResponse.json({ 
           stats: {
-            ...stats,
+            ...stats
             application: appStats,
-          },
+          }
         })
 
       case 'all':
         const [allChannels, allAlerts, allStats] = await Promise.all([
-          monitoringDataService.getChannels(),
-          monitoringDataService.getAlerts(),
+          monitoringDataService.getChannels()
+          monitoringDataService.getAlerts()
           monitoringDataService.getStats()
         ])
         return NextResponse.json({
-          channels: allChannels,
+          channels: allChannels
           alerts: allAlerts,
           stats: allStats,
         })
@@ -43,9 +43,9 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao buscar dados de monitoramento',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
+      error: 'Erro ao buscar dados de monitoramento'
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       case 'simulate_vaga':
         const simulatedAlert = await monitoringDataService.simulateVagaDetection()
         return NextResponse.json({ 
-          success: true, 
+          success: true 
           message: 'Vaga simulada criada', 
           alert: simulatedAlert ,
         })
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       case 'refresh':
         await monitoringDataService.refresh()
         return NextResponse.json({ 
-          success: true, 
+          success: true 
           message: 'Dados atualizados com sucesso' ,
         })
 
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao processar ação',
-      details: error instanceof Error ? error.message : String(error),
-    }, { status: 500 }),
+      error: 'Erro ao processar ação'
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }

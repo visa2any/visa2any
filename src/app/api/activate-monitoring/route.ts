@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     return NextResponse.json({ 
-      error: 'Erro interno do servidor',
+      error: 'Erro interno do servidor'
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
@@ -46,7 +46,7 @@ async function activateWebScraping() {
   try {
     if (webScrapingActive) {
       return NextResponse.json({ 
-        message: 'Web scraping já está ativo',
+        message: 'Web scraping já está ativo'
         status: 'active'
       })
     }
@@ -82,13 +82,13 @@ async function activateWebScraping() {
 Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Web scraping ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao ativar web scraping',
+      error: 'Erro ao ativar web scraping'
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
@@ -98,7 +98,7 @@ async function activateEmailMonitoring() {
   try {
     if (emailMonitoringActive) {
       return NextResponse.json({ 
-        message: 'Email monitoring já está ativo',
+        message: 'Email monitoring já está ativo'
         status: 'active'
       })
     }
@@ -108,7 +108,7 @@ async function activateEmailMonitoring() {
       try {
         console.log('📧 Verificando emails de consulados...')
         const [recentAlerts, consulateAlerts] = await Promise.all([
-          emailMonitoringService.checkRecentEmails(),
+          emailMonitoringService.checkRecentEmails()
           emailMonitoringService.checkConsulateEmails()
         ])
         
@@ -137,13 +137,13 @@ async function activateEmailMonitoring() {
 Você receberá alertas quando consulados enviarem emails sobre vagas!`)
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Email monitoring ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao ativar email monitoring',
+      error: 'Erro ao ativar email monitoring'
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
@@ -166,13 +166,13 @@ async function activateAutomation() {
 Máxima eficiência na detecção de slots!`)
 
     return NextResponse.json({
-      success: true,
+      success: true
       message: 'Browser automation ativado com sucesso!'
     })
 
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao ativar automation',
+      error: 'Erro ao ativar automation'
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
@@ -202,7 +202,7 @@ async function deactivateAll() {
     'Todos os sistemas de monitoramento foram desativados com sucesso.')
 
   return NextResponse.json({
-    success: true,
+    success: true
     message: 'Todos os sistemas foram desativados'
   })
 }
@@ -210,20 +210,20 @@ async function deactivateAll() {
 function getSystemStatus() {
   return NextResponse.json({
     webScraping: {
-      active: webScrapingActive,
+      active: webScrapingActive
       interval: webScrapingInterval ? '30 minutos' : 'Inativo',
       cost: 'R$ 2/consulta'
-    },
+    }
     emailMonitoring: {
       active: emailMonitoringActive,
       interval: emailInterval ? '15 minutos' : 'Inativo', 
       cost: 'R$ 20/mês'
-    },
+    }
     automation: {
       active: automationActive,
       status: automationActive ? 'Ativo' : 'Inativo',
       cost: 'R$ 50/mês'
-    },
+    }
     totalCost: calculateTotalCost()
   })
 }
@@ -246,7 +246,7 @@ async function sendActivationNotification(title: string, message: string) {
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         chat_id: chatId,
         text: `${title}\n\n${message}`,

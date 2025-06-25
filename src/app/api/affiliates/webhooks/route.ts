@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório',
+        error: 'ID do afiliado é obrigatório'
       }, { status: 400 })
     }
 
@@ -41,16 +41,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: endpoints.map(endpoint => ({
-        ...endpoint,
+        ...endpoint
         secret: undefined // Não retornar o secret
-      })),
+      }))
     })
 
   } catch (error) {
     console.error('Erro ao buscar webhooks:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       new URL(webhookUrl)
     } catch {
       return NextResponse.json({
-        error: 'URL inválida',
+        error: 'URL inválida'
       }, { status: 400 })
     }
 
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       id: `webhook_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       url: webhookUrl,
       events,
-      secret: secret || generateWebhookSecret(),
+      secret: secret || generateWebhookSecret()
       active: true,
       affiliateId
     }
@@ -111,17 +111,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoint,
+        ...endpoint
         secret: undefined, // Não retornar o secret
         testResult,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao configurar webhook:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -133,7 +133,7 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
-        error: 'affiliateId e webhookId são obrigatórios',
+        error: 'affiliateId e webhookId são obrigatórios'
       }, { status: 400 })
     }
 
@@ -142,7 +142,7 @@ export async function PUT(request: NextRequest) {
 
     if (index === -1) {
       return NextResponse.json({
-        error: 'Webhook não encontrado',
+        error: 'Webhook não encontrado'
       }, { status: 404 })
     }
 
@@ -152,16 +152,16 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoints[index],
+        ...endpoints[index]
         secret: undefined,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro ao atualizar webhook:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -174,7 +174,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!affiliateId || !webhookId) {
       return NextResponse.json({
-        error: 'affiliateId e webhookId são obrigatórios',
+        error: 'affiliateId e webhookId são obrigatórios'
       }, { status: 400 })
     }
 
@@ -183,21 +183,21 @@ export async function DELETE(request: NextRequest) {
 
     if (filteredEndpoints.length === endpoints.length) {
       return NextResponse.json({
-        error: 'Webhook não encontrado',
+        error: 'Webhook não encontrado'
       }, { status: 404 })
     }
 
     webhookEndpoints.set(affiliateId, filteredEndpoints)
 
     return NextResponse.json({
-      data: { message: 'Webhook removido com sucesso' },
+      data: { message: 'Webhook removido com sucesso' }
     })
 
   } catch (error) {
     console.error('Erro ao remover webhook:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }
 
@@ -222,8 +222,8 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
       event: 'webhook.test',
       data: {
         message: 'Este é um evento de teste para verificar se seu webhook está funcionando corretamente.',
-        timestamp: new Date().toISOString(),
-      },
+        timestamp: new Date().toISOString()
+      }
       timestamp: new Date().toISOString()
     }
 
@@ -236,28 +236,28 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
         'Content-Type': 'application/json',
         'X-Webhook-Signature': `sha256=${signature}`,
         'User-Agent': 'Visa2Any-Webhooks/1.0',
-      },
+      }
       body: payload,
       signal: AbortSignal.timeout(10000) // 10 segundos timeout
     })
 
     if (response.ok) {
       return { 
-        success: true,
+        success: true
         message: 'Webhook testado com sucesso',
-      },
+      }
     } else {
       return { 
-        success: false,
+        success: false
         message: `Erro HTTP ${response.status}: ${response.statusText}` ,
       }
     }
 
   } catch (error) {
     return { 
-      success: false,
+      success: false
       message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}` ,
-    },
+    }
   }
 }
 
@@ -297,9 +297,9 @@ async function sendWebhookEvent(,
             'X-Webhook-Signature': `sha256=${signature}`,
             'X-Webhook-Event': eventType,
             'User-Agent': 'Visa2Any-Webhooks/1.0',
-          },
+          }
           body: payload,
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(10000)
         })
 
         if (!response.ok) {
@@ -307,14 +307,14 @@ async function sendWebhookEvent(,
         }
 
       } catch (error) {
-        console.error(`Erro ao enviar webhook para ${endpoint.url}:`, error),
-      },
+        console.error(`Erro ao enviar webhook para ${endpoint.url}:`, error)
+      }
     })
 
     await Promise.allSettled(promises)
 
   } catch (error) {
-    console.error('Erro ao enviar webhooks:', error),
+    console.error('Erro ao enviar webhooks:', error)
   }
 }
 
@@ -328,7 +328,7 @@ async function sendConversionWebhook(affiliateId: string, conversionData: any) {
     conversionValue: conversionData.conversionValue,
     commissionValue: conversionData.commissionValue,
     referralCode: conversionData.referralCode,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   })
 }
 
@@ -340,7 +340,7 @@ async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
     type: commissionData.type,
     description: commissionData.description,
     dueDate: commissionData.dueDate,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   })
 }
 
@@ -352,7 +352,7 @@ async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
     method: paymentData.method,
     transactionId: paymentData.transactionId,
     processedAt: paymentData.processedAt,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   })
 }
 
@@ -363,7 +363,7 @@ async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
     newTier: tierData.newTier,
     newCommissionRate: tierData.newCommissionRate,
     reason: tierData.reason,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   })
 }
 
@@ -377,6 +377,6 @@ async function sendClickWebhook(affiliateId: string, clickData: any) {
     device: clickData.device,
     source: clickData.source,
     campaign: clickData.campaign,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   })
 }

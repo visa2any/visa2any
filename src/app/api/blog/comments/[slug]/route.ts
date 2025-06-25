@@ -16,15 +16,15 @@ export async function GET(,
       where: {
         postId: slug,
         parentId: null // Apenas comentários principais (não respostas)
-      },
+      }
       include: {
         user: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
+          }
+        }
         replies: {
           include: {
             user: {
@@ -32,17 +32,17 @@ export async function GET(,
                 id: true,
                 name: true,
                 email: true,
-              },
-            },
-          },
+              }
+            }
+          }
           orderBy: {
             createdAt: 'asc',
-          },
-        },
-      },
+          }
+        }
+      }
       orderBy: {
         createdAt: 'desc',
-      },
+      }
     })
 
     // Formattar os comentários para incluir informações do autor
@@ -57,7 +57,7 @@ export async function GET(,
       author: {
         name: comment.user.name,
         avatar: null // Pode ser implementado posteriormente
-      },
+      }
       replies: comment.replies.map(reply => ({
         id: reply.id,
         userId: reply.userId,
@@ -69,21 +69,21 @@ export async function GET(,
         author: {
           name: reply.user.name,
           avatar: null,
-        },
-      })),
+        }
+      }))
     }))
 
     return NextResponse.json({
-      comments: formattedComments,
+      comments: formattedComments
     })
 
   } catch (error) {
     console.error('❌ Erro ao buscar comentários:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor',
-      },
+        error: 'Erro interno do servidor'
+      }
       { status: 500 }
-    ),
+    )
   }
 }

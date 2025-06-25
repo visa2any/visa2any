@@ -14,14 +14,14 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      user,
+      user
     })
 
   } catch (error) {
     console.error('Erro ao verificar usuário:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }

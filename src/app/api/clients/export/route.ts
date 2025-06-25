@@ -31,18 +31,18 @@ export async function GET(request: NextRequest) {
         assignedUser: {
           select: {
             name: true,
-          },
-        },
+          }
+        }
         _count: {
           select: {
             consultations: true,
             payments: true,
-          },
-        },
-      },
+          }
+        }
+      }
       orderBy: {
         createdAt: 'desc',
-      },
+      }
     })
 
     // Gerar CSV
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         'Consultorias',
         'Pagamentos',
         'Data Cadastro'
-      ].join(','),
+      ].join(',')
       
       // Dados dos clientes
       ...clients.map(client => [
@@ -98,11 +98,11 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`,
-      },
+      }
     })
 
   } catch (error) {
     console.error('Erro no export de clientes:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 }),
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }

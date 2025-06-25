@@ -28,27 +28,27 @@ async function getCustomerFromToken(request: NextRequest) {
     }
 
     return await prisma.client.findUnique({
-      where: { id: payload.customerId },
+      where: { id: payload.customerId }
       include: {
         consultations: {
-          orderBy: { createdAt: 'desc' },
-          take: 5,
-        },
+          orderBy: { createdAt: 'desc' }
+          take: 5
+        }
         documents: {
-          orderBy: { uploadedAt: 'desc' },
-        },
+          orderBy: { uploadedAt: 'desc' }
+        }
         interactions: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 10,
-        },
+        }
         payments: {
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+          orderBy: { createdAt: 'desc' }
+        }
+      }
     })
   } catch (error) {
     console.error('Erro ao buscar cliente:', error)
-    return null,
+    return null
   }
 }
 
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     if (!customer) {
       return NextResponse.json({
-        error: 'Cliente não encontrado ou não autenticado',
+        error: 'Cliente não encontrado ou não autenticado'
       }, { status: 401 })
     }
 
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
              customer.status === 'DOCUMENTS_PENDING' ? 'Revisão de Documentos' :
              customer.status === 'SUBMITTED' ? 'Acompanhamento da Aplicação' :
              customer.status === 'APPROVED' ? 'Preparação para Viagem' : 'Processo Concluído',
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
       description: 'Próxima etapa do seu processo de imigração'
     }
 
@@ -103,45 +103,45 @@ export async function GET(request: NextRequest) {
         id: '1',
         title: 'Cadastro Inicial',
         description: 'Conta criada e perfil inicial preenchido',
-        date: customer.createdAt.toLocaleDateString('pt-BR'),
+        date: customer.createdAt.toLocaleDateString('pt-BR')
         status: 'completed',
-      },
+      }
       {
         id: '2',
         title: 'Análise de Elegibilidade',
         description: 'Avaliação inicial do seu perfil',
-        date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: customer.status === 'LEAD' ? 'current' : 'completed',
-      },
+      }
       {
         id: '3',
         title: 'Consultoria Especializada',
         description: 'Reunião com consultor para estratégia personalizada',
-        date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
                 ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming',
-      },
+      }
       {
         id: '4',
         title: 'Coleta de Documentos',
         description: 'Preparação de toda documentação necessária',
-        date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
                 customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming',
-      },
+      }
       {
         id: '5',
         title: 'Submissão da Aplicação',
         description: 'Envio oficial da aplicação para as autoridades',
-        date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
                 ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming',
-      },
+      }
       {
         id: '6',
         title: 'Aprovação',
         description: 'Recebimento da aprovação oficial',
-        date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
                 customer.status === 'SUBMITTED' ? 'current' : 'upcoming'
       }
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       name: doc.fileName || 'Documento',
       status: doc.status?.toLowerCase() || 'pending',
-      uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR'),
+      uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR')
       comments: doc.notes,
     }))
 
@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
           status: 'pending',
           uploadDate: 'Aguardando envio',
           comments: null,
-        },
+        }
         {
           id: 'doc2',
           name: 'Diploma Universitário',
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
       id: payment.id,
       description: payment.description || 'Pagamento de serviço',
       amount: payment.amount,
-      status: payment.status.toLowerCase(),
+      status: payment.status.toLowerCase()
       dueDate: payment.dueDate ? payment.dueDate.toLocaleDateString('pt-BR') : 'A definir',
       paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined,
     }))
@@ -193,7 +193,7 @@ export async function GET(request: NextRequest) {
         description: 'Taxa de Consultoria',
         amount: 297,
         status: 'pending',
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         paidDate: undefined,
       })
     }
@@ -205,15 +205,15 @@ export async function GET(request: NextRequest) {
         title: 'Bem-vindo ao Portal!',
         message: 'Sua conta foi criada com sucesso. Comece explorando seu painel.',
         type: 'success',
-        date: customer.createdAt.toLocaleDateString('pt-BR'),
+        date: customer.createdAt.toLocaleDateString('pt-BR')
         read: false,
-      },
+      }
       {
         id: 'notif2',
         title: 'Próximos Passos',
         message: 'Complete seu perfil para uma análise mais precisa.',
         type: 'info',
-        date: new Date().toLocaleDateString('pt-BR'),
+        date: new Date().toLocaleDateString('pt-BR')
         read: false
       }
     ]
@@ -238,13 +238,13 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      customer: customerData,
+      customer: customerData
     })
 
   } catch (error) {
     console.error('Erro ao buscar perfil do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-    }, { status: 500 }),
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 }

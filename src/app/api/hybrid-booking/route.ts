@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     // Validação dos campos obrigatórios
     if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {
       return NextResponse.json(
-        { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' },
+        { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' }
         { status: 400 }
       )
     }
@@ -42,32 +42,32 @@ export async function POST(request: NextRequest) {
     if (result.success) {
       return NextResponse.json({
         booking: {
-          method: result.method,
+          method: result.method
           provider: result.provider,
           appointmentDetails: result.appointmentDetails,
           cost: result.cost,
           processingTime: result.processingTime,
           instructions: result.instructions,
-        },
+        }
         attempts: result.attempts,
         warnings: result.warnings,
         message: `Agendamento realizado via ${result.method} (${result.provider})`,
-      }),
+      })
     } else {
       return NextResponse.json({
-        error: result.error,
+        error: result.error
         attempts: result.attempts,
         warnings: result.warnings,
-        recommendations: this.generateRecommendations(result.attempts),
+        recommendations: this.generateRecommendations(result.attempts)
       }, { status: 400 })
     }
 
   } catch (error) {
     console.error('Erro no agendamento híbrido:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-        { error: 'Parâmetros country e visaType são obrigatórios' },
+        { error: 'Parâmetros country e visaType são obrigatórios' }
         { status: 400 }
       )
     }
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
 
     return NextResponse.json({
-      country,
+      country
       visaType,
       availability: {
         official: {
@@ -97,21 +97,21 @@ export async function GET(request: NextRequest) {
           slots: results.official,
           reliability: 'Alta',
           cost: 'Gratuito',
-        },
+        }
         partners: {
           source: 'Parceiros (VisaHQ/iVisa)',
           slots: results.partners,
           reliability: 'Alta',
           cost: 'Pago',
-        },
+        }
         scraping: {
           source: 'Web Scraping',
           slots: results.scraping,
           reliability: 'Baixa',
           cost: 'Gratuito',
           warning: 'Dados podem estar desatualizados',
-        },
-      },
+        }
+      }
       consolidated: results.consolidated,
       summary: {
         totalSlots: results.consolidated.length,
@@ -119,18 +119,18 @@ export async function GET(request: NextRequest) {
           results.official.length > 0 && 'official',
           results.partners.length > 0 && 'partners', 
           results.scraping.length > 0 && 'scraping'
-        ].filter(Boolean),
-        recommendations: this.generateAvailabilityRecommendations(results),
-      },
-      lastUpdated: new Date().toISOString(),
+        ].filter(Boolean)
+        recommendations: this.generateAvailabilityRecommendations(results)
+      }
+      lastUpdated: new Date().toISOString()
     })
 
   } catch (error) {
     console.error('Erro na busca híbrida:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 

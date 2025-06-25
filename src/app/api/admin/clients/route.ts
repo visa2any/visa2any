@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { phone: { contains: search } },
-        { profession: { contains: search } },
-        { nationality: { contains: search } },
+        { name: { contains: search } }
+        { email: { contains: search } }
+        { phone: { contains: search } }
+        { profession: { contains: search } }
+        { nationality: { contains: search } }
         { targetCountry: { contains: search } }
       ]
     }
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       [clients, total] = await Promise.all([
         prisma.client.findMany({
           where,
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: limit,
           skip: offset,
           select: {
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
             updatedAt: true,
             notes: true
           }
-        }),
+        })
         prisma.client.count({ where })
       ])
     } catch (dbError) {
@@ -74,10 +74,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        clients,
+        clients
         pagination: {
           current: page,
-          total: Math.ceil(total / limit),
+          total: Math.ceil(total / limit)
           hasNext: offset + clients.length < total,
           hasPrev: page > 1,
           totalItems: total
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
     // Retornar resposta de fallback
     return NextResponse.json({
       data: {
-        clients: [],
+        clients: []
         pagination: {
           current: 1,
           total: 0,
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Nome e email são obrigatórios'
-        },
+        }
         { status: 400 }
       )
     }
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Cliente já cadastrado com este email'
-        },
+        }
         { status: 409 }
       )
     }
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     // Criar cliente
     const client = await prisma.client.create({
       data: {
-        name,
+        name
         email,
         phone: phone || null,
         profession: profession || null,
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }

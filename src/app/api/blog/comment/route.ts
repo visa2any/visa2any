@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 
 const commentSchema = z.object({
-  postId: z.string().min(1, 'Post ID é obrigatório'),
-  content: z.string().min(1, 'Conteúdo é obrigatório').max(1000, 'Máximo 1000 caracteres'),
+  postId: z.string().min(1, 'Post ID é obrigatório')
+  content: z.string().min(1, 'Conteúdo é obrigatório').max(1000, 'Máximo 1000 caracteres')
   parentId: z.string().optional() // For replies
 })
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
     }
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
 
     // Get user info
     const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, name: true, email: true },
+      where: { id: userId }
+      select: { id: true, name: true, email: true }
     })
 
     if (!user) {
@@ -59,19 +59,19 @@ export async function POST(request: NextRequest) {
     // Create comment
     const comment = await prisma.blogPostComment.create({
       data: {
-        userId,
+        userId
         postId: validatedData.postId,
         content: validatedData.content,
         parentId: validatedData.parentId || null,
-      },
+      }
       include: {
         user: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
+          }
+        }
         replies: {
           include: {
             user: {
@@ -79,15 +79,15 @@ export async function POST(request: NextRequest) {
                 id: true,
                 name: true,
                 email: true,
-              },
-            },
-          },
-        },
-      },
+              }
+            }
+          }
+        }
+      }
     })
 
     return NextResponse.json({
-      comment,
+      comment
       message: 'Comentário adicionado com sucesso',
     })
 
@@ -95,18 +95,18 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors,
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Error adding blog comment:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
 
@@ -118,24 +118,24 @@ export async function GET(request: NextRequest) {
 
     if (!postId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
     }
 
     const comments = await prisma.blogPostComment.findMany({
       where: {
-        postId,
+        postId
         parentId: null // Only root comments
-      },
+      }
       include: {
         user: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
+          }
+        }
         replies: {
           include: {
             user: {
@@ -143,28 +143,28 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 email: true,
-              },
-            },
-          },
+              }
+            }
+          }
           orderBy: {
             createdAt: 'asc',
-          },
-        },
-      },
+          }
+        }
+      }
       orderBy: {
         createdAt: 'desc',
-      },
+      }
     })
 
     return NextResponse.json({
-      comments,
+      comments
     })
 
   } catch (error) {
     console.error('Error fetching blog comments:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
-    ),
+    )
   }
 }
