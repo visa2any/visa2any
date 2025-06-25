@@ -119,7 +119,7 @@ Sua nova vida te espera! 🌍✈️
 #Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`,
     imageUrl: '/images/posts/facebook-depoimento.jpg',
     isActive: true
-  }
+  },
 
   // Templates de Email
   {

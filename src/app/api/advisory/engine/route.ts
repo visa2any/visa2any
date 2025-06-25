@@ -262,7 +262,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'EU residency pathway',
           'Family reunification benefits'
         ]
-      }
+      },
       'WORK': {
         system: 'D2 Visa',
         averageProcessingTime: '2-4 months',

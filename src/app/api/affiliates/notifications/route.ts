@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       type,
       title,
       message,
-      data = {}
+      data = {},
       priority = 'medium',
     } = body
 
