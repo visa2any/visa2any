@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
         where: { id: validatedData.clientId }
         include: {
           interactions: {
-            orderBy: { createdAt: 'desc' }
-            take: 20,
+            orderBy: { createdAt: 'desc' },
+            take: 20
           }
           documents: true,
           consultations: true,
-          payments: true,
+          payments: true
         }
       })
     }
@@ -85,9 +85,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId || null,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             status: true,
-            targetCountry: true,
+            targetCountry: true
           }
         }
       }
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
           totalScored: scoringData.length
           averageScore: scoreDistribution.average,
           highQualityLeads: scoreDistribution.highQuality,
-          modelAccuracy: modelAccuracy,
+          modelAccuracy: modelAccuracy
         }
         scoreDistribution: scoreDistribution,
         conversionFactors: conversionFactors,
@@ -399,46 +399,46 @@ function getRecommendedActions(scoringResult: any): any[] {
       priority: 'URGENT'
       action: 'immediate_call',
       description: 'Ligar imediatamente - lead quente',
-      sla: '15 minutos',
+      sla: '15 minutos'
     })
     actions.push({
       priority: 'HIGH',
       action: 'premium_offer',
       description: 'Oferecer desconto premium',
-      sla: '1 hora',
+      sla: '1 hora'
     })
   } else if (score >= 60) {
     actions.push({
       priority: 'HIGH',
       action: 'schedule_call',
       description: 'Agendar ligação nas próximas 2h',
-      sla: '2 horas',
+      sla: '2 horas'
     })
     actions.push({
       priority: 'MEDIUM',
       action: 'nurture_sequence',
       description: 'Iniciar sequência de nurturing premium',
-      sla: '4 horas',
+      sla: '4 horas'
     })
   } else if (score >= 40) {
     actions.push({
       priority: 'MEDIUM',
       action: 'email_follow_up',
       description: 'Email personalizado de follow-up',
-      sla: '24 horas',
+      sla: '24 horas'
     })
     actions.push({
       priority: 'LOW',
       action: 'retargeting',
       description: 'Adicionar em campanhas de retargeting',
-      sla: '48 horas',
+      sla: '48 horas'
     })
   } else {
     actions.push({
       priority: 'LOW',
       action: 'educational_content',
       description: 'Enviar conteúdo educacional',
-      sla: '7 dias',
+      sla: '7 dias'
     })
   }
 
@@ -544,7 +544,7 @@ function analyzeScoreDistribution(data: any[]) {
     average: scores.reduce((sum, score) => sum + score, 0) / scores.length,
     highQuality: scores.filter(score => score >= 70).length,
     medium: scores.filter(score => score >= 40 && score < 70).length,
-    low: scores.filter(score => score < 40).length,
+    low: scores.filter(score => score < 40).length
   }
 }
 
@@ -569,7 +569,7 @@ function generateTrends(data: any[]) {
   return {
     averageScoreImprovement: '+12%'
     conversionRateImprovement: '+23%',
-    topPerformingSource: 'organic',
+    topPerformingSource: 'organic'
   }
 }
 

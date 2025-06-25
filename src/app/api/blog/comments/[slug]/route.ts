@@ -22,7 +22,7 @@ export async function GET(,
           select: {
             id: true,
             name: true,
-            email: true,
+            email: true
           }
         }
         replies: {
@@ -31,17 +31,17 @@ export async function GET(,
               select: {
                 id: true,
                 name: true,
-                email: true,
+                email: true
               }
             }
           }
           orderBy: {
-            createdAt: 'asc',
+            createdAt: 'asc'
           }
         }
       }
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       }
     })
 
@@ -68,7 +68,7 @@ export async function GET(,
         updatedAt: reply.updatedAt,
         author: {
           name: reply.user.name,
-          avatar: null,
+          avatar: null
         }
       }))
     }))

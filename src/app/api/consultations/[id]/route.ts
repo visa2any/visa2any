@@ -137,9 +137,9 @@ export async function PATCH(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -152,7 +152,7 @@ export async function PATCH(
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -221,7 +221,7 @@ export async function PUT(
             id: true, 
             name: true, 
             email: true, 
-            status: true ,
+            status: true 
           }
         }
         consultant: {
@@ -247,7 +247,7 @@ export async function PUT(
         where: { id: existingConsultation.clientId }
         data: { 
           status: newClientStatus,
-          score: validatedData.score || existingConsultation.client.score,
+          score: validatedData.score || existingConsultation.client.score
         }
       })
     }
@@ -260,9 +260,9 @@ export async function PUT(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -275,7 +275,7 @@ export async function PUT(
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -326,9 +326,9 @@ export async function DELETE(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 

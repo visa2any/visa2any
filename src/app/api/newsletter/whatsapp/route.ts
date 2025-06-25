@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         phone,
         countries: countries || ['Global'],
         isActive: true,
-        source: 'blog_newsletter',
+        source: 'blog_newsletter'
       }
     })
 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         id: subscriber.id,
         name: subscriber.name,
         phone: subscriber.phone,
-        countries: subscriber.countries,
+        countries: subscriber.countries
       }
     })
 
@@ -107,7 +107,7 @@ _Para cancelar, responda SAIR_`
     body: JSON.stringify({
       to: phone,
       message: message,
-      type: 'newsletter_welcome',
+      type: 'newsletter_welcome'
     })
   })
 
@@ -123,7 +123,7 @@ export async function GET() {
   try {
     const subscribers = await prisma.whatsAppSubscriber.findMany({
       where: { isActive: true }
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
       take: 100
     })
 
@@ -146,7 +146,7 @@ export async function GET() {
         name: sub.name,
         phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4')
         countries: sub.countries,
-        createdAt: sub.createdAt,
+        createdAt: sub.createdAt
       }))
     })
 

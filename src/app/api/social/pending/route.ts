@@ -15,14 +15,14 @@ export async function GET() {
           lte: now // Posts agendados para agora ou no passado
         }
       }
-      orderBy: { scheduledAt: 'asc' }
-      take: 50,
+      orderBy: { scheduledAt: 'asc' },
+      take: 50
     })
 
     return NextResponse.json({
       success: true
       count: pendingPosts.length,
-      posts: pendingPosts,
+      posts: pendingPosts
     })
 
   } catch (error) {

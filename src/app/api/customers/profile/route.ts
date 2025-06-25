@@ -31,15 +31,15 @@ async function getCustomerFromToken(request: NextRequest) {
       where: { id: payload.customerId }
       include: {
         consultations: {
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
           take: 5
         }
         documents: {
           orderBy: { uploadedAt: 'desc' }
         }
         interactions: {
-          orderBy: { createdAt: 'desc' }
-          take: 10,
+          orderBy: { createdAt: 'desc' },
+          take: 10
         }
         payments: {
           orderBy: { createdAt: 'desc' }
@@ -104,14 +104,14 @@ export async function GET(request: NextRequest) {
         title: 'Cadastro Inicial',
         description: 'Conta criada e perfil inicial preenchido',
         date: customer.createdAt.toLocaleDateString('pt-BR')
-        status: 'completed',
+        status: 'completed'
       }
       {
         id: '2',
         title: 'Análise de Elegibilidade',
         description: 'Avaliação inicial do seu perfil',
         date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
-        status: customer.status === 'LEAD' ? 'current' : 'completed',
+        status: customer.status === 'LEAD' ? 'current' : 'completed'
       }
       {
         id: '3',
@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
       name: doc.fileName || 'Documento',
       status: doc.status?.toLowerCase() || 'pending',
       uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR')
-      comments: doc.notes,
+      comments: doc.notes
     }))
 
     // Adicionar documentos simulados se não houver nenhum
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
           name: 'Passaporte',
           status: 'pending',
           uploadDate: 'Aguardando envio',
-          comments: null,
+          comments: null
         }
         {
           id: 'doc2',
@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
       amount: payment.amount,
       status: payment.status.toLowerCase()
       dueDate: payment.dueDate ? payment.dueDate.toLocaleDateString('pt-BR') : 'A definir',
-      paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined,
+      paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined
     }))
 
     // Adicionar pagamentos simulados se não houver nenhum
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
         amount: 297,
         status: 'pending',
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
-        paidDate: undefined,
+        paidDate: undefined
       })
     }
 
@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
         message: 'Sua conta foi criada com sucesso. Comece explorando seu painel.',
         type: 'success',
         date: customer.createdAt.toLocaleDateString('pt-BR')
-        read: false,
+        read: false
       }
       {
         id: 'notif2',

@@ -19,18 +19,18 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             email: true,
-            phone: true,
+            phone: true
           }
         }
         consultant: {
           select: {
             name: true,
-            email: true,
+            email: true
           }
         }
       }
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       }
     })
 

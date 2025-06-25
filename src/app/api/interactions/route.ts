@@ -5,9 +5,9 @@ import { z } from 'zod'
 // Schema para criar interação
 const createInteractionSchema = z.object({
   clientId: z.string().min(1, 'Cliente é obrigatório')
-  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER'])
+  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),
   channel: z.string().min(1, 'Canal é obrigatório')
-  direction: z.enum(['inbound', 'outbound'])
+  direction: z.enum(['inbound', 'outbound']),
   subject: z.string().optional()
   content: z.string().min(1, 'Conteúdo é obrigatório')
   response: z.string().optional()
@@ -38,12 +38,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar interações
-    const [interactions, total] = await Promise.all([
+    const [interactions, total] = await Promise.all([,
       prisma.interaction.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           client: {
             select: { 
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
               name: true, 
               email: true, 
               phone: true,
-              status: true,
+              status: true
             }
           }
         }
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages,
+          hasMore: page < totalPages
         }
       }
     })
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
-        completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null,
+        completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null
       }
       include: {
         client: {
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
             id: true, 
             name: true, 
             email: true,
-            status: true,
+            status: true
           }
         }
       }
@@ -129,9 +129,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

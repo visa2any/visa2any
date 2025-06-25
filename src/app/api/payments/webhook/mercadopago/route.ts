@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         externalReference: mpPayment.external_reference
       }
       include: {
-        client: true,
+        client: true
       }
     })
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
           payment_type_id: mpPayment.payment_type_id,
           transaction_amount: mpPayment.transaction_amount,
           date_approved: mpPayment.date_approved,
-          date_created: mpPayment.date_created,
+          date_created: mpPayment.date_created
         }
       }
     })
@@ -94,9 +94,9 @@ export async function POST(request: NextRequest) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -118,9 +118,9 @@ export async function POST(request: NextRequest) {
         clientId: null,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     }).catch(() => {}) // Não falhar se log não funcionar
 
@@ -155,7 +155,7 @@ async function processPaymentSuccess(payment: any) {
             payment_amount: `R$ ${payment.amount.toFixed(2)}`,
             payment_plan: getPaymentPackageName(payment.productId)
             payment_date: new Date().toLocaleDateString('pt-BR')
-            transaction_id: payment.transactionId,
+            transaction_id: payment.transactionId
           }
         })
       })
@@ -216,9 +216,9 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -232,9 +232,9 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     }).catch(() => {})
   }

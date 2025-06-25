@@ -4,9 +4,9 @@ import { z } from 'zod'
 
 // Schema para monitoramento de mudanças legais
 const lawMonitorSchema = z.object({
-  country: z.string()
+  country: z.string(),
   visaType: z.string().optional()
-  alertType: z.enum(['immediate', 'daily', 'weekly'])
+  alertType: z.enum(['immediate', 'daily', 'weekly']),
   clientId: z.string().optional()
   keywords: z.array(z.string()).optional()
 })
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -172,7 +172,7 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     timeline: {
       immediate: 0,
       upcoming: 0,
-      future: 0,
+      future: 0
     }
     recommendations: [] as string[]
   }
@@ -244,7 +244,7 @@ async function setupLawChangeAlerts(data: any) {
       details: {
         alertType: 'law_change_monitoring',
         country: data.country || 'all',
-        visaType: data.visaType || 'all',
+        visaType: data.visaType || 'all'
       }
     }
   })
@@ -264,7 +264,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       category: 'compliance',
       action: 'Review new requirements and ensure compliance',
       timeline: 'Immediate',
-      details: 'Requirements have changed - verify your application meets new criteria',
+      details: 'Requirements have changed - verify your application meets new criteria'
     })
   }
   
@@ -275,7 +275,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       category: 'financial',
       action: 'Review investment strategy',
       timeline: 'Before application',
-      details: 'Investment amounts have changed - adjust financial planning accordingly',
+      details: 'Investment amounts have changed - adjust financial planning accordingly'
     })
   }
   
@@ -286,7 +286,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       category: 'preparation',
       action: 'Update language testing strategy',
       timeline: '2-3 months',
-      details: 'Language requirements have been updated - may need to retake tests',
+      details: 'Language requirements have been updated - may need to retake tests'
     })
   }
   
@@ -297,7 +297,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
       category: 'strategy',
       action: 'Schedule emergency consultation',
       timeline: 'Within 48 hours',
-      details: 'Significant changes detected - expert review recommended',
+      details: 'Significant changes detected - expert review recommended'
     })
   }
   

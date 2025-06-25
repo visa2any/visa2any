@@ -30,18 +30,18 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         assignedUser: {
           select: {
-            name: true,
+            name: true
           }
         }
         _count: {
           select: {
             consultations: true,
-            payments: true,
+            payments: true
           }
         }
       }
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       }
     })
 

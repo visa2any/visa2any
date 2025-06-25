@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
           rateLimitInfo: {
             limit: rateLimitResult.limit,
             remaining: rateLimitResult.remaining,
-            reset: rateLimitResult.reset,
+            reset: rateLimitResult.reset
           }
         }
         { 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         email: true,
         password: true,
         role: true,
-        isActive: true,
+        isActive: true
       }
     })
 
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
         user: userData,
         token,
       }
-      message: 'Login realizado com sucesso',
+      message: 'Login realizado com sucesso'
     })
 
     // ✅ Definir cookie seguro com configurações melhoradas
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
       sameSite: 'strict', // ✅ Mais seguro que 'lax'
       maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
       path: '/',
-      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
     })
     
     console.log('🍪 Cookie auth-token definido com sucesso')
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

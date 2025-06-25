@@ -4,14 +4,14 @@ import { z } from 'zod'
 
 // Schema para avaliação de qualidade
 const qualityAssessmentSchema = z.object({
-  clientId: z.string()
+  clientId: z.string(),
   assessmentType: z.enum([
     'document_review',
     'application_completeness',
     'compliance_check',
     'submission_readiness',
     'full_audit'
-  ])
+  ]),
   scope: z.object({
     includeDocuments: z.boolean().default(true)
     includeProfile: z.boolean().default(true)
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
           where: { status: { in: ['UPLOADED', 'PROCESSED', 'VERIFIED'] } }
         }
         consultations: {
-          orderBy: { createdAt: 'desc' }
-          take: 5,
+          orderBy: { createdAt: 'desc' },
+          take: 5
         }
         interactions: {
-          orderBy: { createdAt: 'desc' }
-          take: 20,
+          orderBy: { createdAt: 'desc' },
+          take: 20
         }
       }
     })
@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -153,8 +153,8 @@ export async function GET(request: NextRequest) {
 
     const assessments = await prisma.automationLog.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' }
-      take: 20,
+      orderBy: { createdAt: 'desc' },
+      take: 20
     })
 
     // Analisar tendências
@@ -168,13 +168,13 @@ export async function GET(request: NextRequest) {
           overallScore: a.details?.overallScore || 0,
           readinessLevel: a.details?.readinessLevel,
           criticalIssues: a.details?.criticalIssues || 0,
-          createdAt: a.createdAt,
+          createdAt: a.createdAt
         }))
         trends: trends,
         summary: {
           totalAssessments: assessments.length,
           averageScore: assessments.reduce((sum, a) => sum + (a.details?.overallScore || 0), 0) / assessments.length || 0,
-          latestReadinessLevel: assessments[0]?.details?.readinessLevel || 'unknown',
+          latestReadinessLevel: assessments[0]?.details?.readinessLevel || 'unknown'
         }
       }
     })
@@ -273,7 +273,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       averageQuality: 0,
       missingDocuments: [] as string[],
       expiredDocuments: [] as any[],
-      lowQualityDocuments: [] as any[],
+      lowQualityDocuments: [] as any[]
     }
   }
 
@@ -348,7 +348,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       type: 'missing_documents',
       severity: 'critical',
       message: `${missingDocs.length} required documents missing`,
-      details: missingDocs,
+      details: missingDocs
     })
     assessment.recommendations.push({
       priority: 'high',
@@ -369,7 +369,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       priority: 'medium',
       category: 'quality',
       action: 'Improve document quality',
-      details: 'Rescan documents with higher resolution',
+      details: 'Rescan documents with higher resolution'
     })
   }
 
@@ -384,7 +384,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       priority: 'high',
       category: 'validity',
       action: 'Renew expiring documents',
-      details: 'Update documents before submission',
+      details: 'Update documents before submission'
     })
   }
 
@@ -392,14 +392,14 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
   if (assessment.metrics.averageConfidence > 85) {
     assessment.strengths.push({
       type: 'high_ocr_confidence',
-      message: 'Documents have high OCR extraction confidence',
+      message: 'Documents have high OCR extraction confidence'
     })
   }
 
   if (assessment.metrics.averageQuality > 85) {
     assessment.strengths.push({
       type: 'high_document_quality',
-      message: 'Documents meet high quality standards',
+      message: 'Documents meet high quality standards'
     })
   }
 
@@ -418,7 +418,7 @@ function assessClientProfile(client: any) {
       accuracyScore: 0,
       consistencyScore: 0,
       missingFields: [] as string[],
-      inconsistentFields: [] as string[],
+      inconsistentFields: [] as string[]
     }
   }
 
@@ -460,7 +460,7 @@ function assessClientProfile(client: any) {
       type: 'incomplete_profile',
       severity: 'medium',
       message: `${missingFields.length} required profile fields missing`,
-      details: missingFields,
+      details: missingFields
     })
     assessment.recommendations.push({
       priority: 'medium',
@@ -475,7 +475,7 @@ function assessClientProfile(client: any) {
       type: 'profile_inconsistencies',
       severity: 'low',
       message: `${inconsistentFields.length} profile fields need correction`,
-      details: inconsistentFields,
+      details: inconsistentFields
     })
     assessment.recommendations.push({
       priority: 'low',
@@ -489,7 +489,7 @@ function assessClientProfile(client: any) {
   if (assessment.metrics.completenessScore > 90) {
     assessment.strengths.push({
       type: 'complete_profile',
-      message: 'Profile is comprehensive and complete',
+      message: 'Profile is comprehensive and complete'
     })
   }
 
@@ -507,7 +507,7 @@ async function assessCompliance(client: any, criteria: any) {
       documentCompliance: 0,
       timelineCompliance: 0,
       requirementCompliance: 0,
-      riskLevel: 'low' as 'low' | 'medium' | 'high',
+      riskLevel: 'low' as 'low' | 'medium' | 'high'
     }
   }
 
@@ -559,7 +559,7 @@ function assessApplicationStrategy(client: any) {
     metrics: {
       strategyAlignment: 0,
       timelineRealism: 0,
-      preparationLevel: 0,
+      preparationLevel: 0
     }
   }
 
@@ -591,7 +591,7 @@ async function generateQualityReport(assessment: any, client: any, assessmentTyp
       readinessLevel: assessment.readinessLevel,
       totalIssues: assessment.issues.length,
       criticalIssues: assessment.issues.filter((i: any) => i.severity === 'critical').length,
-      recommendations: assessment.recommendations.length,
+      recommendations: assessment.recommendations.length
     }
     breakdown: assessment.breakdown,
     issues: groupIssuesBySeverity(assessment.issues)
@@ -673,7 +673,7 @@ function generateQualityTimeline(assessment: any) {
     timeline.push({
       phase: 'Critical Issues Resolution',
       duration: '3-5 days',
-      description: 'Address all critical blocking issues',
+      description: 'Address all critical blocking issues'
     })
   }
   
@@ -681,14 +681,14 @@ function generateQualityTimeline(assessment: any) {
     timeline.push({
       phase: 'High Priority Improvements',
       duration: '1-2 weeks',
-      description: 'Implement high priority recommendations',
+      description: 'Implement high priority recommendations'
     })
   }
   
   timeline.push({
     phase: 'Final Review & Submission',
     duration: '2-3 days',
-    description: 'Final quality check and submission preparation',
+    description: 'Final quality check and submission preparation'
   })
   
   return timeline
@@ -723,7 +723,7 @@ function analyzeQualityTrends(assessments: any[]) {
     return {
       trend: 'insufficient_data'
       scoreChange: 0,
-      improvement: false,
+      improvement: false
     }
   }
   

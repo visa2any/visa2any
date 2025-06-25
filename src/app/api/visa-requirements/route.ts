@@ -8,27 +8,27 @@ const visaRequirementSchema = z.object({
   visaType: z.string().min(1, 'Tipo de visto é obrigatório')
   visaSubtype: z.string().optional()
   requiredDocuments: z.array(z.object({
-    type: z.string()
-    name: z.string()
-    required: z.boolean()
+    type: z.string(),
+    name: z.string(),
+    required: z.boolean(),
     description: z.string().optional()
     validityMonths: z.number().optional()
   }))
-  processingTime: z.string()
+  processingTime: z.string(),
   fees: z.object({
-    government: z.number()
+    government: z.number(),
     service: z.number().optional()
     currency: z.string().default('USD')
   })
   eligibilityCriteria: z.array(z.object({
-    criterion: z.string()
-    description: z.string()
+    criterion: z.string(),
+    description: z.string(),
     required: z.boolean()
   }))
   commonPitfalls: z.array(z.string())
   successTips: z.array(z.string())
   governmentLinks: z.array(z.object({
-    name: z.string()
+    name: z.string(),
     url: z.string()
   }))
 })
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar requisitos
-    const [requirements, total] = await Promise.all([
+    const [requirements, total] = await Promise.all([,
       prisma.visaRequirement.findMany({
         where,
         skip,
@@ -102,11 +102,11 @@ export async function GET(request: NextRequest) {
           totalRequirements: total,
           countries: countries.map(c => ({
             country: c.country,
-            count: c._count.country,
+            count: c._count.country
           }))
           visaTypes: visaTypes.map(v => ({
             type: v.visaType,
-            count: v._count.visaType,
+            count: v._count.visaType
           }))
         }
         pagination: {
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages,
+          hasMore: page < totalPages
         }
       }
     })
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
         country_visaType_visaSubtype: {
           country: validatedData.country
           visaType: validatedData.visaType,
-          visaSubtype: validatedData.visaSubtype || '',
+          visaSubtype: validatedData.visaSubtype || ''
         }
       }
     })
@@ -169,14 +169,14 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })
 
     return NextResponse.json({
       data: requirement
-      message: 'Requisitos criados com sucesso',
+      message: 'Requisitos criados com sucesso'
     }, { status: 201 })
 
   } catch (error) {
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -229,14 +229,14 @@ export async function PUT(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })
 
     return NextResponse.json({
       data: requirement
-      message: 'Requisitos atualizados com sucesso',
+      message: 'Requisitos atualizados com sucesso'
     })
 
   } catch (error) {

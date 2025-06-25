@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         partners: partnersStatus
         total: partnersStatus.length,
-        message: 'Status dos parceiros recuperado com sucesso',
+        message: 'Status dos parceiros recuperado com sucesso'
       })
     }
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
           estimatedCost: bestPartner.pricing.perTransaction,
           processingSpeed: `${bestPartner.speed}ms avg response`,
         }
-        message: 'Melhor parceiro encontrado',
+        message: 'Melhor parceiro encontrado'
       })
     } else {
       return NextResponse.json({
@@ -144,15 +144,15 @@ export async function POST(request: NextRequest) {
           cost: result.cost,
           totalCost,
           processingTime: result.processingTime,
-          instructions: result.instructions,
+          instructions: result.instructions
         }
-        message: 'Agendamento realizado via parceiro com sucesso!',
+        message: 'Agendamento realizado via parceiro com sucesso!'
       })
     } else {
       return NextResponse.json(
         { 
           error: result.error
-          partnerId: result.partnerId,
+          partnerId: result.partnerId
         }
         { status: 400 }
       )

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
               email: validatedData.clientInfo.email,
               phone: validatedData.clientInfo.phone,
               status: 'LEAD',
-              source: 'checkout',
+              source: 'checkout'
             }
           })
         }
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         status: 'PENDING',
         paymentMethod: 'MERCADO_PAGO',
         description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''} - Total: R$ ${validatedData.totalAmount}`,
-        clientId: clientId,
+        clientId: clientId
       }
     })
 
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       quantity: validatedData.quantity,
       unitPrice: validatedData.totalAmount, // MP recebe o valor total
       description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,
-      clientEmail: validatedData.clientInfo?.email,
+      clientEmail: validatedData.clientInfo?.email
     })
 
     // Log da criação do pedido
@@ -84,9 +84,9 @@ export async function POST(request: NextRequest) {
         clientId: clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         orderId: payment.id
         paymentUrl: paymentUrl,
         amount: validatedData.totalAmount,
-        status: 'pending',
+        status: 'pending'
       }
     }, { status: 201 })
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -141,7 +141,7 @@ async function createMercadoPagoPayment(orderData: {
         }
       ],
       payer: orderData.clientEmail ? {
-        email: orderData.clientEmail,
+        email: orderData.clientEmail
       } : undefined,
       back_urls: {
         success: `${process.env.NEXTAUTH_URL}/success?payment_id=simulated&status=approved&external_reference=${orderData.orderId}`,
@@ -157,7 +157,7 @@ async function createMercadoPagoPayment(orderData: {
       payment_methods: {
         excluded_payment_methods: [],
         excluded_payment_types: [],
-        installments: 12,
+        installments: 12
       }
     }
 
@@ -168,7 +168,7 @@ async function createMercadoPagoPayment(orderData: {
     const { MercadoPagoConfig, Preference } = await import('mercadopago')
     
     const client = new MercadoPagoConfig({
-      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!
     })
     
     const preference = new Preference(client)

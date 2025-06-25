@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       leadMagnet: validatedData.leadMagnet,
       hasPhone: !!validatedData.phone,
       utmSource: validatedData.utmSource,
-      utmMedium: validatedData.utmMedium,
+      utmMedium: validatedData.utmMedium
     })
 
     // Salvar interação de captura
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
           userAgent: request.headers.get('user-agent')
           ip: ip,
           referrer: validatedData.referrer,
-          leadScore: leadScore,
+          leadScore: leadScore
         }
         clientId: client.id,
         completedAt: new Date()
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
           source: validatedData.source,
           leadMagnet: validatedData.leadMagnet,
           leadScore: leadScore,
-          country: validatedData.country,
+          country: validatedData.country
         }
       }
     })
@@ -138,9 +138,9 @@ export async function POST(request: NextRequest) {
         leadId: client.id
         leadScore: leadScore,
         isNewLead: isNewLead,
-        recommendations: recommendations,
+        recommendations: recommendations
       }
-      message: responseMessage,
+      message: responseMessage
     })
 
   } catch (error) {
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar estatísticas
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
-      // Total de leads
+      // Total de leads,
       prisma.client.count({
         where: { status: 'LEAD' }
       })
@@ -213,11 +213,11 @@ export async function GET(request: NextRequest) {
         overview: {
           totalLeads
           newLeads,
-          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0,
+          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
         }
         leadsBySource: leadsBySource.map(item => ({
           source: item.source,
-          count: item._count.id,
+          count: item._count.id
         }))
         leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
         period: `${days} dias`,
@@ -307,7 +307,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
         template: 'welcome_lead',
         clientId: clientId,
         variables: {
-          lead_magnet: leadMagnet || 'website',
+          lead_magnet: leadMagnet || 'website'
         }
       })
     })
@@ -332,9 +332,9 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
         clientId: clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 

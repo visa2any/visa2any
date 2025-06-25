@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     // Criar cookie de autenticação
     const response = NextResponse.json({
       user: result.user
-      token: result.token,
+      token: result.token
     })
 
     // Configurar cookie httpOnly
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/',
+      path: '/'
     })
 
     return response

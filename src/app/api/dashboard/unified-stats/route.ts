@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
         action: 'Novo cliente cadastrado',
         client: { id: '1', name: 'João Silva', email: 'joao@email.com' }
         executedAt: new Date().toISOString()
-        priority: 'medium' as const,
+        priority: 'medium' as const
       }
       {
         id: '2',
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
         action: 'Consulta finalizada',
         client: { id: '2', name: 'Maria Santos', email: 'maria@email.com' }
         executedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-        priority: 'high' as const,
+        priority: 'high' as const
       }
       {
         id: '3',
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
         client: { id: '1', name: 'João Silva' }
         dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
         priority: 'high' as const,
-        type: 'document_review',
+        type: 'document_review'
       }
       {
         id: '2',

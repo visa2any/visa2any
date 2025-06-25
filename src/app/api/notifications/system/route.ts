@@ -37,14 +37,14 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
+            email: true
           }
         }
       }
       orderBy: {
-        executedAt: 'desc',
-      }
-      take: 10,
+        executedAt: 'desc'
+      },
+      take: 10
     })
 
     // Convert automation logs to notifications
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
             title: 'Nova atividade',
             message: `Nova atividade registrada no sistema`,
             actionUrl: `/admin`,
-            actionLabel: 'Ver dashboard',
+            actionLabel: 'Ver dashboard'
           }
       }
     })
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
 
     const pendingDocuments = await prisma.document.count({
       where: {
-        status: 'PENDING',
+        status: 'PENDING'
       }
     })
 
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
         title: 'Consultorias pendentes',
         message: `${pendingConsultations} consultoria${pendingConsultations > 1 ? 's' : ''} agendada${pendingConsultations > 1 ? 's' : ''} para a próxima hora`,
         actionUrl: '/admin/consultations',
-        actionLabel: 'Ver consultorias',
+        actionLabel: 'Ver consultorias'
       })
     }
 
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
         title: 'Documentos pendentes',
         message: `${pendingDocuments} documento${pendingDocuments > 1 ? 's' : ''} aguardando validação`,
         actionUrl: '/admin/documents',
-        actionLabel: 'Ver documentos',
+        actionLabel: 'Ver documentos'
       })
     }
 

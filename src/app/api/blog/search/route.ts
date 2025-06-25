@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!query.trim()) {
       return NextResponse.json({
         results: []
-        suggestions: [],
+        suggestions: []
       })
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       results
-      total: results.length,
+      total: results.length
     })
 
   } catch (error) {
@@ -56,15 +56,15 @@ async function generateSuggestions(query: string) {
         published: true,
         title: {
           contains: searchTerm,
-          mode: 'insensitive',
+          mode: 'insensitive'
         }
       }
       select: {
         title: true,
         category: true,
-        country: true,
+        country: true
       }
-      take: 5,
+      take: 5
     })
 
     // Buscar países únicos que contenham o termo
@@ -73,15 +73,15 @@ async function generateSuggestions(query: string) {
         published: true,
         country: {
           contains: searchTerm,
-          mode: 'insensitive',
+          mode: 'insensitive'
         }
       }
       select: {
         country: true,
-        flag: true,
+        flag: true
       }
       distinct: ['country'],
-      take: 3,
+      take: 3
     })
 
     // Buscar categorias que contenham o termo
@@ -90,14 +90,14 @@ async function generateSuggestions(query: string) {
         published: true,
         category: {
           contains: searchTerm,
-          mode: 'insensitive',
+          mode: 'insensitive'
         }
       }
       select: {
-        category: true,
+        category: true
       }
       distinct: ['category'],
-      take: 3,
+      take: 3
     })
 
     const suggestions = []
@@ -108,7 +108,7 @@ async function generateSuggestions(query: string) {
         type: 'post',
         text: post.title,
         category: post.category,
-        icon: '📄',
+        icon: '📄'
       })
     })
 
@@ -119,7 +119,7 @@ async function generateSuggestions(query: string) {
           type: 'country',
           text: `${country.flag || '🌍'} ${country.country}`,
           category: 'País',
-          icon: country.flag || '🌍',
+          icon: country.flag || '🌍'
         })
       }
     })
@@ -130,7 +130,7 @@ async function generateSuggestions(query: string) {
         type: 'category',
         text: cat.category,
         category: 'Categoria',
-        icon: '📂',
+        icon: '📂'
       })
     })
 
@@ -188,7 +188,7 @@ async function performAdvancedSearch(query: string) {
         urgent: true,
         tags: true,
         country: true,
-        flag: true,
+        flag: true
       }
     })
 
@@ -235,7 +235,7 @@ async function performAdvancedSearch(query: string) {
         ...post
         score,
         tags: Array.isArray(post.tags) ? post.tags : [],
-        relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low',
+        relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low'
       }
     })
 

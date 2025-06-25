@@ -78,15 +78,15 @@ export async function POST(request: NextRequest) {
           date: bookingResult.date,
           time: bookingResult.time,
           location: bookingResult.location,
-          instructions: bookingResult.instructions,
+          instructions: bookingResult.instructions
         }
-        message: 'Agendamento realizado com sucesso!',
+        message: 'Agendamento realizado com sucesso!'
       })
     } else {
       return NextResponse.json(
         { 
           error: bookingResult.error
-          message: 'Não foi possível realizar o agendamento',
+          message: 'Não foi possível realizar o agendamento'
         }
         { status: 400 }
       )
@@ -128,9 +128,9 @@ export async function PUT(request: NextRequest) {
           confirmationCode: result.confirmationCode,
           date: result.date,
           time: result.time,
-          location: result.location,
+          location: result.location
         }
-        message: 'Agendamento reagendado com sucesso!',
+        message: 'Agendamento reagendado com sucesso!'
       })
     } else {
       return NextResponse.json(

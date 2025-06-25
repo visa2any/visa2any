@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         id: clientId,
         name: 'Cliente',
         email: 'cliente@email.com',
-        phone: '+5511999999999',
+        phone: '+5511999999999'
       }
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         templateUsed: template,
         sentAt: new Date().toISOString()
-        channel: type,
+        channel: type
       }
     }
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       messageId: deliveryResult.messageId
       status: deliveryResult.status,
-      communication: communicationRecord,
+      communication: communicationRecord
     })
 
   } catch (error) {
@@ -122,7 +122,7 @@ async function sendWhatsApp(phone: string, message: string) {
   
   return {
     messageId: `wa_${Date.now()}`
-    status: 'sent',
+    status: 'sent'
   }
 }
 
@@ -132,7 +132,7 @@ async function sendEmail(email: string, subject: string, content: string) {
   
   return {
     messageId: `email_${Date.now()}`
-    status: 'sent',
+    status: 'sent'
   }
 }
 
@@ -142,6 +142,6 @@ async function sendSMS(phone: string, message: string) {
   
   return {
     messageId: `sms_${Date.now()}`
-    status: 'sent',
+    status: 'sent'
   }
 }

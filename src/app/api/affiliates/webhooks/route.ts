@@ -153,7 +153,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       data: {
         ...endpoints[index]
-        secret: undefined,
+        secret: undefined
       }
     })
 
@@ -244,7 +244,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
     if (response.ok) {
       return { 
         success: true
-        message: 'Webhook testado com sucesso',
+        message: 'Webhook testado com sucesso'
       }
     } else {
       return { 

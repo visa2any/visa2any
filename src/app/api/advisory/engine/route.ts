@@ -7,7 +7,7 @@ const advisoryQuerySchema = z.object({
   clientId: z.string().optional(),
   profile: z.object({
     targetCountry: z.string(),
-    visaType: z.string()
+    visaType: z.string(),
     age: z.number().optional(),
     education: z.string().optional()
     experience: z.number().optional(),
@@ -18,7 +18,7 @@ const advisoryQuerySchema = z.object({
     currentCountry: z.string().optional()
   })
   documents: z.array(z.object({,
-    type: z.string()
+    type: z.string(),
     status: z.string(),
     expiryDate: z.string().optional()
     issuingCountry: z.string().optional()

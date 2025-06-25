@@ -20,42 +20,42 @@ export async function POST(request: NextRequest) {
             name: 'Passaporte válido',
             required: true,
             description: 'Passaporte com validade mínima de 6 meses',
-            validityMonths: 6,
+            validityMonths: 6
           }
           {
             type: 'DIPLOMA',
             name: 'Diploma universitário',
             required: true,
             description: 'Diploma reconhecido de ensino superior',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'TRANSCRIPT',
             name: 'Histórico escolar',
             required: true,
             description: 'Histórico completo com notas',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Comprovante de experiência',
             required: true,
             description: 'Mínimo 1 ano de experiência qualificada',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'BANK_STATEMENT',
             name: 'Comprovante financeiro',
             required: true,
             description: 'CAD $13,310 para pessoa solteira',
-            validityMonths: 3,
+            validityMonths: 3
           }
           {
             type: 'MEDICAL_EXAM',
             name: 'Exame médico',
             required: true,
             description: 'Exame em clínica aprovada',
-            validityMonths: 12,
+            validityMonths: 12
           }
           {
             type: 'POLICE_CLEARANCE',
@@ -69,28 +69,28 @@ export async function POST(request: NextRequest) {
         fees: {
           government: 1365,
           service: 2500,
-          currency: 'CAD',
+          currency: 'CAD'
         }
         eligibilityCriteria: [
           {
             criterion: 'Idade',
             description: 'Idade entre 18-45 anos (pontuação máxima aos 20-29)',
-            required: true,
+            required: true
           }
           {
             criterion: 'Educação',
             description: 'Mínimo ensino médio completo',
-            required: true,
+            required: true
           }
           {
             criterion: 'Experiência',
             description: 'Mínimo 1 ano de experiência qualificada',
-            required: true,
+            required: true
           }
           {
             criterion: 'Idioma',
             description: 'CLB 7 em inglês ou francês',
-            required: true,
+            required: true
           }
           {
             criterion: 'Recursos financeiros',
@@ -135,28 +135,28 @@ export async function POST(request: NextRequest) {
             name: 'Passaporte válido',
             required: true,
             description: 'Passaporte com validade mínima de 6 meses',
-            validityMonths: 6,
+            validityMonths: 6
           }
           {
             type: 'DIPLOMA',
             name: 'Qualificações educacionais',
             required: true,
             description: 'Diploma reconhecido pelo governo australiano',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Evidência de experiência',
             required: true,
             description: 'Mínimo 3 anos em ocupação qualificada',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'MEDICAL_EXAM',
             name: 'Exame médico',
             required: true,
             description: 'Health examination by panel physician',
-            validityMonths: 12,
+            validityMonths: 12
           }
           {
             type: 'POLICE_CLEARANCE',
@@ -170,23 +170,23 @@ export async function POST(request: NextRequest) {
         fees: {
           government: 4640,
           service: 3000,
-          currency: 'AUD',
+          currency: 'AUD'
         }
         eligibilityCriteria: [
           {
             criterion: 'Idade',
             description: 'Menos de 45 anos',
-            required: true,
+            required: true
           }
           {
             criterion: 'Inglês',
             description: 'IELTS 6.0 cada banda (mínimo)',
-            required: true,
+            required: true
           }
           {
             criterion: 'Skills Assessment',
             description: 'Avaliação positiva da profissão',
-            required: true,
+            required: true
           }
           {
             criterion: 'EOI Points',
@@ -231,28 +231,28 @@ export async function POST(request: NextRequest) {
             name: 'Passaporte',
             required: true,
             description: 'Passaporte válido por mais de 3 meses',
-            validityMonths: 3,
+            validityMonths: 3
           }
           {
             type: 'BANK_STATEMENT',
             name: 'Comprovativo de rendimentos',
             required: true,
             description: 'Rendimento mínimo de €760/mês',
-            validityMonths: 3,
+            validityMonths: 3
           }
           {
             type: 'POLICE_CLEARANCE',
             name: 'Registo criminal',
             required: true,
             description: 'Certidão de antecedentes do país de origem',
-            validityMonths: 12,
+            validityMonths: 12
           }
           {
             type: 'MEDICAL_EXAM',
             name: 'Atestado médico',
             required: true,
             description: 'Declaração médica de sanidade física e mental',
-            validityMonths: 6,
+            validityMonths: 6
           }
           {
             type: 'OTHER',
@@ -266,18 +266,18 @@ export async function POST(request: NextRequest) {
         fees: {
           government: 320,
           service: 1500,
-          currency: 'EUR',
+          currency: 'EUR'
         }
         eligibilityCriteria: [
           {
             criterion: 'Rendimento',
             description: 'Rendimento mínimo de €760 mensais',
-            required: true,
+            required: true
           }
           {
             criterion: 'Alojamento',
             description: 'Comprovativo de habitação em Portugal',
-            required: true,
+            required: true
           }
           {
             criterion: 'Seguro',
@@ -322,14 +322,14 @@ export async function POST(request: NextRequest) {
             name: 'Passport',
             required: true,
             description: 'Valid passport for 6+ months',
-            validityMonths: 6,
+            validityMonths: 6
           }
           {
             type: 'WORK_CERTIFICATE',
             name: 'Evidence of extraordinary ability',
             required: true,
             description: 'Awards, publications, media coverage',
-            validityMonths: null,
+            validityMonths: null
           }
           {
             type: 'OTHER',
@@ -343,13 +343,13 @@ export async function POST(request: NextRequest) {
         fees: {
           government: 1435,
           service: 8000,
-          currency: 'USD',
+          currency: 'USD'
         }
         eligibilityCriteria: [
           {
             criterion: 'Extraordinary ability',
             description: '3 of 10 criteria must be met',
-            required: true,
+            required: true
           }
           {
             criterion: 'Field expertise',
@@ -386,7 +386,7 @@ export async function POST(request: NextRequest) {
           data: {
             ...requirement,
             lastUpdated: new Date()
-            isActive: true,
+            isActive: true
           }
         })
       )
@@ -400,7 +400,7 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })
@@ -408,7 +408,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         created: created.length
-        requirements: created,
+        requirements: created
       }
       message: `${created.length} requisitos de visto criados com sucesso`,
     })

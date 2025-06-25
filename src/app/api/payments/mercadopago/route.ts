@@ -3,7 +3,7 @@ import { MercadoPagoConfig, Preference } from 'mercadopago'
 
 // Configurar MercadoPago
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!
 })
 
 const preference = new Preference(client)
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         installments: body.installments || 12,
         default_installments: body.installments || 1,
         default_payment_method_id: null,
-        default_card_id: null,
+        default_card_id: null
       }
       statement_descriptor: 'VISA2ANY'
     }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       init_point: result.init_point,
       sandbox_init_point: result.sandbox_init_point,
       checkout_url: result.init_point,
-      public_key: process.env.MERCADOPAGO_PUBLIC_KEY,
+      public_key: process.env.MERCADOPAGO_PUBLIC_KEY
     })
 
   } catch (error) {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       error: 'Erro ao criar pagamento'
-      details: error instanceof Error ? error.message : 'Erro desconhecido',
+      details: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 })
   }
 }

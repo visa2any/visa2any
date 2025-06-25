@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar dados básicos
     const [totalClients, totalUsers, allClients] = await Promise.all([
-      // Total de clientes
+      // Total de clientes,
       prisma.client.count().catch(() => 0)
       
       // Total de usuários 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           status: true,
-          createdAt: true,
+          createdAt: true
         }
       }).catch(() => [])
     ])
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
           totalRevenue: 425000,
           revenueThisPeriod: 52300,
           revenueGrowth: 15,
-          averageTicket: 2850,
+          averageTicket: 2850
         }
         clientsByStatus: [
           { status: 'LEAD', count: 62 }

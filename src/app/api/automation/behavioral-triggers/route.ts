@@ -17,7 +17,7 @@ const behavioralTriggerSchema = z.object({
     'cart_abandon',
     'video_watch',
     'download_attempt'
-  ])
+  ]),
   data: z.object({
     page: z.string().optional()
     timeSpent: z.number().optional()
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
           priority: triggerAnalysis.priority,
           page: validatedData.data?.page,
           timeSpent: validatedData.data?.timeSpent,
-          scrollDepth: validatedData.data?.scrollDepth,
+          scrollDepth: validatedData.data?.scrollDepth
         }
       }
     })
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       data: {
         triggered: triggerAnalysis.shouldTrigger
         action: triggerAnalysis.action,
-        message: triggerAnalysis.message,
+        message: triggerAnalysis.message
       }
     })
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -193,7 +193,7 @@ async function executeTriggerAction(analysis: any) {
     whatsapp_pricing_help: async () => {
       // Enviar WhatsApp com ajuda sobre preços
       return await sendWhatsAppTrigger('pricing_help', {
-        message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊",
+        message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊"
       })
     }
 
@@ -201,7 +201,7 @@ async function executeTriggerAction(analysis: any) {
       // Email para recuperar assessment
       return await sendEmailTrigger('assessment_recovery', {
         subject: "Continue sua análise - faltam só 2 minutos! ⏰",
-        template: 'assessment_recovery',
+        template: 'assessment_recovery'
       })
     }
 
@@ -250,10 +250,10 @@ async function getAssessmentProgress(clientId?: string) {
     const interactions = await prisma.interaction.findMany({
       where: { 
         clientId
-        type: 'AUTOMATED_EMAIL',
+        type: 'AUTOMATED_EMAIL'
       }
-      orderBy: { createdAt: 'desc' }
-      take: 1,
+      orderBy: { createdAt: 'desc' },
+      take: 1
     })
     
     return interactions[0] ? { step: 0 } : null
@@ -269,7 +269,7 @@ async function checkUserConversion(clientId?: string) {
     const payment = await prisma.payment.findFirst({
       where: { 
         clientId
-        status: 'COMPLETED',
+        status: 'COMPLETED'
       }
     })
     
@@ -284,7 +284,7 @@ async function getSessionActions(sessionId?: string) {
   return {
     pageViews: 7
     hasConverted: false,
-    timeSpent: 780,
+    timeSpent: 780
   }
 }
 

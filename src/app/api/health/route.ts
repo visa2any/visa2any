@@ -44,13 +44,13 @@ export async function GET(request: NextRequest) {
       health.services.telegram = {
         status: 'error',
         configured: true,
-        error: 'Connection failed',
+        error: 'Connection failed'
       }
     }
   } else {
     health.services.telegram = {
       status: 'not_configured',
-      configured: false,
+      configured: false
     }
   }
 
@@ -73,14 +73,14 @@ export async function GET(request: NextRequest) {
       health.services.whatsapp = {
         status: 'error',
         configured: true,
-        error: 'Connection failed',
+        error: 'Connection failed'
       }
     }
   } else {
     health.services.whatsapp = {
       status: 'not_configured',
       configured: false,
-      missing: !process.env.WHATSAPP_TOKEN ? 'WHATSAPP_TOKEN' : 'WHATSAPP_PHONE_ID',
+      missing: !process.env.WHATSAPP_TOKEN ? 'WHATSAPP_TOKEN' : 'WHATSAPP_PHONE_ID'
     }
   }
 
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
         status: 'error',
         configured: true,
         provider: 'resend',
-        error: 'Connection failed',
+        error: 'Connection failed'
       }
     }
   } else if (process.env.SMTP_HOST) {
@@ -112,13 +112,13 @@ export async function GET(request: NextRequest) {
       status: 'configured',
       configured: true,
       provider: 'smtp',
-      host: process.env.SMTP_HOST,
+      host: process.env.SMTP_HOST
     }
   } else {
     health.services.email = {
       status: 'not_configured',
       configured: false,
-      missing: 'RESEND_API_KEY or SMTP_HOST',
+      missing: 'RESEND_API_KEY or SMTP_HOST'
     }
   }
 
@@ -142,20 +142,20 @@ export async function GET(request: NextRequest) {
         status: 'error',
         configured: true,
         provider: 'mercadopago',
-        error: 'Connection failed',
+        error: 'Connection failed'
       }
     }
   } else if (process.env.STRIPE_SECRET_KEY) {
     health.services.payment = {
       status: 'configured',
       configured: true,
-      provider: 'stripe',
+      provider: 'stripe'
     }
   } else {
     health.services.payment = {
       status: 'not_configured',
       configured: false,
-      missing: 'MERCADOPAGO_ACCESS_TOKEN or STRIPE_SECRET_KEY',
+      missing: 'MERCADOPAGO_ACCESS_TOKEN or STRIPE_SECRET_KEY'
     }
   }
 
@@ -163,12 +163,12 @@ export async function GET(request: NextRequest) {
   health.configuration = {
     nextauth: {
       url: !!process.env.NEXTAUTH_URL,
-      secret: !!process.env.NEXTAUTH_SECRET,
+      secret: !!process.env.NEXTAUTH_SECRET
     }
     features: {
       realMonitoring: process.env.ENABLE_REAL_MONITORING === 'true',
       paymentProcessing: process.env.ENABLE_PAYMENT_PROCESSING !== 'false',
-      hybridBooking: process.env.ENABLE_HYBRID_BOOKING !== 'false',
+      hybridBooking: process.env.ENABLE_HYBRID_BOOKING !== 'false'
     }
     storage: {
       cloudinary: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY)

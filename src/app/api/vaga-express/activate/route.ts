@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       plan,
       clientName,
       amount,
-      status: 'ACTIVE',
+      status: 'ACTIVE'
     })
 
     // Aqui salvaria no SQLite usando as tabelas do vaga_express_tables.sql
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         plan,
         status: 'ACTIVE',
         monitoringStarted: true,
-        estimatedActivationTime: '30 minutes',
+        estimatedActivationTime: '30 minutes'
       }
     })
 

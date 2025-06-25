@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Erro no processamento de posts agendados'
-        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       }
       { status: 500 }
     )

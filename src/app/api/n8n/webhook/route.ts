@@ -63,9 +63,9 @@ async function handleLegalChange(data: any) {
       executedAt: new Date()
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
     }
   })
 
@@ -92,10 +92,10 @@ async function handleLegalChange(data: any) {
             legalChangeId: data.id,
             priority,
             sourceUrl,
-            requiresAction: priority === 'HIGH',
+            requiresAction: priority === 'HIGH'
           }
           scheduledAt: new Date()
-          status: 'PENDING',
+          status: 'PENDING'
         }
       })
     }
@@ -113,9 +113,9 @@ async function handleConsularSlot(data: any) {
       executedAt: new Date()
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
     }
   })
 
@@ -144,7 +144,7 @@ async function handleConsularSlot(data: any) {
           expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 minutes
         }
         scheduledAt: new Date()
-        status: 'PENDING',
+        status: 'PENDING'
       }
     })
 
@@ -157,7 +157,7 @@ async function handleConsularSlot(data: any) {
         content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,
         metadata: { slotData: data, priority: 'URGENT' }
         scheduledAt: new Date(Date.now() + 2 * 60 * 1000), // 2 min delay
-        status: 'PENDING',
+        status: 'PENDING'
       }
     })
   }
@@ -177,7 +177,7 @@ async function handleDocumentValidation(data: any) {
           issues,
           recommendations,
           validatedAt: new Date()
-          validatedBy: 'N8N_AUTOMATION',
+          validatedBy: 'N8N_AUTOMATION'
         }
       }
     })
@@ -192,7 +192,7 @@ async function handleDocumentValidation(data: any) {
       success: true,
       details: {
         timestamp: new Date().toISOString()
-        action: 'automated_action',
+        action: 'automated_action'
       }
     }
   })
@@ -222,7 +222,7 @@ async function handleDocumentValidation(data: any) {
             recommendations,
           }
           scheduledAt: new Date()
-          status: 'PENDING',
+          status: 'PENDING'
         }
       })
     }
@@ -260,10 +260,10 @@ async function handleClientRiskAlert(data: any) {
         riskScore,
         factors,
         recommendations,
-        requiresIntervention: riskScore > 70,
+        requiresIntervention: riskScore > 70
       }
       scheduledAt: new Date()
-      status: 'PENDING',
+      status: 'PENDING'
     }
   })
 
@@ -278,7 +278,7 @@ async function handleClientRiskAlert(data: any) {
         scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
         metadata: {
           triggerType: 'RISK_ALERT',
-          riskData: data,
+          riskData: data
         }
       }
     })

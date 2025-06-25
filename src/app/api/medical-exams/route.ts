@@ -107,9 +107,9 @@ export async function POST(request: NextRequest) {
         booking: {
           bookingId: result.bookingId
           confirmationCode: result.confirmationCode,
-          instructions: result.instructions,
+          instructions: result.instructions
         }
-        message: 'Exame médico agendado com sucesso!',
+        message: 'Exame médico agendado com sucesso!'
       })
     } else {
       return NextResponse.json(

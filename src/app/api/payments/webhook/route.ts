@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: result.success
-      message: 'Webhook processado com sucesso',
+      message: 'Webhook processado com sucesso'
     })
     
   } catch (error) {
@@ -42,6 +42,6 @@ export async function GET() {
     status: 'Online',
     url: '/api/payments/webhook',
     methods: ['POST'],
-    description: 'Endpoint para receber notificações de pagamento do Mercado Pago',
+    description: 'Endpoint para receber notificações de pagamento do Mercado Pago'
   })
 }

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       plan: body.plan,
       client: body.clientName,
       amount: body.amount,
-      country: body.country,
+      country: body.country
     })
 
     // Em produção, aqui salvaria no banco de dados temporário
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Vaga Express prepared successfully'
-      purchaseId: body.purchaseId,
+      purchaseId: body.purchaseId
     })
 
   } catch (error) {

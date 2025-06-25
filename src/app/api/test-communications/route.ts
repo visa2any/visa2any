@@ -50,14 +50,14 @@ export async function GET(request: NextRequest) {
         type: 'email',
         status: emailResult.success ? 'success' : 'error',
         message: emailResult.success ? 'Email enviado com sucesso' : emailResult.error,
-        details: emailResult.data,
+        details: emailResult.data
       })
     } else {
       results.tests.push({
         type: 'email',
         status: 'warning',
         message: 'Email não configurado - usando simulação',
-        details: 'Configure SENDGRID_API_KEY ou RESEND_API_KEY',
+        details: 'Configure SENDGRID_API_KEY ou RESEND_API_KEY'
       })
     }
 
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: phone,
-        message: `🧪 TESTE VISA2ANY\n\nSistema de comunicações funcionando!\n\nData: ${new Date().toLocaleString('pt-BR')}\nTipo: WhatsApp Business API\n\n✅ Teste realizado com sucesso!`,
+        message: `🧪 TESTE VISA2ANY\n\nSistema de comunicações funcionando!\n\nData: ${new Date().toLocaleString('pt-BR')}\nTipo: WhatsApp Business API\n\n✅ Teste realizado com sucesso!`
       })
     })
     
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       type: 'whatsapp',
       status: whatsappResult.success ? 'success' : 'error',
       message: whatsappResult.success ? 'WhatsApp enviado com sucesso' : 'WhatsApp em modo simulação',
-      details: whatsappResult.data,
+      details: whatsappResult.data
     })
 
     // 3. Testar webhook de pagamento (simulação)
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
         client: {
           name: 'Cliente Teste',
           email: email,
-          phone: phone,
+          phone: phone
         }
       }
 
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       results.tests.push({
         type: 'webhook_simulation',
         status: 'success',
-        message: 'Webhook de pagamento simulado',
+        message: 'Webhook de pagamento simulado'
       })
       
     } catch (error) {
@@ -118,14 +118,14 @@ export async function GET(request: NextRequest) {
       results.tests.push({
         type: 'webhook_simulation',
         status: 'error',
-        message: 'Erro ao simular webhook',
+        message: 'Erro ao simular webhook'
       })
     }
 
     // 4. Retornar resultados
     return NextResponse.json({
       data: results
-      message: 'Testes de comunicação concluídos',
+      message: 'Testes de comunicação concluídos'
     })
     
   } catch (error) {

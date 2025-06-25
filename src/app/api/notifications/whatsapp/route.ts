@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       message: validatedData.message,
       clientId: validatedData.clientId,
       template: validatedData.template,
-      variables: validatedData.variables,
+      variables: validatedData.variables
     })
 
     // Log do envio
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         error: whatsAppResult.error || null,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })
@@ -51,9 +51,9 @@ export async function POST(request: NextRequest) {
         messageId: whatsAppResult.messageId
         sent: whatsAppResult.success,
         queued: whatsAppResult.queued || false,
-        to: validatedData.to,
+        to: validatedData.to
       }
-      message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso',
+      message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso'
     })
 
   } catch (error) {
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

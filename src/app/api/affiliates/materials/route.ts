@@ -25,7 +25,7 @@ const defaultMaterials = [
     `,
     imageUrl: '/images/banners/banner-principal.jpg',
     previewUrl: '/materials/preview/banner-principal',
-    isActive: true,
+    isActive: true
   }
   {
     type: 'BANNER',
@@ -50,7 +50,7 @@ const defaultMaterials = [
     `,
     imageUrl: '/images/banners/banner-eua.jpg',
     previewUrl: '/materials/preview/banner-eua',
-    isActive: true,
+    isActive: true
   }
 
   // Posts para Redes Sociais
@@ -84,7 +84,7 @@ E muito mais!
 
 #morarfora #intercambio #imigração #visa2any #vivernoexterior #visto #consultoria #sonhoamericano`,
     imageUrl: '/images/posts/instagram-consultoria.jpg',
-    isActive: true,
+    isActive: true
   }
   {
     type: 'SOCIAL_POST',
@@ -118,7 +118,7 @@ Sua nova vida te espera! 🌍✈️
 
 #Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`,
     imageUrl: '/images/posts/facebook-depoimento.jpg',
-    isActive: true,
+    isActive: true
   }
 
   // Templates de Email
@@ -182,7 +182,7 @@ Sua nova vida te espera! 🌍✈️
 </body>
 </html>
     `,
-    isActive: true,
+    isActive: true
   }
 
   // Vídeos
@@ -215,7 +215,7 @@ Sua nova vida te espera!"
     `,
     imageUrl: '/images/videos/depoimento-maria.jpg',
     previewUrl: '/materials/preview/video-depoimento',
-    isActive: true,
+    isActive: true
   }
 
   // Guias/E-books

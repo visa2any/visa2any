@@ -8,7 +8,7 @@ if (!accessToken) {
 }
 
 const client = new MercadoPagoConfig({
-  accessToken: accessToken!,
+  accessToken: accessToken!
 })
 
 const payment = new Payment(client)
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     if (!formData.transaction_amount || formData.transaction_amount <= 0) {
       return NextResponse.json({
         error: 'Valor inválido'
-        details: 'transaction_amount deve ser maior que zero',
+        details: 'transaction_amount deve ser maior que zero'
       }, { status: 400 })
     }
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         email: formData.payer.email,
         first_name: formData.payer.first_name,
         last_name: formData.payer.last_name,
-        identification: formData.payer.identification,
+        identification: formData.payer.identification
       }
     }
 

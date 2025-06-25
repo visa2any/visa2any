@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
         targets,
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
-        message: 'Targets de scraping listados',
+        message: 'Targets de scraping listados'
       })
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         lastUpdated: result.lastUpdated,
         source: result.source,
         warning: 'Dados obtidos via web scraping - podem estar desatualizados',
-        disclaimer: 'Este serviço é apenas para fins informativos',
+        disclaimer: 'Este serviço é apenas para fins informativos'
       })
     }
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           { 
             error: 'Confirmação legal necessária para habilitar scraping'
             warning: 'Web scraping pode violar ToS dos sites. Você assume total responsabilidade legal.',
-            required: 'Envie legalConfirmation: true para confirmar',
+            required: 'Envie legalConfirmation: true para confirmar'
           }
           { status: 400 }
         )
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
           targetId,
           enabled,
           message: `Target ${enabled ? 'habilitado' : 'desabilitado'} com sucesso`,
-          warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined,
+          warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined
         })
       } else {
         return NextResponse.json(
@@ -111,10 +111,10 @@ export async function POST(request: NextRequest) {
         monitoring: {
           targets: targetIds,
           interval: intervalMinutes || 30,
-          status: 'started',
+          status: 'started'
         }
         message: 'Monitoramento iniciado',
-        warning: 'Monitoramento contínuo pode ser detectado pelos sites',
+        warning: 'Monitoramento contínuo pode ser detectado pelos sites'
       })
     }
 

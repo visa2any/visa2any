@@ -6,7 +6,7 @@ import { z } from 'zod'
 // Schema para criar consultoria
 const createConsultationSchema = z.object({
   clientId: z.string().min(1, 'Cliente é obrigatório')
-  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE'])
+  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']),
   scheduledAt: z.string().datetime().optional()
   duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas
   consultantId: z.string().optional()
@@ -46,12 +46,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar consultorias
-    const [consultations, total] = await Promise.all([
+    const [consultations, total] = await Promise.all([,
       prisma.consultation.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           client: {
             select: { 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
               phone: true,
               targetCountry: true,
               visaType: true,
-              status: true,
+              status: true
             }
           }
           consultant: {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages,
+          hasMore: page < totalPages
         }
       }
     })
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
         duration: validatedData.duration || 60, // Default 1 hora
-        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS',
+        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
       }
       include: {
         client: {
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
             name: true, 
             email: true, 
             targetCountry: true,
-            visaType: true,
+            visaType: true
           }
         }
         consultant: {
@@ -173,9 +173,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         views: 0,
         likes: 0,
         comments: 0,
-        featured: urgent || trending || false,
+        featured: urgent || trending || false
       }
     })
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true
       post: newPost,
-      message: 'Artigo criado automaticamente com sucesso',
+      message: 'Artigo criado automaticamente com sucesso'
     })
 
   } catch (error) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const recentPosts = await prisma.blogPost.findMany({
-      orderBy: { publishDate: 'desc' }
+      orderBy: { publishDate: 'desc' },
       take: 5
       select: {
         id: true,
@@ -95,7 +95,7 @@ export async function GET() {
         publishDate: true,
         author: true,
         urgent: true,
-        trending: true,
+        trending: true
       }
     })
 
@@ -147,7 +147,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       success: true
       post: updatedPost,
-      message: 'Post atualizado com sucesso',
+      message: 'Post atualizado com sucesso'
     })
 
   } catch (error) {

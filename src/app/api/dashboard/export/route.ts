@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - period)
 
     // Buscar dados do período
-    const [clients, consultations, payments] = await Promise.all([
+    const [clients, consultations, payments] = await Promise.all([,
       prisma.client.findMany({
         where: {
           createdAt: { gte: startDate }
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           phone: true,
           status: true,
           createdAt: true,
-          assignedUserId: true,
+          assignedUserId: true
         }
       })
       prisma.consultation.findMany({
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
           amount: true,
           currency: true,
           status: true,
-          createdAt: true,
+          createdAt: true
         }
       })
     ])

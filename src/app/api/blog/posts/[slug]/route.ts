@@ -15,7 +15,7 @@ export async function GET(,
     const post = await prisma.blogPost.findFirst({
       where: {
         id: slug,
-        published: true,
+        published: true
       }
     })
 
@@ -33,7 +33,7 @@ export async function GET(,
       where: { id: slug }
       data: {
         views: {
-          increment: 1,
+          increment: 1
         }
       }
     })
@@ -43,11 +43,11 @@ export async function GET(,
       where: {
         category: post.category,
         id: { not: post.id }
-        published: true,
+        published: true
       }
       take: 4,
       orderBy: {
-        publishDate: 'desc',
+        publishDate: 'desc'
       }
     })
 
@@ -59,7 +59,7 @@ export async function GET(,
       }
       relatedPosts: relatedPosts.map(p => ({
         ...p,
-        tags: Array.isArray(p.tags) ? p.tags : [],
+        tags: Array.isArray(p.tags) ? p.tags : []
       }))
     })
 
@@ -109,7 +109,7 @@ export async function PUT(,
     return NextResponse.json({
       post: {
         ...updatedPost
-        tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : [],
+        tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : []
       }
     })
 

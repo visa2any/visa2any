@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
           ]
         }
         include: {
-          client: true,
+          client: true
         }
       })
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           data: {
             status: status === 'approved' ? 'COMPLETED' : 'FAILED',
             transactionId: payment_id,
-            paidAt: status === 'approved' ? new Date() : null,
+            paidAt: status === 'approved' ? new Date() : null
           }
         })
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
             paymentId: payment.id,
             clientId: payment.clientId,
             amount: payment.amount,
-            transactionId: payment_id,
+            transactionId: payment_id
           })
         }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           data: {
             paymentId: payment.id,
             clientId: payment.clientId,
-            status: status === 'approved' ? 'COMPLETED' : 'FAILED',
+            status: status === 'approved' ? 'COMPLETED' : 'FAILED'
           }
         })
       }

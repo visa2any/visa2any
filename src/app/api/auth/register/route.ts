@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,
-        role: validatedData.role || 'STAFF',
+        role: validatedData.role || 'STAFF'
       }
       select: {
         id: true,
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         email: true,
         role: true,
         isActive: true,
-        createdAt: true,
+        createdAt: true
       }
     })
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: user
-      message: 'Usuário criado com sucesso',
+      message: 'Usuário criado com sucesso'
     }, { status: 201 })
 
   } catch (error) {
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

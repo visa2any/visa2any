@@ -10,7 +10,7 @@ const eligibilityAnalysisSchema = z.object({
   visaType: z.string().optional()
   profile: z.object({
     age: z.number().min(18).max(80)
-    education: z.string()
+    education: z.string(),
     workExperience: z.number().min(0)
     language: z.object({
       english: z.number().min(0).max(10).optional()
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         targetCountry: validatedData.targetCountry,
         visaType: analyses[0]?.visaType,
         score: analyses[0]?.analysis.totalScore || 0,
-        status: analyses[0]?.analysis.totalScore >= 70 ? 'QUALIFIED' : 'LEAD',
+        status: analyses[0]?.analysis.totalScore >= 70 ? 'QUALIFIED' : 'LEAD'
       }
     })
 
@@ -118,9 +118,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
           recommendationLevel: getRecommendationLevel(analyses[0]?.analysis.totalScore || 0)
         }
       }
-      message: 'Análise de elegibilidade concluída com sucesso',
+      message: 'Análise de elegibilidade concluída com sucesso'
     })
 
   } catch (error) {
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -358,7 +358,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
     feedback,
     blockers,
     eligible,
-    minimumRequired: 65,
+    minimumRequired: 65
   }
 }
 
@@ -432,7 +432,7 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     totalScore: Math.min(score, 100)
     feedback,
     blockers,
-    eligible: score >= 70 && blockers.length === 0,
+    eligible: score >= 70 && blockers.length === 0
   }
 }
 
@@ -470,7 +470,7 @@ function analyzeGenericEligibility(profile: any, requirement: any) {
     totalScore: Math.max(Math.min(score, 100), 0)
     feedback,
     blockers,
-    eligible: score >= 60,
+    eligible: score >= 60
   }
 }
 

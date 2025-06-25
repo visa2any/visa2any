@@ -62,14 +62,14 @@ export async function POST(request: NextRequest) {
         userId
         postId: validatedData.postId,
         content: validatedData.content,
-        parentId: validatedData.parentId || null,
+        parentId: validatedData.parentId || null
       }
       include: {
         user: {
           select: {
             id: true,
             name: true,
-            email: true,
+            email: true
           }
         }
         replies: {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                email: true
               }
             }
           }
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       comment
-      message: 'Comentário adicionado com sucesso',
+      message: 'Comentário adicionado com sucesso'
     })
 
   } catch (error) {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
+            email: true
           }
         }
         replies: {
@@ -142,17 +142,17 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                email: true
               }
             }
           }
           orderBy: {
-            createdAt: 'asc',
+            createdAt: 'asc'
           }
         }
       }
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       }
     })
 

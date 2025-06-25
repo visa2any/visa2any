@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
         where: { id: validatedData.clientId }
         include: {
           consultations: {
-            orderBy: { createdAt: 'desc' }
-            take: 1,
+            orderBy: { createdAt: 'desc' },
+            take: 1
           }
           documents: {
             select: { type: true, status: true }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         details: {
           message: validatedData.message,
           intent: sofiaResponse.intent,
-          confidence: sofiaResponse.confidence,
+          confidence: sofiaResponse.confidence
         }
       }
     })
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         confidence: sofiaResponse.confidence,
         suggestions: sofiaResponse.suggestions,
         actions: sofiaResponse.actions,
-        conversationId: sofiaResponse.conversationId,
+        conversationId: sofiaResponse.conversationId
       }
     })
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -174,7 +174,7 @@ function detectIntent(message: string) {
       bestMatch = {
         name: intentName,
         confidence,
-        keywords: matchedKeywords,
+        keywords: matchedKeywords
       }
     }
   }
@@ -227,7 +227,7 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
             actions: [{
               type: 'start_analysis',
               label: 'Iniciar Análise Completa',
-              clientId: clientContext.id,
+              clientId: clientContext.id
             }],
           }
         }
@@ -307,7 +307,7 @@ Qual pacote faz mais sentido para você?`
         ],
         actions: [{
           type: 'show_pricing',
-          label: 'Ver Detalhes dos Pacotes',
+          label: 'Ver Detalhes dos Pacotes'
         }]
       }
     
@@ -369,7 +369,7 @@ Qual opção prefere?`
         ],
         actions: [{
           type: 'contact_specialist',
-          label: 'Falar com Especialista Agora',
+          label: 'Falar com Especialista Agora'
         }]
       }
     
@@ -398,7 +398,7 @@ Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução
         ],
         actions: [{
           type: 'escalate_complaint',
-          label: 'Falar com Gerente Agora',
+          label: 'Falar com Gerente Agora'
         }]
       }
     
@@ -422,7 +422,7 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
           'Consultar custos',
           'Falar com especialista'
         ],
-        actions: [],
+        actions: []
       }
   }
 }
@@ -435,7 +435,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: country }
-      isActive: true,
+      isActive: true
     }
   })
   
@@ -466,7 +466,7 @@ Quer uma análise completa do seu perfil?`
       ],
       actions: [{
         type: 'start_analysis',
-        label: 'Iniciar Análise Completa',
+        label: 'Iniciar Análise Completa'
       }],
     }
   }
@@ -490,7 +490,7 @@ ${genericDocs}
     ],
     actions: [{
       type: 'start_analysis',
-      label: 'Análise Gratuita Agora',
+      label: 'Análise Gratuita Agora'
     }],
   }
 }
@@ -577,7 +577,7 @@ function getSofiaIntents() {
   return {
     greeting: {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
-      patterns: ['^(olá|oi|hello|hi)'],
+      patterns: ['^(olá|oi|hello|hi)']
     }
     
     eligibility_question: {

@@ -274,7 +274,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: `Sequência ${sequence} ativada para ${email}`
-      emailsScheduled: templates.length,
+      emailsScheduled: templates.length
     })
 
   } catch (error) {
@@ -341,7 +341,7 @@ async function scheduleEmail(emailData: {
   sendAt: Date,
   sequence: string
   clientId?: string,
-  templateIndex: number,
+  templateIndex: number
 }) {
   try {
     // Em produção, usar serviço de queue como Bull/Redis
@@ -352,7 +352,7 @@ async function scheduleEmail(emailData: {
       subject: emailData.subject,
       sendAt: emailData.sendAt,
       sequence: emailData.sequence,
-      templateIndex: emailData.templateIndex,
+      templateIndex: emailData.templateIndex
     })
 
     // Se o delay for 0 (imediato), enviar agora
@@ -401,7 +401,7 @@ async function sendEmailNow(emailData: {
         html: emailData.body.replace(/\n/g, '<br>')
         template: 'automation',
         variables: {
-          content: emailData.body,
+          content: emailData.body
         }
       })
     })

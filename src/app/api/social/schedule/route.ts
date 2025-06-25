@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         imageUrl,
         hashtags: hashtags || [],
         scheduledAt: new Date(scheduledAt || Date.now())
-        status: 'SCHEDULED',
+        status: 'SCHEDULED'
       }
     })
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         id: socialPost.id,
         platform: socialPost.platform,
         scheduledAt: socialPost.scheduledAt,
-        status: socialPost.status,
+        status: socialPost.status
       }
     })
 
@@ -76,8 +76,8 @@ export async function GET(request: NextRequest) {
 
     const socialPosts = await prisma.socialPost.findMany({
       where
-      orderBy: { scheduledAt: 'asc' }
-      take: 100,
+      orderBy: { scheduledAt: 'asc' },
+      take: 100
     })
 
     const stats = {
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
         scheduledAt: post.scheduledAt,
         publishedAt: post.publishedAt,
         status: post.status,
-        createdAt: post.createdAt,
+        createdAt: post.createdAt
       }))
     })
 

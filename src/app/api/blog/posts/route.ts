@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       where,
       orderBy,
       take: limit,
-      skip: offset,
+      skip: offset
     })
 
     // Buscar total para paginação
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
     // Converter tags JSON para array
     const postsWithTags = posts.map(post => ({
       ...post,
-      tags: Array.isArray(post.tags) ? post.tags : [],
+      tags: Array.isArray(post.tags) ? post.tags : []
     }))
 
     return NextResponse.json({
@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
         current: 1,
         total: 0,
         limit: 50,
-        offset: 0,
+        offset: 0
       }
     })
   }
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       post: {
         ...post
-        tags: Array.isArray(post.tags) ? post.tags : [],
+        tags: Array.isArray(post.tags) ? post.tags : []
       }
     })
 

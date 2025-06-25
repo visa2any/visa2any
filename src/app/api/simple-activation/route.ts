@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         if (!process.env.ENABLE_REAL_MONITORING) {
           return NextResponse.json({
             message: 'Monitoramento real não habilitado'
-            error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar',
+            error: 'Configure ENABLE_REAL_MONITORING=true no .env para ativar'
           })
         }
         
@@ -40,7 +40,7 @@ Sistema pronto para produção!`)
         return NextResponse.json({
           message: 'Sistema híbrido ativo!'
           system: 'hybrid-booking',
-          active: true,
+          active: true
         })
         
       default:
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       whatsapp: !!process.env.WHATSAPP_TOKEN,
       email: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST)
       payment: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
-      database: !!process.env.DATABASE_URL,
+      database: !!process.env.DATABASE_URL
     }
   })
 }
@@ -116,7 +116,7 @@ async function sendTelegramNotification(title: string, message: string) {
       body: JSON.stringify({
         chat_id: chatId,
         text: `${title}\n\n${message}`,
-        parse_mode: 'HTML',
+        parse_mode: 'HTML'
       })
     })
 

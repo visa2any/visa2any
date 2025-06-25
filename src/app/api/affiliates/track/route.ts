@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60, // 30 dias
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax'
     })
 
     return response
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
       where: {
         affiliateId: affiliate.id,
         referralCode,
-        converted: false,
+        converted: false
       }
       data: {
         converted: true,

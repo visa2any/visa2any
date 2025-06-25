@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       totalUpdates: data.result?.length || 0,
       uniqueChatIds: Array.from(chatIds)
       messages: messages.slice(-5), // Últimas 5 mensagens
-      rawData: data,
+      rawData: data
     })
 
   } catch (error) {
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       }
       body: JSON.stringify({
         chat_id: chatId,
-        text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅',
+        text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅'
       })
     })
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       success: data.ok
       data,
       sentTo: chatId,
-      message: message || 'Mensagem de teste',
+      message: message || 'Mensagem de teste'
     })
 
   } catch (error) {

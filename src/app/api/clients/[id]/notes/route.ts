@@ -51,7 +51,7 @@ export async function POST(,
       timestamp: new Date().toISOString()
       author: 'Current User',
       metadata: {
-        noteId: noteId,
+        noteId: noteId
       }
     }
 
@@ -59,7 +59,7 @@ export async function POST(,
       message: 'Note added successfully'
       data: {
         note: newNote,
-        timelineEntry: timelineEntry,
+        timelineEntry: timelineEntry
       }
     })
 
@@ -108,7 +108,7 @@ export async function GET(
 
     return NextResponse.json({
       notes: mockNotes
-      total: mockNotes.length,
+      total: mockNotes.length
     })
 
   } catch (error) {

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
             id: true,
             name: true,
             targetCountry: true,
-            visaType: true,
+            visaType: true
           }
         }
       }
@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
         data: {
           documentId: document.id
           analysis: document.analysis,
-          cached: true,
+          cached: true
         }
-        message: 'Análise recuperada do cache',
+        message: 'Análise recuperada do cache'
       })
     }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           documentId: document.id,
           documentType: document.type,
           confidence: analysisResult.confidence,
-          processingTime: analysisResult.processingTime,
+          processingTime: analysisResult.processingTime
         }
       }
     })
@@ -94,9 +94,9 @@ export async function POST(request: NextRequest) {
       data: {
         documentId: document.id
         analysis: analysisResult,
-        document: updatedDocument,
+        document: updatedDocument
       }
-      message: 'Análise concluída com sucesso',
+      message: 'Análise concluída com sucesso'
     })
 
   } catch (error) {
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -132,7 +132,7 @@ export async function GET(
             id: true,
             name: true,
             targetCountry: true,
-            visaType: true,
+            visaType: true
           }
         }
       }
@@ -151,7 +151,7 @@ export async function GET(
         analysis: document.analysis,
         isValid: document.isValid,
         validationNotes: document.validationNotes,
-        validatedAt: document.validatedAt,
+        validatedAt: document.validatedAt
       }
     })
 
@@ -197,7 +197,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
         countryValidation: countryValidation,
         fraudDetection: fraudDetection,
         recommendations: generateRecommendations(analysisResult, countryValidation, fraudDetection)
-        processingTime: processingTime,
+        processingTime: processingTime
       }
       validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection)
       processingTime: processingTime
@@ -212,10 +212,10 @@ async function performAdvancedDocumentAnalysis(document: any) {
       ocrText: '',
       analysis: {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
-        processingTime: Date.now() - startTime,
+        processingTime: Date.now() - startTime
       }
       validationNotes: 'Erro durante análise automática. Revisão manual necessária.',
-      processingTime: Date.now() - startTime,
+      processingTime: Date.now() - startTime
     }
   }
 }
@@ -369,7 +369,7 @@ async function analyzePassport(document: any, ocrResult: any) {
     confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
-    recommendations: issues.length > 0 ? ['Renovar passaporte se próximo do vencimento'] : [],
+    recommendations: issues.length > 0 ? ['Renovar passaporte se próximo do vencimento'] : []
   }
 }
 
@@ -400,7 +400,7 @@ async function analyzeDiploma(document: any, ocrResult: any) {
     confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
-    recommendations: ['Verificar se precisa de validação/apostilamento'],
+    recommendations: ['Verificar se precisa de validação/apostilamento']
   }
 }
 
@@ -432,7 +432,7 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
     confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
-    recommendations: ['Verificar se período está adequado (mínimo 3 meses)'],
+    recommendations: ['Verificar se período está adequado (mínimo 3 meses)']
   }
 }
 
@@ -463,7 +463,7 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
     confidence: Math.max(confidence, 0.1)
     extractedData: fields,
     issues: issues,
-    recommendations: ['Verificar se atende tempo mínimo de experiência'],
+    recommendations: ['Verificar se atende tempo mínimo de experiência']
   }
 }
 
@@ -475,7 +475,7 @@ async function analyzeBirthCertificate(document: any, ocrResult: any) {
     confidence: 0.8,
     extractedData: {}
     issues: [],
-    recommendations: ['Verificar se precisa de apostilamento'],
+    recommendations: ['Verificar se precisa de apostilamento']
   }
 }
 
@@ -486,7 +486,7 @@ async function analyzePoliceClearance(document: any, ocrResult: any) {
     confidence: 0.8,
     extractedData: {}
     issues: [],
-    recommendations: ['Verificar validade (máximo 12 meses)'],
+    recommendations: ['Verificar validade (máximo 12 meses)']
   }
 }
 
@@ -497,7 +497,7 @@ async function analyzeGenericDocument(document: any, ocrResult: any) {
     confidence: 0.6,
     extractedData: {}
     issues: ['Tipo de documento requer análise manual'],
-    recommendations: ['Solicitar revisão de especialista'],
+    recommendations: ['Solicitar revisão de especialista']
   }
 }
 
@@ -508,7 +508,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       isValid: true
       needsReview: true,
       confidence: 0.7,
-      countrySpecificIssues: ['País de destino não especificado'],
+      countrySpecificIssues: ['País de destino não especificado']
     }
   }
   
@@ -516,7 +516,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: document.client.targetCountry }
-      isActive: true,
+      isActive: true
     }
   })
   
@@ -525,7 +525,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       isValid: true
       needsReview: true,
       confidence: 0.7,
-      countrySpecificIssues: ['Requisitos específicos não encontrados'],
+      countrySpecificIssues: ['Requisitos específicos não encontrados']
     }
   }
   
@@ -537,7 +537,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
       isValid: true
       needsReview: false,
       confidence: 0.8,
-      countrySpecificIssues: [],
+      countrySpecificIssues: []
     }
   }
   
@@ -562,7 +562,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
     needsReview: issues.length > 0,
     confidence: issues.length === 0 ? 0.9 : 0.6,
     countrySpecificIssues: issues,
-    requirement: relevantDoc,
+    requirement: relevantDoc
   }
 }
 
@@ -606,7 +606,7 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     hasCriticalIssues: criticalIssues.length > 0,
     warnings: warnings,
     criticalIssues: criticalIssues,
-    riskScore: criticalIssues.length * 0.8 + warnings.length * 0.3,
+    riskScore: criticalIssues.length * 0.8 + warnings.length * 0.3
   }
 }
 
@@ -689,7 +689,7 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
             status: 'SCHEDULED',
             clientId: clientId,
             scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
-            notes: 'Consultoria agendada automaticamente após validação de documentos essenciais',
+            notes: 'Consultoria agendada automaticamente após validação de documentos essenciais'
           }
         })
         

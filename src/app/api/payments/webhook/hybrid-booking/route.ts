@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             id: true,
             name: true,
             email: true,
-            phone: true,
+            phone: true
           }
         }
       }
@@ -126,7 +126,7 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       availableDates: hybridPayment.availableDates,
       paidAmount: paymentData.transaction_amount,
       paymentMethod: paymentData.payment_method_id,
-      deadline: booking.deadline,
+      deadline: booking.deadline
     })
 
     // Notificar cliente sobre confirmação
@@ -137,7 +137,7 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       plan: hybridPayment.plan,
       paidAmount: paymentData.transaction_amount,
       paymentMethod: getPaymentMethodName(paymentData.payment_method_id)
-      bookingId: booking.id,
+      bookingId: booking.id
     })
 
     console.log('Pagamento aprovado processado:', hybridPayment.id)
@@ -184,7 +184,7 @@ ${paymentData.payment_method_id === 'pix' ?
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message,
+        message: message
       })
     })
 
@@ -234,7 +234,7 @@ Infelizmente seu pagamento não foi aprovado:
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message,
+        message: message
       })
     })
 
@@ -298,7 +298,7 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML',
+        parse_mode: 'HTML'
       })
     })
   } catch (error) {
@@ -345,7 +345,7 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: data.client.phone,
-        message: message,
+        message: message
       })
     })
   } catch (error) {

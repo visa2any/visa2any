@@ -14,7 +14,7 @@ export async function GET(,
     if (result.success) {
       return NextResponse.json({
         booking: result.booking
-        message: 'Status do exame recuperado com sucesso',
+        message: 'Status do exame recuperado com sucesso'
       })
     } else {
       return NextResponse.json(
@@ -53,7 +53,7 @@ export async function PUT(
     if (result.success) {
       return NextResponse.json({
         confirmationCode: result.confirmationCode
-        message: result.message,
+        message: result.message
       })
     } else {
       return NextResponse.json(

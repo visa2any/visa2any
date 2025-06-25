@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { bookingRequest, options }: { 
       bookingRequest: BookingRequest,
-      options: HybridBookingOptions ,
+      options: HybridBookingOptions 
     } = body
 
     // Validação dos campos obrigatórios
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       consulate: bookingRequest.consulate,
       visaType: bookingRequest.visaType,
       method: defaultOptions.preferredMethod,
-      urgency: defaultOptions.urgency,
+      urgency: defaultOptions.urgency
     })
 
     // Executar agendamento híbrido
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
           appointmentDetails: result.appointmentDetails,
           cost: result.cost,
           processingTime: result.processingTime,
-          instructions: result.instructions,
+          instructions: result.instructions
         }
         attempts: result.attempts,
         warnings: result.warnings,
@@ -96,20 +96,20 @@ export async function GET(request: NextRequest) {
           source: 'APIs Oficiais (CASV/VFS)',
           slots: results.official,
           reliability: 'Alta',
-          cost: 'Gratuito',
+          cost: 'Gratuito'
         }
         partners: {
           source: 'Parceiros (VisaHQ/iVisa)',
           slots: results.partners,
           reliability: 'Alta',
-          cost: 'Pago',
+          cost: 'Pago'
         }
         scraping: {
           source: 'Web Scraping',
           slots: results.scraping,
           reliability: 'Baixa',
           cost: 'Gratuito',
-          warning: 'Dados podem estar desatualizados',
+          warning: 'Dados podem estar desatualizados'
         }
       }
       consolidated: results.consolidated,

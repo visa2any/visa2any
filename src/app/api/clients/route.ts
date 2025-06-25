@@ -51,12 +51,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar clientes com paginação
-    const [clients, total] = await Promise.all([
+    const [clients, total] = await Promise.all([,
       prisma.client.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           assignedUser: {
             select: { id: true, name: true, email: true }
@@ -69,8 +69,8 @@ export async function GET(request: NextRequest) {
               scheduledAt: true,
               score: true
             }
-            orderBy: { createdAt: 'desc' }
-            take: 1,
+            orderBy: { createdAt: 'desc' },
+            take: 1
           }
           payments: {
             select: { 
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
             select: {
               consultations: true,
               documents: true,
-              interactions: true,
+              interactions: true
             }
           }
         }
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     const client = await prisma.client.create({
       data: {
         ...validatedData
-        status: 'LEAD',
+        status: 'LEAD'
       }
       include: {
         assignedUser: {
@@ -165,9 +165,9 @@ export async function POST(request: NextRequest) {
         clientId: client.id,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )

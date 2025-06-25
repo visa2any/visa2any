@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         visaFee: countryFees.visaFee,
         serviceFee: baseFee,
         biometricFee: countryFees.biometricFee || 0,
-        additionalFees: countryFees.additionalFees || 0,
+        additionalFees: countryFees.additionalFees || 0
       }
       subtotal: countryFees.visaFee + baseFee + (countryFees.biometricFee || 0) + (countryFees.additionalFees || 0)
       discounts: {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       }
       total: {
         withoutDiscount: 0,
-        withPixDiscount: 0,
+        withPixDiscount: 0
       }
       currency: countryFees.currency
     }
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         id: true,
         name: true,
         email: true,
-        phone: true,
+        phone: true
       }
     })
 
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
       plan: data.plan,
       urgency: data.urgency,
       costs: costs,
-      availableDates: data.availableDates,
+      availableDates: data.availableDates
     })
 
     // 7. Notificar cliente sobre cobrança
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       paymentLinks: paymentLinks,
       expiresIn: 30,
       country: data.country,
-      consulate: data.consulate,
+      consulate: data.consulate
     })
 
     return NextResponse.json({
@@ -174,14 +174,14 @@ export async function POST(request: NextRequest) {
         costs: costs,
         paymentLinks: paymentLinks,
         expiresAt: payment.expiresAt,
-        officialPaymentUrl: countryFees.officialPaymentUrl,
+        officialPaymentUrl: countryFees.officialPaymentUrl
       }
       client: {
         name: client.name,
-        email: client.email,
+        email: client.email
       }
       consultantNotified: true,
-      message: 'Cobrança criada e notificações enviadas',
+      message: 'Cobrança criada e notificações enviadas'
     })
 
   } catch (error) {
@@ -208,7 +208,7 @@ export async function GET(request: NextRequest) {
             select: {
               name: true,
               email: true,
-              phone: true,
+              phone: true
             }
           }
         }
@@ -229,13 +229,13 @@ export async function GET(request: NextRequest) {
       // Buscar pagamentos do cliente
       const payments = await prisma.hybridPayment.findMany({
         where: { clientId }
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         take: 10,
         include: {
           client: {
             select: {
               name: true,
-              email: true,
+              email: true
             }
           }
         }
@@ -274,7 +274,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       title: 'Vaga Express - Agendamento de Visto (PIX)',
       description: `${client.name} - Taxa consular + serviço (5% desconto PIX)`,
       paymentMethods: ['pix'],
-      discount: costs.discounts.pix,
+      discount: costs.discounts.pix
     })
     links.pix = pixPreference?.init_point || null
 
@@ -285,7 +285,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       title: 'Vaga Express - Agendamento de Visto (Cartão)',
       description: `${client.name} - Taxa consular + serviço`,
       paymentMethods: ['credit_card', 'debit_card'],
-      installments: 12,
+      installments: 12
     })
     links.card = cardPreference?.init_point || null
 
@@ -295,7 +295,7 @@ async function generatePaymentLinks(paymentId: string, costs: any, client: any) 
       amount: costs.total.withoutDiscount,
       title: 'Vaga Express - Agendamento de Visto (Boleto)',
       description: `${client.name} - Taxa consular + serviço`,
-      paymentMethods: ['ticket'],
+      paymentMethods: ['ticket']
     })
     links.boleto = boletoPreference?.init_point || null
 
@@ -321,13 +321,13 @@ async function createMercadoPagoPreference(options: any) {
           description: options.description,
           quantity: 1,
           currency_id: 'BRL',
-          unit_price: options.amount,
+          unit_price: options.amount
         }],
         external_reference: options.paymentId,
         payment_methods: {
           excluded_payment_types: options.paymentMethods ? [] : ['credit_card', 'debit_card', 'ticket', 'digital_wallet'],
           included_payment_types: options.paymentMethods || undefined,
-          installments: options.installments || 1,
+          installments: options.installments || 1
         }
         back_urls: {
           success: `${process.env.NEXTAUTH_URL}/hybrid-booking/payment/success?id=${options.paymentId}`,
@@ -338,7 +338,7 @@ async function createMercadoPagoPreference(options: any) {
         notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/hybrid-booking`,
         metadata: {
           payment_id: options.paymentId,
-          discount: options.discount || 0,
+          discount: options.discount || 0
         }
       })
     })
@@ -403,7 +403,7 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML',
+        parse_mode: 'HTML'
       })
     })
   } catch (error) {
@@ -451,7 +451,7 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
         to: client.phone,
-        message: whatsappMessage,
+        message: whatsappMessage
       })
     })
 
@@ -470,7 +470,7 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
           costs: data.costs,
           paymentLinks: data.paymentLinks,
           paymentId: data.paymentId,
-          expiresIn: data.expiresIn,
+          expiresIn: data.expiresIn
         }
       })
     })

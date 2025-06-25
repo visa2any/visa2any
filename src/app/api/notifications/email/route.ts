@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     const emailResult = await sendEmailWithProvider({
       to: validatedData.to,
       subject: emailContent.subject,
-      html: emailContent.html,
+      html: emailContent.html
     })
 
     // Log do envio
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         error: emailResult.error || null,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })
@@ -138,9 +138,9 @@ export async function POST(request: NextRequest) {
         messageId: emailResult.messageId
         sent: emailResult.success,
         provider: emailResult.provider,
-        to: validatedData.to,
+        to: validatedData.to
       }
-      message: 'Email enviado com sucesso',
+      message: 'Email enviado com sucesso'
     })
 
   } catch (error) {
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -175,7 +175,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+          pass: process.env.SMTP_PASS
         }
       })
 
@@ -183,7 +183,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`,
         to: to,
         subject: subject,
-        html: html,
+        html: html
       })
 
       console.log('✅ Email enviado via Hostinger:', result.messageId)
@@ -209,15 +209,15 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         body: JSON.stringify({
           personalizations: [{
             to: [{ email: to }],
-            subject: subject,
+            subject: subject
           }],
           from: {
             email: process.env.FROM_EMAIL || 'info@visa2any.com',
-            name: process.env.FROM_NAME || 'Visa2Any',
+            name: process.env.FROM_NAME || 'Visa2Any'
           }
           content: [{
             type: 'text/html',
-            value: html,
+            value: html
           }],
         })
       })
@@ -225,7 +225,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       if (response.ok) {
         return {
           messageId: `sg_${Date.now()}`
-          provider: 'sendgrid',
+          provider: 'sendgrid'
         }
       }
     } catch (error) {
@@ -242,6 +242,6 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
 
   return {
     messageId: `sim_${Date.now()}`
-    provider: 'simulation',
+    provider: 'simulation'
   }
 }

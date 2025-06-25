@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           responseTime: 120,
-          sentiment: 'positive',
+          sentiment: 'positive'
         }
       }
       {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           templateUsed: 'boas-vindas',
-          responseTime: 15,
+          responseTime: 15
         }
       }
       {
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           }
         ],
         metadata: {
-          templateUsed: 'documentos-pendentes',
+          templateUsed: 'documentos-pendentes'
         }
       }
       {
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           duration: 1800,
-          callType: 'follow-up',
+          callType: 'follow-up'
         }
       }
       {
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           sentiment: 'neutral',
-          requiresResponse: true,
+          requiresResponse: true
         }
       }
     ]
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       messages: filteredMessages
-      total: filteredMessages.length,
+      total: filteredMessages.length
     })
 
   } catch (error) {
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: newMessage
-      messageId: newMessage.id,
+      messageId: newMessage.id
     })
 
   } catch (error) {

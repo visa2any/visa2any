@@ -42,7 +42,7 @@ export async function GET(,
           select: { id: true, name: true, email: true, role: true }
         }
         consultations: {
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
           include: {
             consultant: {
               select: { id: true, name: true, email: true }
@@ -53,7 +53,7 @@ export async function GET(,
           orderBy: { createdAt: 'desc' }
         }
         documents: {
-          orderBy: { uploadedAt: 'desc' }
+          orderBy: { uploadedAt: 'desc' },
           include: {
             uploadedBy: {
               select: { id: true, name: true }
@@ -61,7 +61,7 @@ export async function GET(,
           }
         }
         interactions: {
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
           take: 50 // Últimas 50 interações
         }
       }
@@ -133,9 +133,9 @@ export async function PATCH(
         clientId: id,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -148,7 +148,7 @@ export async function PATCH(
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -209,9 +209,9 @@ export async function PUT(
         clientId: id,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -224,7 +224,7 @@ export async function PUT(
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -275,7 +275,7 @@ export async function DELETE(
         success: true,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
       }
     })

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       featuredPosts,
       trendingPosts,
       urgentPosts
-    ] = await Promise.all([
+    ] = await Promise.all([,
       prisma.blogPost.count()
       prisma.blogPost.aggregate({
         _sum: { views: true }
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       where: {
         published: true,
         publishDate: {
-          gte: dateFrom,
+          gte: dateFrom
         }
       }
       select: {
@@ -67,30 +67,30 @@ export async function GET(request: NextRequest) {
         publishDate: true,
         category: true,
         country: true,
-        flag: true,
+        flag: true
       }
       orderBy: {
-        views: 'desc',
-      }
-      take: 10,
+        views: 'desc'
+      },
+      take: 10
     })
 
     // Distribuição por categoria
     const categoryStats = await prisma.blogPost.groupBy({
       by: ['category'],
       where: {
-        published: true,
+        published: true
       }
       _count: {
-        category: true,
+        category: true
       }
       _sum: {
         views: true,
-        likes: true,
+        likes: true
       }
       orderBy: {
         _count: {
-          category: 'desc',
+          category: 'desc'
         }
       }
     })
@@ -101,35 +101,35 @@ export async function GET(request: NextRequest) {
       where: {
         published: true,
         country: {
-          not: null,
+          not: null
         }
       }
       _count: {
-        country: true,
+        country: true
       }
       _sum: {
         views: true,
-        likes: true,
+        likes: true
       }
       orderBy: {
         _count: {
-          country: 'desc',
+          country: 'desc'
         }
       }
-      take: 10,
+      take: 10
     })
 
     // Distribuição por dificuldade
     const difficultyStats = await prisma.blogPost.groupBy({
       by: ['difficulty'],
       where: {
-        published: true,
+        published: true
       }
       _count: {
-        difficulty: true,
+        difficulty: true
       }
       _sum: {
-        views: true,
+        views: true
       }
     })
 
@@ -137,13 +137,13 @@ export async function GET(request: NextRequest) {
     const typeStats = await prisma.blogPost.groupBy({
       by: ['type'],
       where: {
-        published: true,
+        published: true
       }
       _count: {
-        type: true,
+        type: true
       }
       _sum: {
-        views: true,
+        views: true
       }
     })
 
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
     const recentComments = await prisma.blogPostComment.count({
       where: {
         createdAt: {
-          gte: dateFrom,
+          gte: dateFrom
         }
       }
     })
@@ -162,14 +162,14 @@ export async function GET(request: NextRequest) {
       where: {
         published: true,
         publishDate: {
-          gte: dateFrom,
+          gte: dateFrom
         }
       }
       _count: {
-        publishDate: true,
+        publishDate: true
       }
       orderBy: {
-        publishDate: 'asc',
+        publishDate: 'asc'
       }
     })
 
@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
         }
         topPosts: topPosts.map(post => ({
           ...post,
-          engagementRate: post.views > 0 ? ((post.likes + post.comments) / post.views * 100).toFixed(2) : '0.00',
+          engagementRate: post.views > 0 ? ((post.likes + post.comments) / post.views * 100).toFixed(2) : '0.00'
         }))
         distribution: {
           categories: categoryStats.map(stat => ({
@@ -204,31 +204,31 @@ export async function GET(request: NextRequest) {
             posts: stat._count.category,
             views: stat._sum.views || 0,
             likes: stat._sum.likes || 0,
-            avgViewsPerPost: stat._count.category > 0 ? Math.round((stat._sum.views || 0) / stat._count.category) : 0,
+            avgViewsPerPost: stat._count.category > 0 ? Math.round((stat._sum.views || 0) / stat._count.category) : 0
           }))
           countries: countryStats.map(stat => ({
             country: stat.country,
             posts: stat._count.country,
             views: stat._sum.views || 0,
-            likes: stat._sum.likes || 0,
+            likes: stat._sum.likes || 0
           }))
           difficulties: difficultyStats.map(stat => ({
             difficulty: stat.difficulty,
             posts: stat._count.difficulty,
             views: stat._sum.views || 0,
-            percentage: totalPosts > 0 ? ((stat._count.difficulty / totalPosts) * 100).toFixed(1) : '0.0',
+            percentage: totalPosts > 0 ? ((stat._count.difficulty / totalPosts) * 100).toFixed(1) : '0.0'
           }))
           types: typeStats.map(stat => ({
             type: stat.type,
             posts: stat._count.type,
             views: stat._sum.views || 0,
-            percentage: totalPosts > 0 ? ((stat._count.type / totalPosts) * 100).toFixed(1) : '0.0',
+            percentage: totalPosts > 0 ? ((stat._count.type / totalPosts) * 100).toFixed(1) : '0.0'
           }))
         }
         timeline: {
           posts: postsOverTime.map(item => ({
             date: item.publishDate,
-            count: item._count.publishDate,
+            count: item._count.publishDate
           }))
         }
         period: {

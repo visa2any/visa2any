@@ -23,10 +23,10 @@ export async function POST(request: NextRequest) {
           success: bookingResult.whatsappSent || bookingResult.emailSent
           notifications: {
             whatsapp: bookingResult.whatsappSent ? 'Enviado' : 'Falhou',
-            email: bookingResult.emailSent ? 'Enviado' : 'Falhou',
+            email: bookingResult.emailSent ? 'Enviado' : 'Falhou'
           }
           errors: bookingResult.errors,
-          message: 'Notificações de agendamento enviadas',
+          message: 'Notificações de agendamento enviadas'
         })
 
       case 'send_payment_link':
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
           message: completedSent ? 
             'Confirmação de agendamento enviada' : 
             'Falha ao enviar confirmação final',
-          celebration: '🎉 Agendamento concluído com sucesso!',
+          celebration: '🎉 Agendamento concluído com sucesso!'
         })
 
       default:
@@ -140,12 +140,12 @@ export async function GET(request: NextRequest) {
             whatsapp: {
               status: config.whatsapp.status,
               configured: config.whatsapp.configured,
-              provider: 'WhatsApp Business API',
+              provider: 'WhatsApp Business API'
             }
             email: {
               status: config.email.status,
               configured: config.email.configured,
-              provider: config.email.provider,
+              provider: config.email.provider
             }
           }
           setup: {
@@ -180,9 +180,9 @@ export async function GET(request: NextRequest) {
           test: {
             whatsapp: testResult.whatsappSent ? 'Enviado' : 'Falhou',
             email: testResult.emailSent ? 'Enviado' : 'Falhou',
-            errors: testResult.errors,
+            errors: testResult.errors
           }
-          message: 'Teste de notificação executado',
+          message: 'Teste de notificação executado'
         })
 
       case 'templates':
@@ -216,12 +216,12 @@ export async function GET(request: NextRequest) {
               {
                 name: 'booking_created_email',
                 description: 'Email de agendamento criado',
-                type: 'HTML template',
+                type: 'HTML template'
               }
               {
                 name: 'payment_confirmed_email',
                 description: 'Email de pagamento confirmado',
-                type: 'HTML template',
+                type: 'HTML template'
               }
               {
                 name: 'booking_completed_email',
@@ -230,7 +230,7 @@ export async function GET(request: NextRequest) {
               }
             ],
           }
-          customization: 'Templates podem ser personalizados no código',
+          customization: 'Templates podem ser personalizados no código'
         })
 
       case 'stats':
@@ -254,7 +254,7 @@ export async function GET(request: NextRequest) {
           performance: {
             averageDeliveryTime: '2.3 segundos',
             peakHours: '09:00-11:00 e 14:00-17:00',
-            bestPerformingChannel: 'Email',
+            bestPerformingChannel: 'Email'
           }
         })
 

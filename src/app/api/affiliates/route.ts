@@ -45,18 +45,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar afiliados
-    const [affiliates, total] = await Promise.all([
+    const [affiliates, total] = await Promise.all([,
       prisma.affiliate.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           _count: {
             select: {
               referrals: true,
               clicks: true,
-              commissions: true,
+              commissions: true
             }
           }
         }
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         totalEarnings: true,
         pendingEarnings: true,
         totalClicks: true,
-        totalConversions: true,
+        totalConversions: true
       }
     })
 
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
           totalCommissions: stats._sum.totalEarnings || 0,
           pendingCommissions: stats._sum.pendingEarnings || 0,
           totalClicks: stats._sum.totalClicks || 0,
-          totalConversions: stats._sum.totalConversions || 0,
+          totalConversions: stats._sum.totalConversions || 0
         }
       }
     })
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
         commissionRate,
         paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto
         status: 'PENDING', // Aguardando aprovação
-        tier: 'BRONZE',
+        tier: 'BRONZE'
       }
     })
 
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: affiliate
-      message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.',
+      message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.'
     })
 
   } catch (error) {

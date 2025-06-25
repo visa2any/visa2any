@@ -29,7 +29,7 @@ export async function GET(,
         author: 'Ana Silva',
         metadata: {
           oldValue: 'LEAD',
-          newValue: 'QUALIFIED',
+          newValue: 'QUALIFIED'
         }
       }
       {
@@ -57,7 +57,7 @@ export async function GET(,
             name: 'passaporte-joao-silva.pdf',
             type: 'application/pdf',
             url: '/documents/passaporte-joao-silva.pdf',
-            size: 1024576,
+            size: 1024576
           }
         }
       }
@@ -71,7 +71,7 @@ export async function GET(,
         metadata: {
           duration: 60,
           consultationType: 'inicial',
-          notes: 'Cliente tem bom perfil para visto EB-1A. Precisa reunir mais evidências de reconhecimento.',
+          notes: 'Cliente tem bom perfil para visto EB-1A. Precisa reunir mais evidências de reconhecimento.'
         }
       }
       {
@@ -84,7 +84,7 @@ export async function GET(,
         metadata: {
           amount: 250,
           paymentMethod: 'cartao_credito',
-          transactionId: 'TXN_12345',
+          transactionId: 'TXN_12345'
         }
       }
       {
@@ -106,7 +106,7 @@ export async function GET(,
         metadata: {
           priority: 'high',
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
-          status: 'pending',
+          status: 'pending'
         }
       }
       {
@@ -123,7 +123,7 @@ export async function GET(,
             name: 'lista-documentos-complementares.pdf',
             type: 'application/pdf',
             url: '/documents/lista-documentos-complementares.pdf',
-            size: 512000,
+            size: 512000
           }
         }
       }
@@ -137,7 +137,7 @@ export async function GET(,
         metadata: {
           oldValue: '75',
           newValue: '87',
-          reason: 'Documentos acadêmicos aprovados',
+          reason: 'Documentos acadêmicos aprovados'
         }
       }
       {
@@ -149,7 +149,7 @@ export async function GET(,
         author: 'Carlos Santos',
         metadata: {
           oldValue: 'DOCUMENTS_PENDING',
-          newValue: 'IN_PROCESS',
+          newValue: 'IN_PROCESS'
         }
       }
     ]
@@ -161,7 +161,7 @@ export async function GET(,
 
     return NextResponse.json({
       timeline: sortedTimeline
-      total: sortedTimeline.length,
+      total: sortedTimeline.length
     })
 
   } catch (error) {

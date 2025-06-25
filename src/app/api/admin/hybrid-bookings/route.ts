@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         return await extendDeadline(bookingId, data.hours)
       
       default:
-        return NextResponse.json({,
+        return NextResponse.json({
           error: 'Ação não reconhecida'
         }, { status: 400 })
     }

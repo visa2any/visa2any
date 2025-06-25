@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // Criar resposta de sucesso
     const response = NextResponse.json({
       success: true,
-      message: 'Logout realizado com sucesso',
+      message: 'Logout realizado com sucesso'
     })
 
     // Remover cookie
@@ -62,14 +62,14 @@ export async function POST(request: NextRequest) {
     // Mesmo com erro, remover cookie
     const response = NextResponse.json({
       success: true,
-      message: 'Logout realizado',
+      message: 'Logout realizado'
     })
 
     response.cookies.set('auth-token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 0,
+      maxAge: 0
     })
 
     return response

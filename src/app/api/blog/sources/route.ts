@@ -7,8 +7,8 @@ export async function GET() {
     const sources = await prisma.newsSource.findMany({
       include: {
         logs: {
-          orderBy: { createdAt: 'desc' }
-          take: 5,
+          orderBy: { createdAt: 'desc' },
+          take: 5
         }
       }
       orderBy: [
@@ -21,7 +21,7 @@ export async function GET() {
       success: true
       sources,
       total: sources.length,
-      active: sources.filter(s => s.isActive).length,
+      active: sources.filter(s => s.isActive).length
     })
 
   } catch (error) {
@@ -79,14 +79,14 @@ export async function POST(request: NextRequest) {
         flag: flag || '🌍',
         keywords: keywords || [],
         priority: priority || 1,
-        checkInterval: checkInterval || 60,
+        checkInterval: checkInterval || 60
       }
     })
 
     return NextResponse.json({
       success: true
       source: newSource,
-      message: 'Fonte adicionada com sucesso',
+      message: 'Fonte adicionada com sucesso'
     })
 
   } catch (error) {
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       success: true
       source: updatedSource,
-      message: 'Fonte atualizada com sucesso',
+      message: 'Fonte atualizada com sucesso'
     })
 
   } catch (error) {
@@ -159,7 +159,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      message: 'Fonte removida com sucesso',
+      message: 'Fonte removida com sucesso'
     })
 
   } catch (error) {

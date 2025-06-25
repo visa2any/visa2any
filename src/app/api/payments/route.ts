@@ -35,19 +35,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar pagamentos
-    const [payments, total] = await Promise.all([
+    const [payments, total] = await Promise.all([,
       prisma.payment.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           client: {
             select: { 
               id: true, 
               name: true, 
               email: true,
-              phone: true,
+              phone: true
             }
           }
         }
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages,
+          hasMore: page < totalPages
         }
       }
     })
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         ...validatedData
         transactionId,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
-        status: 'PENDING',
+        status: 'PENDING'
       }
       include: {
         client: {
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
             id: true, 
             name: true, 
             email: true,
-            phone: true,
+            phone: true
           }
         }
       }
@@ -153,9 +153,9 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
         ...payment
         paymentLink,
       }
-      message: 'Pagamento criado com sucesso',
+      message: 'Pagamento criado com sucesso'
     }, { status: 201 })
 
   } catch (error) {
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -256,7 +256,7 @@ export async function PUT(request: NextRequest) {
             'Lista de documentos necessários',
             'Suporte por email 48h'
           ],
-          popular: false,
+          popular: false
         }
         {
           id: 'premium_consultation',
@@ -272,7 +272,7 @@ export async function PUT(request: NextRequest) {
             'Acompanhamento por 30 dias',
             'Suporte prioritário'
           ],
-          popular: true,
+          popular: true
         }
         {
           id: 'vip_full_service',
@@ -290,7 +290,7 @@ export async function PUT(request: NextRequest) {
             'Consultor dedicado'
           ],
           popular: false,
-          guarantee: true,
+          guarantee: true
         }
         // Pacotes internacionais
         {
@@ -306,7 +306,7 @@ export async function PUT(request: NextRequest) {
             'Required documents list',
             '48h email support'
           ],
-          popular: false,
+          popular: false
         }
         {
           id: 'international_premium',

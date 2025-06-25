@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
           targets: monitoring.targets,
           message: `Monitoramento configurado para ${countries.length} países`,
           cost: 'GRATUITO',
-          instructions: 'Sistema monitora automaticamente e notifica quando encontrar vagas',
+          instructions: 'Sistema monitora automaticamente e notifica quando encontrar vagas'
         })
 
       case 'optimized_workflow':
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           workflow: workflow.workflow,
           totalTime: workflow.totalTime,
           cost: `R$ ${workflow.cost}`,
-          efficiency: 'Processo otimizado para máxima eficiência',
+          efficiency: 'Processo otimizado para máxima eficiência'
         })
 
       default:
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
           bestOption: {
             immediate: 'manual_assisted',
             scalable: 'api_monitoring',
-            cheapest: 'telegram_bots',
+            cheapest: 'telegram_bots'
           }
         })
 
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
               profit: `R$ ${roi.profit}`,
               roi: `${roi.roi.toFixed(1)}%`,
             }
-            viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável',
+            viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável'
           })
         } catch (error) {
           return NextResponse.json(
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
           instructions: emailSetup.instructions,
           cost: 'R$ 20/mês',
           roi: 'Altíssimo (quase gratuito)',
-          providers: emailSetup.emailConfig.providers,
+          providers: emailSetup.emailConfig.providers
         })
 
       default:

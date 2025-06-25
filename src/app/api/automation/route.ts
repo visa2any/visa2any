@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
             'Custo muito baixo (R$ 2/consulta)',
             'Suporte multiplataforma'
           ],
-          warning: '⚠️ Use com responsabilidade - pode violar ToS dos sites',
+          warning: '⚠️ Use com responsabilidade - pode violar ToS dos sites'
         })
 
       case 'start_monitoring':
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
               status: 'Ativo',
               version: 'Latest',
               browsers: ['Chromium', 'Firefox', 'Safari'],
-              cost: 'R$ 2 por consulta',
+              cost: 'R$ 2 por consulta'
             }
             monitoring: {
               countries: ['usa', 'canada', 'uk', 'germany', 'france'],
@@ -95,22 +95,22 @@ export async function GET(request: NextRequest) {
                 canada: '20 min',
                 uk: '25 min',
                 germany: '45 min',
-                france: '35 min',
+                france: '35 min'
               }
-              status: 'Configurado',
+              status: 'Configurado'
             }
             notifications: {
               whatsapp: 'Ativo',
               email: 'Ativo',
               telegram: 'Disponível',
-              dashboard: 'Online',
+              dashboard: 'Online'
             }
           }
           performance: {
             successRate: '75%',
             avgResponseTime: '30 segundos',
             dailyQueries: 'Ilimitado',
-            monthlyBudget: 'R$ 50',
+            monthlyBudget: 'R$ 50'
           }
         })
 
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
               target: 'CGI Federal (CASV)',
               reliability: '80%',
               interval: '30 min',
-              status: 'Ativo',
+              status: 'Ativo'
             }
             {
               code: 'canada',
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
               target: 'VFS Global',
               reliability: '75%',
               interval: '20 min',
-              status: 'Ativo',
+              status: 'Ativo'
             }
             {
               code: 'uk',
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
               target: 'VFS Global UK',
               reliability: '70%',
               interval: '25 min',
-              status: 'Ativo',
+              status: 'Ativo'
             }
             {
               code: 'germany',
@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
               target: 'Consulado Alemão',
               reliability: '65%',
               interval: '45 min',
-              status: 'Ativo',
+              status: 'Ativo'
             }
             {
               code: 'france',
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
             }
           ],
           totalSupported: 5,
-          averageReliability: '72%',
+          averageReliability: '72%'
         })
 
       case 'costs':
@@ -171,24 +171,24 @@ export async function GET(request: NextRequest) {
           pricing: {
             setup: {
               cost: 'R$ 0',
-              description: 'Playwright é gratuito e open source',
+              description: 'Playwright é gratuito e open source'
             }
             operation: {
               perQuery: 'R$ 2',
               monthly: 'R$ 50',
-              description: 'Apenas custo de servidor/infra',
+              description: 'Apenas custo de servidor/infra'
             }
             comparison: {
               officialAPIs: 'R$ 25.000+ (setup) + taxas',
               partnerAPIs: 'R$ 299-599/mês + R$ 15/transação',
               automation: 'R$ 50/mês total',
-              savings: 'Até 95% de economia',
+              savings: 'Até 95% de economia'
             }
           }
           roi: {
             breakEven: '3 agendamentos/mês',
             potential: 'R$ 10k+/mês com volume',
-            paybackPeriod: '1 semana',
+            paybackPeriod: '1 semana'
           }
         })
 

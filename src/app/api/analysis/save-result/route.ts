@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       where: { id: clientId }
       data: {
         score,
-        status: score >= 80 ? 'QUALIFIED' : 'LEAD',
+        status: score >= 80 ? 'QUALIFIED' : 'LEAD'
       }
     })
 

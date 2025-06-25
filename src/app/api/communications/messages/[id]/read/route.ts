@@ -27,7 +27,7 @@ export async function PATCH(,
 
     return NextResponse.json({
       message: 'Message marked as read'
-      data: updatedMessage,
+      data: updatedMessage
     })
 
   } catch (error) {

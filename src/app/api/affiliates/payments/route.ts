@@ -27,19 +27,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar comissões
-    const [commissions, total] = await Promise.all([
+    const [commissions, total] = await Promise.all([,
       prisma.affiliateCommission.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
         include: {
           affiliate: {
             select: {
               id: true,
               name: true,
               email: true,
-              referralCode: true,
+              referralCode: true
             }
           }
           referral: {
@@ -48,12 +48,12 @@ export async function GET(request: NextRequest) {
                 select: {
                   id: true,
                   name: true,
-                  email: true,
+                  email: true
                 }
               }
             }
           }
-          payment: true,
+          payment: true
         }
       })
       prisma.affiliateCommission.count({ where })
@@ -63,10 +63,10 @@ export async function GET(request: NextRequest) {
     const stats = await prisma.affiliateCommission.groupBy({
       by: ['status'],
       _sum: {
-        amount: true,
+        amount: true
       }
       _count: {
-        id: true,
+        id: true
       }
       where: affiliateId ? { affiliateId } : {}
     })
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
           total,
           pages: Math.ceil(total / limit)
         }
-        stats: paymentStats,
+        stats: paymentStats
       }
     })
 
@@ -118,10 +118,10 @@ export async function POST(request: NextRequest) {
     const commissions = await prisma.affiliateCommission.findMany({
       where: {
         id: { in: commissionIds }
-        status: 'PENDING',
+        status: 'PENDING'
       }
       include: {
-        affiliate: true,
+        affiliate: true
       }
     })
 
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         acc[affiliateId] = {
           affiliate: commission.affiliate,
           commissions: [],
-          totalAmount: 0,
+          totalAmount: 0
         }
       }
       acc[affiliateId].commissions.push(commission)
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
         }
         data: {
           status: 'APPROVED',
-          paymentId: payment.id,
+          paymentId: payment.id
         }
       })
 
@@ -257,7 +257,7 @@ export async function PUT(request: NextRequest) {
       data: updateData,
       include: {
         affiliate: true,
-        commissions: true,
+        commissions: true
       }
     })
 
@@ -287,7 +287,7 @@ export async function PUT(request: NextRequest) {
         where: { paymentId }
         data: {
           status: 'PENDING',
-          paymentId: null,
+          paymentId: null
         }
       })
 

@@ -22,12 +22,12 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ 
           stats: {
             ...stats
-            application: appStats,
+            application: appStats
           }
         })
 
       case 'all':
-        const [allChannels, allAlerts, allStats] = await Promise.all([
+        const [allChannels, allAlerts, allStats] = await Promise.all([,
           monitoringDataService.getChannels()
           monitoringDataService.getAlerts()
           monitoringDataService.getStats()
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           channels: allChannels
           alerts: allAlerts,
-          stats: allStats,
+          stats: allStats
         })
 
       default:
@@ -71,14 +71,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
           success: true 
           message: 'Vaga simulada criada', 
-          alert: simulatedAlert ,
+          alert: simulatedAlert 
         })
 
       case 'refresh':
         await monitoringDataService.refresh()
         return NextResponse.json({ 
           success: true 
-          message: 'Dados atualizados com sucesso' ,
+          message: 'Dados atualizados com sucesso' 
         })
 
       default:

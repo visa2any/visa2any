@@ -5,13 +5,13 @@ import { z } from 'zod'
 // Schema para verificação de compliance
 const complianceCheckSchema = z.object({
   clientId: z.string(),
-  country: z.string()
+  country: z.string(),
   visaType: z.string(),
   documents: z.array(z.object({
     id: z.string(),
-    type: z.string()
+    type: z.string(),
     fileName: z.string(),
-    status: z.string()
+    status: z.string(),
     uploadDate: z.string(),
     expiryDate: z.string().optional()
     issuingCountry: z.string().optional(),

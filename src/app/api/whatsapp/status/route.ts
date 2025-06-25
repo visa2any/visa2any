@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Erro ao verificar status do WhatsApp'
-        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       }
       { status: 500 }
     )
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Erro ao reconectar WhatsApp'
-        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       }
       { status: 500 }
     )

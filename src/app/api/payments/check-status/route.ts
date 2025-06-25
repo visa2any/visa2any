@@ -8,7 +8,7 @@ if (!accessToken) {
 }
 
 const client = new MercadoPagoConfig({
-  accessToken: accessToken!,
+  accessToken: accessToken!
 })
 
 const payment = new Payment(client)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       id: result.id,
       status: result.status,
       status_detail: result.status_detail,
-      payment_method: result.payment_method_id,
+      payment_method: result.payment_method_id
     })
 
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       date_created: result.date_created,
       date_approved: result.date_approved,
       payer_email: result.payer?.email,
-      external_reference: result.external_reference,
+      external_reference: result.external_reference
     })
 
   } catch (error) {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       error: 'Erro ao verificar status do pagamento'
-      details: error instanceof Error ? error.message : 'Erro desconhecido',
+      details: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 })
   }
 }

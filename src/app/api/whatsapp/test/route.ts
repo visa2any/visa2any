@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
       info: {
         integrated: true,
         backend: 'Next.js',
-        status: 'Pronto para integração com Baileys',
+        status: 'Pronto para integração com Baileys'
       }
     })
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Erro na API de teste'
-        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       }
       { status: 500 }
     )
@@ -54,14 +54,14 @@ export async function POST(request: NextRequest) {
         backend: 'Next.js integrado',
         timestamp: new Date().toISOString()
       }
-      message: 'Mensagem enviada com sucesso (simulação)',
+      message: 'Mensagem enviada com sucesso (simulação)'
     })
 
   } catch (error) {
     return NextResponse.json(
       { 
         error: 'Erro no teste de envio'
-        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       }
       { status: 500 }
     )

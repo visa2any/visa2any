@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Verificar se já existe
     const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({
       where: {
-        phone: cleanPhone,
+        phone: cleanPhone
       }
     })
 
@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
       // Atualizar dados existentes
       const updatedSubscriber = await prisma.whatsAppSubscriber.update({
         where: {
-          id: existingSubscriber.id,
+          id: existingSubscriber.id
         }
         data: {
           name,
           countries: countries.length > 0 ? countries : ['Global'],
           isActive: true,
-          source: 'blog_newsletter',
+          source: 'blog_newsletter'
         }
       })
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         subscriber: {
           id: updatedSubscriber.id,
           name: updatedSubscriber.name,
-          isActive: updatedSubscriber.isActive,
+          isActive: updatedSubscriber.isActive
         }
       })
     }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         phone: cleanPhone,
         countries: countries.length > 0 ? countries : ['Global'],
         isActive: true,
-        source: 'blog_newsletter',
+        source: 'blog_newsletter'
       }
     })
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       subscriber: {
         id: newSubscriber.id,
         name: newSubscriber.name,
-        isActive: newSubscriber.isActive,
+        isActive: newSubscriber.isActive
       }
     })
 
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     const active = searchParams.get('active') !== 'false'
     
     // Estatísticas da newsletter
-    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([
+    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([,
       prisma.whatsAppSubscriber.count()
       prisma.whatsAppSubscriber.count({
         where: { isActive: true }
@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
       by: ['source'],
       where: { isActive: active }
       _count: {
-        source: true,
+        source: true
       }
     })
 
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
             .sort((a, b) => b.count - a.count)
           sources: sourceDistribution.map(item => ({
             source: item.source,
-            count: item._count.source,
+            count: item._count.source
           }))
         }
       }

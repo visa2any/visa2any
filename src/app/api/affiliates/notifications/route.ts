@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       data: {
         notifications
         unreadCount,
-        total: notifications.length,
+        total: notifications.length
       }
     })
 
@@ -191,11 +191,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         conversionValue: 89.55,
         commissionValue: 13.43,
         conversionType: 'CONSULTATION',
-        clientName: 'Maria Silva',
+        clientName: 'Maria Silva'
       }
       read: false,
       createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString()
-      priority: 'high',
+      priority: 'high'
     }
     {
       id: 'notif_2',
@@ -205,11 +205,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         amount: 1450.75,
         paymentMethod: 'PIX',
-        transactionId: 'TXN123456789',
+        transactionId: 'TXN123456789'
       }
       read: false,
       createdAt: yesterday.toISOString()
-      priority: 'high',
+      priority: 'high'
     }
     {
       id: 'notif_3',
@@ -219,11 +219,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         oldTier: 'SILVER',
         newTier: 'GOLD',
-        newCommissionRate: 0.25,
+        newCommissionRate: 0.25
       }
       read: true,
       createdAt: twoDaysAgo.toISOString()
-      priority: 'urgent',
+      priority: 'urgent'
     }
     {
       id: 'notif_4',
@@ -233,11 +233,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         bonusAmount: 250.00,
         reason: 'Meta mensal superada',
-        month: 'Junho',
+        month: 'Junho'
       }
       read: true,
       createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
-      priority: 'medium',
+      priority: 'medium'
     }
     {
       id: 'notif_5',
@@ -250,7 +250,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       }
       read: false,
       createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString()
-      priority: 'low',
+      priority: 'low'
     }
     {
       id: 'notif_6',
@@ -261,7 +261,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         amount: 375.00,
         clientName: 'João Santos',
         conversionType: 'VISA_PROCESS',
-        dueDate: '2024-07-15',
+        dueDate: '2024-07-15'
       }
       read: true,
       createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()

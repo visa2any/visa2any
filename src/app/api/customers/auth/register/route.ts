@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       { 
         customerId: customer.id, 
         email: customer.email,
-        type: 'customer',
+        type: 'customer'
       }
       jwtSecret,
       { expiresIn: '7d' }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         phone: customer.phone,
         status: customer.status,
-        eligibilityScore: customer.eligibilityScore,
+        eligibilityScore: customer.eligibilityScore
       }
       token,
     })
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/',
+      path: '/'
     })
 
     return response

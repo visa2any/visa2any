@@ -25,7 +25,7 @@ export async function GET(,
             email: true,
             phone: true,
             targetCountry: true,
-            visaType: true,
+            visaType: true
           }
         }
       }
@@ -86,14 +86,14 @@ export async function PUT(
       where: { id: params.id }
       data: {
         ...validatedData
-        paidAt: validatedData.status === 'COMPLETED' ? new Date() : existingPayment.paidAt,
+        paidAt: validatedData.status === 'COMPLETED' ? new Date() : existingPayment.paidAt
       }
       include: {
         client: {
           select: { 
             id: true, 
             name: true, 
-            email: true ,
+            email: true 
           }
         }
       }
@@ -112,15 +112,15 @@ export async function PUT(
         clientId: existingPayment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
     return NextResponse.json({
       data: payment
-      message: 'Pagamento atualizado com sucesso',
+      message: 'Pagamento atualizado com sucesso'
     })
 
   } catch (error) {
@@ -128,7 +128,7 @@ export async function PUT(
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -194,7 +194,7 @@ export async function POST(
         status: newStatus as any
         paymentMethod: provider,
         transactionId: transaction_id || external_id || payment.transactionId,
-        paidAt: newStatus === 'COMPLETED' ? new Date() : null,
+        paidAt: newStatus === 'COMPLETED' ? new Date() : null
       }
     })
 
@@ -211,9 +211,9 @@ export async function POST(
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -244,7 +244,7 @@ async function generatePaymentInfo(payment: any) {
           fee: 0,
           processingTime: 'Imediato',
           qrCode: `${baseUrl}/api/payments/${payment.id}/pix-qr`,
-          pixKey: 'visa2any@mercadopago.com.br',
+          pixKey: 'visa2any@mercadopago.com.br'
         }
         {
           type: 'CREDIT_CARD',
@@ -270,7 +270,7 @@ async function generatePaymentInfo(payment: any) {
           type: 'CREDIT_CARD',
           name: 'Credit Card',
           fee: payment.amount * 0.029 + 0.30, // 2.9% + $0.30
-          processingTime: '1-2 business days',
+          processingTime: '1-2 business days'
         }
         {
           type: 'BANK_TRANSFER',
@@ -382,9 +382,9 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
 
@@ -399,9 +399,9 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString()
-          action: 'automated_action',
+          action: 'automated_action'
         }
-        success: true,
+        success: true
       }
     })
   }

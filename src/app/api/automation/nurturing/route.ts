@@ -15,10 +15,10 @@ const nurturingSchema = z.object({
     'visa_application',
     'success_celebration',
     'referral_request'
-  ])
+  ]),
   triggerData: z.record(z.any()).optional()
   customSchedule: z.array(z.object({
-    day: z.number()
+    day: z.number(),
     hour: z.number().optional()
     template: z.string()
   })).optional()
@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
       where: { id: validatedData.clientId }
       include: {
         interactions: {
-          orderBy: { createdAt: 'desc' }
-          take: 5,
+          orderBy: { createdAt: 'desc' },
+          take: 5
         }
       }
     })
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           sequenceType: validatedData.sequenceType,
           emailsScheduled: scheduledEmails.length,
           duration: personalizedSequence.duration,
-          clientName: client.name,
+          clientName: client.name
         }
       }
     })
@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
         sequenceType: validatedData.sequenceType
         emailsScheduled: scheduledEmails.length,
         duration: `${personalizedSequence.duration} dias`,
-        firstEmail: scheduledEmails[0]?.sendAt,
+        firstEmail: scheduledEmails[0]?.sendAt
       }
-      message: 'Sequência de nurturing iniciada com sucesso',
+      message: 'Sequência de nurturing iniciada com sucesso'
     })
 
   } catch (error) {
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos'
-          details: error.errors,
+          details: error.errors
         }
         { status: 400 }
       )
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
         type: 'NURTURING_SEQUENCE'
         ...(clientId && { clientId })
       }
-      orderBy: { executedAt: 'desc' }
+      orderBy: { executedAt: 'desc' },
       take: 50,
       include: {
         client: {
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             email: true,
-            status: true,
+            status: true
           }
         }
       }
@@ -278,7 +278,7 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
       day: personalized.duration + 3,
       hour: 14,
       template: 'advanced_strategies',
-      subject: 'Estratégias avançadas para seu perfil',
+      subject: 'Estratégias avançadas para seu perfil'
     })
   }
 
@@ -303,7 +303,7 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
       subject: email.subject,
       sendAt: sendAt,
       sequenceType: sequence.name,
-      day: email.day,
+      day: email.day
     })
 
     // Simular agendamento (em produção usar scheduler real)
@@ -324,7 +324,7 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
       body: JSON.stringify({
         template: template,
         clientId: clientId,
-        variables: variables,
+        variables: variables
       })
     })
 
@@ -392,23 +392,23 @@ function getCountrySpecificContent(country: string): any {
     'Canada': {
       tips: 'Dica especial: CRS score é fundamental para Express Entry',
       processing_time: '6-8 meses',
-      success_rate: '85%',
+      success_rate: '85%'
     }
     'Australia': {
       tips: 'Skills Assessment é obrigatório para maioria dos vistos',
       processing_time: '8-12 meses', 
-      success_rate: '78%',
+      success_rate: '78%'
     }
     'Portugal': {
       tips: 'D7 visa é ideal para renda passiva/aposentados',
       processing_time: '2-4 meses',
-      success_rate: '92%',
+      success_rate: '92%'
     }
   }
 
   return countryContent[country] || {
     tips: 'Cada país tem suas especificidades'
     processing_time: 'Varia por país',
-    success_rate: '80%+',
+    success_rate: '80%+'
   }
 }
