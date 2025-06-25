@@ -109,6 +109,11 @@ export async function PUT(
         type: 'PAYMENT_UPDATED',
         action: 'update_payment',
         clientId: existingPayment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -202,6 +207,11 @@ export async function POST(
         type: 'PAYMENT_WEBHOOK',
         action: 'webhook_received',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -367,6 +377,11 @@ async function processPaymentSuccess(payment: any) {
         type: 'PAYMENT_SUCCESS_PROCESSED',
         action: 'process_payment_success',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -379,6 +394,11 @@ async function processPaymentSuccess(payment: any) {
         type: 'PAYMENT_SUCCESS_ERROR',
         action: 'process_payment_success',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
   }

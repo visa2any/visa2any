@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
           }
 
         case 'DOCUMENT_VALIDATED':
-          const details = log.details as any
+          const details = log.details as { documentName?: string }
           return {
             ...baseNotification,
             type: 'success' as const,
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
           }
 
         case 'CLIENT_STATUS_CHANGED':
-          const statusDetails = log.details as any
+          const statusDetails = log.details as { newStatus?: string }
           return {
             ...baseNotification,
             type: 'info' as const,

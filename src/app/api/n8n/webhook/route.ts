@@ -60,6 +60,11 @@ async function handleLegalChange(data: any) {
       type: 'LEGAL_CHANGE_DETECTED',
       status: 'SUCCESS',
       executedAt: new Date()
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
     }
   })
 
@@ -105,6 +110,11 @@ async function handleConsularSlot(data: any) {
       type: 'CONSULAR_SLOT_DETECTED',
       status: 'SUCCESS',
       executedAt: new Date()
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
     }
   })
 
@@ -176,9 +186,13 @@ async function handleDocumentValidation(data: any) {
   await prisma.automationLog.create({
     data: {
       type: 'DOCUMENT_VALIDATED',
+      action: 'validate_document',
       clientId,
-      status: 'SUCCESS',
-      executedAt: new Date()
+      success: true,
+      details: {
+        timestamp: new Date().toISOString(),
+        action: 'automated_action'
+      }
     }
   })
 
@@ -221,9 +235,15 @@ async function handleClientRiskAlert(data: any) {
   await prisma.automationLog.create({
     data: {
       type: 'CLIENT_RISK_ALERT',
+      action: 'risk_alert',
       clientId,
-      status: 'SUCCESS',
-      executedAt: new Date()
+      success: true,
+      details: {
+        riskType,
+        riskScore,
+        factors,
+        timestamp: new Date().toISOString()
+      }
     }
   })
 
@@ -270,10 +290,17 @@ async function handleAutomationCompleted(data: any) {
   // Log automation completion
   await prisma.automationLog.create({
     data: {
-      type: 'AUTOMATED_EMAIL',
+      type: 'AUTOMATION_COMPLETED',
+      action: 'complete_workflow',
       clientId: clientId || null,
-      status: result.success ? 'SUCCESS' : 'FAILED',
-      executedAt: new Date()
+      success: result.success || true,
+      details: {
+        workflowId,
+        workflowName,
+        result,
+        metrics,
+        timestamp: new Date().toISOString()
+      }
     }
   })
 

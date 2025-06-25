@@ -116,6 +116,11 @@ export async function POST(request: NextRequest) {
         type: 'ELIGIBILITY_ANALYSIS',
         action: 'analyze_eligibility',
         clientId: validatedData.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

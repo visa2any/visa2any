@@ -83,6 +83,11 @@ export async function POST(request: NextRequest) {
         type: 'ML_LEAD_SCORING',
         action: 'calculate_lead_score',
         clientId: validatedData.clientId || null
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

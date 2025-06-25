@@ -398,6 +398,10 @@ export async function POST(request: NextRequest) {
         type: 'VISA_REQUIREMENTS_SEEDED',
         action: 'seed_visa_requirements',
         success: true
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 

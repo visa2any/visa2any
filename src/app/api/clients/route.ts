@@ -161,6 +161,11 @@ export async function POST(request: NextRequest) {
         type: 'CLIENT_CREATED',
         action: 'create_client',
         clientId: client.id
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

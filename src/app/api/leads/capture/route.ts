@@ -328,6 +328,11 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
         type: 'HIGH_PRIORITY_LEAD',
         action: 'notify_sales_team',
         clientId: clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

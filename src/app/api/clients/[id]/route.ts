@@ -130,6 +130,11 @@ export async function PATCH(
         type: 'CLIENT_UPDATED',
         action: 'inline_edit',
         clientId: id
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -200,6 +205,11 @@ export async function PUT(
         type: 'CLIENT_UPDATED',
         action: 'update_client',
         clientId: id
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -260,6 +270,10 @@ export async function DELETE(
         type: 'CLIENT_DELETED',
         action: 'delete_client',
         success: true
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 

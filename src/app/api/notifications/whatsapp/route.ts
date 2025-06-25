@@ -39,6 +39,10 @@ export async function POST(request: NextRequest) {
         success: whatsAppResult.success,
         clientId: validatedData.clientId || null,
         error: whatsAppResult.error || null
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 

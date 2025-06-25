@@ -134,6 +134,11 @@ export async function PATCH(
         type: 'CONSULTATION_UPDATED',
         action: 'inline_edit',
         clientId: existingConsultation.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -251,6 +256,11 @@ export async function PUT(
         type: 'CONSULTATION_UPDATED',
         action: 'update_consultation',
         clientId: existingConsultation.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -311,6 +321,11 @@ export async function DELETE(
         type: 'CONSULTATION_DELETED',
         action: 'delete_consultation',
         clientId: existingConsultation.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

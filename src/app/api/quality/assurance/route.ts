@@ -85,6 +85,11 @@ export async function POST(request: NextRequest) {
         type: 'QUALITY_ASSESSMENT',
         action: `quality_${validatedData.assessmentType}`,
         clientId: validatedData.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

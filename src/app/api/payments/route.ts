@@ -149,6 +149,11 @@ export async function POST(request: NextRequest) {
         type: 'PAYMENT_CREATED',
         action: 'create_payment',
         clientId: validatedData.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

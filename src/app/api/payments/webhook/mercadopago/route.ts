@@ -89,6 +89,11 @@ export async function POST(request: NextRequest) {
         type: 'PAYMENT_WEBHOOK_PROCESSED',
         action: 'process_mercadopago_webhook',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -108,6 +113,11 @@ export async function POST(request: NextRequest) {
         type: 'PAYMENT_WEBHOOK_ERROR',
         action: 'process_mercadopago_webhook',
         clientId: null
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     }).catch(() => {}) // Não falhar se log não funcionar
 
@@ -200,6 +210,11 @@ async function processPaymentSuccess(payment: any) {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS',
         action: 'process_payment_success_automations',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
@@ -211,6 +226,11 @@ async function processPaymentSuccess(payment: any) {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS_ERROR',
         action: 'process_payment_success_automations',
         clientId: payment.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     }).catch(() => {})
   }

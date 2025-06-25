@@ -82,6 +82,11 @@ export async function POST(request: NextRequest) {
         type: 'ORDER_CREATED',
         action: 'create_order',
         clientId: clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

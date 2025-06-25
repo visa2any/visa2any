@@ -126,6 +126,10 @@ export async function POST(request: NextRequest) {
         success: emailResult.success,
         clientId: validatedData.clientId || null,
         error: emailResult.error || null
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 

@@ -165,6 +165,10 @@ export async function POST(request: NextRequest) {
         type: 'VISA_REQUIREMENT_CREATED',
         action: 'create_visa_requirement',
         success: true
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 
@@ -219,6 +223,10 @@ export async function PUT(request: NextRequest) {
         type: 'VISA_REQUIREMENT_UPDATED',
         action: 'update_visa_requirement',
         success: true
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
       }
     })
 

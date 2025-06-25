@@ -126,6 +126,11 @@ export async function POST(request: NextRequest) {
         type: 'EMAIL',
         action: 'create_interaction',
         clientId: validatedData.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 

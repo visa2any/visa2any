@@ -150,10 +150,10 @@ export async function GET(request: NextRequest) {
       data: sequences.map(seq => ({
         id: seq.id,
         client: seq.client,
-        sequenceType: (seq.details as any)?.sequenceType,
+        sequenceType: (seq.details as { sequenceType?: string })?.sequenceType,
         status: seq.success ? 'active' : 'failed',
         createdAt: seq.executedAt,
-        emailsScheduled: (seq.details as any)?.emailsScheduled || 0
+        emailsScheduled: (seq.details as { emailsScheduled?: number })?.emailsScheduled || 0
       }))
     })
 

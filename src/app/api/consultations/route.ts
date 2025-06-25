@@ -170,6 +170,11 @@ export async function POST(request: NextRequest) {
         type: 'CONSULTATION_CREATED',
         action: 'create_consultation',
         clientId: validatedData.clientId
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true,
       }
     })
 
