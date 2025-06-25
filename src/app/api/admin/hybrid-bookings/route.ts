@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      bookings
+      bookings,
       stats
     })
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         return await extendDeadline(bookingId, data.hours)
       
       default:
-        return NextResponse.json({
+        return NextResponse.json({,
           error: 'Ação não reconhecida'
         }, { status: 400 })
     }
@@ -188,9 +188,9 @@ async function addBookingNote(bookingId: string, note: string) {
 
     const currentNotes = booking.notes || []
     const newNote = {
-      id: Date.now().toString()
+      id: Date.now().toString(),
       content: note,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
       author: 'Sistema' // TODO: pegar do usuário logado
     }
 
@@ -204,7 +204,7 @@ async function addBookingNote(bookingId: string, note: string) {
     // })
 
     return NextResponse.json({
-      booking: updatedBooking
+      booking: updatedBooking,
       message: 'Nota adicionada com sucesso'
     })
 
@@ -243,7 +243,7 @@ async function extendDeadline(bookingId: string, hours: number) {
     // })
 
     return NextResponse.json({
-      booking: updatedBooking
+      booking: updatedBooking,
       message: `Prazo estendido em ${hours} horas`
     })
 
@@ -334,7 +334,7 @@ Infelizmente não conseguimos realizar seu agendamento:
       await fetch('/api/notifications/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
-        body: JSON.stringify({
+        body: JSON.stringify({,
           to: booking.client.phone,
           message: message
         })

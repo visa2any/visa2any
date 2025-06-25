@@ -4,17 +4,17 @@ import { z } from 'zod'
 
 // Schema para verificação de compliance
 const complianceCheckSchema = z.object({
-  clientId: z.string()
+  clientId: z.string(),
   country: z.string()
-  visaType: z.string()
+  visaType: z.string(),
   documents: z.array(z.object({
-    id: z.string()
+    id: z.string(),
     type: z.string()
-    fileName: z.string()
+    fileName: z.string(),
     status: z.string()
-    uploadDate: z.string()
+    uploadDate: z.string(),
     expiryDate: z.string().optional()
-    issuingCountry: z.string().optional()
+    issuingCountry: z.string().optional(),
     metadata: z.record(z.any()).optional()
   }))
   checkType: z.enum([
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
 
     // Salvar resultado da verificação
     await prisma.automationLog.create({
-      data: {
+      data: {,
         type: 'COMPLIANCE_CHECK',
         action: `compliance_${validatedData.checkType}`,
         clientId: validatedData.clientId,
         success: true,
-        details: {
+        details: {,
           checkType: validatedData.checkType,
           complianceScore: complianceResult.overallScore,
           complianceLevel: complianceResult.complianceLevel,
@@ -71,10 +71,10 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      data: {
+      data: {,
         compliance: complianceResult
         report: detailedReport,
-        recommendations: generateComplianceRecommendations(complianceResult)
+        recommendations: generateComplianceRecommendations(complianceResult),
         nextSteps: generateComplianceNextSteps(complianceResult, validatedData.checkType)
       }
     })
@@ -83,16 +83,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
 
     console.error('Erro na verificação de compliance:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
+      { error: 'Dados inválidos' },
       { status: 400 }
     )
     }
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
     const requirements = await getComplianceRequirements(country, visaType, detailed)
 
     return NextResponse.json({
-      data: {
+      data: {,
         country: country
         visaType: visaType,
         requirements: requirements,
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao obter requisitos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -145,13 +145,13 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Passaporte válido',
             validity: '6 months beyond intended stay',
             pages: 'At least 2 blank pages',
-            specifications: {
+            specifications: {,
               format: 'PDF scan',
               resolution: '300 DPI minimum',
               color: 'Color scan required',
               pages: 'All pages including blank ones'
             }
-          }
+          },
           {
             type: 'language_test',
             name: 'Teste de idioma',
@@ -163,18 +163,18 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'TEF': 'CLB 7 equivalent',
               'TCF': 'CLB 7 equivalent'
             }
-          }
+          },
           {
             type: 'education_assessment',
             name: 'Avaliação educacional',
             validity: '5 years',
             organizations: ['WES', 'ICAS', 'IQAS', 'CES', 'MCC'],
-            requirements: {
+            requirements: {,
               transcripts: 'Official sealed transcripts',
               diplomas: 'Original or certified copies',
               translation: 'If not in English/French'
             }
-          }
+          },
           {
             type: 'work_experience',
             name: 'Comprovante de experiência',
@@ -186,7 +186,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Annual salary',
               'Contact information'
             ]
-          }
+          },
           {
             type: 'proof_of_funds',
             name: 'Comprovante financeiro',
@@ -205,7 +205,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Oferta de emprego',
             points: '50-200 CRS points',
             requirements: ['LMIA or LMIA-exempt', 'NOC A, B, or 0']
-          }
+          },
           {
             type: 'french_test',
             name: 'Teste de francês',
@@ -213,7 +213,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             acceptedTests: ['TEF', 'TCF']
           }
         ],
-        embassySpecific: {
+        embassySpecific: {,
           processingTimes: '6-8 months',
           interviewRequired: 'Rarely',
           medicalExam: 'Country-specific',
@@ -226,7 +226,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             type: 'lmia',
             name: 'LMIA ou LMIA-exempt job offer',
             validity: 'Valid at time of application'
-          }
+          },
           {
             type: 'employment_contract',
             name: 'Contrato de trabalho',
@@ -249,12 +249,12 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Skills Assessment',
             validity: '3 years (varies by occupation)',
             organizations: 'Occupation-specific assessing authority',
-            requirements: {
+            requirements: {,
               qualifications: 'Relevant to nominated occupation',
               experience: 'Closely related work experience',
               documentation: 'Comprehensive evidence package'
             }
-          }
+          },
           {
             type: 'english_test',
             name: 'English Language Test',
@@ -265,7 +265,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'PTE': '50 each component',
               'TOEFL': '12 L, 13 R, 21 W, 18 S'
             }
-          }
+          },
           {
             type: 'age_evidence',
             name: 'Comprovante de idade',
@@ -289,7 +289,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Research activities',
               'Investment funds'
             ]
-          }
+          },
           {
             type: 'criminal_record',
             name: 'Certidão de antecedentes',
@@ -299,7 +299,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Country of nationality',
               'Any country lived 1+ years (last 5 years)'
             ]
-          }
+          },
           {
             type: 'health_insurance',
             name: 'Seguro saúde',
@@ -318,7 +318,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
               'Minimum wage compliance',
               'Valid for at least 1 year'
             ]
-          }
+          },
           {
             type: 'accommodation_proof',
             name: 'Comprovante de alojamento',
@@ -336,7 +336,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
   const countryReqs = requirementsDatabase[country]
   if (!countryReqs || !countryReqs[visaType]) {
     return {
-      mandatory: []
+      mandatory: [],
       optional: [],
       note: 'Requirements not available - contact specialist',
       lastUpdated: new Date().toISOString()
@@ -345,7 +345,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
 
   return {
     ...countryReqs[visaType]
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
     source: 'Official embassy requirements'
   }
 }
@@ -360,7 +360,7 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     missing: [] as any[],
     expiring: [] as any[],
     recommendations: [] as any[],
-    breakdown: {
+    breakdown: {,
       mandatory: { completed: 0, total: 0, score: 0 }
       optional: { completed: 0, total: 0, score: 0 }
       technical: { score: 0, issues: 0 }
@@ -526,7 +526,7 @@ async function checkDocumentCompliance(document: any, requirement: any) {
 // Gerar relatório detalhado de compliance
 async function generateComplianceReport(result: any, requirements: any, country: string, visaType: string) {
   const report = {
-    summary: {
+    summary: {,
       country: country,
       visaType: visaType,
       overallScore: result.overallScore,
@@ -535,7 +535,7 @@ async function generateComplianceReport(result: any, requirements: any, country:
       criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,
       readinessLevel: getReadinessLevel(result)
     }
-    sections: {
+    sections: {,
       mandatory: {
         title: 'Documentos Obrigatórios',
         completed: result.breakdown.mandatory.completed,
@@ -543,19 +543,19 @@ async function generateComplianceReport(result: any, requirements: any, country:
         score: result.breakdown.mandatory.score,
         status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete'
       }
-      optional: {
+      optional: {,
         title: 'Documentos Opcionais',
         completed: result.breakdown.optional.completed,
         total: result.breakdown.optional.total,
         score: result.breakdown.optional.score,
         benefit: 'Additional points/advantages'
       }
-      issues: {
-        critical: result.issues.filter((i: any) => i.severity === 'critical')
-        medium: result.issues.filter((i: any) => i.severity === 'medium')
+      issues: {,
+        critical: result.issues.filter((i: any) => i.severity === 'critical'),
+        medium: result.issues.filter((i: any) => i.severity === 'medium'),
         low: result.issues.filter((i: any) => i.severity === 'low')
       }
-      timeline: {
+      timeline: {,
         documentsExpiring: result.expiring,
         actionRequired: result.issues.filter((i: any) => i.severity === 'critical').length > 0
       }
@@ -580,7 +580,7 @@ function generateComplianceRecommendations(result: any) {
   // Recomendações para documentos faltando
   if (result.missing.length > 0) {
     recommendations.push({
-      priority: 'critical'
+      priority: 'critical',
       category: 'missing_documents',
       action: `Provide ${result.missing.length} missing required documents`,
       timeline: 'Before submission',
@@ -637,7 +637,7 @@ function generateDetailedRecommendations(result: any, requirements: any) {
   if (result.expiring.length > 0) {
     recommendations.shortTerm.push({
       action: 'Renew expiring documents',
-      documents: result.expiring.map((e: any) => e.name)
+      documents: result.expiring.map((e: any) => e.name),
       timeline: '2-4 weeks'
     })
   }

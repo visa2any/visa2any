@@ -4,22 +4,22 @@ import { z } from 'zod'
 
 // Schema para consulta do advisory engine
 const advisoryQuerySchema = z.object({
-  clientId: z.string().optional()
+  clientId: z.string().optional(),
   profile: z.object({
-    targetCountry: z.string()
+    targetCountry: z.string(),
     visaType: z.string()
-    age: z.number().optional()
+    age: z.number().optional(),
     education: z.string().optional()
-    experience: z.number().optional()
+    experience: z.number().optional(),
     maritalStatus: z.string().optional()
-    hasChildren: z.boolean().optional()
+    hasChildren: z.boolean().optional(),
     income: z.string().optional()
-    languages: z.array(z.string()).optional()
+    languages: z.array(z.string()).optional(),
     currentCountry: z.string().optional()
   })
-  documents: z.array(z.object({
+  documents: z.array(z.object({,
     type: z.string()
-    status: z.string()
+    status: z.string(),
     expiryDate: z.string().optional()
     issuingCountry: z.string().optional()
   })).optional()
@@ -90,12 +90,12 @@ export async function POST(request: NextRequest) {
 
     // Log da consulta
     await prisma.automationLog.create({
-      data: {
+      data: {,
         type: 'ADVISORY_CONSULTATION',
         action: `advisory_${validatedData.queryType}`,
         clientId: validatedData.clientId || null,
         success: true,
-        details: {
+        details: {,
           queryType: validatedData.queryType,
           targetCountry: validatedData.profile.targetCountry,
           visaType: validatedData.profile.visaType,
@@ -105,11 +105,11 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      data: {
+      data: {,
         queryType: validatedData.queryType
         analysis: analysisResult,
         recommendations: strategicRecommendations,
-        expertise: {
+        expertise: {,
           source: countryExpertise.source,
           lastUpdated: countryExpertise.lastUpdated,
           confidenceLevel: countryExpertise.confidenceLevel
@@ -122,16 +122,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
 
     console.error('Erro no advisory engine:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
     const supportedCountries = await getSupportedCountries(includeStats)
 
     return NextResponse.json({
-      data: {
+      data: {,
         countries: supportedCountries
         totalSupported: supportedCountries.length,
         lastUpdated: new Date().toISOString()
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao listar países suportados:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
 async function getCountrySpecificExpertise(country: string, visaType: string) {
   const expertise = {
     source: 'internal_database',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
     confidenceLevel: 0.95,
     data: {} as any
   }
@@ -196,7 +196,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'French language proficiency',
           'Job offer from Canadian employer'
         ],
-        embassyInsights: {
+        embassyInsights: {,
           fastTrackOptions: ['Provincial Nominee Programs', 'Canadian Experience Class'],
           seasonalVariations: 'Higher draws in Q4',
           currentPriorities: 'Healthcare workers, IT professionals, trades'
@@ -237,7 +237,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Regional nomination',
           'Partner skills bonus'
         ],
-        embassyInsights: {
+        embassyInsights: {,
           fastTrackOptions: ['State nomination', 'Regional visas'],
           seasonalVariations: 'July program year start',
           currentPriorities: 'Engineers, nurses, IT specialists'
@@ -291,7 +291,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
           'Employer issues',
           'Wage requirements not met'
         ],
-        embassyInsights: {
+        embassyInsights: {,
           fastTrackOptions: ['Premium processing', 'O1 extraordinary ability'],
           seasonalVariations: 'H1B cap season (April)',
           currentPriorities: 'STEM fields, healthcare'
@@ -456,7 +456,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
 // Análise para Portugal
 async function assessPortugal(profile: any, expertise: any) {
   return {
-    documentationScore: 85
+    documentationScore: 85,
     financialScore: profile.income ? 80 : 50,
     timelineScore: 90,
     complianceScore: 85
@@ -466,7 +466,7 @@ async function assessPortugal(profile: any, expertise: any) {
 // Análise genérica
 async function assessGeneric(profile: any, expertise: any) {
   return {
-    profileScore: 70
+    profileScore: 70,
     documentationScore: 60,
     complianceScore: 75,
     timelineScore: 65
@@ -476,7 +476,7 @@ async function assessGeneric(profile: any, expertise: any) {
 // Outras funções (implementação simplificada para demonstração)
 async function analyzeDocumentRequirements(profile: any, documents: any[], expertise: any) {
   return {
-    required: expertise.data.keyRequirements || []
+    required: expertise.data.keyRequirements || [],
     missing: [],
     recommendations: ['Ensure all documents are apostilled', 'Translate to target language']
   }
@@ -484,7 +484,7 @@ async function analyzeDocumentRequirements(profile: any, documents: any[], exper
 
 async function estimateProcessingTimeline(profile: any, expertise: any) {
   return {
-    estimated: expertise.data.averageProcessingTime || '6-12 months'
+    estimated: expertise.data.averageProcessingTime || '6-12 months',
     factors: ['Document completeness', 'Embassy workload', 'Seasonal variations'],
     fastTrackOptions: expertise.data.embassyInsights?.fastTrackOptions || []
   }
@@ -492,7 +492,7 @@ async function estimateProcessingTimeline(profile: any, expertise: any) {
 
 async function calculateSuccessProbability(profile: any, documents: any[], expertise: any) {
   return {
-    probability: 75
+    probability: 75,
     confidence: 'medium',
     factors: expertise.data.successFactors || [],
     risks: expertise.data.commonRejectionReasons || []
@@ -501,7 +501,7 @@ async function calculateSuccessProbability(profile: any, documents: any[], exper
 
 async function performComplianceCheck(profile: any, documents: any[], expertise: any) {
   return {
-    compliant: true
+    compliant: true,
     issues: [],
     recommendations: ['Review embassy-specific requirements']
   }
@@ -509,7 +509,7 @@ async function performComplianceCheck(profile: any, documents: any[], expertise:
 
 async function getEmbassySpecificInsights(profile: any, expertise: any) {
   return expertise.data.embassyInsights || {
-    insights: ['Contact embassy for latest updates']
+    insights: ['Contact embassy for latest updates'],
     fastTrackOptions: [],
     currentPriorities: []
   }
@@ -520,7 +520,7 @@ async function getRecentLawUpdates(country: string, visaType: string) {
   return {
     updates: [
       {
-        date: '2024-01-15'
+        date: '2024-01-15',
         title: 'New language requirements',
         summary: 'Updated minimum language scores',
         impact: 'medium'
@@ -532,12 +532,12 @@ async function getRecentLawUpdates(country: string, visaType: string) {
 async function generateStrategicRecommendations(profile: any, analysis: any, expertise: any) {
   return [
     {
-      priority: 'high'
+      priority: 'high',
       category: 'preparation',
       action: 'Complete language testing',
       timeline: '2-3 months',
       impact: 'high'
-    }
+    },
     {
       priority: 'medium', 
       category: 'documentation',
@@ -568,7 +568,7 @@ async function getSupportedCountries(includeStats: boolean) {
         averageTimeline: '8 months',
         clientsSucessful: 1247
       })
-    }
+    },
     {
       name: 'Australia', 
       code: 'AU',
@@ -579,7 +579,7 @@ async function getSupportedCountries(includeStats: boolean) {
         averageTimeline: '10 months',
         clientsSucessful: 943
       })
-    }
+    },
     {
       name: 'Portugal',
       code: 'PT', 
