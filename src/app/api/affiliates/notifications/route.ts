@@ -206,9 +206,9 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         amount: 1450.75,
         paymentMethod: 'PIX',
         transactionId: 'TXN123456789'
-      }
+      },
       read: false,
-      createdAt: yesterday.toISOString()
+      createdAt: yesterday.toISOString(),
       priority: 'high'
     },
     {

@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           pages: Math.ceil(total / limit)
-        }
+        },
         stats: {
           totalAffiliates: stats._count.id || 0,
           activeAffiliates: activeCount,

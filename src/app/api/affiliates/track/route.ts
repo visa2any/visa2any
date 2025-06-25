@@ -30,7 +30,7 @@ async function getLocationFromIP(ip: string) {
     const response = await fetch(`https://ipapi.co/${ip}/json/`)
     const data = await response.json()
     return {
-      country: data.country_name || 'Unknown'
+      country: data.country_name || 'Unknown',
       city: data.city || 'Unknown'
     }
   } catch (error) {

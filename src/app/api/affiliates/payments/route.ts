@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           pages: Math.ceil(total / limit)
-        }
+        },
         stats: paymentStats
       }
     })
