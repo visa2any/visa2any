@@ -321,9 +321,9 @@ export async function GET(request: NextRequest) {
         data: filteredDefaults.map((material, index) => ({
           id: `default_${index}`,
           ...material,
-          createdAt: new Date().toISOString()
-          updatedAt: new Date().toISOString()
-          views: Math.floor(Math.random() * 1000)
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          views: Math.floor(Math.random() * 1000),
           downloads: Math.floor(Math.random() * 500)
         }))
       })

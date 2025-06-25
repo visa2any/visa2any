@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: country
+        country: country,
         visaType: visaType,
         period: `${days} dias`,
         changes: changes,

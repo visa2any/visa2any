@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar estatísticas gerais
     const stats = await prisma.affiliate.aggregate({
-      _count: { id: true }
+      _count: { id: true },
       _sum: {
         totalEarnings: true,
         pendingEarnings: true,

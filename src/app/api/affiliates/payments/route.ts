@@ -64,10 +64,10 @@ export async function GET(request: NextRequest) {
       by: ['status'],
       _sum: {
         amount: true
-      }
+      },
       _count: {
         id: true
-      }
+      },
       where: affiliateId ? { affiliateId } : {}
     })
 

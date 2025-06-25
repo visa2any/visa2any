@@ -183,7 +183,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
 
   return [
     {
-      id: 'notif_1'
+      id: 'notif_1',
       type: 'conversion',
       title: '🎉 Nova Conversão!',
       message: 'Parabéns! Você acabou de gerar uma nova conversão no valor de R$ 89,55 através do seu link de Consultoria EUA.',
