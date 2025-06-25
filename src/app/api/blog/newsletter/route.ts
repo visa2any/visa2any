@@ -127,7 +127,8 @@ export async function GET(request: NextRequest) {
     countryDistribution.forEach(sub => {
       const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
       countries.forEach(country => {
-        countryCount[country] = (countryCount[country] || 0) + 1
+        const countryKey = String(country)
+        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
       })
     })
 
