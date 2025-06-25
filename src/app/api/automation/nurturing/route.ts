@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
         type: 'NURTURING_SEQUENCE',
         ...(clientId && { clientId })
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { executedAt: 'desc' },
       take: 50,
       include: {
         client: {
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
         client: seq.client,
         sequenceType: seq.details?.sequenceType,
         status: seq.success ? 'active' : 'failed',
-        createdAt: seq.createdAt,
+        createdAt: seq.executedAt,
         emailsScheduled: seq.details?.emailsScheduled || 0
       }))
     })
