@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
         affiliateId: affiliate.id,
         referralCode,
         converted: false
-      }
+      },
       data: {
         converted: true,
         conversionValue,

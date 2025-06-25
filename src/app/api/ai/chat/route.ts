@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        message: sofiaResponse.message
+        message: sofiaResponse.message,
         intent: sofiaResponse.intent,
         confidence: sofiaResponse.confidence,
         suggestions: sofiaResponse.suggestions,

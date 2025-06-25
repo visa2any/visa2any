@@ -265,7 +265,7 @@ export async function PUT(request: NextRequest) {
     if (status === 'COMPLETED') {
       // Marcar comissões como pagas
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId }
+        where: { paymentId },
         data: {
           status: 'PAID',
           paidAt: new Date()

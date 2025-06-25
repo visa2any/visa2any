@@ -301,7 +301,7 @@ async function sendPaymentNotification(affiliateId: string, paymentData: any) {
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
   })
 }
@@ -318,7 +318,7 @@ async function sendTierPromotionNotification(affiliateId: string, tierData: any)
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
   })
 }
