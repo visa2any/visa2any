@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        commissions
+        commissions,
         pagination: {
           page,
           limit,

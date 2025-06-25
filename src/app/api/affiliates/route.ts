@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        affiliates
+        affiliates,
         pagination: {
           page,
           limit,

@@ -192,11 +192,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         commissionValue: 13.43,
         conversionType: 'CONSULTATION',
         clientName: 'Maria Silva'
-      }
+      },
       read: false,
-      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
       priority: 'high'
-    }
+    },
     {
       id: 'notif_2',
       type: 'payment',
@@ -210,7 +210,7 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       read: false,
       createdAt: yesterday.toISOString()
       priority: 'high'
-    }
+    },
     {
       id: 'notif_3',
       type: 'tier_promotion',

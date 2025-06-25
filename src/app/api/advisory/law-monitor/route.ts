@@ -130,7 +130,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         source: 'IRCC',
         category: 'requirements',
         affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program'],
-      }
+      },
       {
         id: 'ca-2024-002', 
         date: '2024-01-10',

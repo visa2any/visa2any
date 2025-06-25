@@ -411,7 +411,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const material = await prisma.affiliateMaterial.update({
-      where: { id }
+      where: { id },
       data: {
         ...updateData,
         updatedAt: new Date()
