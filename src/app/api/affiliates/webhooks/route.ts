@@ -262,7 +262,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
 }
 
 // Função para enviar evento para webhooks
-async function sendWebhookEvent(,
+async function sendWebhookEvent(
   affiliateId: string, 
   eventType: string, 
   eventData: any
