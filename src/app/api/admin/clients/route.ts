@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
             updatedAt: true,
             notes: true
           }
-        })
+        }),
         prisma.client.count({ where })
       ])
     } catch (dbError) {

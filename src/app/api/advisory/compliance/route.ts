@@ -13,7 +13,7 @@ const complianceCheckSchema = z.object({
     fileName: z.string(),
     status: z.string(),
     uploadDate: z.string(),
-    expiryDate: z.string().optional()
+    expiryDate: z.string().optional(),
     issuingCountry: z.string().optional(),
     metadata: z.record(z.any()).optional()
   }))

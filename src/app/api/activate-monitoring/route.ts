@@ -209,21 +209,21 @@ async function deactivateAll() {
 
 function getSystemStatus() {
   return NextResponse.json({
-    webScraping: {,
-      active: webScrapingActive
+    webScraping: {
+      active: webScrapingActive,
       interval: webScrapingInterval ? '30 minutos' : 'Inativo',
       cost: 'R$ 2/consulta'
-    }
-    emailMonitoring: {,
+    },
+    emailMonitoring: {
       active: emailMonitoringActive,
       interval: emailInterval ? '15 minutos' : 'Inativo', 
       cost: 'R$ 20/mês'
-    }
-    automation: {,
+    },
+    automation: {
       active: automationActive,
       status: automationActive ? 'Ativo' : 'Inativo',
       cost: 'R$ 50/mês'
-    }
+    },
     totalCost: calculateTotalCost()
   })
 }

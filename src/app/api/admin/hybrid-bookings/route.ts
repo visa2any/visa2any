@@ -134,7 +134,7 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     // await notifyClientStatusUpdate(booking, status, appointmentDetails)
 
     return NextResponse.json({
-      booking
+      booking,
       message: `Status atualizado para ${status}`
     })
 

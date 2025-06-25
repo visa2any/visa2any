@@ -9,11 +9,11 @@ const advisoryQuerySchema = z.object({
     targetCountry: z.string(),
     visaType: z.string(),
     age: z.number().optional(),
-    education: z.string().optional()
+    education: z.string().optional(),
     experience: z.number().optional(),
-    maritalStatus: z.string().optional()
+    maritalStatus: z.string().optional(),
     hasChildren: z.boolean().optional(),
-    income: z.string().optional()
+    income: z.string().optional(),
     languages: z.array(z.string()).optional(),
     currentCountry: z.string().optional()
   })
