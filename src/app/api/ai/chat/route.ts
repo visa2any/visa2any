@@ -24,12 +24,12 @@ export async function POST(request: NextRequest) {
     let clientContext = null
     if (validatedData.clientId) {
       clientContext = await prisma.client.findUnique({
-        where: { id: validatedData.clientId }
+        where: { id: validatedData.clientId },
         include: {
           consultations: {
             orderBy: { createdAt: 'desc' },
             take: 1
-          }
+          },
           documents: {
             select: { type: true, status: true }
           }

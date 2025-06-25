@@ -205,11 +205,11 @@ export async function POST(request: NextRequest) {
       : 0
 
     await prisma.affiliate.update({
-      where: { id: affiliate.id }
+      where: { id: affiliate.id },
       data: {
-        totalConversions: { increment: 1 }
-        totalEarnings: { increment: commissionValue }
-        pendingEarnings: { increment: commissionValue }
+        totalConversions: { increment: 1 },
+        totalEarnings: { increment: commissionValue },
+        pendingEarnings: { increment: commissionValue },
         conversionRate,
         lastActivity: new Date()
       }

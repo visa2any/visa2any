@@ -284,7 +284,7 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
   // Simular envio da notificação
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
   })
 }

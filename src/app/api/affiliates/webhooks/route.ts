@@ -152,7 +152,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoints[index]
+        ...endpoints[index],
         secret: undefined
       }
     })

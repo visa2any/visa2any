@@ -253,7 +253,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const payment = await prisma.affiliatePayment.update({
-      where: { id: paymentId }
+      where: { id: paymentId },
       data: updateData,
       include: {
         affiliate: true,
