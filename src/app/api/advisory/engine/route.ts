@@ -16,13 +16,13 @@ const advisoryQuerySchema = z.object({
     income: z.string().optional(),
     languages: z.array(z.string()).optional(),
     currentCountry: z.string().optional()
-  })
-  documents: z.array(z.object({,
+  }),
+  documents: z.array(z.object({
     type: z.string(),
     status: z.string(),
-    expiryDate: z.string().optional()
+    expiryDate: z.string().optional(),
     issuingCountry: z.string().optional()
-  })).optional()
+  })).optional(),
   queryType: z.enum([
     'eligibility_assessment',
     'document_requirements', 
@@ -90,12 +90,12 @@ export async function POST(request: NextRequest) {
 
     // Log da consulta
     await prisma.automationLog.create({
-      data: {,
+      data: {
         type: 'ADVISORY_CONSULTATION',
         action: `advisory_${validatedData.queryType}`,
         clientId: validatedData.clientId || null,
         success: true,
-        details: {,
+        details: {
           queryType: validatedData.queryType,
           targetCountry: validatedData.profile.targetCountry,
           visaType: validatedData.profile.visaType,
@@ -105,15 +105,15 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      data: {,
-        queryType: validatedData.queryType
+      data: {
+        queryType: validatedData.queryType,
         analysis: analysisResult,
         recommendations: strategicRecommendations,
-        expertise: {,
+        expertise: {
           source: countryExpertise.source,
           lastUpdated: countryExpertise.lastUpdated,
           confidenceLevel: countryExpertise.confidenceLevel
-        }
+        },
         nextSteps: generateNextSteps(analysisResult, validatedData.profile)
       }
     })
@@ -146,8 +146,8 @@ export async function GET(request: NextRequest) {
     const supportedCountries = await getSupportedCountries(includeStats)
 
     return NextResponse.json({
-      data: {,
-        countries: supportedCountries
+      data: {
+        countries: supportedCountries,
         totalSupported: supportedCountries.length,
         lastUpdated: new Date().toISOString()
       }
@@ -550,7 +550,7 @@ async function generateStrategicRecommendations(profile: any, analysis: any, exp
 
 function generateNextSteps(analysis: any, profile: any) {
   return [
-    'Schedule consultation to discuss strategy'
+    'Schedule consultation to discuss strategy',
     'Begin document preparation',
     'Consider language improvement if needed'
   ]

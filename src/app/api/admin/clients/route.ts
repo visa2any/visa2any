@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        clients
-        pagination: {,
+        clients,
+        pagination: {
           current: page,
           total: Math.ceil(total / limit),
           hasNext: offset + clients.length < total,
@@ -90,9 +90,9 @@ export async function GET(request: NextRequest) {
     
     // Retornar resposta de fallback
     return NextResponse.json({
-      data: {,
-        clients: []
-        pagination: {,
+      data: {
+        clients: [],
+        pagination: {
           current: 1,
           total: 0,
           hasNext: false,
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     // Criar cliente
     const client = await prisma.client.create({
       data: {
-        name
+        name,
         email,
         phone: phone || null,
         profession: profession || null,

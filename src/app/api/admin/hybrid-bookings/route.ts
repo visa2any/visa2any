@@ -160,7 +160,7 @@ async function assignConsultant(bookingId: string, consultantId: string) {
     // })
 
     return NextResponse.json({
-      booking
+      booking,
       message: 'Consultor atribuído com sucesso'
     })
 
@@ -333,8 +333,8 @@ Infelizmente não conseguimos realizar seu agendamento:
     if (message) {
       await fetch('/api/notifications/whatsapp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-        body: JSON.stringify({,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           to: booking.client.phone,
           message: message
         })

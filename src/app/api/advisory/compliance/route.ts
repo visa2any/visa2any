@@ -16,7 +16,7 @@ const complianceCheckSchema = z.object({
     expiryDate: z.string().optional(),
     issuingCountry: z.string().optional(),
     metadata: z.record(z.any()).optional()
-  }))
+  })),
   checkType: z.enum([
     'pre_submission',
     'embassy_compliance',
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
 
     // Salvar resultado da verificação
     await prisma.automationLog.create({
-      data: {,
+      data: {
         type: 'COMPLIANCE_CHECK',
         action: `compliance_${validatedData.checkType}`,
         clientId: validatedData.clientId,
         success: true,
-        details: {,
+        details: {
           checkType: validatedData.checkType,
           complianceScore: complianceResult.overallScore,
           complianceLevel: complianceResult.complianceLevel,
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      data: {,
-        compliance: complianceResult
+      data: {
+        compliance: complianceResult,
         report: detailedReport,
         recommendations: generateComplianceRecommendations(complianceResult),
         nextSteps: generateComplianceNextSteps(complianceResult, validatedData.checkType)
@@ -108,16 +108,16 @@ export async function GET(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-      { error: 'Dados inválidos' },
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
     const requirements = await getComplianceRequirements(country, visaType, detailed)
 
     return NextResponse.json({
-      data: {,
-        country: country
+      data: {
+        country: country,
         visaType: visaType,
         requirements: requirements,
         lastUpdated: new Date().toISOString()
@@ -145,7 +145,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Passaporte válido',
             validity: '6 months beyond intended stay',
             pages: 'At least 2 blank pages',
-            specifications: {,
+            specifications: {
               format: 'PDF scan',
               resolution: '300 DPI minimum',
               color: 'Color scan required',
@@ -169,7 +169,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Avaliação educacional',
             validity: '5 years',
             organizations: ['WES', 'ICAS', 'IQAS', 'CES', 'MCC'],
-            requirements: {,
+            requirements: {
               transcripts: 'Official sealed transcripts',
               diplomas: 'Original or certified copies',
               translation: 'If not in English/French'
@@ -213,7 +213,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             acceptedTests: ['TEF', 'TCF']
           }
         ],
-        embassySpecific: {,
+        embassySpecific: {
           processingTimes: '6-8 months',
           interviewRequired: 'Rarely',
           medicalExam: 'Country-specific',
@@ -249,7 +249,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
             name: 'Skills Assessment',
             validity: '3 years (varies by occupation)',
             organizations: 'Occupation-specific assessing authority',
-            requirements: {,
+            requirements: {
               qualifications: 'Relevant to nominated occupation',
               experience: 'Closely related work experience',
               documentation: 'Comprehensive evidence package'
@@ -344,7 +344,7 @@ async function getComplianceRequirements(country: string, visaType: string, deta
   }
 
   return {
-    ...countryReqs[visaType]
+    ...countryReqs[visaType],
     lastUpdated: new Date().toISOString(),
     source: 'Official embassy requirements'
   }
@@ -360,9 +360,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     missing: [] as any[],
     expiring: [] as any[],
     recommendations: [] as any[],
-    breakdown: {,
-      mandatory: { completed: 0, total: 0, score: 0 }
-      optional: { completed: 0, total: 0, score: 0 }
+    breakdown: {
+      mandatory: { completed: 0, total: 0, score: 0 },
+      optional: { completed: 0, total: 0, score: 0 },
       technical: { score: 0, issues: 0 }
     }
   }
@@ -526,7 +526,7 @@ async function checkDocumentCompliance(document: any, requirement: any) {
 // Gerar relatório detalhado de compliance
 async function generateComplianceReport(result: any, requirements: any, country: string, visaType: string) {
   const report = {
-    summary: {,
+    summary: {
       country: country,
       visaType: visaType,
       overallScore: result.overallScore,
@@ -534,32 +534,32 @@ async function generateComplianceReport(result: any, requirements: any, country:
       totalIssues: result.issues.length,
       criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,
       readinessLevel: getReadinessLevel(result)
-    }
-    sections: {,
+    },
+    sections: {
       mandatory: {
         title: 'Documentos Obrigatórios',
         completed: result.breakdown.mandatory.completed,
         total: result.breakdown.mandatory.total,
         score: result.breakdown.mandatory.score,
         status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete'
-      }
-      optional: {,
+      },
+      optional: {
         title: 'Documentos Opcionais',
         completed: result.breakdown.optional.completed,
         total: result.breakdown.optional.total,
         score: result.breakdown.optional.score,
         benefit: 'Additional points/advantages'
-      }
-      issues: {,
+      },
+      issues: {
         critical: result.issues.filter((i: any) => i.severity === 'critical'),
         medium: result.issues.filter((i: any) => i.severity === 'medium'),
         low: result.issues.filter((i: any) => i.severity === 'low')
-      }
-      timeline: {,
+      },
+      timeline: {
         documentsExpiring: result.expiring,
         actionRequired: result.issues.filter((i: any) => i.severity === 'critical').length > 0
       }
-    }
+    },
     recommendations: generateDetailedRecommendations(result, requirements)
   }
 

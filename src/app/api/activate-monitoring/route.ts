@@ -246,8 +246,8 @@ async function sendActivationNotification(title: string, message: string) {
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-      body: JSON.stringify({,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         chat_id: chatId,
         text: `${title}\n\n${message}`,
         parse_mode: 'HTML'
