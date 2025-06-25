@@ -82,7 +82,14 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'NURTURING_SEQUENCE',
         action: 'start_sequence',
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
+        success: true,
+        details: {
+          sequenceType: validatedData.sequenceType,
+          emailsScheduled: scheduledEmails.length,
+          duration: personalizedSequence.duration,
+          clientName: client.name
+        }
       }
     })
 
