@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { appointmentBookingService } from '@/lib/appointment-booking'
 
 // DELETE - Cancelar agendamento
-export async function DELETE(,
+export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {

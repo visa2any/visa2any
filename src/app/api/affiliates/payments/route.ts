@@ -293,7 +293,7 @@ export async function PUT(request: NextRequest) {
 
       // Reverter saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId }
+        where: { id: payment.affiliateId },
         data: {
           pendingEarnings: { increment: payment.amount }
         }

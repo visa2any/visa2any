@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
     // Criar consultoria IA com o resultado
     const consultation = await prisma.consultation.create({
       data: {
-        clientId
+        clientId,
         type: 'AI_ANALYSIS',
         status: 'COMPLETED',
-        completedAt: new Date()
+        completedAt: new Date(),
         duration: 15, // 15 minutos estimados para análise IA
         score,
-        recommendation: recommendations.join('\n')
-        nextSteps: nextSteps.join('\n')
+        recommendation: recommendations.join('\n'),
+        nextSteps: nextSteps.join('\n'),
         notes: `Análise de elegibilidade automática - Nível: ${level}`,
         result: {
           score,
