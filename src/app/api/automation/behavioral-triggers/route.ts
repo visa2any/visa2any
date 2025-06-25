@@ -53,7 +53,9 @@ export async function POST(request: NextRequest) {
         details: {
           event: validatedData.event,
           shouldTrigger: triggerAnalysis.shouldTrigger,
-          triggerReason: triggerAnalysis.reason,
+          action: triggerAnalysis.action,
+          message: triggerAnalysis.message,
+          priority: triggerAnalysis.priority,
           page: validatedData.data?.page,
           timeSpent: validatedData.data?.timeSpent,
           scrollDepth: validatedData.data?.scrollDepth
