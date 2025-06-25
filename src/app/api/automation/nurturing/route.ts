@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       where: {
         clientId: validatedData.clientId,
         type: 'NURTURING_SEQUENCE',
-        createdAt: {
+        executedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
         }
       }
