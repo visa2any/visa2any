@@ -223,7 +223,7 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
       data: {
         message: 'Este é um evento de teste para verificar se seu webhook está funcionando corretamente.',
         timestamp: new Date().toISOString()
-      }
+      },
       timestamp: new Date().toISOString()
     }
 
@@ -236,20 +236,20 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
         'Content-Type': 'application/json',
         'X-Webhook-Signature': `sha256=${signature}`,
         'User-Agent': 'Visa2Any-Webhooks/1.0',
-      }
+      },
       body: payload,
       signal: AbortSignal.timeout(10000) // 10 segundos timeout
     })
 
     if (response.ok) {
       return { 
-        success: true
+        success: true,
         message: 'Webhook testado com sucesso'
       }
     } else {
       return { 
-        success: false
-        message: `Erro HTTP ${response.status}: ${response.statusText}` ,
+        success: false,
+        message: `Erro HTTP ${response.status}: ${response.statusText}`
       }
     }
 
