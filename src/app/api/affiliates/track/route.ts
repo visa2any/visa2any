@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     if (!affiliate) {
       return NextResponse.json(
-        { error: 'Afiliado não encontrado' }
+        { error: 'Afiliado não encontrado' },
         { status: 404 }
       )
     }

@@ -247,11 +247,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         newMaterials: 8,
         categories: ['banners', 'email_templates'],
-      }
+      },
       read: false,
-      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
       priority: 'low'
-    }
+    },
     {
       id: 'notif_6',
       type: 'commission',

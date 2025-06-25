@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       id: `webhook_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       url: webhookUrl,
       events,
-      secret: secret || generateWebhookSecret()
+      secret: secret || generateWebhookSecret(),
       active: true,
       affiliateId
     }
