@@ -56,7 +56,15 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'USER_CREATED',
         action: 'register_user',
-        success: true
+        success: true,
+        clientId: null,
+        details: {
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          registrationTimestamp: new Date().toISOString()
+        }
       }
     })
 
