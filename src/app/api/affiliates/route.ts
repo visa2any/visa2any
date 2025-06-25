@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
     // await sendAffiliateWelcomeEmail(affiliate)
 
     return NextResponse.json({
-      data: affiliate
+      data: affiliate,
       message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.'
     })
 

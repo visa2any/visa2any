@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
       await prisma.affiliateCommission.updateMany({
         where: {
           id: { in: group.commissions.map((c: any) => c.id) }
-        }
+        },
         data: {
           status: 'APPROVED',
           paymentId: payment.id

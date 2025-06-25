@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     if (!referralCode || !clientId) {
       return NextResponse.json(
-        { error: 'Código de referência e ID do cliente são obrigatórios' }
+        { error: 'Código de referência e ID do cliente são obrigatórios' },
         { status: 400 }
       )
     }

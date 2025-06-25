@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: endpoints.map(endpoint => ({
-        ...endpoint
+        ...endpoint,
         secret: undefined // Não retornar o secret
       }))
     })

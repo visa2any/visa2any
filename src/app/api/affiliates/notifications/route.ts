@@ -234,11 +234,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         bonusAmount: 250.00,
         reason: 'Meta mensal superada',
         month: 'Junho'
-      }
+      },
       read: true,
-      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       priority: 'medium'
-    }
+    },
     {
       id: 'notif_5',
       type: 'system',
