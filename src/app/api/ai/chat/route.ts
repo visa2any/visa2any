@@ -578,7 +578,7 @@ function getSofiaIntents() {
     greeting: {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
       patterns: ['^(olá|oi|hello|hi)']
-    }
+    },
     
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],

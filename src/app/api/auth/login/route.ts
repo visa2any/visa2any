@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
           headers: {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString()
+            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
             'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()
           }
         }

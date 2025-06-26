@@ -73,21 +73,21 @@ export async function POST(request: NextRequest) {
       
       return NextResponse.json({
         appointment: {
-          id: bookingResult.appointmentId
+          id: bookingResult.appointmentId,
           confirmationCode: bookingResult.confirmationCode,
           date: bookingResult.date,
           time: bookingResult.time,
           location: bookingResult.location,
           instructions: bookingResult.instructions
-        }
+        },
         message: 'Agendamento realizado com sucesso!'
       })
     } else {
       return NextResponse.json(
         { 
-          error: bookingResult.error
+          error: bookingResult.error,
           message: 'Não foi possível realizar o agendamento'
-        }
+        },
         { status: 400 }
       )
     }
