@@ -7,15 +7,15 @@ import { z } from 'zod'
 const updateConsultationSchema = z.object({
   type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']).optional()
   status: z.enum(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'RESCHEDULED']).optional()
-  scheduledAt: z.string().optional()
+  scheduledAt: z.string().optional(),
   completedAt: z.string().datetime().optional()
-  duration: z.number().optional()
+  duration: z.number().optional(),
   result: z.any().optional()
-  score: z.number().min(0).max(100).optional()
+  score: z.number().min(0).max(100).optional(),
   recommendation: z.string().optional()
-  timeline: z.string().optional()
+  timeline: z.string().optional(),
   nextSteps: z.string().optional()
-  notes: z.string().optional()
+  notes: z.string().optional(),
   consultantId: z.string().optional()
 })
 

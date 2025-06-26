@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
 
 // Função para criar pagamento no Mercado Pago
 async function createMercadoPagoPayment(orderData: {
-  orderId: string
+  orderId: string,
   title: string,
   quantity: number,
   unitPrice: number,

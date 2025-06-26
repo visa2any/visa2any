@@ -4,10 +4,10 @@ import { z } from 'zod'
 
 // Schema para envio de email
 const sendEmailSchema = z.object({
-  to: z.string().email('Email é obrigatório')
+  to: z.string().email('Email é obrigatório'),
   subject: z.string().min(1, 'Assunto é obrigatório').optional()
   message: z.string().min(1, 'Mensagem é obrigatória').optional()
-  template: z.string().optional()
+  template: z.string().optional(),
   clientId: z.string().optional()
   variables: z.record(z.any()).optional()
 })

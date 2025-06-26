@@ -6,7 +6,7 @@ import { z } from 'zod'
 const visaRequirementSchema = z.object({
   country: z.string().min(1, 'País é obrigatório')
   visaType: z.string().min(1, 'Tipo de visto é obrigatório')
-  visaSubtype: z.string().optional()
+  visaSubtype: z.string().optional(),
   requiredDocuments: z.array(z.object({
     type: z.string(),
     name: z.string(),
@@ -25,7 +25,7 @@ const visaRequirementSchema = z.object({
     description: z.string(),
     required: z.boolean()
   }))
-  commonPitfalls: z.array(z.string())
+  commonPitfalls: z.array(z.string()),
   successTips: z.array(z.string())
   governmentLinks: z.array(z.object({
     name: z.string(),

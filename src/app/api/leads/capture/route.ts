@@ -5,17 +5,17 @@ import { z } from 'zod'
 // Schema para captura de leads
 const leadCaptureSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório')
-  email: z.string().email('Email inválido')
+  email: z.string().email('Email inválido'),
   phone: z.string().optional()
-  source: z.string().default('website')
+  source: z.string().default('website'),
   leadMagnet: z.string().optional()
-  utmSource: z.string().optional()
+  utmSource: z.string().optional(),
   utmMedium: z.string().optional()
-  utmCampaign: z.string().optional()
+  utmCampaign: z.string().optional(),
   utmContent: z.string().optional()
-  referrer: z.string().optional()
+  referrer: z.string().optional(),
   userAgent: z.string().optional()
-  ip: z.string().optional()
+  ip: z.string().optional(),
   interests: z.array(z.string()).optional()
   notes: z.string().optional()
 })

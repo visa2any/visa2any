@@ -8,9 +8,9 @@ const createInteractionSchema = z.object({
   type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),
   channel: z.string().min(1, 'Canal é obrigatório')
   direction: z.enum(['inbound', 'outbound']),
-  subject: z.string().optional()
+  subject: z.string().optional(),
   content: z.string().min(1, 'Conteúdo é obrigatório')
-  response: z.string().optional()
+  response: z.string().optional(),
   scheduledAt: z.string().datetime().optional()
   completedAt: z.string().datetime().optional()
 })

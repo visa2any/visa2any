@@ -7,9 +7,9 @@ import { z } from 'zod'
 const createConsultationSchema = z.object({
   clientId: z.string().min(1, 'Cliente é obrigatório')
   type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']),
-  scheduledAt: z.string().datetime().optional()
+  scheduledAt: z.string().datetime().optional(),
   duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas
-  consultantId: z.string().optional()
+  consultantId: z.string().optional(),
   notes: z.string().optional()
 })
 

@@ -5,7 +5,7 @@ import { z } from 'zod'
 // Schema para atualizar pagamento
 const updatePaymentSchema = z.object({
   status: z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']).optional()
-  paymentMethod: z.string().optional()
+  paymentMethod: z.string().optional(),
   transactionId: z.string().optional()
 })
 

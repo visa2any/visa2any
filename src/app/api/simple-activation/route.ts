@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 // Estado real dos sistemas baseado em variáveis de ambiente
 const getSystemState = () => ({
   webScraping: process.env.ENABLE_REAL_MONITORING === 'true',
-  emailMonitoring: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST)
+  emailMonitoring: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST),
   automation: !!(process.env.WHATSAPP_TOKEN && process.env.TELEGRAM_BOT_TOKEN)
-  paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
+  paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY),
   hybridBooking: true, // Sempre ativo para agendamento híbrido
   lastActivation: new Date().toISOString()
 })

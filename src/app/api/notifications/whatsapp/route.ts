@@ -7,9 +7,9 @@ import { z } from 'zod'
 const sendWhatsAppSchema = z.object({
   to: z.string().min(10, 'Número de telefone é obrigatório')
   message: z.string().min(1, 'Mensagem é obrigatória')
-  clientId: z.string().optional()
+  clientId: z.string().optional(),
   template: z.string().optional()
-  variables: z.record(z.any()).optional()
+  variables: z.record(z.any()).optional(),
   mediaUrl: z.string().url().optional()
 })
 

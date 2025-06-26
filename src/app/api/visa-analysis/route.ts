@@ -7,7 +7,7 @@ import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limi
 const eligibilityAnalysisSchema = z.object({
   clientId: z.string().min(1, 'Cliente é obrigatório')
   targetCountry: z.string().min(1, 'País de destino é obrigatório')
-  visaType: z.string().optional()
+  visaType: z.string().optional(),
   profile: z.object({
     age: z.number().min(18).max(80)
     education: z.string(),

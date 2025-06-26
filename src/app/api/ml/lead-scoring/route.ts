@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 // Schema para análise de lead scoring
 const leadScoringSchema = z.object({
-  clientId: z.string().optional()
+  clientId: z.string().optional(),
   profile: z.object({
     // Dados demográficos
     age: z.number().optional()
