@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         emailsScheduled: scheduledEmails.length,
         duration: `${personalizedSequence.duration} dias`,
         firstEmail: scheduledEmails[0]?.sendAt
-      }
+      },
       message: 'Sequência de nurturing iniciada com sucesso'
     })
 

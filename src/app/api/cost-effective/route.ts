@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         
         if (!bookingRequest.applicantInfo?.fullName || !bookingRequest.consularInfo?.country) {
           return NextResponse.json(
-            { error: 'Campos applicantInfo.fullName e consularInfo.country são obrigatórios' }
+            { error: 'Campos applicantInfo.fullName e consularInfo.country são obrigatórios' },
             { status: 400 }
           )
         }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         const result = await costEffectiveSolutions.manualAssistedBooking(bookingRequest)
         
         return NextResponse.json({
-          success: result.success
+          success: result.success,
           method: 'Agendamento Manual Assistido',
           cost: `R$ ${result.cost}`,
           estimatedTime: result.estimatedTime,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         
         if (!Array.isArray(countries) || countries.length === 0) {
           return NextResponse.json(
-            { error: 'Campo countries deve ser um array não vazio' }
+            { error: 'Campo countries deve ser um array não vazio' },
             { status: 400 }
           )
         }
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         const monitoring = await costEffectiveSolutions.setupVacancyMonitoring(countries)
         
         return NextResponse.json({
-          success: monitoring.success
+          success: monitoring.success,
           monitoringId: monitoring.monitoringId,
           targets: monitoring.targets,
           message: `Monitoramento configurado para ${countries.length} países`,
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         const workflow = await costEffectiveSolutions.optimizedManualWorkflow(workflowRequest)
         
         return NextResponse.json({
-          success: workflow.success
+          success: workflow.success,
           workflow: workflow.workflow,
           totalTime: workflow.totalTime,
           cost: `R$ ${workflow.cost}`,
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Action deve ser: manual_booking, setup_monitoring, ou optimized_workflow' }
+          { error: 'Action deve ser: manual_booking, setup_monitoring, ou optimized_workflow' },
           { status: 400 }
         )
     }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na API de soluções econômicas:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -102,11 +102,11 @@ export async function GET(request: NextRequest) {
         const methods = costEffectiveSolutions.getCostEffectiveMethods()
         
         return NextResponse.json({
-          success: true
+          success: true,
           methods: methods.map(method => ({
             ...method,
             costDescription: `Setup: R$ ${method.cost.setup} | Mensal: R$ ${method.cost.monthly} | Por transação: R$ ${method.cost.perTransaction}`,
-          }))
+          })),
           recommendation: 'Para começar imediatamente, use "Agendamento Manual Assistido"',
           bestOption: {
             immediate: 'manual_assisted',
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
         
         if (!method) {
           return NextResponse.json(
-            { error: 'Parâmetro method é obrigatório' }
+            { error: 'Parâmetro method é obrigatório' },
             { status: 400 }
           )
         }
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
           const roi = costEffectiveSolutions.calculateROI(method, monthlyVolume, revenuePerBooking)
           
           return NextResponse.json({
-            success: true
+            success: true,
             method: roi.method,
             analysis: {
               monthlyVolume,
@@ -141,12 +141,12 @@ export async function GET(request: NextRequest) {
               monthlyRevenue: `R$ ${roi.monthlyRevenue}`,
               profit: `R$ ${roi.profit}`,
               roi: `${roi.roi.toFixed(1)}%`,
-            }
+            },
             viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável'
           })
         } catch (error) {
           return NextResponse.json(
-            { error: `Método '${method}' não encontrado` }
+            { error: `Método '${method}' não encontrado` },
             { status: 400 }
           )
         }
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
         const telegramSetup = await costEffectiveSolutions.setupTelegramAlerts()
         
         return NextResponse.json({
-          success: telegramSetup.success
+          success: telegramSetup.success,
           setup: telegramSetup.botInfo,
           instructions: telegramSetup.instructions,
           cost: 'GRATUITO',
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
         const emailSetup = await costEffectiveSolutions.setupEmailMonitoring()
         
         return NextResponse.json({
-          success: emailSetup.success
+          success: emailSetup.success,
           config: emailSetup.emailConfig,
           instructions: emailSetup.instructions,
           cost: 'R$ 20/mês',
@@ -184,7 +184,7 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Action deve ser: methods, roi, telegram_setup, ou email_setup' }
+          { error: 'Action deve ser: methods, roi, telegram_setup, ou email_setup' },
           { status: 400 }
         )
     }
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro na API de métodos econômicos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

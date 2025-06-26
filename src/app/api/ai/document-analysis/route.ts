@@ -350,7 +350,7 @@ async function analyzePassport(document: any, ocrResult: any) {
     
     if (expiryDate < sixMonthsFromNow) {
       issues.push('Passaporte expira em menos de 6 meses')
-      confidence -= 0.3,
+      confidence -= 0.3
     }
   } else {
     issues.push('Data de expiração não identificada')

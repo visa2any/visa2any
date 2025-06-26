@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     
     if (!query.trim()) {
       return NextResponse.json({
-        results: []
+        results: [],
         suggestions: []
       })
     }
