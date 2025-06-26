@@ -35,7 +35,7 @@ Ana Silva
 Consultora Sênior Visa2Any
 📱 +55 11 99999-9999
       `,
-    }
+    },
     {
       delay: 60, // 1 hora depois se não respondeu
       subject: '⏰ {name}, restam apenas algumas horas...',
@@ -85,7 +85,7 @@ Clique aqui para começar: {aiAnalysisLink}
 Att,
 Equipe Visa2Any
       `,
-    }
+    },
     {
       delay: 1440, // 24 horas
       subject: '📚 {name}, baixe nossos guias exclusivos',
@@ -108,7 +108,7 @@ PS: Tudo 100% gratuito, sem pegadinha!
 
 Equipe Visa2Any
       `,
-    }
+    },
     {
       delay: 4320, // 3 dias
       subject: '🎯 {name}, vamos criar sua estratégia?',
@@ -159,7 +159,7 @@ Nos próximos dias vou te enviar mais dicas valiosas!
 Att,
 Equipe Visa2Any
       `,
-    }
+    },
     {
       delay: 2880, // 2 dias
       subject: '💡 {name}, dica #1: Por onde começar',
@@ -182,7 +182,7 @@ Próxima dica chegará em 2 dias.
 
 Equipe Visa2Any
       `,
-    }
+    },
     {
       delay: 7200, // 5 dias
       subject: '🔍 {name}, dica #2: Evite estes erros fatais',
@@ -273,7 +273,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `Sequência ${sequence} ativada para ${email}`
+      message: `Sequência ${sequence} ativada para ${email}`,
       emailsScheduled: templates.length
     })
 
@@ -339,7 +339,7 @@ async function scheduleEmail(emailData: {
   subject: string,
   body: string,
   sendAt: Date,
-  sequence: string
+  sequence: string,
   clientId?: string,
   templateIndex: number
 }) {
@@ -384,7 +384,7 @@ async function sendEmailNow(emailData: {
   to: string,
   subject: string,
   body: string,
-  sequence: string
+  sequence: string,
   clientId?: string,
 }) {
   try {
@@ -394,11 +394,11 @@ async function sendEmailNow(emailData: {
     // Simular envio por enquanto
     const response = await fetch('/api/notifications/email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: emailData.to,
         subject: emailData.subject,
-        html: emailData.body.replace(/\n/g, '<br>')
+        html: emailData.body.replace(/\n/g, '<br>'),
         template: 'automation',
         variables: {
           content: emailData.body

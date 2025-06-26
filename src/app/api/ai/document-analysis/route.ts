@@ -187,19 +187,19 @@ async function performAdvancedDocumentAnalysis(document: any) {
     const processingTime = Date.now() - startTime
     
     return {
-      isValid: analysisResult.isValid && countryValidation.isValid && !fraudDetection.hasCriticalIssues
+      isValid: analysisResult.isValid && countryValidation.isValid && !fraudDetection.hasCriticalIssues,
       needsReview: analysisResult.needsReview || countryValidation.needsReview || fraudDetection.hasWarnings,
-      confidence: Math.min(analysisResult.confidence, countryValidation.confidence)
+      confidence: Math.min(analysisResult.confidence, countryValidation.confidence),
       ocrText: ocrResult.text,
       analysis: {
         ocr: ocrResult,
         typeSpecific: analysisResult,
         countryValidation: countryValidation,
         fraudDetection: fraudDetection,
-        recommendations: generateRecommendations(analysisResult, countryValidation, fraudDetection)
+        recommendations: generateRecommendations(analysisResult, countryValidation, fraudDetection),
         processingTime: processingTime
-      }
-      validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection)
+      },
+      validationNotes: generateValidationNotes(analysisResult, countryValidation, fraudDetection),
       processingTime: processingTime
     }
     

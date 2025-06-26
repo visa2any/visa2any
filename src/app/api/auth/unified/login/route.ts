@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
       // Login para admin/staff
       if (!password) {
         return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+          { error: 'Dados inválidos' },
+          { status: 400 }
+        )
       }
       result = await loginAdmin(email, password)
     } else {

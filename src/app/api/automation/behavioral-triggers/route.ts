@@ -4,8 +4,8 @@ import { z } from 'zod'
 
 // Schema para triggers comportamentais
 const behavioralTriggerSchema = z.object({
-  clientId: z.string().optional()
-  sessionId: z.string().optional()
+  clientId: z.string().optional(),
+  sessionId: z.string().optional(),
   event: z.enum([
     'page_view',
     'time_spent',
@@ -19,14 +19,14 @@ const behavioralTriggerSchema = z.object({
     'download_attempt'
   ]),
   data: z.object({
-    page: z.string().optional()
-    timeSpent: z.number().optional()
-    scrollDepth: z.number().optional()
-    formFields: z.array(z.string()).optional()
-    videoProgress: z.number().optional()
-    userAgent: z.string().optional()
+    page: z.string().optional(),
+    timeSpent: z.number().optional(),
+    scrollDepth: z.number().optional(),
+    formFields: z.array(z.string()).optional(),
+    videoProgress: z.number().optional(),
+    userAgent: z.string().optional(),
     referrer: z.string().optional()
-  }).optional()
+  }).optional(),
   timestamp: z.string().optional()
 })
 
