@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
-      results
+      results,
       total: results.length
     })
 

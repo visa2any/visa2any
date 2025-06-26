@@ -364,9 +364,9 @@ async function analyzePassport(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length === 0 || issues.every(issue => !issue.includes('expira'))
-    needsReview: issues.length > 0
-    confidence: Math.max(confidence, 0.1)
+    isValid: issues.length === 0 || issues.every(issue => !issue.includes('expira')),
+    needsReview: issues.length > 0,
+    confidence: Math.max(confidence, 0.1),
     extractedData: fields,
     issues: issues,
     recommendations: issues.length > 0 ? ['Renovar passaporte se próximo do vencimento'] : []

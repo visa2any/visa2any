@@ -5,25 +5,25 @@ import { z } from 'zod'
 
 // Schema para atualizar cliente
 const updateClientSchema = z.object({
-  name: z.string().min(2).optional()
-  email: z.string().email().optional()
-  phone: z.string().optional()
-  country: z.string().optional()
-  nationality: z.string().optional()
-  age: z.number().min(0).max(120).optional()
-  profession: z.string().optional()
-  education: z.string().optional()
-  targetCountry: z.string().optional()
-  visaType: z.string().optional()
-  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional()
-  score: z.number().min(0).max(100).optional()
-  notes: z.string().optional()
-  source: z.string().optional()
+  name: z.string().min(2).optional(),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  country: z.string().optional(),
+  nationality: z.string().optional(),
+  age: z.number().min(0).max(120).optional(),
+  profession: z.string().optional(),
+  education: z.string().optional(),
+  targetCountry: z.string().optional(),
+  visaType: z.string().optional(),
+  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional(),
+  score: z.number().min(0).max(100).optional(),
+  notes: z.string().optional(),
+  source: z.string().optional(),
   assignedUserId: z.string().optional()
 })
 
 // GET /api/clients/[id] - Buscar cliente específico
-export async function GET(,
+export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
