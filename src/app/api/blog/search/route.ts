@@ -152,15 +152,15 @@ async function performAdvancedSearch(query: string) {
         published: true,
         OR: [
           // Busca exata no título (maior relevância)
-          { title: { contains: query, mode: 'insensitive' } }
+          { title: { contains: query, mode: 'insensitive' } },
           // Busca exata no resumo
-          { excerpt: { contains: query, mode: 'insensitive' } }
+          { excerpt: { contains: query, mode: 'insensitive' } },
           // Busca no conteúdo
-          { content: { contains: query, mode: 'insensitive' } }
+          { content: { contains: query, mode: 'insensitive' } },
           // Busca no país
-          { country: { contains: query, mode: 'insensitive' } }
+          { country: { contains: query, mode: 'insensitive' } },
           // Busca no autor
-          { author: { contains: query, mode: 'insensitive' } }
+          { author: { contains: query, mode: 'insensitive' } },
           // Busca individual por palavras
           ...searchWords.flatMap(word => [
             { title: { contains: word, mode: 'insensitive' } }

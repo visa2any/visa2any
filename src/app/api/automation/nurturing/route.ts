@@ -182,16 +182,16 @@ function getNurturingSequence(type: string, client: any) {
         { day: 10, hour: 13, template: 'urgency', subject: 'Últimas vagas - não perca!' },
         { day: 14, hour: 15, template: 'last_chance', subject: 'Última chance: oferta especial expira hoje' }
       ],
-    }
+    },
 
     assessment_follow_up: {
       name: 'Follow-up Assessment',
       duration: 7,
       emails: [
-        { day: 0, hour: 1, template: 'assessment_results', subject: 'Sua análise está pronta! 📊' }
-        { day: 1, hour: 12, template: 'assessment_explanation', subject: 'Como interpretar sua análise' }
-        { day: 3, hour: 14, template: 'next_steps', subject: 'Próximos passos para seu visto' }
-        { day: 5, hour: 10, template: 'consultation_offer', subject: 'Quer acelerar? Fale com especialista' }
+        { day: 0, hour: 1, template: 'assessment_results', subject: 'Sua análise está pronta! 📊' },
+        { day: 1, hour: 12, template: 'assessment_explanation', subject: 'Como interpretar sua análise' },
+        { day: 3, hour: 14, template: 'next_steps', subject: 'Próximos passos para seu visto' },
+        { day: 5, hour: 10, template: 'consultation_offer', subject: 'Quer acelerar? Fale com especialista' },
         { day: 7, hour: 16, template: 'assessment_final', subject: 'Não deixe sua análise esquecida' }
       ],
     }

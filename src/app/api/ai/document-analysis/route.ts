@@ -481,10 +481,10 @@ async function analyzeBirthCertificate(document: any, ocrResult: any) {
 
 async function analyzePoliceClearance(document: any, ocrResult: any) {
   return {
-    isValid: true
+    isValid: true,
     needsReview: false,
     confidence: 0.8,
-    extractedData: {}
+    extractedData: {},
     issues: [],
     recommendations: ['Verificar validade (máximo 12 meses)']
   }

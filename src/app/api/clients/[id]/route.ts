@@ -132,9 +132,9 @@ export async function PATCH(
         action: 'inline_edit',
         clientId: id,
         details: {
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
           action: 'automated_action'
-        }
+        },
         success: true
       }
     })
@@ -208,9 +208,9 @@ export async function PUT(
         action: 'update_client',
         clientId: id,
         details: {
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
           action: 'automated_action'
-        }
+        },
         success: true
       }
     })
