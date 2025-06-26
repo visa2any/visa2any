@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 
-export async function GET(,
+export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -16,7 +16,7 @@ export async function GET(,
       where: {
         postId: slug,
         parentId: null // Apenas comentários principais (não respostas)
-      }
+      },
       include: {
         user: {
           select: {
@@ -24,7 +24,7 @@ export async function GET(,
             name: true,
             email: true
           }
-        }
+        },
         replies: {
           include: {
             user: {
@@ -34,12 +34,12 @@ export async function GET(,
                 email: true
               }
             }
-          }
+          },
           orderBy: {
             createdAt: 'asc'
           }
         }
-      }
+      },
       orderBy: {
         createdAt: 'desc'
       }
@@ -57,7 +57,7 @@ export async function GET(,
       author: {
         name: comment.user.name,
         avatar: null // Pode ser implementado posteriormente
-      }
+      },
       replies: comment.replies.map(reply => ({
         id: reply.id,
         userId: reply.userId,
@@ -82,7 +82,7 @@ export async function GET(,
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      }
+      },
       { status: 500 }
     )
   }

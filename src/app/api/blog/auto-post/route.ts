@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Validação básica
     if (!title || !excerpt || !content || !category) {
       return NextResponse.json(
-        { error: 'Campos obrigatórios: title, excerpt, content, category' }
+        { error: 'Campos obrigatórios: title, excerpt, content, category' },
         { status: 400 }
       )
     }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (existingPost) {
       return NextResponse.json(
-        { error: 'Post com este título já existe' }
+        { error: 'Post com este título já existe' },
         { status: 409 }
       )
     }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // Criar novo post no banco
     const newPost = await prisma.blogPost.create({
       data: {
-        title
+        title,
         excerpt,
         content,
         category,
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
         sourceUrl,
         urgent: urgent || false,
         trending: trending || false,
-        publishDate: new Date()
-        readTime: calculateReadTime(content)
+        publishDate: new Date(),
+        readTime: calculateReadTime(content),
         views: 0,
         likes: 0,
         comments: 0,
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     console.log(`[AUTO-POST] Novo artigo criado: ${title}`)
 
     return NextResponse.json({
-      success: true
+      success: true,
       post: newPost,
       message: 'Artigo criado automaticamente com sucesso'
     })
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[AUTO-POST] Erro:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -88,7 +88,7 @@ export async function GET() {
   try {
     const recentPosts = await prisma.blogPost.findMany({
       orderBy: { publishDate: 'desc' },
-      take: 5
+      take: 5,
       select: {
         id: true,
         title: true,
@@ -100,7 +100,7 @@ export async function GET() {
     })
 
     return NextResponse.json({
-      status: 'active'
+      status: 'active',
       message: 'Sistema de auto-posting funcionando',
       recentPosts,
       timestamp: new Date().toISOString()
@@ -109,7 +109,7 @@ export async function GET() {
   } catch (error) {
     console.error('[AUTO-POST] Erro na verificação:', error)
     return NextResponse.json(
-      { error: 'Erro ao verificar status' }
+      { error: 'Erro ao verificar status' },
       { status: 500 }
     )
   }
@@ -131,21 +131,21 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { error: 'ID do post é obrigatório' }
+        { error: 'ID do post é obrigatório' },
         { status: 400 }
       )
     }
 
     const updatedPost = await prisma.blogPost.update({
-      where: { id }
+      where: { id },
       data: {
-        ...updateData
+        ...updateData,
         updatedAt: new Date()
       }
     })
 
     return NextResponse.json({
-      success: true
+      success: true,
       post: updatedPost,
       message: 'Post atualizado com sucesso'
     })
@@ -153,7 +153,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('[AUTO-POST] Erro na atualização:', error)
     return NextResponse.json(
-      { error: 'Erro ao atualizar post' }
+      { error: 'Erro ao atualizar post' },
       { status: 500 }
     )
   }

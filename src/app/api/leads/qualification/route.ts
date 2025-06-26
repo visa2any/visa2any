@@ -23,15 +23,15 @@ export async function POST(request: NextRequest) {
     if (client) {
       // Atualizar cliente existente com dados da qualificação
       client = await prisma.client.update({
-        where: { id: client.id }
+        where: { id: client.id },
         data: {
           name: name,
           phone: phone || client.phone,
           eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses)
+          leadQualificationData: JSON.stringify(responses),
           leadScore: score,
-          leadCategory: category.toUpperCase()
-          leadPriority: priority.toUpperCase()
+          leadCategory: category.toUpperCase(),
+          leadPriority: priority.toUpperCase(),
           status: score >= 75 ? 'QUALIFIED' : 'LEAD',
           updatedAt: new Date()
         }
@@ -44,15 +44,15 @@ export async function POST(request: NextRequest) {
           email,
           phone: phone || null,
           eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses)
+          leadQualificationData: JSON.stringify(responses),
           leadScore: score,
-          leadCategory: category.toUpperCase()
-          leadPriority: priority.toUpperCase()
+          leadCategory: category.toUpperCase(),
+          leadPriority: priority.toUpperCase(),
           status: score >= 75 ? 'QUALIFIED' : 'LEAD',
           isActive: true,
           destinationCountry: responses.country || null,
           visaType: responses['visa-type'] || null,
-          createdAt: new Date()
+          createdAt: new Date(),
           updatedAt: new Date()
         }
       })
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     await triggerEmailAutomation(client, category, responses)
 
     return NextResponse.json({
-      message: 'Qualificação processada com sucesso'
+      message: 'Qualificação processada com sucesso',
       client: {
         id: client.id,
         name: client.name,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         score,
         category,
         priority,
-        nextAction,
+        nextAction
       }
     })
 
@@ -127,7 +127,7 @@ async function createFollowUpTask(clientId: string, type: string, description: s
         break
       case 'OFFER_AI_ANALYSIS':
         dueDate.setHours(dueDate.getHours() + 4) // 4 horas
-        break,
+        break
       default:
         dueDate.setDate(dueDate.getDate() + 1) // 1 dia
     }
@@ -157,28 +157,28 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
     if (category === 'hot') {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sequence: 'hot_lead_immediate',
-          ...automationData,
+          ...automationData
         })
       })
     } else if (category === 'warm') {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sequence: 'warm_lead_nurturing',
-          ...automationData,
+          ...automationData
         })
       })
     } else {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sequence: 'cold_lead_education',
-          ...automationData,
+          ...automationData
         })
       })
     }

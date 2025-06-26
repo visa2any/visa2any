@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 
 const commentSchema = z.object({
-  postId: z.string().min(1, 'Post ID é obrigatório')
-  content: z.string().min(1, 'Conteúdo é obrigatório').max(1000, 'Máximo 1000 caracteres')
+  postId: z.string().min(1, 'Post ID é obrigatório'),
+  content: z.string().min(1, 'Conteúdo é obrigatório').max(1000, 'Máximo 1000 caracteres'),
   parentId: z.string().optional() // For replies
 })
 
@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
     const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
+        { error: 'Token de autenticação é obrigatório' },
         { status: 401 }
       )
     }
@@ -24,9 +25,9 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-      { error: 'Erro interno do servidor' }
-      { status: 500 }
-    )
+        { error: 'Erro interno do servidor' },
+        { status: 500 }
+      )
     }
 
     let userId: string
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
       userEmail = decoded.email
     } catch {
       return NextResponse.json(
+        { error: 'Token inválido' },
         { status: 401 }
       )
     }
@@ -46,12 +48,13 @@ export async function POST(request: NextRequest) {
 
     // Get user info
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
       select: { id: true, name: true, email: true }
     })
 
     if (!user) {
       return NextResponse.json(
+        { error: 'Usuário não encontrado' },
         { status: 404 }
       )
     }
@@ -59,11 +62,11 @@ export async function POST(request: NextRequest) {
     // Create comment
     const comment = await prisma.blogPostComment.create({
       data: {
-        userId
+        userId,
         postId: validatedData.postId,
         content: validatedData.content,
         parentId: validatedData.parentId || null
-      }
+      },
       include: {
         user: {
           select: {
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
             name: true,
             email: true
           }
-        }
+        },
         replies: {
           include: {
             user: {
@@ -87,7 +90,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      comment
+      comment,
       message: 'Comentário adicionado com sucesso'
     })
 
@@ -95,7 +98,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
         }
         { status: 400 }
@@ -118,16 +121,16 @@ export async function GET(request: NextRequest) {
 
     if (!postId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
     const comments = await prisma.blogPostComment.findMany({
       where: {
-        postId
+        postId,
         parentId: null // Only root comments
-      }
+      },
       include: {
         user: {
           select: {
@@ -135,7 +138,7 @@ export async function GET(request: NextRequest) {
             name: true,
             email: true
           }
-        }
+        },
         replies: {
           include: {
             user: {
@@ -145,12 +148,12 @@ export async function GET(request: NextRequest) {
                 email: true
               }
             }
-          }
+          },
           orderBy: {
             createdAt: 'asc'
           }
         }
-      }
+      },
       orderBy: {
         createdAt: 'desc'
       }
