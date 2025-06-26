@@ -1,27 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',import { z } from 'zod'
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
-// Schema para mensagem do chat,const chatMessageSchema = z.object({,  message: z.string().min(1, 'Mensagem é obrigatória'),  clientId: z.string().optional(),  conversationId: z.string().optional(),  context: z.object({,    targetCountry: z.string().optional(),    visaType: z.string().optional(),    currentStep: z.string().optional()
+// Schema para mensagem do chat,const chatMessageSchema = z.object({,  message: z.string().min(1, 'Mensagem é obrigatória'),  clientId: z.string().optional(),  conversationId: z.string().optional(),  context: z.object({,    targetCountry: z.string().optional(),    visaType: z.string().optional()
+    currentStep: z.string().optional()
   }).optional()
 })
 
-// POST /api/ai/chat - Conversar com Sofia IA,export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    const validatedData = chatMessageSchema.parse(body)
+// POST /api/ai/chat - Conversar com Sofia IA,
+export async function POST(request: NextRequest) {,  try {
+    const body = await request.json()
+const validatedData = chatMessageSchema.parse(body)
 
-    // Obter contexto do cliente se disponível,    let clientContext = null,    if (validatedData.clientId) {,      clientContext = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          consultations: {,            orderBy: { createdAt: 'desc' },            take: 1
+    // Obter contexto do cliente se disponível,    let clientContext = null,    if (validatedData.clientId) {,      clientContext = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          consultations: {,            orderBy: { createdAt: 'desc' }
+            take: 1
           },          documents: {,            select: { type: true, status: true }
           }
         }
       })
     }
 
-    // Processar mensagem com Sofia IA,    const sofiaResponse = await processSofiaMessage(,      validatedData.message,      clientContext,      validatedData.context
+    // Processar mensagem com Sofia IA,    const sofiaResponse = await processSofiaMessage(,      validatedData.message,      clientContext
+      validatedData.context
     )
 
-    // Salvar interação se tem cliente,    if (validatedData.clientId) {,      await prisma.interaction.create({,        data: {,          type: 'AUTOMATED_EMAIL',          channel: 'chat',          direction: 'inbound',          content: validatedData.message,          response: sofiaResponse.message,          clientId: validatedData.clientId,          completedAt: new Date()
+    // Salvar interação se tem cliente,    if (validatedData.clientId) {,      await prisma.interaction.create({,        data: {,          type: 'AUTOMATED_EMAIL',          channel: 'chat',          direction: 'inbound',          content: validatedData.message,          response: sofiaResponse.message,          clientId: validatedData.clientId
+          completedAt: new Date()
         }
       })
     }
 
-    // Log da conversa,    await prisma.automationLog.create({,      data: {,        type: 'AI_CHAT_INTERACTION',        action: 'chat_with_sofia',        clientId: validatedData.clientId || null,        success: true,        details: {,          message: validatedData.message,          intent: sofiaResponse.intent,          confidence: sofiaResponse.confidence
+    // Log da conversa,    await prisma.automationLog.create({,      data: {,        type: 'AI_CHAT_INTERACTION',        action: 'chat_with_sofia',        clientId: validatedData.clientId || null,        success: true,        details: {,          message: validatedData.message,          intent: sofiaResponse.intent
+          confidence: sofiaResponse.confidence
         }
       }
     }),
@@ -38,7 +48,9 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   }
 }
 
-// GET /api/ai/chat/intents - Listar intenções disponíveis,export async function GET(request: NextRequest) {,  try {,    const intents = getSofiaIntents(),
+// GET /api/ai/chat/intents - Listar intenções disponíveis,
+export async function GET(request: NextRequest) {,  try {,    const intents = getSofiaIntents()
+
     return NextResponse.json({,      data: { intents }
     })
 
@@ -47,27 +59,37 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   }
 }
 
-// Função principal da Sofia IA,async function processSofiaMessage(message: string, clientContext: any, context: any) {
-  // Detectar intenção,  const intent = detectIntent(message)
+// Função principal da Sofia IA,async function processSofiaMessage(message: string, clientContext: any
+ context: any) {
+  // Detectar intenção
+  const intent = detectIntent(message)
   
-  // Gerar resposta baseada na intenção e contexto,  const response = await generateSofiaResponse(intent, message, clientContext, context),  
+  // Gerar resposta baseada na intenção e contexto,  const response = await generateSofiaResponse(intent, message, clientContext, context)
+  
   return {,    message: response.message,    intent: intent.name,    confidence: intent.confidence,    suggestions: response.suggestions,    actions: response.actions,    conversationId: generateConversationId()
   }
 }
 
-// Detectar intenção da mensagem,function detectIntent(message: string) {,  const lowercaseMessage = message.toLowerCase(),  const intents = getSofiaIntents(),  
+// Detectar intenção da mensagem,function detectIntent(message: string) {
+  const lowercaseMessage =  
+const intents = getSofiaIntents()
+  
   let bestMatch: { name: string; confidence: number; keywords: string[] } = { name: 'unknown', confidence: 0, keywords: [] },  
-  for (const [intentName, intentData] of Object.entries(intents)) {,    let score = 0,    const matchedKeywords: string[] = []
+  for (const [intentName, intentData] of Object.entries(intents)) {,    let score =  
+const matchedKeywords: string[] = []
     
-    // Verificar keywords,    for (const keyword of intentData.keywords) {,      if (lowercaseMessage.includes(keyword.toLowerCase())) {,        score += 1,        matchedKeywords.push(keyword)
+    // Verificar keywords,    for (const keyword of intentData.keywords) {,      if (lowercaseMessage.includes(keyword.toLowerCase())) {,        score += 1
+        matchedKeywords.push(keyword)
       }
     }
     
-    // Verificar patterns,    for (const pattern of intentData.patterns) {,      const regex = new RegExp(pattern, 'i'),      if (regex.test(lowercaseMessage)) {,        score += 2
+    // Verificar patterns,    for (const pattern of intentData.patterns) {,      const regex = new RegExp(pattern, 'i'),      if (regex.test(lowercaseMessage)) {
+        score += 2
       }
     }
     
-    // Calcular confiança,    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1),    
+    // Calcular confiança,    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
+    
     if (confidence > bestMatch.confidence) {,      bestMatch = {,        name: intentName,        confidence,        keywords: matchedKeywords
       }
     }
@@ -75,7 +97,9 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   return bestMatch
 }
 
-// Gerar resposta da Sofia,async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {,  const intentName = intent.name,  const clientName = clientContext?.name?.split(' ')[0] || 'Cliente',  
+// Gerar resposta da Sofia,async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {
+  const intentName =  
+const clientName = clientContext?.name?.split(' ')[0] || 'Cliente',  
   switch (intentName) {,    case 'greeting':,      return {,        message: `Olá ${clientName}! 👋 Eu sou a Sofia, sua assistente virtual especializada em vistos e imigração. Como posso te ajudar hoje?`,        suggestions: [,          'Quero analisar minha elegibilidade',          'Quais documentos preciso?',          'Quanto custa o processo?',          'Quanto tempo demora?'
         ]
         actions: []
@@ -215,12 +239,15 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
   }
 }
 
-// Obter resposta sobre documentos por país,async function getDocumentsResponse(country: string, clientName: string) {,  const countryLower = country.toLowerCase()
+// Obter resposta sobre documentos por país,async function getDocumentsResponse(country: string, clientName: string) {
+  const countryLower = country.toLowerCase()
   
-  // Buscar requisitos na base de conhecimento,  const requirements = await prisma.visaRequirement.findFirst({,    where: {,      country: { contains: country },      isActive: true
+  // Buscar requisitos na base de conhecimento,  const requirements = await prisma.visaRequirement.findFirst({,    where: {,      country: { contains: country }
+      isActive: true
     }
   }),  
-  if (requirements) {,    const docs = requirements.requiredDocuments as any[],    const docList = docs.map(doc => `- ${doc.name} (${doc.required ? 'Obrigatório' : 'Opcional'})`).join('\n'),    
+  if (requirements) {,    const docs =  
+const docList = docs.map(doc => `- ${doc.name} (${doc.required ? 'Obrigatório' : 'Opcional'})`).join('\n'),    
     return {,      message: `Perfeito ${clientName}! Aqui estão os documentos para ${country}:
 
 📄 **Documentos Necessários:**
@@ -240,7 +267,8 @@ Quer uma análise completa do seu perfil?`,      suggestions: [,        'Fazer a
     }
   }
   
-  // Resposta genérica se não tem dados específicos,  const genericDocs = getGenericDocuments(countryLower),  return {,    message: `${clientName}, aqui estão os documentos típicos para ${country}:
+  // Resposta genérica se não tem dados específicos,  const genericDocs = getGenericDocuments(countryLower),  return {,    message: `${clientName}
+ aqui estão os documentos típicos para ${country}:
 
 📄 **Documentos Comuns:**
 ${genericDocs}
@@ -254,7 +282,8 @@ ${genericDocs}
   }
 }
 
-// Documentos genéricos por país,function getGenericDocuments(country: string): string {,  const genericDocs: { [key: string]: string } = {,    'canadá': `- Passaporte válido
+// Documentos genéricos por país,function getGenericDocuments(country: string): string {
+  const genericDocs: { [key: string]: string } = {,    'canadá': `- Passaporte válido
 - Diploma universitário + histórico
 - Comprovante de experiência profissional
 - Teste de inglês (IELTS/CELPIP)
@@ -287,21 +316,25 @@ ${genericDocs}
 - Comprovante financeiro`
 }
 
-// Extrair país da mensagem,function extractCountryFromMessage(message: string): string | null {,  const countries = ['canadá', 'canada', 'austrália', 'australia', 'portugal', 'estados unidos', 'eua', 'usa'],  const messageLower = message.toLowerCase(),  
+// Extrair país da mensagem,function extractCountryFromMessage(message: string): string | null {,  const countries = ['canadá', 'canada', 'austrália', 'australia', 'portugal', 'estados unidos', 'eua', 'usa'],  const messageLower = message.toLowerCase()
+  
   for (const country of countries) {,    if (messageLower.includes(country)) {,      return country === 'canada' ? 'canadá' : ,             country === 'australia' ? 'austrália' :,             country === 'eua' || country === 'usa' ? 'estados unidos' : ,             country
     }
   },  
   return null
 }
 
-// Mapear status para label,function getStatusLabel(status: string): string {,  const labels: Record<string, string> = {,    'LEAD': 'Interessado',    'QUALIFIED': 'Qualificado',    'CONSULTATION_SCHEDULED': 'Consulta Agendada',    'IN_PROCESS': 'Em Processo',    'DOCUMENTS_PENDING': 'Docs Pendentes',    'SUBMITTED': 'Submetido',    'APPROVED': 'Aprovado',    'COMPLETED': 'Concluído'
+// Mapear status para label,function getStatusLabel(status: string): string {,  const labels: Record<string
+ string> = {,    'LEAD': 'Interessado',    'QUALIFIED': 'Qualificado',    'CONSULTATION_SCHEDULED': 'Consulta Agendada',    'IN_PROCESS': 'Em Processo',    'DOCUMENTS_PENDING': 'Docs Pendentes',    'SUBMITTED': 'Submetido',    'APPROVED': 'Aprovado',    'COMPLETED': 'Concluído'
   },  return labels[status] || status
 }
 
-// Gerar ID de conversa,function generateConversationId(): string {,  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+// Gerar ID de conversa,function generateConversationId(): string {
+  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-// Intenções da Sofia IA,function getSofiaIntents() {,  return {,    greeting: {,      keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],      patterns: ['^(olá|oi|hello|hi)']
+// Intenções da Sofia IA,function getSofiaIntents() {,  return {,    greeting: {,      keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite']
+      patterns: ['^(olá|oi|hello|hi)']
     },    
     eligibility_question: {,      keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado']
       patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']

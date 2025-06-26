@@ -100,7 +100,8 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Se pagamento foi aprovado e não estava aprovado antes, processar automações
+    // Se pagamento foi aprovado e não estava aprovado antes
+ processar automações
     if (newStatus === 'COMPLETED' && !wasCompleted) {
       await processPaymentSuccess(updatedPayment)
     }

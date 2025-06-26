@@ -46,8 +46,10 @@ export async function POST(request: NextRequest) {
           success: paymentSent,
           notification: paymentSent ? 'Link de pagamento enviado via WhatsApp' : 'Falha ao enviar',
           sharing: {
-            whatsapp: `https://wa.me/?text=💳 Link de pagamento: ${paymentUrl}`,
-            telegram: `https://t.me/share/url?url=${paymentUrl}`,
+            whatsapp: `https://wa.me/?text=💳 Link de pagamento: ${paymentUrl}`
+
+            telegram: `https://t.me/share/url?url=${paymentUrl}`
+
             email: `mailto:?subject=Link de Pagamento&body=Pague seu agendamento: ${paymentUrl}`,
           }
         })

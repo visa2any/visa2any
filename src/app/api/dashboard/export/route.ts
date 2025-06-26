@@ -1,12 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',import { verifyAuth } from '@/lib/auth',
-export const dynamic = 'force-dynamic',
-export async function GET(request: NextRequest) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    },
-    const { searchParams } = new URL(request.url),    const period = parseInt(searchParams.get('period') || '30'),    
-    const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { verifyAuth } from 'next/server'
 
-    // Buscar dados do período,    const [clients, consultations, payments] = await Promise.all([,      prisma.client.findMany({,        where: {,          createdAt: { gte: startDate }
+export const dynamic = 'force-dynamic',
+
+export async function GET(request: NextRequest) {,  try {
+    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    },
+    const { searchParams } = new URL(request.url)
+    const period =  
+const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
+
+    // Buscar dados do período,    const [clients, consultations, payments] = await Promise.all([,      prisma.client.findMany({,        where: {
+          createdAt: { gte: startDate }
         },        select: {,          id: true,          name: true,          email: true,          phone: true,          status: true,          createdAt: true,          assignedUserId: true
         }
       }),      prisma.consultation.findMany({,        where: {,          createdAt: { gte: startDate }
@@ -19,7 +26,8 @@ export async function GET(request: NextRequest) {,  try {
       })
     ])
 
-    // Gerar CSV,    const csvRows = [
+    // Gerar CSV
+    const csvRows = [
       // Header,      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(',')
       
       // Clientes
@@ -42,7 +50,8 @@ export async function GET(request: NextRequest) {,  try {
 
     const csvContent = csvRows.join('\n')
     
-    // Retornar CSV como download,    return new NextResponse(csvContent, {,      headers: {,        'Content-Type': 'text/csv; charset=utf-8',        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`
+    // Retornar CSV como download,    return new NextResponse(csvContent, {
+      headers: {,        'Content-Type': 'text/csv; charset=utf-8',        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`
       }
     })
 

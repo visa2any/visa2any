@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from 'next/server'
+
 export const dynamic = 'force-dynamic'
 
-// GET - Buscar posts pendentes para publicação,export async function GET() {,  try {,    const now = new Date(),    
-    const pendingPosts = await prisma.socialPost.findMany({,      where: {,        status: 'SCHEDULED',        scheduledAt: {,          lte: now // Posts agendados para agora ou no passado
+// GET - Buscar posts pendentes para publicação,
+export async function GET() {,  try {
+    const now =  
+const pendingPosts = await prisma.socialPost.findMany({,      where: {,        status: 'SCHEDULED',        scheduledAt: {,          lte: now // Posts agendados para agora ou no passado
         }
       },      orderBy: { scheduledAt: 'asc' },      take: 50
     }),

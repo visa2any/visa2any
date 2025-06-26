@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
         select: { id: true, name: true, email: true, phone: true }
       })
     } catch (error) {
-      // If client not found in database, use mock data
+      // If client not found in database
+ use mock data
       client = {
         id: clientId,
         name: 'Cliente',

@@ -22,7 +22,8 @@ interface WebhookEndpoint {
   affiliateId?: string
 }
 
-// Simulação de storage de webhooks (em produção, usar Redis ou banco)
+// Simulação de storage de webhooks (em produção
+ usar Redis ou banco)
 const webhookEndpoints = new Map<string, WebhookEndpoint[]>()
 
 // GET - Listar webhooks configurados

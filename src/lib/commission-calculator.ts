@@ -226,7 +226,8 @@ export async function promoteTier(
     console.log(`Afiliado ${affiliateId} promovido para ${newTier}. Motivo: ${reason || 'Automático'}`)
 
     // TODO: Enviar notificação para o afiliado
-    // await sendTierPromotionNotification(affiliateId, newTier)
+    // await sendTierPromotionNotification(affiliateId
+ newTier)
 
   } catch (error) {
     console.error('Erro ao promover tier:', error)

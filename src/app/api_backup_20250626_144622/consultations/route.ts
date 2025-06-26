@@ -120,7 +120,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Se for consultoria humana, verificar se consultor existe
+    // Se for consultoria humana
+ verificar se consultor existe
     if (validatedData.consultantId) {
       const consultant = await prisma.user.findUnique({
         where: { id: validatedData.consultantId }

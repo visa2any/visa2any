@@ -52,7 +52,8 @@ export default function MercadoPagoInline({
   const initializationRef = useRef<boolean>(false)
 
   useEffect(() => {
-    // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick, ABORTAR
+    // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick
+ ABORTAR
     if (isCreatingBrick) {
       console.log('🛑 JÁ CRIANDO BRICK EM OUTRO LUGAR - ABORTANDO')
       setLoading(false)
@@ -122,7 +123,8 @@ export default function MercadoPagoInline({
     try {
       console.log('🔥 INICIANDO CRIAÇÃO DO BRICK - CONTROLE RADICAL')
       
-      // VERIFICAÇÃO FINAL: Se não estamos criando, abortar
+      // VERIFICAÇÃO FINAL: Se não estamos criando
+ abortar
       if (!isCreatingBrick) {
         console.log('🛑 NÃO ESTAMOS CRIANDO BRICK - ABORTANDO')
         return
@@ -235,7 +237,8 @@ export default function MercadoPagoInline({
               .then(result => {
                 console.log('🎯 Resultado completo do pagamento:', result)
                 if (result.success) {
-                  // Se for PIX, mostrar QR code na tela e enviar email
+                  // Se for PIX
+ mostrar QR code na tela e enviar email
                   if ((selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') && result.qr_code_base64) {
                     setPaymentResult(result)
                     setShowPixCode(true)
@@ -517,7 +520,8 @@ export default function MercadoPagoInline({
     }
   }
 
-  // Se PIX foi gerado, mostrar tela de QR code
+  // Se PIX foi gerado
+ mostrar tela de QR code
   if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">

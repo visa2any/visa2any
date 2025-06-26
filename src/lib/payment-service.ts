@@ -245,10 +245,12 @@ class PaymentService {
   // Métodos auxiliares para banco de dados
   private async savePaymentRecord(record: any): Promise<void> {
     // Aqui você salvaria no banco de dados
-    // Por enquanto, vamos usar console.log para demonstração
+    // Por enquanto
+ vamos usar console.log para demonstração
     console.log('Pagamento salvo:', record)
     
-    // Em produção, seria algo como:
+    // Em produção
+ seria algo como:
     // await db.payments.create(record)
   }
 

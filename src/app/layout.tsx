@@ -34,14 +34,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com')
+
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'Visa2Any - Plataforma Líder em Assessoria de Vistos',
     description: 'Simplifique sua jornada internacional com a plataforma mais completa de assessoria de vistos e imigração.',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'
+
     siteName: 'Visa2Any',
     images: [
       {

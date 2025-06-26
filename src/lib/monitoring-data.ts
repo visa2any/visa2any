@@ -285,7 +285,8 @@ class MonitoringDataService {
       }
     }
 
-    // Se não houver alertas salvos, retornar array vazio
+    // Se não houver alertas salvos
+ retornar array vazio
     return []
   }
 

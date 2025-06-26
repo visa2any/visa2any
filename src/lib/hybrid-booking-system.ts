@@ -1,5 +1,6 @@
 // Sistema Híbrido de Agendamento
-// Combina parceiros, scraping e APIs oficiais com fallback inteligente
+// Combina parceiros
+ scraping e APIs oficiais com fallback inteligente
 
 import { appointmentBookingService, BookingRequest, BookingResponse } from './appointment-booking'
 import { partnerIntegrationService, PartnerBookingRequest } from './partner-integrations'
@@ -40,8 +41,10 @@ interface HybridBookingResult {
 
 class HybridBookingSystem {
   private readonly methodPriority = {
-    'official': 1,    // APIs oficiais (CASV, VFS)
-    'partner': 2,     // Parceiros (VisaHQ, iVisa)
+    'official': 1,    // APIs oficiais (CASV
+ VFS)
+    'partner': 2,     // Parceiros (VisaHQ
+ iVisa)
     'scraping': 3     // Web scraping (último recurso)
   }
 
@@ -87,7 +90,8 @@ class HybridBookingSystem {
             cost: result.cost
           })
 
-          // Se teve sucesso, retornar resultado
+          // Se teve sucesso
+ retornar resultado
           if (result.success) {
             return {
               method,
@@ -101,7 +105,8 @@ class HybridBookingSystem {
             }
           }
 
-          // Se fallback está desabilitado, parar na primeira falha
+          // Se fallback está desabilitado
+ parar na primeira falha
           if (!options.fallbackEnabled) {
             break
           }
@@ -116,7 +121,8 @@ class HybridBookingSystem {
         }
       }
 
-      // Se chegou aqui, todas as tentativas falharam
+      // Se chegou aqui
+ todas as tentativas falharam
       return {
         method: 'none',
         provider: 'none',
@@ -169,7 +175,8 @@ class HybridBookingSystem {
     }
   }
 
-  // Tentar parceiros (VisaHQ, iVisa)
+  // Tentar parceiros (VisaHQ
+ iVisa)
   private async tryPartnerAPI(request: BookingRequest, options: HybridBookingOptions): Promise<any> {
     try {
       // Converter formato de request
@@ -262,7 +269,8 @@ class HybridBookingSystem {
         }
       }
 
-      // Para web scraping, apenas retornamos as vagas encontradas
+      // Para web scraping
+ apenas retornamos as vagas encontradas
       // NÃO fazemos agendamento real (muito arriscado)
       const firstSlot = result.slots[0]
       

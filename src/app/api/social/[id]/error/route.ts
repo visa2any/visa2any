@@ -1,6 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from 'next/server'
+
 export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {,    const { id } = params,    const body = await request.json(),    const { status, error } = body,
+) {,  try {,    const { id } = params,    const body = await request.json()
+const { status, error } = body
+
     const socialPost = await prisma.socialPost.update({,      where: { id },      data: {,        status: 'ERROR',        error: error || 'Erro desconhecido',        updatedAt: new Date()
       }
     }),

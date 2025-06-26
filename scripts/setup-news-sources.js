@@ -6,7 +6,8 @@ const defaultSources = [
   // Fontes Oficiais Estados Unidos
   {
     name: 'USCIS News',
-    url: 'https://www.uscis.gov/news',
+    url: 'https://www.uscis.gov/news'
+
     type: 'rss',
     category: 'Notícias Urgentes',
     country: 'Estados Unidos',
@@ -20,7 +21,8 @@ const defaultSources = [
   },
   {
     name: 'US State Department Visa News',
-    url: 'https://travel.state.gov/content/travel/en/News.html',
+    url: 'https://travel.state.gov/content/travel/en/News.html'
+
     type: 'scraping',
     category: 'Vistos Trabalho',
     country: 'Estados Unidos', 
@@ -35,7 +37,8 @@ const defaultSources = [
   // Fontes Oficiais Canadá
   {
     name: 'IRCC News',
-    url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html',
+    url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html'
+
     type: 'scraping',
     category: 'Imigração',
     country: 'Canadá',
@@ -49,7 +52,8 @@ const defaultSources = [
   },
   {
     name: 'Canada Immigration Newsletter',
-    url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news/notices.html',
+    url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news/notices.html'
+
     type: 'scraping',
     category: 'Imigração',
     country: 'Canadá',
@@ -64,7 +68,8 @@ const defaultSources = [
   // Fontes Oficiais Austrália
   {
     name: 'Australian Department of Home Affairs',
-    url: 'https://www.homeaffairs.gov.au/news-media/current-alerts',
+    url: 'https://www.homeaffairs.gov.au/news-media/current-alerts'
+
     type: 'scraping',
     category: 'Vistos Trabalho',
     country: 'Austrália',
@@ -80,7 +85,8 @@ const defaultSources = [
   // Fontes Europa
   {
     name: 'Portugal Immigration News',
-    url: 'https://www.sef.pt/pt/pages/homepage.aspx',
+    url: 'https://www.sef.pt/pt/pages/homepage.aspx'
+
     type: 'scraping',
     category: 'Vistos Europa',
     country: 'Portugal',
@@ -94,7 +100,8 @@ const defaultSources = [
   },
   {
     name: 'Germany Immigration Updates',
-    url: 'https://www.make-it-in-germany.com/en/visa-residence',
+    url: 'https://www.make-it-in-germany.com/en/visa-residence'
+
     type: 'scraping',
     category: 'Tech & TI',
     country: 'Alemanha',
@@ -110,7 +117,8 @@ const defaultSources = [
   // Fontes Especializadas
   {
     name: 'Visa Guide World',
-    url: 'https://visaguide.world/news/',
+    url: 'https://visaguide.world/news/'
+
     type: 'rss',
     category: 'Notícias Gerais',
     country: 'Global',
@@ -124,7 +132,8 @@ const defaultSources = [
   },
   {
     name: 'SchengenVisaInfo',
-    url: 'https://www.schengenvisainfo.com/news/',
+    url: 'https://www.schengenvisainfo.com/news/'
+
     type: 'rss',
     category: 'Vistos Europa',
     country: 'Europa',
@@ -139,7 +148,8 @@ const defaultSources = [
   // Fontes de TI/Tech
   {
     name: 'H1B Info News',
-    url: 'https://www.h1binfo.net/news/',
+    url: 'https://www.h1binfo.net/news/'
+
     type: 'scraping',
     category: 'Tech & TI',
     country: 'Estados Unidos',
@@ -155,7 +165,8 @@ const defaultSources = [
   // Fontes de Investimento
   {
     name: 'Investment Migration Insider',
-    url: 'https://www.imidaily.com/category/news/',
+    url: 'https://www.imidaily.com/category/news/'
+
     type: 'rss',
     category: 'Investimento',
     country: 'Global',

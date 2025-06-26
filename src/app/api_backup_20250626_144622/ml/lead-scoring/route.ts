@@ -550,7 +550,8 @@ function analyzeScoreDistribution(data: any[]) {
 
 async function calculateModelAccuracy(data: any[]) {
   // Calcular accuracy comparando previsões com conversões reais
-  // Em produção, implementar análise mais sofisticada
+  // Em produção
+ implementar análise mais sofisticada
   return 78.5 // Placeholder
 }
 

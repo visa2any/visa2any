@@ -35,7 +35,8 @@ export default function SimpleCheckout({
     if (disabled) return
     
     if (price === 0) {
-      // Para produtos gratuitos, ir direto para o formulário
+      // Para produtos gratuitos
+ ir direto para o formulário
       window.location.href = '/consultoria-ia'
       return
     }

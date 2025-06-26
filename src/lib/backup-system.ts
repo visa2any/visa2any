@@ -273,7 +273,8 @@ export class BackupScheduler {
     const target = new Date(now)
     target.setHours(2, 0, 0, 0)
     
-    // Se já passou das 02:00 hoje, agendar para amanhã
+    // Se já passou das 02:00 hoje
+ agendar para amanhã
     if (target <= now) {
       target.setDate(target.getDate() + 1)
     }

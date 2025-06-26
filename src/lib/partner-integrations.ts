@@ -1,5 +1,6 @@
 // Integrações com APIs de Parceiros - Ativação Imediata
-// VisaHQ, iVisa, TravelVisa e outros provedores
+// VisaHQ, iVisa
+ TravelVisa e outros provedores
 
 interface PartnerAPI {
   id: string
@@ -55,7 +56,8 @@ class PartnerIntegrationService {
     {
       id: 'visahq',
       name: 'VisaHQ',
-      baseUrl: 'https://api.visahq.com/v2',
+      baseUrl: 'https://api.visahq.com/v2'
+
       apiKey: process.env.VISAHQ_API_KEY || '',
       supportedCountries: ['usa', 'canada', 'uk', 'germany', 'france', 'italy', 'spain', 'australia', 'japan'],
       features: ['appointment_booking', 'document_processing', 'status_tracking', 'urgent_processing'],
@@ -70,7 +72,8 @@ class PartnerIntegrationService {
     {
       id: 'ivisa',
       name: 'iVisa',
-      baseUrl: 'https://api.ivisa.com/v1',
+      baseUrl: 'https://api.ivisa.com/v1'
+
       apiKey: process.env.IVISA_API_KEY || '',
       supportedCountries: ['usa', 'canada', 'uk', 'australia', 'new_zealand', 'singapore', 'south_korea'],
       features: ['online_visas', 'eta_processing', 'document_review', 'rush_service'],
@@ -85,7 +88,8 @@ class PartnerIntegrationService {
     {
       id: 'travelvisa',
       name: 'TravelVisa',
-      baseUrl: 'https://api.travelvisa.com/v3',
+      baseUrl: 'https://api.travelvisa.com/v3'
+
       apiKey: process.env.TRAVELVISA_API_KEY || '',
       supportedCountries: ['usa', 'canada', 'uk', 'europe', 'asia'],
       features: ['bulk_processing', 'corporate_accounts', 'api_integration', 'white_label'],
@@ -100,7 +104,8 @@ class PartnerIntegrationService {
     {
       id: 'visa_central',
       name: 'Visa Central',
-      baseUrl: 'https://api.visacentral.com/v2',
+      baseUrl: 'https://api.visacentral.com/v2'
+
       apiKey: process.env.VISA_CENTRAL_API_KEY || '',
       supportedCountries: ['usa', 'china', 'russia', 'india', 'brazil', 'middle_east'],
       features: ['complex_visas', 'business_visas', 'diplomatic_processing', 'courier_service'],
@@ -115,7 +120,8 @@ class PartnerIntegrationService {
     {
       id: 'onlinevisa',
       name: 'OnlineVisa',
-      baseUrl: 'https://api.onlinevisa.com/v1',
+      baseUrl: 'https://api.onlinevisa.com/v1'
+
       apiKey: process.env.ONLINEVISA_API_KEY || '',
       supportedCountries: ['esta_usa', 'eta_canada', 'eta_australia', 'etias_europe', 'k_eta_korea'],
       features: ['online_only', 'instant_approval', 'mobile_app', 'multi_language'],
@@ -140,7 +146,8 @@ class PartnerIntegrationService {
       return null
     }
 
-    // Calcular score baseado em confiabilidade, velocidade e custo
+    // Calcular score baseado em confiabilidade
+ velocidade e custo
     const scoredPartners = availablePartners.map(partner => {
       let score = 0
       

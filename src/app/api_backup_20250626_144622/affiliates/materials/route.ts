@@ -293,7 +293,8 @@ export async function GET(request: NextRequest) {
       where.category = category
     }
 
-    // Se affiliateId for fornecido, incluir materiais específicos do afiliado
+    // Se affiliateId for fornecido
+ incluir materiais específicos do afiliado
     if (affiliateId) {
       where.OR = [
         { affiliateId: null }, // Materiais públicos
@@ -309,7 +310,8 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' }
     })
 
-    // Se não houver materiais no banco, retornar materiais padrão
+    // Se não houver materiais no banco
+ retornar materiais padrão
     if (materials.length === 0 && !affiliateId) {
       const filteredDefaults = defaultMaterials.filter(material => {
         if (type && material.type !== type) return false

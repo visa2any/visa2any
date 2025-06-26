@@ -1,22 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from 'next/server'
+
+
 export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    
     console.log('Webhook híbrido recebido:', body)
 
-    // Validar webhook do MercadoPago,    const { data, type } = body,    
+    // Validar webhook do MercadoPago,    const { data, type } = body
+    
     if (type !== 'payment') {,      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })
     }
 
-    // Buscar detalhes do pagamento no MercadoPago,    const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {,      headers: {,        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+    // Buscar detalhes do pagamento no MercadoPago,    const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
+      headers: {,        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
       }
     }),
     if (!paymentResponse.ok) {,      throw new Error('Erro ao buscar pagamento no MercadoPago')
     },
     const paymentData = await paymentResponse.json(),    console.log('Dados do pagamento:', paymentData)
 
-    // Validar se é um pagamento híbrido,    const paymentId = paymentData.external_reference,    if (!paymentId) {,      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })
+    // Validar se é um pagamento híbrido,    const paymentId = paymentData.external_reference,    if (!paymentId) {,      return NextResponse.json({ status: 'ignored'
+ reason: 'no external_reference' })
     }
 
-    // Buscar registro de pagamento híbrido,    const hybridPayment = await prisma.hybridPayment.findUnique({,      where: { id: paymentId },      include: {,        client: {,          select: {,            id: true,            name: true,            email: true,            phone: true
+    // Buscar registro de pagamento híbrido,    const hybridPayment = await prisma.hybridPayment.findUnique({,      where: { id: paymentId },      include: {,        client: {,          select: {,            id: true,            name: true,            email: true
+            phone: true
           }
         }
       }
@@ -24,7 +31,8 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
     if (!hybridPayment) {,      console.error('Pagamento híbrido não encontrado:', paymentId),      return NextResponse.json({ status: 'error', reason: 'payment not found' })
     }
 
-    // Processar baseado no status do pagamento,    switch (paymentData.status) {,      case 'approved':,        await processApprovedPayment(hybridPayment, paymentData),        break,      
+    // Processar baseado no status do pagamento,    switch (paymentData.status) {,      case 'approved':,        await processApprovedPayment(hybridPayment, paymentData),        break
+      
       case 'pending':,        await processPendingPayment(hybridPayment, paymentData),        break,      
       case 'rejected':,      case 'cancelled':,        await processRejectedPayment(hybridPayment, paymentData),        break,      
       default:,        console.log('Status não tratado:', paymentData.status)
@@ -35,19 +43,24 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
   }
 }
 
-// Processar pagamento aprovado,async function processApprovedPayment(hybridPayment: any, paymentData: any) {,  try {
-    // Atualizar status do pagamento,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'APPROVED',        paymentMethod: paymentData.payment_method_id,        paymentId: paymentData.id.toString(),        paidAmount: paymentData.transaction_amount,        paidAt: new Date(paymentData.date_approved),        updatedAt: new Date()
+// Processar pagamento aprovado,async function processApprovedPayment(hybridPayment: any, paymentData: any) {
+  try {
+    // Atualizar status do pagamento,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'APPROVED',        paymentMethod: paymentData.payment_method_id,        paymentId: paymentData.id.toString(),        paidAmount: paymentData.transaction_amount,        paidAt: new Date(paymentData.date_approved)
+        updatedAt: new Date()
       }
     })
 
-    // Criar registro de agendamento para consultor,    const booking = await prisma.hybridBooking.create({,      data: {,        paymentId: hybridPayment.id,        clientId: hybridPayment.clientId,        country: hybridPayment.country,        consulate: hybridPayment.consulate,        availableDates: hybridPayment.availableDates,        plan: hybridPayment.plan,        urgency: hybridPayment.urgency,        status: 'CONSULTANT_ASSIGNED',        assignedAt: new Date(),        deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency)),        createdAt: new Date()
+    // Criar registro de agendamento para consultor,    const booking = await prisma.hybridBooking.create({,      data: {,        paymentId: hybridPayment.id,        clientId: hybridPayment.clientId,        country: hybridPayment.country,        consulate: hybridPayment.consulate,        availableDates: hybridPayment.availableDates,        plan: hybridPayment.plan,        urgency: hybridPayment.urgency,        status: 'CONSULTANT_ASSIGNED',        assignedAt: new Date(),        deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))
+        createdAt: new Date()
       }
     })
 
-    // Notificar consultor para agendar,    await notifyConsultantToBook({,      bookingId: booking.id,      paymentId: hybridPayment.id,      client: hybridPayment.client,      country: hybridPayment.country,      consulate: hybridPayment.consulate,      plan: hybridPayment.plan,      urgency: hybridPayment.urgency,      availableDates: hybridPayment.availableDates,      paidAmount: paymentData.transaction_amount,      paymentMethod: paymentData.payment_method_id,      deadline: booking.deadline
+    // Notificar consultor para agendar,    await notifyConsultantToBook({,      bookingId: booking.id,      paymentId: hybridPayment.id,      client: hybridPayment.client,      country: hybridPayment.country,      consulate: hybridPayment.consulate,      plan: hybridPayment.plan,      urgency: hybridPayment.urgency,      availableDates: hybridPayment.availableDates,      paidAmount: paymentData.transaction_amount,      paymentMethod: paymentData.payment_method_id
+      deadline: booking.deadline
     })
 
-    // Notificar cliente sobre confirmação,    await notifyClientPaymentConfirmed({,      client: hybridPayment.client,      country: hybridPayment.country,      consulate: hybridPayment.consulate,      plan: hybridPayment.plan,      paidAmount: paymentData.transaction_amount,      paymentMethod: getPaymentMethodName(paymentData.payment_method_id),      bookingId: booking.id
+    // Notificar cliente sobre confirmação,    await notifyClientPaymentConfirmed({,      client: hybridPayment.client,      country: hybridPayment.country,      consulate: hybridPayment.consulate,      plan: hybridPayment.plan,      paidAmount: paymentData.transaction_amount,      paymentMethod: getPaymentMethodName(paymentData.payment_method_id)
+      bookingId: booking.id
     }),
     console.log('Pagamento aprovado processado:', hybridPayment.id)
 
@@ -55,11 +68,13 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
   }
 }
 
-// Processar pagamento pendente,async function processPendingPayment(hybridPayment: any, paymentData: any) {,  try {,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'PENDING_PAYMENT',        paymentId: paymentData.id.toString(),        updatedAt: new Date()
+// Processar pagamento pendente,async function processPendingPayment(hybridPayment: any, paymentData: any) {,  try {,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'PENDING_PAYMENT',        paymentId: paymentData.id.toString()
+        updatedAt: new Date()
       }
     })
 
-    // Notificar cliente sobre pendência,    const message = `⏳ PAGAMENTO EM PROCESSAMENTO,
+    // Notificar cliente sobre pendência,    const message = `⏳ PAGAMENTO EM PROCESSAMENTO
+
 Olá ${hybridPayment.client.name}!,
 Recebemos seu pagamento e ele está sendo processado:
 
@@ -81,11 +96,13 @@ ${paymentData.payment_method_id === 'pix' ? ,  '⚡ PIX: Confirmação em até 5
   }
 }
 
-// Processar pagamento rejeitado,async function processRejectedPayment(hybridPayment: any, paymentData: any) {,  try {,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'REJECTED',        paymentId: paymentData.id.toString(),        rejectionReason: paymentData.status_detail,        updatedAt: new Date()
+// Processar pagamento rejeitado,async function processRejectedPayment(hybridPayment: any, paymentData: any) {,  try {,    await prisma.hybridPayment.update({,      where: { id: hybridPayment.id },      data: {,        status: 'REJECTED',        paymentId: paymentData.id.toString(),        rejectionReason: paymentData.status_detail
+        updatedAt: new Date()
       }
     })
 
-    // Notificar cliente sobre rejeição,    const message = `❌ PAGAMENTO NÃO APROVADO,
+    // Notificar cliente sobre rejeição,    const message = `❌ PAGAMENTO NÃO APROVADO
+
 Olá ${hybridPayment.client.name},
 Infelizmente seu pagamento não foi aprovado:
 
@@ -112,12 +129,13 @@ Infelizmente seu pagamento não foi aprovado:
   }
 }
 
-// Notificar consultor para fazer agendamento,async function notifyConsultantToBook(data: any) {,  const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
+// Notificar consultor para fazer agendamento,async function notifyConsultantToBook(data: any) {
+  const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
   },
   const planEmoji = {,    'BASIC': '🥉',    'PREMIUM': '🥈',    'VIP': '🥇'
   },
-  const deadlineText = new Date(data.deadline).toLocaleString('pt-BR'),  
-  const message = `${urgencyEmoji[data.urgency]} PAGAMENTO CONFIRMADO - AGENDAR AGORA!
+  const deadlineText =  
+const message = `${urgencyEmoji[data.urgency]} PAGAMENTO CONFIRMADO - AGENDAR AGORA!
 
 ${planEmoji[data.plan]} CLIENTE: ${data.client.name}
 📧 Email: ${data.client.email}  
@@ -145,14 +163,16 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
 🔗 Ver Booking: ${process.env.NEXTAUTH_URL}/admin/hybrid-bookings/${data.bookingId}
 
 ⚡ ${data.plan === 'VIP' ? 'CLIENTE VIP - PRIORIDADE MÁXIMA!' : 'CLIENTE PAGOU - AGENDAR AGORA!'}`,
-  try {,    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        chat_id: process.env.TELEGRAM_CHAT_ID,        text: message,        parse_mode: 'HTML'
+  try {,    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        chat_id: process.env.TELEGRAM_CHAT_ID,        text: message
+        parse_mode: 'HTML'
       })
     })
   } catch (error) {,    console.error('Erro ao notificar consultor:', error)
   }
 }
 
-// Notificar cliente sobre confirmação de pagamento,async function notifyClientPaymentConfirmed(data: any) {,  const message = `✅ PAGAMENTO CONFIRMADO!,
+// Notificar cliente sobre confirmação de pagamento,async function notifyClientPaymentConfirmed(data: any) {,  const message = `✅ PAGAMENTO CONFIRMADO!
+
 Parabéns ${data.client.name}! 🎉,
 Seu pagamento foi aprovado com sucesso:
 
@@ -181,7 +201,8 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' : ,  data.plan === 'PREMIUM' 
   }
 }
 
-// Utilitários,function getBookingDeadline(urgency: string): number {,  const deadlines = {,    'NORMAL': 4 * 60 * 60 * 1000, // 4 horas,    'URGENT': 2 * 60 * 60 * 1000,  // 2 horas,    'EMERGENCY': 30 * 60 * 1000    // 30 minutos
+// Utilitários,function getBookingDeadline(urgency: string): number {
+  const deadlines = {,    'NORMAL': 4 * 60 * 60 * 1000, // 4 horas,    'URGENT': 2 * 60 * 60 * 1000,  // 2 horas,    'EMERGENCY': 30 * 60 * 1000    // 30 minutos
   },  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL
 },
 function getPaymentMethodName(methodId: string): string {,  const methods: { [key: string]: string } = {,    'pix': 'PIX',    'master': 'Mastercard',    'visa': 'Visa',    'elo': 'Elo',    'hipercard': 'Hipercard',    'bolbradesco': 'Boleto Bradesco',    'account_money': 'Saldo Mercado Pago'

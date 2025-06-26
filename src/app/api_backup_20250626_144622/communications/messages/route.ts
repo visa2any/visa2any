@@ -151,7 +151,8 @@ export async function POST(request: NextRequest) {
     const { type, content, clientId, subject, attachments } = body
 
     // Here you would integrate with actual communication providers
-    // For now, we'll simulate message sending
+    // For now
+ we'll simulate message sending
 
     const newMessage = {
       id: Date.now().toString()

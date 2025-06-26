@@ -85,7 +85,8 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Se documento foi aprovado, verificar se pode prosseguir com próximo passo
+    // Se documento foi aprovado
+ verificar se pode prosseguir com próximo passo
     if (analysisResult.isValid) {
       await checkAndTriggerNextSteps(document.clientId, document.type)
     }
@@ -169,7 +170,8 @@ async function performAdvancedDocumentAnalysis(document: any) {
   const startTime = Date.now()
   
   try {
-    // Simular OCR (em produção usar Google Vision API, AWS Textract, etc.)
+    // Simular OCR (em produção usar Google Vision API, AWS Textract
+ etc.)
     const ocrResult = await performOCR(document)
     
     // Análise específica por tipo de documento
@@ -222,7 +224,8 @@ async function performAdvancedDocumentAnalysis(document: any) {
 
 // Simular OCR
 async function performOCR(document: any) {
-  // Em produção, usar serviço real de OCR
+  // Em produção
+ usar serviço real de OCR
   await new Promise(resolve => setTimeout(resolve, 1500)) // Simular processamento
   
   const mockTexts: Record<string, string> = {
@@ -673,7 +676,8 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
     const hasWork = clientDocuments.some(d => d.type === 'WORK_CERTIFICATE')
     
     if (hasPassport && hasEducation && hasWork) {
-      // Cliente tem documentos básicos, pode agendar consultoria
+      // Cliente tem documentos básicos
+ pode agendar consultoria
       const existingConsultation = await prisma.consultation.findFirst({
         where: { 
           clientId,

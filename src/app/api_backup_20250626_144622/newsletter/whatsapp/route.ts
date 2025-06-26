@@ -99,7 +99,8 @@ Para acessar nosso blog completo: https://visa2any.com/blog
 _Para cancelar, responda SAIR_`
 
   // Aqui você integraria com sua API do WhatsApp
-  // Por exemplo, usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
+  // Por exemplo
+ usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
   
   const whatsappResponse = await fetch('http://localhost:3000/api/whatsapp/send', {
     method: 'POST',

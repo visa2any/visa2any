@@ -161,7 +161,8 @@ export function ConsultationDetailView({ consultation, isOpen, onClose, onUpdate
             Enviar Email
           </button>
           <button 
-            onClick={() => consultation.client && window.open(`https://wa.me/?text=${encodeURIComponent(`Olá ${consultation.client.name}, em relação à sua consultoria...`)}`, '_blank')}
+            onClick={() => consultation.client && window.open(`https://wa.me/?text=${encodeURIComponent(`Olá ${consultation.client.name}
+ em relação à sua consultoria...`)}`, '_blank')}
             className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
           >
             <MessageSquare className="h-4 w-4" />

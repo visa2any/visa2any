@@ -190,7 +190,8 @@ function CheckoutContent() {
     }
   }
 
-  // Para produtos que não suportam quantidade, usar valores padrão
+  // Para produtos que não suportam quantidade
+ usar valores padrão
   const finalAdults = product.supportsQuantity ? adults : 1
   const finalChildren = product.supportsQuantity ? children : 0
   const finalPrice = (product.supportsQuantity && totalFromUrl > 0) ? totalFromUrl : product.price

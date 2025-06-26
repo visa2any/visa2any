@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
           where: { email: validatedData.clientInfo.email }
         })
 
-        // Se não encontrar, criar novo
+        // Se não encontrar
+ criar novo
         if (!client) {
           client = await prisma.client.create({
             data: {
@@ -135,7 +136,8 @@ async function createMercadoPagoPayment(orderData: {
           id: orderData.orderId,
           title: orderData.title,
           description: orderData.description,
-          quantity: 1, // Sempre 1 no MP, preço já é total
+          quantity: 1, // Sempre 1 no MP
+ preço já é total
           unit_price: orderData.unitPrice,
           currency_id: 'BRL'
         }

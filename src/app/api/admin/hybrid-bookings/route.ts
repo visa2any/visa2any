@@ -1,7 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from 'next/server'
+
+
 export async function GET(request: NextRequest) {,  try {
     // Buscar todos os agendamentos híbridos com informações relacionadas
-    // Como hybridBooking não existe no schema, vamos simular dados por enquanto,    const bookings: any[] = []
+    // Como hybridBooking não existe no schema, vamos simular dados por enquanto
+    const bookings: any[] = []
     
     // const bookings = await prisma.hybridBooking.findMany({
     //   include: {
@@ -32,7 +36,8 @@ export async function GET(request: NextRequest) {,  try {
     //   ]
     // })
 
-    // Calcular estatísticas,    const stats = {,      total: bookings.length,
+    // Calcular estatísticas,    const stats = {,      total: bookings.length
+
       pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length,
       inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length,
       completed: bookings.filter(b => b.status === 'COMPLETED').length,
@@ -50,6 +55,7 @@ export async function GET(request: NextRequest) {,  try {
     }, { status: 500 })
   }
 },
+
 export async function POST(request: NextRequest) {,  try {,    const { action, bookingId, data } = await request.json(),
     switch (action) {,      case 'update_status':,        return await updateBookingStatus(bookingId, data.status, data.appointmentDetails),      
       case 'assign_consultant':,        return await assignConsultant(bookingId, data.consultantId),      
@@ -64,19 +70,23 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
   }
 }
 
-// Atualizar status do agendamento,async function updateBookingStatus(bookingId: string, status: string, appointmentDetails?: any) {,  try {,    const updateData: any = {,      status,
+// Atualizar status do agendamento,async function updateBookingStatus(bookingId: string, status: string, appointmentDetails?: any) {,  try {,    const updateData: any = {,      status
+
       updatedAt: new Date()
     }
 
-    // Se marcando como concluído, adicionar data de conclusão,    if (status === 'COMPLETED') {,      updateData.completedAt = new Date(),      
+    // Se marcando como concluído, adicionar data de conclusão,    if (status === 'COMPLETED') {,      updateData.completedAt = new Date()
+      
       if (appointmentDetails) {,        updateData.appointmentDetails = appointmentDetails
       }
     }
 
-    // Se marcando como em progresso, registrar início,    if (status === 'IN_PROGRESS') {,      updateData.startedAt = new Date()
+    // Se marcando como em progresso, registrar início,    if (status === 'IN_PROGRESS') {
+      updateData.startedAt = new Date()
     }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: updateData
     //   include: {
@@ -91,7 +101,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
     // })
 
     // Notificar cliente sobre mudança de status (comentado por enquanto pois booking é mock)
-    // await notifyClientStatusUpdate(booking, status, appointmentDetails),
+    // await notifyClientStatusUpdate(booking, status, appointmentDetails)
+
     return NextResponse.json({,      booking,
       message: `Status atualizado para ${status}`
     })
@@ -101,15 +112,18 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
   }
 }
 
-// Atribuir consultor,async function assignConsultant(bookingId: string, consultantId: string) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
+// Atribuir consultor,async function assignConsultant(bookingId: string, consultantId: string) {
+  try {
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
     //     assignedConsultant: consultantId
     //     assignedAt: new Date()
     //     updatedAt: new Date()
     //   }
-    // }),
+    // })
+
     return NextResponse.json({,      booking,
       message: 'Consultor atribuído com sucesso'
     })
@@ -119,10 +133,13 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
   }
 }
 
-// Adicionar nota ao agendamento,async function addBookingNote(bookingId: string, note: string) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = { notes: [] } // await prisma.hybridBooking.findUnique({
+// Adicionar nota ao agendamento,async function addBookingNote(bookingId: string, note: string) {
+  try {
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const booking = { notes: [] } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId }
-    // }),
+    // })
+
     if (!booking) {,      return NextResponse.json({,        error: 'Agendamento não encontrado'
       }, { status: 404 })
     },
@@ -130,13 +147,16 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
     const newNote = {,      id: Date.now().toString(),      content: note,      createdAt: new Date().toISOString(),      author: 'Sistema' // TODO: pegar do usuário logado
     }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
-    //     notes: [...currentNotes, newNote]
+    //     notes: [...currentNotes
+ newNote]
     //     updatedAt: new Date()
     //   }
-    // }),
+    // })
+
     return NextResponse.json({,      booking: updatedBooking,      message: 'Nota adicionada com sucesso'
     })
 
@@ -145,22 +165,28 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
   }
 }
 
-// Estender prazo,async function extendDeadline(bookingId: string, hours: number) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({
+// Estender prazo,async function extendDeadline(bookingId: string, hours: number) {
+  try {
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId }
-    // }),
+    // })
+
     if (!booking) {,      return NextResponse.json({,        error: 'Agendamento não encontrado'
       }, { status: 404 })
     },
-    const currentDeadline = new Date(booking.deadline),    const newDeadline = new Date(currentDeadline.getTime() + (hours * 60 * 60 * 1000))
+    const currentDeadline = currentDeadlineVar
+    const newDeadline = new Date(currentDeadline.getTime() + (hours * 60 * 60 * 1000))
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema, vamos simular resposta
+    const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
     //     deadline: newDeadline
     //     updatedAt: new Date()
     //   }
-    // }),
+    // })
+
     return NextResponse.json({,      booking: updatedBooking,      message: `Prazo estendido em ${hours} horas`
     })
 
@@ -169,7 +195,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
   }
 }
 
-// Notificar cliente sobre mudança de status,async function notifyClientStatusUpdate(booking: any, status: string, appointmentDetails?: any) {,  try {,    let message = '',
+// Notificar cliente sobre mudança de status,async function notifyClientStatusUpdate(booking: any, status: string, appointmentDetails?: any) {,  try {,    let message = ''
+
     switch (status) {,      case 'IN_PROGRESS':,        message = `🚀 AGENDAMENTO EM ANDAMENTO,
 Olá ${booking.client.name}!,
 Boas notícias! Nossa equipe está trabalhando no seu agendamento:

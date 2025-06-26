@@ -159,7 +159,8 @@ export default function MercadoPagoClean({
         if (window.MercadoPago) {
           resolve()
         } else {
-          // Script existe mas SDK não carregou, aguardar
+          // Script existe mas SDK não carregou
+ aguardar
           existingScript.addEventListener('load', () => resolve())
           existingScript.addEventListener('error', () => reject(new Error('Falha no script existente')))
         }

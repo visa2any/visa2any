@@ -118,7 +118,8 @@ export class PolicyMonitoringEngine {
     console.log(`📡 Verificando ${source.name} (${source.country})...`)
 
     try {
-      // Simulação de busca por mudanças (em produção, usaria web scraping real)
+      // Simulação de busca por mudanças (em produção
+ usaria web scraping real)
       const changes = await this.detectChanges(source)
       
       for (const change of changes) {
@@ -137,8 +138,10 @@ export class PolicyMonitoringEngine {
    * Detecta mudanças em uma fonte (simulado)
    */
   private async detectChanges(source: MonitoringSource): Promise<PolicyChange[]> {
-    // Em produção, isto seria web scraping real ou API calls
-    // Por agora, simulamos algumas mudanças baseadas em padrões reais
+    // Em produção
+ isto seria web scraping real ou API calls
+    // Por agora
+ simulamos algumas mudanças baseadas em padrões reais
     
     const mockChanges: PolicyChange[] = []
     
@@ -366,8 +369,10 @@ export class PolicyMonitoringEngine {
    * Identifica clientes afetados por uma mudança
    */
   private async identifyAffectedClients(change: PolicyChange): Promise<string[]> {
-    // Em produção, consultaria o banco de dados de clientes
-    // Por agora, simula alguns clientes afetados
+    // Em produção
+ consultaria o banco de dados de clientes
+    // Por agora
+ simula alguns clientes afetados
     const mockAffectedClients: string[] = []
     
     if (change.severity === 'high' || change.severity === 'critical') {
@@ -466,7 +471,8 @@ Equipe Visa2Any
         name: 'USCIS Official',
         country: 'USA',
         type: 'government',
-        url: 'https://www.uscis.gov/news/alerts',
+        url: 'https://www.uscis.gov/news/alerts'
+
         keywords: ['visa', 'immigration', 'policy', 'fee', 'requirement'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -477,7 +483,8 @@ Equipe Visa2Any
         name: 'U.S. State Department',
         country: 'USA',
         type: 'government',
-        url: 'https://travel.state.gov/content/travel/en/News.html',
+        url: 'https://travel.state.gov/content/travel/en/News.html'
+
         keywords: ['visa', 'consular', 'processing', 'interview'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -490,7 +497,8 @@ Equipe Visa2Any
         name: 'IRCC Official',
         country: 'Canada',
         type: 'government',
-        url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html',
+        url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html'
+
         keywords: ['immigration', 'express entry', 'pnp', 'crs', 'processing'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -503,7 +511,8 @@ Equipe Visa2Any
         name: 'SEF Portugal',
         country: 'Portugal',
         type: 'government',
-        url: 'https://www.sef.pt/pt/pages/noticias.aspx',
+        url: 'https://www.sef.pt/pt/pages/noticias.aspx'
+
         keywords: ['visto', 'residência', 'golden visa', 'd7'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -516,7 +525,8 @@ Equipe Visa2Any
         name: 'UK Visas and Immigration',
         country: 'UK',
         type: 'government',
-        url: 'https://www.gov.uk/government/organisations/uk-visas-and-immigration/news',
+        url: 'https://www.gov.uk/government/organisations/uk-visas-and-immigration/news'
+
         keywords: ['visa', 'immigration', 'points', 'skilled worker'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -529,7 +539,8 @@ Equipe Visa2Any
         name: 'BAMF Germany',
         country: 'Germany',
         type: 'government',
-        url: 'https://www.bamf.de/DE/Startseite/startseite_node.html',
+        url: 'https://www.bamf.de/DE/Startseite/startseite_node.html'
+
         keywords: ['visa', 'aufenthaltstitel', 'blue card', 'fachkräfte'],
         lastChecked: new Date().toISOString(),
         isActive: true,
@@ -542,7 +553,8 @@ Equipe Visa2Any
         name: 'Extranjería España',
         country: 'Spain',
         type: 'government',
-        url: 'https://extranjeros.inclusion.gob.es/es/noticias/index.html',
+        url: 'https://extranjeros.inclusion.gob.es/es/noticias/index.html'
+
         keywords: ['visado', 'extranjería', 'residencia', 'golden visa'],
         lastChecked: new Date().toISOString(),
         isActive: true,

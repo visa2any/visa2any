@@ -108,7 +108,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Se partnerId não foi especificado, encontrar o melhor
+    // Se partnerId não foi especificado
+ encontrar o melhor
     if (!body.partnerId) {
       const bestPartner = await partnerIntegrationService.findBestPartner(
         body.visaInfo.country,

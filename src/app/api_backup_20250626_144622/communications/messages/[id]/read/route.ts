@@ -15,7 +15,8 @@ export async function PATCH(,
     }
 
     // Here you would update the message status in the database
-    // For now, we'll simulate the update
+    // For now
+ we'll simulate the update
     const updatedMessage = {
       id: messageId,
       status: 'read',

@@ -33,13 +33,15 @@ export async function POST(
       id: noteId,
       clientId,
       content: content.trim(),
-      author: 'Current User', // In a real app, get from session
+      author: 'Current User', // In a real app
+ get from session
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
 
     // Here you would save the note to the database
-    // For now, we'll simulate the save operation
+    // For now
+ we'll simulate the save operation
     await new Promise(resolve => setTimeout(resolve, 200))
 
     // Create timeline entry for the note

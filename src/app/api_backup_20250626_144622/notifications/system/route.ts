@@ -195,8 +195,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { notificationIds } = body
 
-    // In a real implementation, you might want to store read status
-    // For now, we'll just return success
+    // In a real implementation
+ you might want to store read status
+    // For now
+ we'll just return success
     console.log(`User ${user.id} marked notifications as read:`, notificationIds)
 
     return NextResponse.json({

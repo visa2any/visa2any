@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processScheduledPosts } from '@/lib/social-automation'
 
-// Esta rota deve ser chamada por um cron job (ex: Vercel Cron, GitHub Actions)
+// Esta rota deve ser chamada por um cron job (ex: Vercel Cron
+ GitHub Actions)
 export async function POST(request: NextRequest) {
   try {
     // Verificar authorization header se necessário

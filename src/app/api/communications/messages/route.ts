@@ -1,10 +1,13 @@
-import { prisma } from '@/lib/prisma',import { NextRequest, NextResponse } from 'next/server',
+import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
 
 
+export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const clientId = params.id
+const type = searchParams.get('type')
+    const limit = parseInt(searchParams.get('limit') || '50')
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const clientId = searchParams.get('clientId'),    const type = searchParams.get('type'),    const limit = parseInt(searchParams.get('limit') || '50')
-
-    // Mock data for communications,    const mockMessages = [,      {
+    // Mock data for communications
+    const mockMessages = [,      {
         id: '1',        clientId: '1',        client: { name: 'João Silva', email: 'joao@email.com', phone: '+55119999999' },        type: 'whatsapp',        direction: 'inbound',        content: 'Olá, gostaria de saber sobre o visto americano',        subject: null,        status: 'read',        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),        assignedTo: 'Ana Silva',        tags: ['visto-americano', 'primeira-conversa']
         priority: 'medium',        attachments: []
         metadata: {,          responseTime: 120,          sentiment: 'positive'
@@ -37,12 +40,14 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 
     let filteredMessages = mockMessages
 
-    // Apply filters,    if (clientId) {,      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
+    // Apply filters,    if (clientId) {
+      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
     },
     if (type && type !== 'all') {,      filteredMessages = filteredMessages.filter(msg => msg.type === type)
     }
 
-    // Limit results,    filteredMessages = filteredMessages.slice(0, limit),
+    // Limit results,    filteredMessages = filteredMessages.slice(0, limit)
+
     return NextResponse.json({,      messages: filteredMessages,      total: filteredMessages.length
     })
 
@@ -50,17 +55,21 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     )
   }
 },
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    const { type, content, clientId, subject, attachments } = body
+
+export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+const { type, content, clientId, subject, attachments } = body
 
     // Here you would integrate with actual communication providers
-    // For now, we'll simulate message sending,
+    // For now, we'll simulate message sending
+
     const newMessage = {,      id: Date.now().toString(),      clientId,      client: { name: 'Client Name', email: 'client@email.com' },      type,      direction: 'outbound',      content,      subject,      status: 'sent',      timestamp: new Date().toISOString(),      assignedTo: 'Current User',      tags: []
       priority: 'medium',      attachments: attachments || []
       metadata: {,        sentAt: new Date().toISOString()
       }
     }
 
-    // Simulate sending delay,    await new Promise(resolve => setTimeout(resolve, 1000)),
+    // Simulate sending delay,    await new Promise(resolve => setTimeout(resolve, 1000))
+
     return NextResponse.json({,      message: newMessage,      messageId: newMessage.id
     })
 

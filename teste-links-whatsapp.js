@@ -4,12 +4,14 @@ console.log('🧪 TESTANDO LINKS WHATSAPP VISA2ANY\n');
 const links = [
     {
         nome: 'Falar com especialista',
-        url: 'https://wa.me/5511999999999?text=Olá! Vim do site da Visa2Any e gostaria de falar com um especialista sobre vistos.',
+        url: 'https://wa.me/5511999999999?text=Olá! Vim do site da Visa2Any e gostaria de falar com um especialista sobre vistos.'
+
         status: '✅ Válido'
     },
     {
         nome: 'Receber informações',
-        url: 'https://wa.me/5511999999999?text=Quero receber informações sobre vistos e assessoria internacional.',
+        url: 'https://wa.me/5511999999999?text=Quero receber informações sobre vistos e assessoria internacional.'
+
         status: '✅ Válido'
     },
     {

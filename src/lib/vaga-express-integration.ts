@@ -270,7 +270,8 @@ Seu monitoramento já está ATIVO! 🚀
 
 Agora relaxe! Nossa IA está trabalhando 24/7 para você! 💪`
 
-    // Em produção, enviaria WhatsApp/Email real para o cliente
+    // Em produção
+ enviaria WhatsApp/Email real para o cliente
     console.log('Mensagem para cliente:', customerMessage)
   }
 

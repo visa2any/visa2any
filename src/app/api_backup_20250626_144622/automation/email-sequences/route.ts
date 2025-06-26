@@ -251,12 +251,18 @@ export async function POST(request: NextRequest) {
         score,
         urgency,
         budget,
-        schedulingLink: 'https://visa2any.com/agendar',
-        whatsappLink: 'https://wa.me/5511999999999',
-        aiAnalysisLink: 'https://visa2any.com/consultoria-ia',
-        leadMagnetsLink: 'https://visa2any.com/lead-magnets',
-        consultationLink: 'https://visa2any.com/precos',
-        educationalContentLink: 'https://visa2any.com/lead-magnets',
+        schedulingLink: 'https://visa2any.com/agendar'
+
+        whatsappLink: 'https://wa.me/5511999999999'
+
+        aiAnalysisLink: 'https://visa2any.com/consultoria-ia'
+
+        leadMagnetsLink: 'https://visa2any.com/lead-magnets'
+
+        consultationLink: 'https://visa2any.com/precos'
+
+        educationalContentLink: 'https://visa2any.com/lead-magnets'
+
         ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
@@ -344,8 +350,10 @@ async function scheduleEmail(emailData: {
   templateIndex: number
 }) {
   try {
-    // Em produção, usar serviço de queue como Bull/Redis
-    // Por enquanto, simular agendamento
+    // Em produção
+ usar serviço de queue como Bull/Redis
+    // Por enquanto
+ simular agendamento
     
     console.log(`Email agendado:`, {
       to: emailData.to,
@@ -355,7 +363,8 @@ async function scheduleEmail(emailData: {
       templateIndex: emailData.templateIndex
     })
 
-    // Se o delay for 0 (imediato), enviar agora
+    // Se o delay for 0 (imediato)
+ enviar agora
     if (emailData.sendAt <= new Date()) {
       await sendEmailNow(emailData)
     }
@@ -388,7 +397,8 @@ async function sendEmailNow(emailData: {
   clientId?: string,
 }) {
   try {
-    // Usar serviço de email (Resend, SendGrid, etc.)
+    // Usar serviço de email (Resend, SendGrid
+ etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)
     
     // Simular envio por enquanto

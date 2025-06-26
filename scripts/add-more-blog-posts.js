@@ -56,7 +56,8 @@ const newBlogPosts = [
     comments: 45,
     difficulty: 'Intermediário',
     type: 'Notícia',
-    imageUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200&h=600&fit=crop'
+
     videoUrl: null,
     sponsored: false,
     published: true
@@ -114,7 +115,8 @@ const newBlogPosts = [
     comments: 35,
     difficulty: 'Iniciante',
     type: 'Guia',
-    imageUrl: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1200&h=600&fit=crop'
+
     published: true
   },
   {
@@ -185,7 +187,8 @@ const newBlogPosts = [
     comments: 67,
     difficulty: 'Avançado',
     type: 'Análise',
-    imageUrl: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&h=600&fit=crop'
+
     published: true
   },
   {
@@ -273,7 +276,8 @@ const newBlogPosts = [
     comments: 89,
     difficulty: 'Intermediário',
     type: 'Guia',
-    imageUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=1200&h=600&fit=crop'
+
     published: true
   },
   {
@@ -360,7 +364,8 @@ const newBlogPosts = [
     comments: 52,
     difficulty: 'Avançado',
     type: 'Análise',
-    imageUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=1200&h=600&fit=crop'
+
     published: true
   },
   {
@@ -467,7 +472,8 @@ const newBlogPosts = [
     comments: 134,
     difficulty: 'Intermediário',
     type: 'Notícia',
-    imageUrl: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1200&h=600&fit=crop'
+
     published: true
   },
   {
@@ -574,7 +580,8 @@ const newBlogPosts = [
     comments: 78,
     difficulty: 'Avançado',
     type: 'Guia',
-    imageUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&h=600&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&h=600&fit=crop'
+
     published: true
   }
 ]

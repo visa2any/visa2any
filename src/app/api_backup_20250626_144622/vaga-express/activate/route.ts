@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
       clientName,
       clientEmail,
       clientPhone,
-      plan: plan.toUpperCase(), // BASIC, PREMIUM, VIP
+      plan: plan.toUpperCase(), // BASIC, PREMIUM
+ VIP
       amount,
       currency: 'BRL',
       paymentStatus: 'COMPLETED',
@@ -84,7 +85,8 @@ export async function POST(request: NextRequest) {
 
     } catch (n8nError) {
       console.error('❌ Erro ao enviar para N8N:', n8nError)
-      // Não falhar a API por isso, apenas logar
+      // Não falhar a API por isso
+ apenas logar
     }
 
     // Salvar no banco de dados local (simulado)

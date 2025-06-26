@@ -484,7 +484,8 @@ export default function EligibilityCalculator() {
               onClick={async () => {
                 // Reprocessar para salvar no backend
                 await calculateResult()
-                // Depois de salvar, mostrar opção de acessar portal
+                // Depois de salvar
+ mostrar opção de acessar portal
                 setTimeout(() => {
                   const portalBtn = document.getElementById('portal-access-btn')
                   if (portalBtn) portalBtn.style.display = 'block'

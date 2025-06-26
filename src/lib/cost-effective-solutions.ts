@@ -442,7 +442,8 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
   }
 
   private async notifyInterestedClients(country: string, slots: any[]): Promise<void> {
-    // Notificar via WhatsApp, email, etc.
+    // Notificar via WhatsApp, email
+ etc.
     console.log(`Vagas encontradas para ${country}:`, slots.length)
   }
 

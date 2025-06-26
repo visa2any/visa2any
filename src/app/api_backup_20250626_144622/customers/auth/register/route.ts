@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
     )
 
     // Enviar email de boas-vindas (implementar posteriormente)
-    // await sendWelcomeEmail(customer.email, customer.name)
+    // await sendWelcomeEmail(customer.email
+ customer.name)
 
     // Configurar resposta com cookie
     const response = NextResponse.json({

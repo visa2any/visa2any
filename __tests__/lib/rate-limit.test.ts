@@ -146,8 +146,10 @@ describe('Rate Limiting System', () => {
       const blockedResult = applyRateLimit(request)
       expect(blockedResult.success).toBe(false)
 
-      // Em um cenário real, aguardaríamos ou mockaria o tempo
-      // Para este teste, verificamos apenas a estrutura
+      // Em um cenário real
+ aguardaríamos ou mockaria o tempo
+      // Para este teste
+ verificamos apenas a estrutura
       expect(blockedResult.reset).toBeGreaterThan(Date.now())
     })
   })

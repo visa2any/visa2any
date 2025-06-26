@@ -47,7 +47,8 @@ files.forEach(filePath => {
       console.log(`  Fixed ${matches3.length} trailing commas in function calls`);
     }
 
-    // Fix pattern 4: await functionCall(),
+    // Fix pattern 4: await functionCall()
+
     const pattern4 = /await\s+([^(),]+\([^)]*\)),(?=\s*$)/gm;
     const matches4 = newContent.match(pattern4);
     if (matches4) {

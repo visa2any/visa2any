@@ -208,7 +208,8 @@ class WhatsAppService {
             // Full international format
             return cleaned + '@s.whatsapp.net';
         } else if (cleaned.length === 12 && cleaned.startsWith('55')) {
-            // Missing a digit, probably mobile
+            // Missing a digit
+ probably mobile
             return cleaned + '@s.whatsapp.net';
         } else {
             // Default: add country code

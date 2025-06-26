@@ -1,9 +1,11 @@
-import { prisma } from '@/lib/prisma',import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
 
 
 
 
-// Materiais promocionais pré-definidos,const defaultMaterials = [
+// Materiais promocionais pré-definidos
+const defaultMaterials = [
   // Banners,  {
     type: 'BANNER',    title: 'Banner Principal - Visa2Any',    description: 'Banner principal com logo e call-to-action',    category: 'banners',    tags: ['principal', 'logo', 'cta']
     content: `
@@ -194,23 +196,32 @@ Consultoria gratuita: {{AFFILIATE_LINK}},Código especial: {{REFERRAL_CODE}}
   }
 ]
 
-// GET - Listar materiais promocionais,export async function GET(request: NextRequest) {,  try {,    const url = new URL(request.url),    const type = url.searchParams.get('type'),    const category = url.searchParams.get('category'),    const affiliateId = url.searchParams.get('affiliateId')
+// GET - Listar materiais promocionais,
+export async function GET(request: NextRequest) {,  try {
+    const url =  
+const type = url.searchParams.get('type')
+    const category =  
+const affiliateId = url.searchParams.get('affiliateId')
 
-    // Construir filtros,    const where: any = { isActive: true },    
+    // Construir filtros,    const where: any = { isActive: true }
+    
     if (type) {,      where.type = type
     },    
     if (category) {,      where.category = category
     }
 
-    // Se affiliateId for fornecido, incluir materiais específicos do afiliado,    if (affiliateId) {,      where.OR = [,        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
+    // Se affiliateId for fornecido, incluir materiais específicos do afiliado,    if (affiliateId) {
+      where.OR = [,        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
       ]
     } else {,      where.affiliateId = null // Apenas materiais públicos
     }
 
-    // Buscar materiais do banco,    const materials = await prisma.affiliateMaterial.findMany({,      where,      orderBy: { createdAt: 'desc' }
+    // Buscar materiais do banco,    const materials = await prisma.affiliateMaterial.findMany({,      where
+      orderBy: { createdAt: 'desc' }
     })
 
-    // Se não houver materiais no banco, retornar materiais padrão,    if (materials.length === 0 && !affiliateId) {,      const filteredDefaults = defaultMaterials.filter(material => {,        if (type && material.type !== type) return false,        if (category && material.category !== category) return false,        return true
+    // Se não houver materiais no banco, retornar materiais padrão,    if (materials.length === 0 && !affiliateId) {,      const filteredDefaults = defaultMaterials.filter(material => {,        if (type && material.type !== type) return false,        if (category && material.category !== category) return false
+        return true
       }),
       return NextResponse.json({,        data: filteredDefaults.map((material, index) => ({,          id: `default_${index}`
           ...material,          createdAt: new Date().toISOString(),          updatedAt: new Date().toISOString(),          views: Math.floor(Math.random() * 1000),          downloads: Math.floor(Math.random() * 500)
@@ -226,11 +237,15 @@ Consultoria gratuita: {{AFFILIATE_LINK}},Código especial: {{REFERRAL_CODE}}
   }
 }
 
-// POST - Criar novo material,export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    const {,      type,      title,      description,      content,      category,      tags = []
+// POST - Criar novo material,
+export async function POST(request: NextRequest) {,  try {
+    const body = await request.json()
+const {,      type,      title,      description,      content,      category,      tags = []
       imageUrl,      downloadUrl,      previewUrl,      affiliateId,      language = 'pt'
     } = body
 
-    // Validações básicas,    if (!type || !title || !description) {,      return NextResponse.json({,        error: 'Tipo, título e descrição são obrigatórios'
+    // Validações básicas,    if (!type || !title || !description) {,      return NextResponse.json({,        error: 'Tipo
+ título e descrição são obrigatórios'
       }, { status: 400 })
     },
     const material = await prisma.affiliateMaterial.create({,      data: {,        type,        title,        description,        content,        category,        tags,        imageUrl,        downloadUrl,        previewUrl,        affiliateId,        language
@@ -245,7 +260,10 @@ Consultoria gratuita: {{AFFILIATE_LINK}},Código especial: {{REFERRAL_CODE}}
   }
 }
 
-// PUT - Atualizar material,export async function PUT(request: NextRequest) {,  try {,    const body = await request.json(),    const { id, ...updateData } = body,
+// PUT - Atualizar material,
+export async function PUT(request: NextRequest) {,  try {
+    const body = await request.json()
+const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json({,        error: 'ID do material é obrigatório'
       }, { status: 400 })
     },

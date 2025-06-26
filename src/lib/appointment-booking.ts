@@ -41,32 +41,40 @@ class AppointmentBookingService {
   private readonly endpoints = {
     // CASV - EUA (Computer-generated Application Support Service)
     casv: {
-      baseUrl: 'https://cgifederal.secure.force.com',
+      baseUrl: 'https://cgifederal.secure.force.com'
+
       loginUrl: '/apex/login',
       appointmentUrl: '/apex/appointment',
       statusUrl: '/apex/status'
     },
     
-    // VFS Global - Reino Unido, Canadá, Alemanha, França
+    // VFS Global - Reino Unido, Canadá, Alemanha
+ França
     vfs: {
-      baseUrl: 'https://visa.vfsglobal.com',
+      baseUrl: 'https://visa.vfsglobal.com'
+
       countriesUrl: '/countries',
       appointmentUrl: '/appointment',
       scheduleUrl: '/schedule'
     },
     
-    // TLS Contact - França, Alemanha
+    // TLS Contact - França
+ Alemanha
     tls: {
-      baseUrl: 'https://appointment.tlscontact.com',
+      baseUrl: 'https://appointment.tlscontact.com'
+
       appointmentUrl: '/appointment',
       availabilityUrl: '/availability'
     },
     
     // Consulados diretos
     direct: {
-      germany: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do',
-      france: 'https://france-visas.gouv.fr/en/web/france-visas',
-      italy: 'https://vistoperitalia.esteri.it',
+      germany: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do'
+
+      france: 'https://france-visas.gouv.fr/en/web/france-visas'
+
+      italy: 'https://vistoperitalia.esteri.it'
+
       spain: 'https://www.exteriores.gob.es/Consulados'
     }
   }
@@ -115,7 +123,8 @@ class AppointmentBookingService {
     }
   }
 
-  // VFS Global - Reino Unido, Canadá, Alemanha
+  // VFS Global - Reino Unido, Canadá
+ Alemanha
   async bookVFSAppointment(request: BookingRequest): Promise<BookingResponse> {
     try {
       console.log('Conectando ao VFS Global...')
@@ -149,7 +158,8 @@ class AppointmentBookingService {
     }
   }
 
-  // TLS Contact - França, Alemanha
+  // TLS Contact - França
+ Alemanha
   async bookTLSAppointment(request: BookingRequest): Promise<BookingResponse> {
     try {
       console.log('Conectando ao TLS Contact...')

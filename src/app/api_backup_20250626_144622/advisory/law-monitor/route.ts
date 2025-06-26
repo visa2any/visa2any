@@ -103,7 +103,8 @@ async function checkRecentLawChanges(country: string, visaType?: string) {
   // Simular integração com fontes oficiais
   const mockChanges = await getLawChanges(country, 30, visaType)
   
-  // Em produção, integrar com:
+  // Em produção
+ integrar com:
   // - APIs governamentais
   // - RSS feeds de departamentos de imigração
   // - Web scraping de sites oficiais
@@ -229,7 +230,8 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
 
 // Configurar alertas de mudanças legais
 async function setupLawChangeAlerts(data: any) {
-  // Em produção, configurar sistema de alertas
+  // Em produção
+ configurar sistema de alertas
   // - Email notifications
   // - SMS alerts
   // - In-app notifications

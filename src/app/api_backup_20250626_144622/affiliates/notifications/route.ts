@@ -15,7 +15,8 @@ interface NotificationData {
   priority: 'low' | 'medium' | 'high' | 'urgent'
 }
 
-// Simulação de storage de notificações (em produção, usar Redis ou banco)
+// Simulação de storage de notificações (em produção
+ usar Redis ou banco)
 const notificationsStore = new Map<string, NotificationData[]>()
 
 // GET - Buscar notificações do afiliado
@@ -35,7 +36,8 @@ export async function GET(request: NextRequest) {
     // Buscar notificações do storage
     let notifications = notificationsStore.get(affiliateId) || []
 
-    // Se não há notificações, criar algumas de exemplo
+    // Se não há notificações
+ criar algumas de exemplo
     if (notifications.length === 0) {
       notifications = generateSampleNotifications(affiliateId)
       notificationsStore.set(affiliateId, notifications)
@@ -111,11 +113,13 @@ export async function POST(request: NextRequest) {
     notificationsStore.set(affiliateId, existing)
 
     // TODO: Enviar push notification real
-    // await sendPushNotification(affiliateId, notification)
+    // await sendPushNotification(affiliateId
+ notification)
 
     // TODO: Enviar email se for urgente
     // if (priority === 'urgent') {
-    //   await sendEmailNotification(affiliateId, notification)
+    //   await sendEmailNotification(affiliateId
+ notification)
     // }
 
     return NextResponse.json({

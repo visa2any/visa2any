@@ -134,7 +134,8 @@ function extractHighlights(content: string): string[] {
     highlights.push(`• ${match[1]}`)
   }
   
-  // Se não encontrou highlights suficientes, usar pontos genéricos
+  // Se não encontrou highlights suficientes
+ usar pontos genéricos
   if (highlights.length === 0) {
     highlights.push('• Informações atualizadas e verificadas')
     highlights.push('• Orientação especializada')
@@ -194,7 +195,8 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
   const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
   const now = new Date()
   
-  // Se é urgente, agenda para os próximos minutos respeitando intervalo mínimo
+  // Se é urgente
+ agenda para os próximos minutos respeitando intervalo mínimo
   if (isUrgent) {
     const urgentDelay = Math.max(config.minInterval / 4, 15 * 60 * 1000) // Mín 15 min
     return new Date(now.getTime() + urgentDelay)
@@ -213,7 +215,8 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
     return nextTime
   }
   
-  // Se não há mais horários hoje, usar primeiro horário de amanhã
+  // Se não há mais horários hoje
+ usar primeiro horário de amanhã
   const tomorrow = new Date(now)
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(optimalTimes[0], 0, 0, 0)
@@ -225,7 +228,8 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
 async function canSchedulePost(platform: string): Promise<boolean> {
   try {
     // Simular consulta ao banco para verificar último post
-    // Em implementação real, consultar tabela SocialPost
+    // Em implementação real
+ consultar tabela SocialPost
     const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
     
     // Verificar posts do dia
@@ -390,7 +394,8 @@ async function publishToInstagram(post: SocialPost) {
   const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN
   const accountId = process.env.INSTAGRAM_ACCOUNT_ID
   
-  // Instagram requer processo em 2 etapas: criar container, depois publicar
+  // Instagram requer processo em 2 etapas: criar container
+ depois publicar
   const containerResponse = await fetch(`https://graph.facebook.com/${accountId}/media`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -454,7 +459,8 @@ async function publishToTwitter(post: SocialPost) {
   const accessToken = process.env.TWITTER_ACCESS_TOKEN
   const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET
   
-  // Para Twitter, você precisaria usar a biblioteca twitter-api-v2 ou similar
+  // Para Twitter
+ você precisaria usar a biblioteca twitter-api-v2 ou similar
   // Aqui está um exemplo conceitual
   const response = await fetch('https://api.twitter.com/2/tweets', {
     method: 'POST',

@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Aqui você pode integrar com API do WhatsApp para enviar mensagem de boas-vindas
-    // await sendWelcomeMessage(cleanPhone, name)
+    // await sendWelcomeMessage(cleanPhone
+ name)
 
     return NextResponse.json({
       message: 'Cadastro realizado com sucesso! Você receberá atualizações no WhatsApp.',
@@ -174,7 +175,8 @@ export async function GET(request: NextRequest) {
 // Função para enviar mensagem de boas-vindas (placeholder)
 async function sendWelcomeMessage(phone: string, name: string) {
   // Aqui você integraria com a API do WhatsApp Business
-  // Por exemplo: Twilio, WhatsApp Business API, etc.
+  // Por exemplo: Twilio, WhatsApp Business API
+ etc.
   
   const message = `Olá ${name}! 👋
 
@@ -193,6 +195,7 @@ Sua jornada internacional começa agora! 🌍✈️`
   console.log(`📱 Enviando mensagem de boas-vindas para ${phone}:`, message)
   
   // Implementar integração real aqui
-  // const result = await whatsappApi.sendMessage(phone, message)
+  // const result = await whatsappApi.sendMessage(phone
+ message)
   // return result
 }

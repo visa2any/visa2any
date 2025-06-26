@@ -11,8 +11,10 @@ export interface AffiliateLink {
 export interface TrackingParams {
   ref: string          // Código de referência do afiliado
   campaign?: string    // Nome da campanha
-  source?: string      // Origem do tráfego (instagram, facebook, email, etc)
-  medium?: string      // Meio (social, email, paid, etc)
+  source?: string      // Origem do tráfego (instagram, facebook, email
+ etc)
+  medium?: string      // Meio (social, email, paid
+ etc)
   content?: string     // Conteúdo específico
 }
 
@@ -204,7 +206,8 @@ export function calculateCommission(
  * Valida código de referência
  */
 export function validateReferralCode(code: string): boolean {
-  // Código deve ter entre 4 e 12 caracteres, apenas letras e números
+  // Código deve ter entre 4 e 12 caracteres
+ apenas letras e números
   const regex = /^[A-Z0-9]{4,12}$/
   return regex.test(code)
 }

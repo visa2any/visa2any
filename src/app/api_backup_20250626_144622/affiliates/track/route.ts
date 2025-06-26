@@ -21,8 +21,10 @@ function parseUserAgent(userAgent: string) {
 // Função para obter informações de geolocalização por IP
 async function getLocationFromIP(ip: string) {
   try {
-    // Em produção, usar um serviço como ipapi.co ou similar
-    // Para desenvolvimento, retornar valores padrão
+    // Em produção
+ usar um serviço como ipapi.co ou similar
+    // Para desenvolvimento
+ retornar valores padrão
     if (process.env.NODE_ENV === 'development') {
       return { country: 'Brazil', city: 'São Paulo' }
     }

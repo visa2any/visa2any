@@ -251,7 +251,8 @@ export async function createCustomerAccount(data: {
       })
     }
 
-    // Se foi passado dados de compra, criar registro de pagamento
+    // Se foi passado dados de compra
+ criar registro de pagamento
     if (data.product && data.amount) {
       await prisma.payment.create({
         data: {

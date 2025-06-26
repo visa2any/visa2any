@@ -77,7 +77,8 @@ function AdminLayoutContent({
   }, [router, pathname])
 
   useEffect(() => {
-    // Se estivermos na página de login, não fazer verificação
+    // Se estivermos na página de login
+ não fazer verificação
     if (isLoginPage) {
       setIsLoading(false)
       return
@@ -193,7 +194,8 @@ function AdminLayoutContent({
     return null
   }
 
-  // Para o dashboard unificado, usar layout sem sidebar
+  // Para o dashboard unificado
+ usar layout sem sidebar
   if (pathname.startsWith('/admin/dashboard-unified')) {
     return (
       <div className="min-h-screen" style={{ 

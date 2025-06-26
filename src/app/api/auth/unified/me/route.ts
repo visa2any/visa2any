@@ -1,5 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server',import { verifyUnifiedAuth } from '@/lib/auth-unified',
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyUnifiedAuth } from 'next/server'
+
 export const dynamic = 'force-dynamic',
+
 export async function GET(request: NextRequest) {,  try {,    const user = await verifyUnifiedAuth(request),
     if (!user) {,      return NextResponse.json(,        { error: 'Não autorizado' },        { status: 401 }
       )

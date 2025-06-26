@@ -110,7 +110,8 @@ export async function PATCH(
       }
     }
 
-    // Se está marcando como completa, definir completedAt automaticamente
+    // Se está marcando como completa
+ definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
       updateData.completedAt = new Date()
     }
@@ -206,7 +207,8 @@ export async function PUT(
       updateData.completedAt = new Date(validatedData.completedAt)
     }
 
-    // Se está marcando como completa, definir completedAt automaticamente
+    // Se está marcando como completa
+ definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
       updateData.completedAt = new Date()
     }

@@ -204,7 +204,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     variant = 'default'
   } = props
   
-  // Use first product for calculations if new interface, otherwise use legacy props
+  // Use first product for calculations if new interface
+ otherwise use legacy props
   const currentProduct = isNewInterface ? products[0] : {
     id: productId,
     name: productName,
@@ -297,7 +298,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   
   // Cálculo das economias
   const getAdultGroupSavings = () => {
-    // Sempre calcular se tem 4+ adultos, independente do supportsQuantity para display
+    // Sempre calcular se tem 4+ adultos
+ independente do supportsQuantity para display
     if (currentAdults < 4) return 0
     const originalTotal = currentAdults * getBaseAdultPrice()
     const discountedTotal = currentAdults * getFinalAdultPrice()
@@ -305,7 +307,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   }
   
   const getChildrenSavings = () => {
-    // Sempre calcular se tem crianças, independente do supportsQuantity para display
+    // Sempre calcular se tem crianças
+ independente do supportsQuantity para display
     if (currentChildren === 0) return 0
     const originalTotal = currentChildren * getBaseChildPrice()
     const discountedTotal = currentChildren * getFinalChildPrice()
@@ -314,7 +317,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   
   // Total final calculado
   const calculateCurrentTotal = () => {
-    // Se não suporta quantidade, usar preço base
+    // Se não suporta quantidade
+ usar preço base
     if (!supportsQuantity) {
       return price
     }
@@ -475,7 +479,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         return
       }
       
-      // Se for produto Vaga Express, processar com integração
+      // Se for produto Vaga Express
+ processar com integração
       if (currentProduct.id.includes('vaga-express')) {
         console.log('Processando pedido Vaga Express:', orderData)
 
@@ -535,7 +540,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }
 
-  // Se checkout inline ativo, usar componente real do MercadoPago
+  // Se checkout inline ativo
+ usar componente real do MercadoPago
   if (showInlineCheckout && paymentData) {
     return (
       <MercadoPagoSingle

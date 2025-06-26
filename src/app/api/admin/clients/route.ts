@@ -1,10 +1,16 @@
-import { prisma } from '@/lib/prisma',import { NextRequest, NextResponse } from 'next/server',
+import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
 
 
+export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const page = pageVar
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const search = searchVar
+    const status = searchParams.get('status') || ''
+    const country = countryVar
+    const offset = (page - 1) * limit
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const page = parseInt(searchParams.get('page') || '1'),    const limit = parseInt(searchParams.get('limit') || '50'),    const search = searchParams.get('search') || '',    const status = searchParams.get('status') || '',    const country = searchParams.get('country') || '',    const offset = (page - 1) * limit
+    // Construir filtros,    const where: any = {}
 
-    // Construir filtros,    const where: any = {},
     if (search) {,      where.OR = [,        { name: { contains: search } },
         { email: { contains: search } },
         { phone: { contains: search } },
@@ -18,9 +24,11 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     if (country && country !== 'ALL') {,      where.targetCountry = country
     }
 
-    // Buscar clientes com fallback em caso de erro,    let clients: any[] = []
+    // Buscar clientes com fallback em caso de erro
+    let clients: any[] = []
     let total = 0,
-    try {,      [clients, total] = await Promise.all([,        prisma.client.findMany({,          where,
+    try {,      [clients, total] = await Promise.all([
+        prisma.client.findMany({,          where,
           orderBy: { createdAt: 'desc' },
           take: limit,
           skip: offset,
@@ -42,7 +50,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
         prisma.client.count({ where })
       ])
     } catch (dbError) {,      console.error('Erro na consulta do banco:', dbError)
-      // Retornar dados simulados em caso de erro,      clients = []
+      // Retornar dados simulados em caso de erro
+      clients = []
       total = 0
     },
     return NextResponse.json({,      data: {,        clients,
@@ -53,23 +62,27 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 
   } catch (error) {,    console.error('❌ Erro ao buscar clientes:', error)
     
-    // Retornar resposta de fallback,    return NextResponse.json({,      data: {,        clients: []
+    // Retornar resposta de fallback,    return NextResponse.json({,      data: {
+        clients: []
         pagination: {,          current: 1,          total: 0,          hasNext: false,          hasPrev: false,          totalItems: 0
         }
       }
     })
   }
 },
+
 export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
     
-    // Validação básica,    const { name, email, phone, profession, nationality, targetCountry, visaType } = body,    
+    // Validação básica,    const { name, email, phone, profession, nationality, targetCountry, visaType } = body
+    
     if (!name || !email) {,      return NextResponse.json(,        {
           error: 'Nome e email são obrigatórios'
         },        { status: 400 }
       )
     }
 
-    // Verificar se cliente já existe,    const existingClient = await prisma.client.findFirst({,      where: { email }
+    // Verificar se cliente já existe,    const existingClient = await prisma.client.findFirst({
+      where: { email }
     }),
     if (existingClient) {,      return NextResponse.json(,        {
           error: 'Cliente já cadastrado com este email'
@@ -77,7 +90,8 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
       )
     }
 
-    // Criar cliente,    const client = await prisma.client.create({,      data: {,        name,        email,        phone: phone || null,        profession: profession || null,        nationality: nationality || null,        targetCountry: targetCountry || null,        visaType: visaType || null,        status: 'LEAD',        score: 0,        notes: body.notes || null
+    // Criar cliente,    const client = await prisma.client.create({,      data: {,        name,        email,        phone: phone || null,        profession: profession || null,        nationality: nationality || null,        targetCountry: targetCountry || null,        visaType: visaType || null,        status: 'LEAD',        score: 0
+        notes: body.notes || null
       }
     }),
     return NextResponse.json({,      data: client

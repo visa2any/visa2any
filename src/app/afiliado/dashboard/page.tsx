@@ -147,10 +147,14 @@ export default function AffiliateDashboard() {
   }
 
   const affiliateLinks = {
-    home: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/`,
-    consultation: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta`,
-    usa: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta?country=usa&campaign=visto-eua`,
-    canada: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta?country=canada&campaign=visto-canada`,
+    home: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/`
+
+    consultation: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta`
+
+    usa: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta?country=usa&campaign=visto-eua`
+
+    canada: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/consulta?country=canada&campaign=visto-canada`
+
     pricing: `https://visa2any.com/api/affiliates/track?ref=JOAO2024&url=/precos`
   }
 

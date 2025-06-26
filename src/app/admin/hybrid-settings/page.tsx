@@ -101,7 +101,8 @@ export default function HybridSettingsPage() {
       serviceFee: 150,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment',
+      officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment'
+
       isActive: true
     },
     {
@@ -112,7 +113,8 @@ export default function HybridSettingsPage() {
       additionalFees: 95,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees',
+      officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees'
+
       isActive: true
     },
     {
@@ -123,7 +125,8 @@ export default function HybridSettingsPage() {
       additionalFees: 120,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment',
+      officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment'
+
       isActive: true
     },
     {
@@ -134,7 +137,8 @@ export default function HybridSettingsPage() {
       additionalFees: 100,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://france-visas.gouv.fr/payment',
+      officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
+
       isActive: true
     }
   ]

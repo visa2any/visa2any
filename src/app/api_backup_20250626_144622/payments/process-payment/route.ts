@@ -193,7 +193,8 @@ export async function POST(request: NextRequest) {
           cardholder_name: result.card.cardholder?.name
         } : undefined,
 
-        // Para outros métodos (PIX, boleto, etc)
+        // Para outros métodos (PIX, boleto
+ etc)
         point_of_interaction: result.point_of_interaction,
         
         // Dados de fees

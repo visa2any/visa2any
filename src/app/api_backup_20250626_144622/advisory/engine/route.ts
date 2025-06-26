@@ -516,7 +516,8 @@ async function getEmbassySpecificInsights(profile: any, expertise: any) {
 }
 
 async function getRecentLawUpdates(country: string, visaType: string) {
-  // Em produção, integrar com APIs de imigração ou feeds de notícias
+  // Em produção
+ integrar com APIs de imigração ou feeds de notícias
   return {
     updates: [
       {

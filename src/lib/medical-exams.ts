@@ -75,7 +75,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 3053-6611',
       email: 'exames.internacionais@hcor.com.br',
-      website: 'https://www.hcor.com.br',
+      website: 'https://www.hcor.com.br'
+
       approvedFor: ['usa'],
       services: ['medical_exam_usa', 'vaccination', 'chest_xray', 'blood_tests'],
       languages: ['portuguese', 'english'],
@@ -113,7 +114,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 5014-7700',
       email: 'atendimento@fleury.com.br',
-      website: 'https://www.fleury.com.br',
+      website: 'https://www.fleury.com.br'
+
       approvedFor: ['usa'],
       services: ['medical_exam_usa', 'vaccination', 'chest_xray', 'blood_tests'],
       languages: ['portuguese', 'english'],
@@ -153,7 +155,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 4020-6464',
       email: 'central.atendimento@dasa.com.br',
-      website: 'https://www.dasa.com.br',
+      website: 'https://www.dasa.com.br'
+
       approvedFor: ['canada'],
       services: ['medical_exam_canada', 'chest_xray', 'blood_tests', 'urine_tests'],
       languages: ['portuguese', 'english', 'french'],
@@ -192,7 +195,8 @@ class MedicalExamService {
       country: 'Global',
       phone: '+1-202-862-1826',
       email: 'health@iom.int',
-      website: 'https://www.iom.int/health-assessments',
+      website: 'https://www.iom.int/health-assessments'
+
       approvedFor: ['usa', 'canada', 'australia', 'uk'],
       services: ['refugee_medical', 'immigration_medical', 'vaccination', 'mental_health'],
       languages: ['english', 'spanish', 'french', 'arabic', 'portuguese'],

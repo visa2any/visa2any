@@ -51,7 +51,8 @@ export default function MonitoringDashboard() {
           id: 'vaga_express',
           name: 'Vaga Express',
           type: 'telegram',
-          url: 'https://t.me/vagaexpress',
+          url: 'https://t.me/vagaexpress'
+
           status: 'active',
           lastUpdate: '2024-01-15T12:30:00Z',
           foundVacancies: 23,
@@ -63,7 +64,8 @@ export default function MonitoringDashboard() {
           id: 'vaga_consulado_usa',
           name: 'Vagas Consulado EUA',
           type: 'telegram',
-          url: 'https://t.me/vaga_consulado_usa',
+          url: 'https://t.me/vaga_consulado_usa'
+
           status: 'active',
           lastUpdate: '2024-01-15T12:25:00Z',
           foundVacancies: 15,
@@ -75,7 +77,8 @@ export default function MonitoringDashboard() {
           id: 'vagas_visto_canada',
           name: 'Vagas Visto Canadá',
           type: 'telegram',
-          url: 'https://t.me/vagas_visto_canada',
+          url: 'https://t.me/vagas_visto_canada'
+
           status: 'active',
           lastUpdate: '2024-01-15T12:20:00Z',
           foundVacancies: 8,
@@ -87,7 +90,8 @@ export default function MonitoringDashboard() {
           id: 'casv_monitor',
           name: 'CASV Monitor',
           type: 'web',
-          url: 'https://cgifederal.secure.force.com',
+          url: 'https://cgifederal.secure.force.com'
+
           status: 'active',
           lastUpdate: '2024-01-15T12:35:00Z',
           foundVacancies: 12,
@@ -99,7 +103,8 @@ export default function MonitoringDashboard() {
           id: 'vfs_global_monitor',
           name: 'VFS Global Monitor',
           type: 'web',
-          url: 'https://visa.vfsglobal.com',
+          url: 'https://visa.vfsglobal.com'
+
           status: 'active',
           lastUpdate: '2024-01-15T12:32:00Z',
           foundVacancies: 6,

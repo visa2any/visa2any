@@ -1,10 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',import { verifyAuth } from '@/lib/auth',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { verifyAuth } from 'next/server'
+
 export const dynamic = 'force-dynamic',
+
 export async function GET(request: NextRequest) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Buscar todas as consultorias,    const consultations = await prisma.consultation.findMany({,      include: {,        client: {,          select: {,            name: true,            email: true,            phone: true
+    // Buscar todas as consultorias,    const consultations = await prisma.consultation.findMany({,      include: {,        client: {,          select: {,            name: true,            email: true
+            phone: true
           }
         },        consultant: {,          select: {,            name: true,            email: true
           }
@@ -13,7 +19,8 @@ export async function GET(request: NextRequest) {,  try {
       }
     })
 
-    // Gerar CSV,    const csvRows = [
+    // Gerar CSV
+    const csvRows = [
       // Header,      [
         'ID',        'Tipo',        'Status', ,        'Cliente',        'Email Cliente',        'Telefone Cliente',        'Consultor',        'Data Agendada',        'Data Realizada',        'Duração (min)',        'Notas',        'Score',        'Data Criação'
       ].join(',')
@@ -28,7 +35,9 @@ export async function GET(request: NextRequest) {,  try {
 
     const csvContent = csvRows.join('\n')
     
-    // Adicionar BOM para suporte ao UTF-8 no Excel,    const bom = '\uFEFF',    const finalCsv = bom + csvContent,    
+    // Adicionar BOM para suporte ao UTF-8 no Excel
+    const bom =  
+const finalCsv = bom + csvContent,    
     return new NextResponse(finalCsv, {,      headers: {,        'Content-Type': 'text/csv; charset=utf-8',        'Content-Disposition': `attachment; filename="consultorias-${new Date().toISOString().split('T')[0]}.csv"`
       }
     })

@@ -38,7 +38,8 @@ export async function GET(
       }
     })
 
-    // Buscar posts relacionados (mesma categoria, exceto o atual)
+    // Buscar posts relacionados (mesma categoria
+ exceto o atual)
     const relatedPosts = await prisma.blogPost.findMany({
       where: {
         category: post.category,

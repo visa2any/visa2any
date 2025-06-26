@@ -36,7 +36,8 @@ export async function POST(request: NextRequest) {
           })
         }
       } catch (tokenError) {
-        // Token inválido, mas continua com logout
+        // Token inválido
+ mas continua com logout
       }
     }
 
@@ -59,7 +60,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no logout:', error)
     
-    // Mesmo com erro, remover cookie
+    // Mesmo com erro
+ remover cookie
     const response = NextResponse.json({
       success: true,
       message: 'Logout realizado'

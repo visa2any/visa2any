@@ -538,7 +538,8 @@ export default function BlogPostPage() {
         window.open(`https://wa.me/?text=${encodeURIComponent(`${title}\n\n${url}`)}`, '_blank')
         break
       case 'instagram':
-        // Instagram doesn't support direct sharing via URL, copy to clipboard instead
+        // Instagram doesn't support direct sharing via URL
+ copy to clipboard instead
         navigator.clipboard.writeText(`${title}\n\n${url}\n\n#visa2any #imigração #visto`)
         alert('Texto copiado! Cole no seu Instagram Stories ou post.')
         break

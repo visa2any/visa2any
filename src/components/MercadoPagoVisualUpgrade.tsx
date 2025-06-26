@@ -341,7 +341,8 @@ export default function MercadoPagoVisualUpgrade({
       })
 
       if (methods.length === 0) {
-        // Se não encontrou, tentar novamente em 1 segundo
+        // Se não encontrou
+ tentar novamente em 1 segundo
         setTimeout(stylePaymentMethods, 1000)
         return
       }

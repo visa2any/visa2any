@@ -1,10 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',import { verifyAuth } from '@/lib/auth',
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { verifyAuth } from 'next/server'
+
 export const dynamic = 'force-dynamic',
+
 export async function GET(request: NextRequest) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Buscar todos os clientes,    const clients = await prisma.client.findMany({,      select: {,        id: true,        name: true,        email: true,        phone: true,        country: true,        nationality: true,        age: true,        profession: true,        education: true,        targetCountry: true,        visaType: true,        status: true,        createdAt: true,        assignedUser: {,          select: {,            name: true
+    // Buscar todos os clientes,    const clients = await prisma.client.findMany({,      select: {,        id: true,        name: true,        email: true,        phone: true,        country: true,        nationality: true,        age: true,        profession: true,        education: true,        targetCountry: true,        visaType: true,        status: true,        createdAt: true,        assignedUser: {,          select: {
+            name: true
           }
         },        _count: {,          select: {,            consultations: true,            payments: true
           }
@@ -13,7 +19,8 @@ export async function GET(request: NextRequest) {,  try {
       }
     })
 
-    // Gerar CSV,    const csvRows = [
+    // Gerar CSV
+    const csvRows = [
       // Header,      [
         'ID',        'Nome',        'Email', ,        'Telefone',        'País',        'Nacionalidade',        'Idade',        'Profissão',        'Educação',        'País Destino',        'Tipo de Visto',        'Status',        'Consultor',        'Consultorias',        'Pagamentos',        'Data Cadastro'
       ].join(',')
@@ -28,7 +35,9 @@ export async function GET(request: NextRequest) {,  try {
 
     const csvContent = csvRows.join('\n')
     
-    // Adicionar BOM para suporte ao UTF-8 no Excel,    const bom = '\uFEFF',    const finalCsv = bom + csvContent,    
+    // Adicionar BOM para suporte ao UTF-8 no Excel
+    const bom =  
+const finalCsv = bom + csvContent,    
     return new NextResponse(finalCsv, {,      headers: {,        'Content-Type': 'text/csv; charset=utf-8',        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`
       }
     })

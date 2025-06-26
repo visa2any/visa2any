@@ -1,9 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server',
+import { NextRequest, NextResponse } from 'next/server'
+
+
 export async function POST(request: NextRequest) {,  try {,    const { offerId, customerId, priceId } = await request.json(),
     console.log('🛒 Processando compra de upsell:', { offerId, customerId, priceId })
 
-    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe, etc.)
-    // Por agora, vamos simular uma resposta de sucesso,
+    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe
+ etc.)
+    // Por agora, vamos simular uma resposta de sucesso
+
     const upsellProducts = {,      'vip-upgrade': {,        name: 'Upgrade VIP',        price: 3497,        description: 'Serviço premium com garantia de aprovação'
       },      'priority-processing': {,        name: 'Processamento Prioritário',        price: 697,        description: 'Acelere seu processo em 50%'
       },      'consultation-boost': {,        name: 'Consultoria Estratégica',        price: 397,        description: 'Aumente seu score de elegibilidade'
@@ -16,7 +20,8 @@ export async function POST(request: NextRequest) {,  try {,    const { offerId, 
       )
     }
 
-    // Simular criação de ordem de pagamento,    const paymentUrl = `/checkout?product=${offerId}&customer=${customerId}&price=${product.price}`,
+    // Simular criação de ordem de pagamento,    const paymentUrl = `/checkout?product=${offerId}&customer=${customerId}&price=${product.price}`
+
     return NextResponse.json({,      success: true,      message: 'Redirecionando para pagamento',      paymentUrl,      product
     })
 

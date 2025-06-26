@@ -99,7 +99,8 @@ export async function PUT(
       }
     })
 
-    // Se pagamento foi confirmado, processar automações
+    // Se pagamento foi confirmado
+ processar automações
     if (validatedData.status === 'COMPLETED' && existingPayment.status !== 'COMPLETED') {
       await processPaymentSuccess(payment)
     }
@@ -198,7 +199,8 @@ export async function POST(
       }
     })
 
-    // Se pagamento foi confirmado, processar automações
+    // Se pagamento foi confirmado
+ processar automações
     if (newStatus === 'COMPLETED' && payment.status !== 'COMPLETED') {
       await processPaymentSuccess(updatedPayment)
     }
@@ -331,7 +333,8 @@ async function processPaymentSuccess(payment: any) {
     await prisma.client.update({
       where: { id: payment.clientId }
       data: { 
-        status: 'IN_PROCESS' // Cliente pagou, agora está em processo
+        status: 'IN_PROCESS' // Cliente pagou
+ agora está em processo
       }
     })
 

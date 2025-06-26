@@ -58,7 +58,8 @@ function checkFile(filePath) {
     
     // Check for object literals missing commas
     if (line.match(/[a-zA-Z0-9_"']\s*[a-zA-Z0-9_"'].*:/)) {
-      // This is a property line, check if previous line ended without comma
+      // This is a property line
+ check if previous line ended without comma
       if (i > 0) {
         const prevLine = lines[i - 1].trim();
         if (prevLine && 

@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Se for para sugestões, retornar resultados mais rápidos
+    // Se for para sugestões
+ retornar resultados mais rápidos
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({

@@ -325,7 +325,8 @@ export default function BlogPostClient({ slug }: Props) {
         shareUrlFinal = `https://wa.me/?text=${title} ${url}`
         break
       case 'instagram':
-        // Instagram não permite compartilhamento direto via URL, então copiamos o link
+        // Instagram não permite compartilhamento direto via URL
+ então copiamos o link
         navigator.clipboard.writeText(shareUrl)
         alert('Link copiado! Cole no Instagram Stories.')
         return

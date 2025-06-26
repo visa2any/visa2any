@@ -294,7 +294,8 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
     sendAt.setDate(sendAt.getDate() + email.day)
     sendAt.setHours(email.hour || 10, 0, 0, 0)
 
-    // Em produção, usar sistema de filas (Redis/Bull) para agendar
+    // Em produção
+ usar sistema de filas (Redis/Bull) para agendar
     console.log(`📅 Agendando email: ${email.template} para ${sendAt.toISOString()}`)
 
     scheduledEmails.push({

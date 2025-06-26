@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
       html: validatedData.message || ''
     }
 
-    // Se usar template, carregar template e processar variáveis
+    // Se usar template
+ carregar template e processar variáveis
     if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
       const template = EMAIL_TEMPLATES[validatedData.template]
       emailContent.subject = template.subject
@@ -233,7 +234,8 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
     }
   }
 
-  // Se nada funcionou, simular envio
+  // Se nada funcionou
+ simular envio
   console.log('📧 SIMULANDO ENVIO DE EMAIL (SMTP não configurado):')
   console.log('Para:', to)
   console.log('Assunto:', subject)

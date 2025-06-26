@@ -198,7 +198,8 @@ function generateTransactionId(): string {
 
 // Função para gerar link de pagamento (simulado)
 async function generatePaymentLink(payment: any) {
-  // Em produção, integraria com Stripe, Mercado Pago, etc.
+  // Em produção, integraria com Stripe, Mercado Pago
+ etc.
   
   // Simular diferentes métodos de pagamento baseado na moeda
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'

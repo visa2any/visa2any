@@ -149,7 +149,8 @@ export default function LeadMagnetsPage() {
       // Simular download
       const magnet = LEAD_MAGNETS.find(m => m.id === magnetId)
       if (magnet) {
-        // Em produção, servir arquivo real
+        // Em produção
+ servir arquivo real
         console.log(`Downloading: ${magnet.file}`)
         
         // Trigger email automático

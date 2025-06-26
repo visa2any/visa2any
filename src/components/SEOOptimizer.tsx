@@ -85,8 +85,10 @@ export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Visa2Any',
-  url: 'https://visa2any.com',
-  logo: 'https://visa2any.com/logo.png',
+  url: 'https://visa2any.com'
+
+  logo: 'https://visa2any.com/logo.png'
+
   description: 'Plataforma líder em assessoria de vistos, imigração e relocação internacional',
   contactPoint: {
     '@type': 'ContactPoint',

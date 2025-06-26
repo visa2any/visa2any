@@ -101,7 +101,8 @@ const blogPosts: BlogPost[] = [
     comments: 287,
     difficulty: 'Intermediário',
     type: 'Guia',
-    imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=400&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=400&fit=crop'
+
     videoUrl: 'https://youtube.com/watch?v=usa-visa'
   },
   {

@@ -174,7 +174,8 @@ export async function GET(request: NextRequest) {
 
     // Buscar estatísticas
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
-      // Total de leads,
+      // Total de leads
+
       prisma.client.count({
         where: { status: 'LEAD' }
       })
@@ -313,7 +314,8 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
     })
 
     // Agendar emails de nurturing
-    // Em produção, usar queue/scheduler
+    // Em produção
+ usar queue/scheduler
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
   } catch (error) {

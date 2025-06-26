@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Se pagamento aprovado, atualizar status do cliente
+        // Se pagamento aprovado
+ atualizar status do cliente
         if (status === 'approved') {
           await prisma.client.update({
             where: { id: payment.clientId }
@@ -86,7 +87,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Se não encontrou o pagamento, criar log
+    // Se não encontrou o pagamento
+ criar log
     console.warn('⚠️ Pagamento não encontrado:', {
       payment_id,
       external_reference,

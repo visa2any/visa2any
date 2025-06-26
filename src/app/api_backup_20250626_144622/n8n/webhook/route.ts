@@ -267,7 +267,8 @@ async function handleClientRiskAlert(data: any) {
     }
   })
 
-  // If high risk, schedule immediate consultant contact
+  // If high risk
+ schedule immediate consultant contact
   if (riskScore > 80) {
     await prisma.consultation.create({
       data: {

@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server',import { medicalExamService } from '@/lib/medical-exams'
+import { NextRequest, NextResponse } from 'next/server'
+import { medicalExamService } from '@/lib/medical-exams'
 
-// GET - Verificar status do exame,export async function GET(,  request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId = params.bookingId,
-    const result = await medicalExamService.getExamStatus(bookingId),
+// GET - Verificar status do exame,
+export async function GET(
+  request: NextRequest,  { params }: { params: { bookingId: string } }
+) {,  try {,    const bookingId =  
+const result = await medicalExamService.getExamStatus(bookingId),
     if (result.success) {,      return NextResponse.json({,        booking: result.booking,        message: 'Status do exame recuperado com sucesso'
       })
     } else {,      return NextResponse.json(,        { status: 404 }
@@ -14,8 +17,12 @@ import { NextRequest, NextResponse } from 'next/server',import { medicalExamServ
   }
 }
 
-// PUT - Reagendar exame,export async function PUT(,  request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId = params.bookingId,    const body = await request.json(),    const { newDate, newTime } = body,
+// PUT - Reagendar exame,
+export async function PUT(
+  request: NextRequest,  { params }: { params: { bookingId: string } }
+) {,  try {,    const bookingId =  
+const body = await request.json()
+    const { newDate, newTime } = body,
     if (!newDate || !newTime) {,      return NextResponse.json(,        { error: 'Campos newDate e newTime são obrigatórios' },        { status: 400 }
       )
     },
@@ -31,9 +38,11 @@ import { NextRequest, NextResponse } from 'next/server',import { medicalExamServ
   }
 }
 
-// DELETE - Cancelar exame,export async function DELETE(,  request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId = params.bookingId,
-    const result = await medicalExamService.cancelExam(bookingId),
+// DELETE - Cancelar exame,
+export async function DELETE(
+  request: NextRequest,  { params }: { params: { bookingId: string } }
+) {,  try {,    const bookingId =  
+const result = await medicalExamService.cancelExam(bookingId),
     if (result.success) {,      return NextResponse.json({,        message: result.message,        cancelledAt: new Date().toISOString()
       })
     } else {,      return NextResponse.json(,      { error: 'Dados inválidos' },      { status: 400 }

@@ -99,7 +99,8 @@ export function AdvancedAnalytics({ period = '30' }: AdvancedAnalyticsProps) {
     try {
       setIsLoading(true)
       
-      // Mock analytics data - in production, this would come from API
+      // Mock analytics data - in production
+ this would come from API
       const mockAnalytics: AnalyticsData = {
         overview: {
           totalRevenue: 485000,

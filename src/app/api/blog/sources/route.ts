@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-// GET - Listar todas as fontes de notícias,export async function GET() {,  try {,    const sources = await prisma.newsSource.findMany({,      include: {,        logs: {,          orderBy: { createdAt: 'desc' },          take: 5
+// GET - Listar todas as fontes de notícias,
+export async function GET() {,  try {,    const sources = await prisma.newsSource.findMany({,      include: {,        logs: {,          orderBy: { createdAt: 'desc' }
+          take: 5
         }
       },      orderBy: [,        { priority: 'desc' },        { name: 'asc' }
       ]
@@ -13,14 +16,19 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   }
 }
 
-// POST - Adicionar nova fonte,export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    const {,      name,      url,      type,      category,      country,      flag,      keywords,      priority,      checkInterval
+// POST - Adicionar nova fonte,
+export async function POST(request: NextRequest) {,  try {
+    const body = await request.json()
+const {,      name,      url,      type,      category,      country,      flag,      keywords,      priority,      checkInterval
     } = body
 
-    // Validação,    if (!name || !url || !type || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: name, url, type, category' },        { status: 400 }
+    // Validação,    if (!name || !url || !type || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: name, url, type
+ category' },        { status: 400 }
       )
     }
 
-    // Verificar se URL já existe,    const existingSource = await prisma.newsSource.findUnique({,      where: { url }
+    // Verificar se URL já existe,    const existingSource = await prisma.newsSource.findUnique({
+      where: { url }
     }),
     if (existingSource) {,      return NextResponse.json(,        { error: 'Fonte com esta URL já existe' },        { status: 409 }
       )
@@ -36,7 +44,10 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   }
 }
 
-// PUT - Atualizar fonte existente,export async function PUT(request: NextRequest) {,  try {,    const body = await request.json(),    const { id, ...updateData } = body,
+// PUT - Atualizar fonte existente,
+export async function PUT(request: NextRequest) {,  try {
+    const body = await request.json()
+const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json(,        { error: 'ID da fonte é obrigatório' },        { status: 400 }
       )
     },
@@ -52,15 +63,19 @@ import { NextRequest, NextResponse } from 'next/server',import { prisma } from '
   }
 }
 
-// DELETE - Remover fonte,export async function DELETE(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const id = searchParams.get('id'),
+// DELETE - Remover fonte,
+export async function DELETE(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const id = searchParams.get('id')
+
     if (!id) {,      return NextResponse.json(,        { error: 'ID da fonte é obrigatório' },        { status: 400 }
       )
     }
 
-    // Primeiro deletar logs relacionados,    await prisma.autoNewsLog.deleteMany({,      where: { sourceId: id }
+    // Primeiro deletar logs relacionados,    await prisma.autoNewsLog.deleteMany({
+      where: { sourceId: id }
     })
 
-    // Depois deletar a fonte,    await prisma.newsSource.delete({,      where: { id }
+    // Depois deletar a fonte,    await prisma.newsSource.delete({
+      where: { id }
     }),
     return NextResponse.json({,      success: true,      message: 'Fonte removida com sucesso'
     })

@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
 
     // Buscar dados básicos
     const [totalClients, totalUsers, allClients] = await Promise.all([
-      // Total de clientes,
+      // Total de clientes
+
       prisma.client.count().catch(() => 0)
       
       // Total de usuários 

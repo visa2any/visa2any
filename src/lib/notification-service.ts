@@ -30,7 +30,8 @@ interface EmailMessage {
 
 class NotificationService {
   private readonly whatsappConfig = {
-    apiUrl: process.env.WHATSAPP_API_URL || 'https://api.whatsapp.com/send',
+    apiUrl: process.env.WHATSAPP_API_URL || 'https://api.whatsapp.com/send'
+
     token: process.env.WHATSAPP_API_TOKEN || '',
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
     businessPhone: process.env.WHATSAPP_BUSINESS_PHONE || '+5511999999999'
@@ -474,8 +475,10 @@ class NotificationService {
 
   // Método auxiliar para buscar dados do agendamento
   private async getBookingData(trackingId: string): Promise<any> {
-    // Em produção, buscaria do banco de dados
-    // Por enquanto, retornamos dados simulados
+    // Em produção
+ buscaria do banco de dados
+    // Por enquanto
+ retornamos dados simulados
     return {
       trackingId,
       customerName: 'Cliente Teste',

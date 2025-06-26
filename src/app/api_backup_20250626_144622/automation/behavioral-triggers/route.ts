@@ -280,7 +280,8 @@ async function checkUserConversion(clientId?: string) {
 }
 
 async function getSessionActions(sessionId?: string) {
-  // Em produção, usar analytics ou session tracking
+  // Em produção
+ usar analytics ou session tracking
   return {
     pageViews: 7,
     hasConverted: false,

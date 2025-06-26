@@ -195,7 +195,8 @@ export async function POST(request: NextRequest) {
       payments.push(payment)
     }
 
-    // TODO: Integrar com sistema de pagamento (PIX, transferência, etc.)
+    // TODO: Integrar com sistema de pagamento (PIX, transferência
+ etc.)
     // await processPayments(payments)
 
     return NextResponse.json({
@@ -261,7 +262,8 @@ export async function PUT(request: NextRequest) {
       }
     })
 
-    // Se pagamento foi completado, atualizar comissões e afiliado
+    // Se pagamento foi completado
+ atualizar comissões e afiliado
     if (status === 'COMPLETED') {
       // Marcar comissões como pagas
       await prisma.affiliateCommission.updateMany({
@@ -281,7 +283,8 @@ export async function PUT(request: NextRequest) {
       })
     }
 
-    // Se pagamento falhou, reverter comissões
+    // Se pagamento falhou
+ reverter comissões
     if (status === 'FAILED' || status === 'CANCELLED') {
       await prisma.affiliateCommission.updateMany({
         where: { paymentId },

@@ -43,7 +43,8 @@ class WebScrapingService {
     {
       id: 'casv_brazil',
       name: 'CASV Brasil (CGI Federal)',
-      url: 'https://cgifederal.secure.force.com',
+      url: 'https://cgifederal.secure.force.com'
+
       country: 'usa',
       selectors: {
         availability: '.calendar-day.available',
@@ -60,7 +61,8 @@ class WebScrapingService {
     {
       id: 'vfs_sao_paulo',
       name: 'VFS Global São Paulo',
-      url: 'https://visa.vfsglobal.com/bra/en/gbr',
+      url: 'https://visa.vfsglobal.com/bra/en/gbr'
+
       country: 'uk',
       selectors: {
         availability: '.calendar-available',
@@ -77,7 +79,8 @@ class WebScrapingService {
     {
       id: 'consulado_alemao',
       name: 'Consulado Alemão São Paulo',
-      url: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do',
+      url: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do'
+
       country: 'germany',
       selectors: {
         availability: '.buchbar',
@@ -94,7 +97,8 @@ class WebScrapingService {
     {
       id: 'consulado_frances',
       name: 'TLS Contact França',
-      url: 'https://appointment.tlscontact.com/br2fr',
+      url: 'https://appointment.tlscontact.com/br2fr'
+
       country: 'france',
       selectors: {
         availability: '.calendar-day-available',
@@ -111,7 +115,8 @@ class WebScrapingService {
     {
       id: 'consulado_canadense',
       name: 'VFS Global Canadá',
-      url: 'https://visa.vfsglobal.com/bra/en/can',
+      url: 'https://visa.vfsglobal.com/bra/en/can'
+
       country: 'canada',
       selectors: {
         availability: '.available-slot',

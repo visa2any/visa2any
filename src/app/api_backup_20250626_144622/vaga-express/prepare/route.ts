@@ -14,8 +14,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Salvar dados temporariamente (poderia ser Redis, DB, etc.)
-    // Por agora, apenas logar para debug
+    // Salvar dados temporariamente (poderia ser Redis, DB
+ etc.)
+    // Por agora
+ apenas logar para debug
     console.log('🥇 Vaga Express preparado:', {
       purchaseId: body.purchaseId,
       plan: body.plan,
@@ -24,7 +26,8 @@ export async function POST(request: NextRequest) {
       country: body.country
     })
 
-    // Em produção, aqui salvaria no banco de dados temporário
+    // Em produção
+ aqui salvaria no banco de dados temporário
     // ou enviaria para fila de processamento
 
     return NextResponse.json({
