@@ -57,9 +57,9 @@ export async function GET(request: NextRequest) {
             targetCountry: true,
             visaType: true,
             status: true,
-            score: true
-            createdAt: true
-            updatedAt: true
+            score: true,
+            createdAt: true,
+            updatedAt: true,
             notes: true
           }
         })

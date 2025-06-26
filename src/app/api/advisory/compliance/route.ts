@@ -16,7 +16,7 @@ const complianceCheckSchema = z.object({
     expiryDate: z.string().optional(),
     issuingCountry: z.string().optional(),
     metadata: z.record(z.any()).optional()
-  }))
+  })),
   checkType: z.enum([
     'pre_submission'
     'embassy_compliance'

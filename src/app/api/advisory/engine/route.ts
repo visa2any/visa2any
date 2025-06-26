@@ -16,7 +16,7 @@ const advisoryQuerySchema = z.object({
     income: z.string().optional(),
     languages: z.array(z.string()).optional(),
     currentCountry: z.string().optional()
-  })
+  }),
   documents: z.array(z.object({
     type: z.string()
     status: z.string()

@@ -88,7 +88,7 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
 
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao ativar web scraping'
+      error: 'Erro ao ativar web scraping',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }

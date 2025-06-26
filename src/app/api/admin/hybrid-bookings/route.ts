@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 async function updateBookingStatus(bookingId: string, status: string, appointmentDetails?: any) {
   try {
     const updateData: any = {
-      status
+      status,
       updatedAt: new Date()
     }
 
