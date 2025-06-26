@@ -16,10 +16,10 @@ const nurturingSchema = z.object({
     'success_celebration',
     'referral_request'
   ]),
-  triggerData: z.record(z.any()).optional()
+  triggerData: z.record(z.any()).optional(),
   customSchedule: z.array(z.object({
     day: z.number(),
-    hour: z.number().optional()
+    hour: z.number().optional(),
     template: z.string()
   })).optional()
 })

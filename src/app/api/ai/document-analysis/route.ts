@@ -158,7 +158,7 @@ export async function GET(
   } catch (error) {
     console.error('Erro ao buscar análise:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
