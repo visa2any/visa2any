@@ -100,14 +100,14 @@ export async function POST(request: NextRequest) {
         { 
           error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
 
     console.error('Error adding blog comment:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching blog comments:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

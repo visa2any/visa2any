@@ -278,7 +278,7 @@ São Paulo, 20 de dezembro de 2023`
   const text = mockTexts[document.type] || `Document content for ${document.fileName}`
   
   return {
-    text: text
+    text: text,
     confidence: 0.95,
     language: 'pt',
     pages: 1,

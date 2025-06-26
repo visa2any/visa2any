@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        sequenceType: validatedData.sequenceType
+        sequenceType: validatedData.sequenceType,
         emailsScheduled: scheduledEmails.length,
         duration: `${personalizedSequence.duration} dias`,
         firstEmail: scheduledEmails[0]?.sendAt

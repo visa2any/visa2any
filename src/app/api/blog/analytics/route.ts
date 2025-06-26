@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         publishDate: {
           gte: dateFrom
         }
-      }
+      },
       select: {
         id: true,
         title: true,
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
         category: true,
         country: true,
         flag: true
-      }
+      },
       orderBy: {
         views: 'desc'
       },
@@ -80,14 +80,14 @@ export async function GET(request: NextRequest) {
       by: ['category'],
       where: {
         published: true
-      }
+      },
       _count: {
         category: true
-      }
+      },
       _sum: {
         views: true,
         likes: true
-      }
+      },
       orderBy: {
         _count: {
           category: 'desc'
@@ -103,19 +103,19 @@ export async function GET(request: NextRequest) {
         country: {
           not: null
         }
-      }
+      },
       _count: {
         country: true
-      }
+      },
       _sum: {
         views: true,
         likes: true
-      }
+      },
       orderBy: {
         _count: {
           country: 'desc'
         }
-      }
+      },
       take: 10
     })
 
@@ -124,10 +124,10 @@ export async function GET(request: NextRequest) {
       by: ['difficulty'],
       where: {
         published: true
-      }
+      },
       _count: {
         difficulty: true
-      }
+      },
       _sum: {
         views: true
       }
@@ -138,10 +138,10 @@ export async function GET(request: NextRequest) {
       by: ['type'],
       where: {
         published: true
-      }
+      },
       _count: {
         type: true
-      }
+      },
       _sum: {
         views: true
       }
@@ -164,10 +164,10 @@ export async function GET(request: NextRequest) {
         publishDate: {
           gte: dateFrom
         }
-      }
+      },
       _count: {
         publishDate: true
-      }
+      },
       orderBy: {
         publishDate: 'asc'
       }
@@ -175,15 +175,15 @@ export async function GET(request: NextRequest) {
 
     // Calcular taxa de engajamento média
     const avgEngagement = totalPosts > 0 ? {
-      viewsPerPost: Math.round((totalViews._sum.views || 0) / totalPosts)
-      likesPerPost: Math.round((totalLikes._sum.likes || 0) / totalPosts)
+      viewsPerPost: Math.round((totalViews._sum.views || 0) / totalPosts),
+      likesPerPost: Math.round((totalLikes._sum.likes || 0) / totalPosts),
       commentsPerPost: Math.round((totalComments._sum.comments || 0) / totalPosts)
     } : { viewsPerPost: 0, likesPerPost: 0, commentsPerPost: 0 }
 
     return NextResponse.json({
       analytics: {
         overview: {
-          totalPosts
+          totalPosts,
           publishedPosts,
           totalViews: totalViews._sum.views || 0,
           totalLikes: totalLikes._sum.likes || 0,
@@ -193,11 +193,11 @@ export async function GET(request: NextRequest) {
           trendingPosts,
           urgentPosts,
           avgEngagement,
-        }
+        },
         topPosts: topPosts.map(post => ({
           ...post,
           engagementRate: post.views > 0 ? ((post.likes + post.comments) / post.views * 100).toFixed(2) : '0.00'
-        }))
+        })),
         distribution: {
           categories: categoryStats.map(stat => ({
             category: stat.category,
@@ -205,35 +205,35 @@ export async function GET(request: NextRequest) {
             views: stat._sum.views || 0,
             likes: stat._sum.likes || 0,
             avgViewsPerPost: stat._count.category > 0 ? Math.round((stat._sum.views || 0) / stat._count.category) : 0
-          }))
+          })),
           countries: countryStats.map(stat => ({
             country: stat.country,
             posts: stat._count.country,
             views: stat._sum.views || 0,
             likes: stat._sum.likes || 0
-          }))
+          })),
           difficulties: difficultyStats.map(stat => ({
             difficulty: stat.difficulty,
             posts: stat._count.difficulty,
             views: stat._sum.views || 0,
             percentage: totalPosts > 0 ? ((stat._count.difficulty / totalPosts) * 100).toFixed(1) : '0.0'
-          }))
+          })),
           types: typeStats.map(stat => ({
             type: stat.type,
             posts: stat._count.type,
             views: stat._sum.views || 0,
             percentage: totalPosts > 0 ? ((stat._count.type / totalPosts) * 100).toFixed(1) : '0.0'
           }))
-        }
+        },
         timeline: {
           posts: postsOverTime.map(item => ({
             date: item.publishDate,
             count: item._count.publishDate
           }))
-        }
+        },
         period: {
           days: periodDays,
-          from: dateFrom.toISOString()
+          from: dateFrom.toISOString(),
           to: new Date().toISOString()
         }
       }
@@ -244,7 +244,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      }
+      },
       { status: 500 }
     )
   }
