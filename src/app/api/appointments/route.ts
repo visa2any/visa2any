@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao fazer agendamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -109,7 +109,7 @@ export async function PUT(request: NextRequest) {
 
     if (!appointmentId || !newDate || !newTime || !consulate) {
       return NextResponse.json(
-        { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' }
+        { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' },
         { status: 400 }
       )
     }
@@ -124,25 +124,25 @@ export async function PUT(request: NextRequest) {
     if (result.success) {
       return NextResponse.json({
         appointment: {
-          id: result.appointmentId
+          id: result.appointmentId,
           confirmationCode: result.confirmationCode,
           date: result.date,
           time: result.time,
           location: result.location
-        }
+        },
         message: 'Agendamento reagendado com sucesso!'
       })
     } else {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
   } catch (error) {
     console.error('Erro ao reagendar:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

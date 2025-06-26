@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar usuário
     const user = await prisma.user.findUnique({
-      where: { email: validatedData.email }
+      where: { email: validatedData.email },
       select: {
         id: true,
         name: true,
@@ -84,15 +84,15 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return NextResponse.json(
-      { error: 'Erro interno do servidor' }
-      { status: 500 }
-    )
+        { error: 'Erro interno do servidor' },
+        { status: 500 }
+      )
     }
 
     // Gerar JWT token com configurações de segurança melhoradas
     const token = jwt.sign(
       { 
-        userId: user.id 
+        userId: user.id,
         email: user.email, 
         role: user.role,
         iat: Math.floor(Date.now() / 1000), // ✅ Issued at
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       data: {
         user: userData,
         token,
-      }
+      },
       message: 'Login realizado com sucesso'
     })
 
@@ -167,9 +167,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     const errorStack = error instanceof Error ? error.stack : undefined
     console.error('Error details:', errorMessage, errorStack)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

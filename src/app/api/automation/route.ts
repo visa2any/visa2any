@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-        { error: 'Campos country e visaType são obrigatórios' }
+        { error: 'Campos country e visaType são obrigatórios' },
         { status: 400 }
       )
     }
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const result = await costEffectiveSolutions.playwrightAutomation(country, visaType)
         
         return NextResponse.json({
-          success: result.success
+          success: result.success,
           country,
           visaType,
           slots: result.slots,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         const monitoring = await costEffectiveSolutions.setupVacancyMonitoring([country])
         
         return NextResponse.json({
-          success: monitoring.success
+          success: monitoring.success,
           monitoringId: monitoring.monitoringId,
           target: monitoring.targets[0],
           message: `Monitoramento iniciado para ${country}`,
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Action deve ser "search_slots" ou "start_monitoring"' }
+          { error: 'Action deve ser "search_slots" ou "start_monitoring"' },
           { status: 400 }
         )
     }
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na API de automação:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -80,14 +80,14 @@ export async function GET(request: NextRequest) {
       case 'status':
         // Status geral do sistema de automação
         return NextResponse.json({
-          success: true
+          success: true,
           automation: {
             playwright: {
               status: 'Ativo',
               version: 'Latest',
               browsers: ['Chromium', 'Firefox', 'Safari'],
               cost: 'R$ 2 por consulta'
-            }
+            },
             monitoring: {
               countries: ['usa', 'canada', 'uk', 'germany', 'france'],
               intervals: {
@@ -98,14 +98,14 @@ export async function GET(request: NextRequest) {
                 france: '35 min'
               }
               status: 'Configurado'
-            }
+            },
             notifications: {
               whatsapp: 'Ativo',
               email: 'Ativo',
               telegram: 'Disponível',
               dashboard: 'Online'
             }
-          }
+          },
           performance: {
             successRate: '75%',
             avgResponseTime: '30 segundos',
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
       case 'supported_countries':
         // Países suportados pela automação
         return NextResponse.json({
-          success: true
+          success: true,
           countries: [
             {
               code: 'usa',
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
               reliability: '80%',
               interval: '30 min',
               status: 'Ativo'
-            }
+            },
             {
               code: 'canada',
               name: 'Canadá',
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
               reliability: '75%',
               interval: '20 min',
               status: 'Ativo'
-            }
+            },
             {
               code: 'uk',
               name: 'Reino Unido',
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
               reliability: '70%',
               interval: '25 min',
               status: 'Ativo'
-            }
+            },
             {
               code: 'germany',
               name: 'Alemanha',
@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
               reliability: '65%',
               interval: '45 min',
               status: 'Ativo'
-            }
+            },
             {
               code: 'france',
               name: 'França',
@@ -167,24 +167,24 @@ export async function GET(request: NextRequest) {
       case 'costs':
         // Custos detalhados da automação
         return NextResponse.json({
-          success: true
+          success: true,
           pricing: {
             setup: {
               cost: 'R$ 0',
               description: 'Playwright é gratuito e open source'
-            }
+            },
             operation: {
               perQuery: 'R$ 2',
               monthly: 'R$ 50',
               description: 'Apenas custo de servidor/infra'
-            }
+            },
             comparison: {
               officialAPIs: 'R$ 25.000+ (setup) + taxas',
               partnerAPIs: 'R$ 299-599/mês + R$ 15/transação',
               automation: 'R$ 50/mês total',
               savings: 'Até 95% de economia'
             }
-          }
+          },
           roi: {
             breakEven: '3 agendamentos/mês',
             potential: 'R$ 10k+/mês com volume',
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Action deve ser: status, supported_countries, ou costs' }
+          { error: 'Action deve ser: status, supported_countries, ou costs' },
           { status: 400 }
         )
     }
@@ -202,7 +202,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro na consulta de automação:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

@@ -4,11 +4,11 @@ import { z } from 'zod'
 
 // Schema para criar pagamento
 const createPaymentSchema = z.object({
-  clientId: z.string().min(1, 'Cliente é obrigatório')
-  amount: z.number().min(0.01, 'Valor deve ser maior que 0')
-  currency: z.string().default('BRL')
-  description: z.string().min(1, 'Descrição é obrigatória')
-  paymentMethod: z.string().optional()
+  clientId: z.string().min(1, 'Cliente é obrigatório'),
+  amount: z.number().min(0.01, 'Valor deve ser maior que 0'),
+  currency: z.string().default('BRL'),
+  description: z.string().min(1, 'Descrição é obrigatória'),
+  paymentMethod: z.string().optional(),
   dueDate: z.string().datetime().optional()
 })
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar pagamentos
-    const [payments, total] = await Promise.all([,
+    const [payments, total] = await Promise.all([
       prisma.payment.findMany({
         where,
         skip,
@@ -51,21 +51,21 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-      })
+      }),
       prisma.payment.count({ where })
     ])
 
     // Estatísticas
     const stats = await prisma.payment.aggregate({
-      where: clientId ? { clientId } : {}
-      _sum: { amount: true }
+      where: clientId ? { clientId } : {},
+      _sum: { amount: true },
       _count: { id: true }
     })
 
     const statusStats = await prisma.payment.groupBy({
       by: ['status'],
-      _count: { status: true }
-      _sum: { amount: true }
+      _count: { status: true },
+      _sum: { amount: true },
       where: clientId ? { clientId } : {}
     })
 
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        payments
+        payments,
         stats: {
           totalAmount: stats._sum.amount || 0,
           totalPayments: stats._count || 0,
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
             }
             return acc
           }, {} as Record<string, any>)
-        }
+        },
         pagination: {
           page,
           limit,
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { error: 'Cliente não encontrado' }
+        { error: 'Cliente não encontrado' },
         { status: 404 }
       )
     }
@@ -128,11 +128,11 @@ export async function POST(request: NextRequest) {
     // Criar pagamento
     const payment = await prisma.payment.create({
       data: {
-        ...validatedData
+        ...validatedData,
         transactionId,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
         status: 'PENDING'
-      }
+      },
       include: {
         client: {
           select: { 
@@ -152,9 +152,9 @@ export async function POST(request: NextRequest) {
         action: 'create_payment',
         clientId: validatedData.clientId,
         details: {
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
           action: 'automated_action'
-        }
+        },
         success: true
       }
     })
@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...payment
+        ...payment,
         paymentLink,
-      }
+      },
       message: 'Pagamento criado com sucesso'
     }, { status: 201 })
 
@@ -174,16 +174,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
 
     console.error('Erro ao criar pagamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -206,23 +206,23 @@ async function generatePaymentLink(payment: any) {
   if (payment.currency === 'BRL') {
     // Mercado Pago para BRL
     return {
-      provider: 'Mercado Pago'
+      provider: 'Mercado Pago',
       url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,
       qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,
-      pixKey: generatePixKey()
+      pixKey: generatePixKey(),
       methods: ['PIX', 'Cartão de Crédito', 'Boleto'],
     }
   } else if (payment.currency === 'USD') {
     // Stripe para USD
     return {
-      provider: 'Stripe'
+      provider: 'Stripe',
       url: `${baseUrl}/api/payments/${payment.id}/stripe`,
       methods: ['Credit Card', 'Bank Transfer'],
     }
   } else {
     // PayPal para outras moedas
     return {
-      provider: 'PayPal'
+      provider: 'PayPal',
       url: `${baseUrl}/api/payments/${payment.id}/paypal`,
       methods: ['PayPal', 'Credit Card'],
     }
@@ -244,7 +244,7 @@ export async function PUT(request: NextRequest) {
       // Retornar pacotes disponíveis
       const packages = [
         {
-          id: 'basic_consultation'
+          id: 'basic_consultation',
           name: 'Consulta Básica',
           description: 'Análise de elegibilidade com IA + Consultoria humana de 30min',
           price: 299,
@@ -257,7 +257,7 @@ export async function PUT(request: NextRequest) {
             'Suporte por email 48h'
           ],
           popular: false
-        }
+        },
         {
           id: 'premium_consultation',
           name: 'Consulta Premium',
@@ -273,7 +273,7 @@ export async function PUT(request: NextRequest) {
             'Suporte prioritário'
           ],
           popular: true
-        }
+        },
         {
           id: 'vip_full_service',
           name: 'Serviço VIP Completo',
@@ -291,7 +291,7 @@ export async function PUT(request: NextRequest) {
           ],
           popular: false,
           guarantee: true
-        }
+        },
         // Pacotes internacionais
         {
           id: 'international_basic',
@@ -307,7 +307,7 @@ export async function PUT(request: NextRequest) {
             '48h email support'
           ],
           popular: false
-        }
+        },
         {
           id: 'international_premium',
           name: 'International Premium',
@@ -332,14 +332,14 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Dados inválidos' }
+      { error: 'Dados inválidos' },
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro ao processar planos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
