@@ -46,7 +46,7 @@ async function activateWebScraping() {
   try {
     if (webScrapingActive) {
       return NextResponse.json({ 
-        message: 'Web scraping já está ativo'
+        message: 'Web scraping já está ativo',
         status: 'active'
       })
     }
