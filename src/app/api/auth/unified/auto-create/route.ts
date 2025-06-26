@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await createCustomerAccount({
-      name
+      name,
       email,
       phone,
       country,

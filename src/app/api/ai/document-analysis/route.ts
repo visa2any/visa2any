@@ -146,7 +146,7 @@ export async function GET(
 
     return NextResponse.json({
       data: {
-        documentId: document.id
+        documentId: document.id,
         ocrText: document.ocrText,
         analysis: document.analysis,
         isValid: document.isValid,

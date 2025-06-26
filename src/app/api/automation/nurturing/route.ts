@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 // Schema para iniciar sequência de nurturing
 const nurturingSchema = z.object({
-  clientId: z.string().min(1, 'Cliente é obrigatório')
+  clientId: z.string().min(1, 'Cliente é obrigatório'),
   sequenceType: z.enum([
     'welcome_lead',
     'assessment_follow_up', 

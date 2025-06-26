@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Criar cookie de autenticação
     const response = NextResponse.json({
-      user: result.user
+      user: result.user,
       token: result.token
     })
 

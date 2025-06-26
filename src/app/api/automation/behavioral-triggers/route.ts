@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        triggered: triggerAnalysis.shouldTrigger
+        triggered: triggerAnalysis.shouldTrigger,
         action: triggerAnalysis.action,
         message: triggerAnalysis.message
       }
