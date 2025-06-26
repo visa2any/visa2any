@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         role: user.role,
         iat: Math.floor(Date.now() / 1000), // ✅ Issued at
         jti: crypto.randomUUID() // ✅ JWT ID único
-      }
+      },
       jwtSecret,
       { 
         expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)

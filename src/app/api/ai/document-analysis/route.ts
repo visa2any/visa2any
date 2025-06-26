@@ -125,7 +125,7 @@ export async function GET(
 ) {
   try {
     const document = await prisma.document.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
       include: {
         client: {
           select: {

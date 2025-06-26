@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       case 'process_order':
         await vagaExpressIntegration.processVagaExpressOrder(data)
         return NextResponse.json({
-          message: 'Pedido processado e monitoramento ativado!'
+          message: 'Pedido processado e monitoramento ativado!',
           orderId: `VE-${Date.now()}`,
         })
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro na API Vaga Express:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
+      error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     return NextResponse.json({
-      error: 'Erro ao buscar dados'
+      error: 'Erro ao buscar dados',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }

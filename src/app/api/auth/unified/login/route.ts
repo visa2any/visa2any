@@ -7,9 +7,9 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
-    )
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
     }
 
     let result
