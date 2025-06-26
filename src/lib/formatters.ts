@@ -93,8 +93,7 @@ export const formatters = {
     )
   },
 
-  // Passport number (alphanumeric
- uppercase)
+  // Passport number (alphanumeric uppercase)
   passport: (value: string): string => {
     return value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 9)
   },

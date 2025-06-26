@@ -100,8 +100,7 @@ export function CommunicationCenter({
 
   // Remove auto-scroll automático - apenas quando necessário
   useEffect(() => {
-    // Apenas rolar ao mudar de conversa
- não a cada atualização de mensagem
+    // Apenas rolar ao mudar de conversa, não a cada atualização de mensagem
     if (selectedConversation) {
       scrollToBottom(true)
     }
