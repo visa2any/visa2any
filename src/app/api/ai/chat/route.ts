@@ -434,7 +434,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
   // Buscar requisitos na base de conhecimento
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
-      country: { contains: country }
+      country: { contains: country },
       isActive: true
     }
   })

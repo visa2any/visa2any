@@ -92,10 +92,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        documentId: document.id
+        documentId: document.id,
         analysis: analysisResult,
         document: updatedDocument
-      }
+      },
       message: 'Análise concluída com sucesso'
     })
 

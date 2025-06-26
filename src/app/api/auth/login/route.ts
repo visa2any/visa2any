@@ -8,7 +8,7 @@ import { applyRateLimit } from '@/lib/rate-limit'
 
 // Schema para login
 const loginSchema = z.object({
-  email: z.string().email('Email inválido')
+  email: z.string().email('Email inválido'),
   password: z.string().min(1, 'Senha é obrigatória')
 })
 

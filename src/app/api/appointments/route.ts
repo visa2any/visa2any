@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     for (const field of required) {
       if (!body[field as keyof BookingRequest]) {
         return NextResponse.json(
-          { error: `Campo ${field} é obrigatório` }
+          { error: `Campo ${field} é obrigatório` },
           { status: 400 }
         )
       }
