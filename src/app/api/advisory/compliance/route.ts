@@ -4,9 +4,9 @@ import { z } from 'zod'
 
 // Schema para verificação de compliance
 const complianceCheckSchema = z.object({
-  clientId: z.string()
-  country: z.string()
-  visaType: z.string()
+  clientId: z.string(),
+  country: z.string(),
+  visaType: z.string(),
   documents: z.array(z.object({
     id: z.string()
     type: z.string()

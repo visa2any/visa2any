@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 // Schema para consulta do advisory engine
 const advisoryQuerySchema = z.object({
-  clientId: z.string().optional()
+  clientId: z.string().optional(),
   profile: z.object({
     targetCountry: z.string()
     visaType: z.string()

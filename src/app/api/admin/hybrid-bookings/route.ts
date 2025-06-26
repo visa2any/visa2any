@@ -38,12 +38,12 @@ export async function GET(request: NextRequest) {
 
     // Calcular estatísticas
     const stats = {
-      total: bookings.length
-      pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length
-      inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length
-      completed: bookings.filter(b => b.status === 'COMPLETED').length
-      expired: bookings.filter(b => b.status === 'EXPIRED').length
-      emergency: bookings.filter(b => b.urgency === 'EMERGENCY').length
+      total: bookings.length,
+      pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length,
+      inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length,
+      completed: bookings.filter(b => b.status === 'COMPLETED').length,
+      expired: bookings.filter(b => b.status === 'EXPIRED').length,
+      emergency: bookings.filter(b => b.urgency === 'EMERGENCY').length,
       totalRevenue: bookings
         .filter(b => b.status === 'COMPLETED')
         .reduce((sum, b) => sum + (b.payment?.paidAmount || 0), 0)
