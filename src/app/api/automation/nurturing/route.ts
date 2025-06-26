@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: sequences.map(seq => ({
-        id: seq.id
+        id: seq.id,
         client: seq.client,
         sequenceType: (seq.details as { sequenceType?: string })?.sequenceType,
         status: seq.success ? 'active' : 'failed',

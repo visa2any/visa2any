@@ -59,7 +59,7 @@ export async function GET(
               select: { id: true, name: true }
             }
           }
-        }
+        },
         interactions: {
           orderBy: { createdAt: 'desc' },
           take: 50 // Últimas 50 interações

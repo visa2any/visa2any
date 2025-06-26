@@ -34,7 +34,7 @@ export async function POST(
       clientId,
       content: content.trim(),
       author: 'Current User', // In a real app, get from session
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
 

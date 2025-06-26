@@ -63,7 +63,7 @@ async function generateSuggestions(query: string) {
         title: true,
         category: true,
         country: true
-      }
+      },
       take: 5
     })
 

@@ -427,9 +427,9 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length === 0 || !issues.some(i => i.includes('não identificado'))
-    needsReview: issues.length > 0
-    confidence: Math.max(confidence, 0.1)
+    isValid: issues.length === 0 || !issues.some(i => i.includes('não identificado')),
+    needsReview: issues.length > 0,
+    confidence: Math.max(confidence, 0.1),
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se período está adequado (mínimo 3 meses)']
