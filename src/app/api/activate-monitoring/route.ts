@@ -98,7 +98,7 @@ async function activateEmailMonitoring() {
   try {
     if (emailMonitoringActive) {
       return NextResponse.json({ 
-        message: 'Email monitoring já está ativo'
+        message: 'Email monitoring já está ativo',
         status: 'active'
       })
     }

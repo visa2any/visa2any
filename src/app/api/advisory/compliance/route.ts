@@ -18,10 +18,10 @@ const complianceCheckSchema = z.object({
     metadata: z.record(z.any()).optional()
   })),
   checkType: z.enum([
-    'pre_submission'
-    'embassy_compliance'
-    'document_validity'
-    'completeness_check'
+    'pre_submission',
+    'embassy_compliance',
+    'document_validity',
+    'completeness_check',
     'authenticity_verification'
   ])
 })

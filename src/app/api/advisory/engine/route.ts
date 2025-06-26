@@ -18,9 +18,9 @@ const advisoryQuerySchema = z.object({
     currentCountry: z.string().optional()
   }),
   documents: z.array(z.object({
-    type: z.string()
-    status: z.string()
-    expiryDate: z.string().optional()
+    type: z.string(),
+    status: z.string(),
+    expiryDate: z.string().optional(),
     issuingCountry: z.string().optional()
   })).optional()
   queryType: z.enum([
