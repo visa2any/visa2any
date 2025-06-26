@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import ClientHeader from '@/components/ClientHeader'
-import Footer from '@/components/Footer'
 import { 
   CreditCard, DollarSign, Calendar, CheckCircle, Clock, 
   AlertTriangle, Download, Receipt, Shield, Zap, Crown
@@ -550,7 +549,6 @@ export default function PagamentosPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   )
 }

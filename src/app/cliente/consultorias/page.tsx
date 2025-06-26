@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import ClientHeader from '@/components/ClientHeader'
-import Footer from '@/components/Footer'
 import { 
   User, Calendar, Clock, CheckCircle, Video, Phone, 
   MessageCircle, Brain, Star, Award, Zap, Crown
@@ -454,7 +453,6 @@ export default function ConsultoriasPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   )
 }

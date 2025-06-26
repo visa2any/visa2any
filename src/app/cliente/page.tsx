@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ClientHeader from '@/components/ClientHeader'
-import Footer from '@/components/Footer'
 import SofiaIA from '@/components/SofiaIA'
 import ProfileEditor from '@/components/ProfileEditor'
 import DocumentUpload from '@/components/DocumentUpload'
@@ -622,7 +621,6 @@ function CustomerDashboardContent() {
       </div>
 
 
-      <Footer />
 
       {/* Modais */}
       <SofiaIA

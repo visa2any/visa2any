@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import ClientHeader from '@/components/ClientHeader'
-import Footer from '@/components/Footer'
 import DocumentUpload from '@/components/DocumentUpload'
 import { 
   FileText, Upload, Eye, Download, Trash2, RefreshCw, 
@@ -375,7 +374,6 @@ export default function DocumentosPage() {
         </div>
       </div>
 
-      <Footer />
 
       {/* Document Upload Modal */}
       <DocumentUpload
