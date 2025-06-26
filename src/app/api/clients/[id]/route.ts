@@ -51,7 +51,7 @@ export async function GET(
         },
         payments: {
           orderBy: { createdAt: 'desc' }
-        }
+        },
         documents: {
           orderBy: { uploadedAt: 'desc' },
           include: {

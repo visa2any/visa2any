@@ -130,9 +130,9 @@ export async function GET(request: NextRequest) {
 
     const sequences = await prisma.automationLog.findMany({
       where: {
-        type: 'NURTURING_SEQUENCE'
+        type: 'NURTURING_SEQUENCE',
         ...(clientId && { clientId })
-      }
+      },
       orderBy: { executedAt: 'desc' },
       take: 50,
       include: {

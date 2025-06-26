@@ -58,7 +58,7 @@ async function generateSuggestions(query: string) {
           contains: searchTerm,
           mode: 'insensitive'
         }
-      }
+      },
       select: {
         title: true,
         category: true,
@@ -75,7 +75,7 @@ async function generateSuggestions(query: string) {
           contains: searchTerm,
           mode: 'insensitive'
         }
-      }
+      },
       select: {
         country: true,
         flag: true
@@ -92,7 +92,7 @@ async function generateSuggestions(query: string) {
           contains: searchTerm,
           mode: 'insensitive'
         }
-      }
+      },
       select: {
         category: true
       }

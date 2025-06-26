@@ -414,7 +414,7 @@ async function analyzeBankStatement(document: any, ocrResult: any) {
     const balance = parseFloat(fields.finalBalance.replace(/[.,]/g, ''))
     if (balance < 10000) {
       issues.push('Saldo pode ser insuficiente para alguns países')
-      confidence -= 0.2,
+      confidence -= 0.2
     }
   } else {
     issues.push('Saldo final não identificado')

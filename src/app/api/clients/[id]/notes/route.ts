@@ -30,9 +30,9 @@ export async function POST(
     // Create note record
     const noteId = `note_${Date.now()}`
     const newNote = {
-      id: noteId
+      id: noteId,
       clientId,
-      content: content.trim()
+      content: content.trim(),
       author: 'Current User', // In a real app, get from session
       createdAt: new Date().toISOString()
       updatedAt: new Date().toISOString()
