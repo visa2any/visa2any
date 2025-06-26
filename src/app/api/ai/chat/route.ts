@@ -360,7 +360,7 @@ Para qual país você está pensando?`,
 - Resposta em até 2h
 - Ideal para dúvidas rápidas
 
-Qual opção prefere?`
+Qual opção prefere?`,
         suggestions: [
           'Ligar agora',
           'Agendar consultoria',

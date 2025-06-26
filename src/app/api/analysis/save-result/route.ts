@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        consultationId: consultation.id
+        consultationId: consultation.id,
         score,
         level,
         automationAction,

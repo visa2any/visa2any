@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
 
     // Atualizar documento com resultado
     const updatedDocument = await prisma.document.update({
-      where: { id: validatedData.documentId }
+      where: { id: validatedData.documentId },
       data: {
-        status: analysisResult.isValid ? 'VALID' : (analysisResult.needsReview ? 'NEEDS_REVIEW' : 'INVALID')
+        status: analysisResult.isValid ? 'VALID' : (analysisResult.needsReview ? 'NEEDS_REVIEW' : 'INVALID'),
         isValid: analysisResult.isValid,
         ocrText: analysisResult.ocrText,
         analysis: analysisResult.analysis,

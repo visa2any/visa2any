@@ -37,7 +37,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Erro ao cancelar agendamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
