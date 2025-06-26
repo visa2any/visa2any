@@ -48,15 +48,15 @@ export async function GET(request: NextRequest) {
           take: limit,
           skip: offset,
           select: {
-            id: true
-            name: true
-            email: true
-            phone: true
-            profession: true
-            nationality: true
-            targetCountry: true
-            visaType: true
-            status: true
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            profession: true,
+            nationality: true,
+            targetCountry: true,
+            visaType: true,
+            status: true,
             score: true
             createdAt: true
             updatedAt: true

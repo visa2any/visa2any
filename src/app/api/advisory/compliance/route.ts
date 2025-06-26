@@ -8,13 +8,13 @@ const complianceCheckSchema = z.object({
   country: z.string(),
   visaType: z.string(),
   documents: z.array(z.object({
-    id: z.string()
-    type: z.string()
-    fileName: z.string()
-    status: z.string()
-    uploadDate: z.string()
-    expiryDate: z.string().optional()
-    issuingCountry: z.string().optional()
+    id: z.string(),
+    type: z.string(),
+    fileName: z.string(),
+    status: z.string(),
+    uploadDate: z.string(),
+    expiryDate: z.string().optional(),
+    issuingCountry: z.string().optional(),
     metadata: z.record(z.any()).optional()
   }))
   checkType: z.enum([

@@ -6,15 +6,15 @@ import { z } from 'zod'
 const advisoryQuerySchema = z.object({
   clientId: z.string().optional(),
   profile: z.object({
-    targetCountry: z.string()
-    visaType: z.string()
-    age: z.number().optional()
-    education: z.string().optional()
-    experience: z.number().optional()
-    maritalStatus: z.string().optional()
-    hasChildren: z.boolean().optional()
-    income: z.string().optional()
-    languages: z.array(z.string()).optional()
+    targetCountry: z.string(),
+    visaType: z.string(),
+    age: z.number().optional(),
+    education: z.string().optional(),
+    experience: z.number().optional(),
+    maritalStatus: z.string().optional(),
+    hasChildren: z.boolean().optional(),
+    income: z.string().optional(),
+    languages: z.array(z.string()).optional(),
     currentCountry: z.string().optional()
   })
   documents: z.array(z.object({

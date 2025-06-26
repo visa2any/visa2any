@@ -82,7 +82,7 @@ async function activateWebScraping() {
 Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
 
     return NextResponse.json({
-      success: true
+      success: true,
       message: 'Web scraping ativado com sucesso!'
     })
 
