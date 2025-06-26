@@ -6,8 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Materiais promocionais pré-definidos
 const defaultMaterials = [
-  // Banners,  {
-    type: 'BANNER',    title: 'Banner Principal - Visa2Any',    description: 'Banner principal com logo e call-to-action',    category: 'banners',    tags: ['principal', 'logo', 'cta']
+  // Banners,  {,    type: 'BANNER',    title: 'Banner Principal - Visa2Any',    description: 'Banner principal com logo e call-to-action',    category: 'banners',    tags: ['principal', 'logo', 'cta']
     content: `
       <div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; font-family: Arial, sans-serif;">
         <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 16px;">🌍 Realize seu sonho de viver no exterior!</h1>
@@ -37,8 +36,7 @@ const defaultMaterials = [
     `,    imageUrl: '/images/banners/banner-eua.jpg',    previewUrl: '/materials/preview/banner-eua',    isActive: true
   }
 
-  // Posts para Redes Sociais,  {
-    type: 'SOCIAL_POST',    title: 'Post Instagram - Consultoria',    description: 'Post otimizado para Instagram sobre consultoria',    category: 'instagram',    tags: ['instagram', 'consultoria', 'stories']
+  // Posts para Redes Sociais,  {,    type: 'SOCIAL_POST',    title: 'Post Instagram - Consultoria',    description: 'Post otimizado para Instagram sobre consultoria',    category: 'instagram',    tags: ['instagram', 'consultoria', 'stories']
     content: `🌍 QUER MORAR NO EXTERIOR? ,
 A @visa2any é especialista em realizar esse sonho! 
 
@@ -87,8 +85,7 @@ Sua nova vida te espera! 🌍✈️
 #Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`,    imageUrl: '/images/posts/facebook-depoimento.jpg',    isActive: true
   }
 
-  // Templates de Email,  {
-    type: 'EMAIL_TEMPLATE',    title: 'Email - Bem-vindo Lead',    description: 'Template de email para novos leads',    category: 'email',    tags: ['email', 'lead', 'boas-vindas']
+  // Templates de Email,  {,    type: 'EMAIL_TEMPLATE',    title: 'Email - Bem-vindo Lead',    description: 'Template de email para novos leads',    category: 'email',    tags: ['email', 'lead', 'boas-vindas']
     content: `
 <!DOCTYPE html>
 <html>
@@ -143,8 +140,7 @@ Sua nova vida te espera! 🌍✈️
     `,    isActive: true
   }
 
-  // Vídeos,  {
-    type: 'VIDEO',    title: 'Vídeo Depoimento - Cliente Aprovado',    description: 'Vídeo com depoimento de cliente aprovado',    category: 'depoimentos',    tags: ['video', 'depoimento', 'aprovação']
+  // Vídeos,  {,    type: 'VIDEO',    title: 'Vídeo Depoimento - Cliente Aprovado',    description: 'Vídeo com depoimento de cliente aprovado',    category: 'depoimentos',    tags: ['video', 'depoimento', 'aprovação']
     content: `,Script para vídeo de depoimento:,
 "Oi, eu sou a Maria e quero contar como a Visa2Any mudou a minha vida!,
 Sempre sonhei em morar no Canadá, mas não sabia por onde começar. Foi quando conheci a Visa2Any através de {{AFFILIATE_NAME}}.,
@@ -158,8 +154,7 @@ Sua nova vida te espera!",
     `,    imageUrl: '/images/videos/depoimento-maria.jpg',    previewUrl: '/materials/preview/video-depoimento',    isActive: true
   }
 
-  // Guias/E-books,  {
-    type: 'GUIDE',    title: 'E-book - Guia Completo Visto EUA',    description: 'Guia completo sobre como conseguir visto americano',    category: 'guias',    tags: ['ebook', 'guia', 'eua', 'visto']
+  // Guias/E-books,  {,    type: 'GUIDE',    title: 'E-book - Guia Completo Visto EUA',    description: 'Guia completo sobre como conseguir visto americano',    category: 'guias',    tags: ['ebook', 'guia', 'eua', 'visto']
     content: `,GUIA COMPLETO: COMO CONSEGUIR SEU VISTO AMERICANO,
 CAPÍTULO 1: TIPOS DE VISTO
 - Visto B1/B2 (Turismo e Negócios)
@@ -203,25 +198,20 @@ const type = url.searchParams.get('type')
     const category =  
 const affiliateId = url.searchParams.get('affiliateId')
 
-    // Construir filtros,    const where: any = { isActive: true }
-    
+    // Construir filtros,    const where: any = { isActive: true },    
     if (type) {,      where.type = type
     },    
     if (category) {,      where.category = category
     }
 
-    // Se affiliateId for fornecido, incluir materiais específicos do afiliado,    if (affiliateId) {
-      where.OR = [,        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
+    // Se affiliateId for fornecido, incluir materiais específicos do afiliado,    if (affiliateId) {,      where.OR = [,        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
       ]
-    } else {,      where.affiliateId = null // Apenas materiais públicos
-    }
+    } else {,      where.affiliateId = null // Apenas materiais públicos    }
 
-    // Buscar materiais do banco,    const materials = await prisma.affiliateMaterial.findMany({,      where
-      orderBy: { createdAt: 'desc' }
+    // Buscar materiais do banco,    const materials = await prisma.affiliateMaterial.findMany({,      where,      orderBy: { createdAt: 'desc' }
     })
 
-    // Se não houver materiais no banco, retornar materiais padrão,    if (materials.length === 0 && !affiliateId) {,      const filteredDefaults = defaultMaterials.filter(material => {,        if (type && material.type !== type) return false,        if (category && material.category !== category) return false
-        return true
+    // Se não houver materiais no banco, retornar materiais padrão,    if (materials.length === 0 && !affiliateId) {,      const filteredDefaults = defaultMaterials.filter(material => {,        if (type && material.type !== type) return false,        if (category && material.category !== category) return false,        return true
       }),
       return NextResponse.json({,        data: filteredDefaults.map((material, index) => ({,          id: `default_${index}`
           ...material,          createdAt: new Date().toISOString(),          updatedAt: new Date().toISOString(),          views: Math.floor(Math.random() * 1000),          downloads: Math.floor(Math.random() * 500)
@@ -244,8 +234,7 @@ const {,      type,      title,      description,      content,      category,  
       imageUrl,      downloadUrl,      previewUrl,      affiliateId,      language = 'pt'
     } = body
 
-    // Validações básicas,    if (!type || !title || !description) {,      return NextResponse.json({,        error: 'Tipo
- título e descrição são obrigatórios'
+    // Validações básicas,    if (!type || !title || !description) {,      return NextResponse.json({,        error: 'Tipo, título e descrição são obrigatórios'
       }, { status: 400 })
     },
     const material = await prisma.affiliateMaterial.create({,      data: {,        type,        title,        description,        content,        category,        tags,        imageUrl,        downloadUrl,        previewUrl,        affiliateId,        language

@@ -25,17 +25,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = createOrderSchema.parse(body)
 
-    // Criar ou encontrar cliente se informações foram fornecidas
-    let clientId = null
+    // Criar ou encontrar cliente se informações foram fornecidas,    let clientId = null
     if (validatedData.clientInfo?.email) {
       try {
-        // Tentar encontrar cliente existente
-        let client = await prisma.client.findUnique({
+        // Tentar encontrar cliente existente,        let client = await prisma.client.findUnique({
           where: { email: validatedData.clientInfo.email }
         })
 
-        // Se não encontrar
- criar novo
+        // Se não encontrar, criar novo
         if (!client) {
           client = await prisma.client.create({
             data: {
@@ -51,12 +48,10 @@ export async function POST(request: NextRequest) {
         clientId = client.id
       } catch (error) {
         console.error('Erro ao criar/encontrar cliente:', error)
-        // Não bloquear o pedido se houver erro com cliente
-      }
+        // Não bloquear o pedido se houver erro com cliente      }
     }
 
-    // Criar pedido no banco
-    const payment = await prisma.payment.create({
+    // Criar pedido no banco,    const payment = await prisma.payment.create({
       data: {
         amount: validatedData.totalAmount,
         currency: 'BRL',
@@ -67,18 +62,15 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Gerar link de pagamento do Mercado Pago
-    const paymentUrl = await createMercadoPagoPayment({
+    // Gerar link de pagamento do Mercado Pago,    const paymentUrl = await createMercadoPagoPayment({
       orderId: payment.id,
       title: validatedData.productName,
       quantity: validatedData.quantity,
-      unitPrice: validatedData.totalAmount, // MP recebe o valor total
-      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,
+      unitPrice: validatedData.totalAmount, // MP recebe o valor total,      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,
       clientEmail: validatedData.clientInfo?.email
     })
 
-    // Log da criação do pedido
-    await prisma.automationLog.create({
+    // Log da criação do pedido,    await prisma.automationLog.create({
       data: {
         type: 'ORDER_CREATED',
         action: 'create_order',
@@ -126,18 +118,16 @@ async function createMercadoPagoPayment(orderData: {
   quantity: number,
   unitPrice: number,
   description: string
-  clientEmail?: string,
+  clientEmail?: string
 }) {
   try {
-    // Configurar dados da preferência
-    const preferenceData = {
+    // Configurar dados da preferência,    const preferenceData = {
       items: [
         {
           id: orderData.orderId,
           title: orderData.title,
           description: orderData.description,
-          quantity: 1, // Sempre 1 no MP
- preço já é total
+          quantity: 1, // Sempre 1 no MP, preço já é total
           unit_price: orderData.unitPrice,
           currency_id: 'BRL'
         }
@@ -148,26 +138,23 @@ async function createMercadoPagoPayment(orderData: {
       back_urls: {
         success: `${process.env.NEXTAUTH_URL}/success?payment_id=simulated&status=approved&external_reference=${orderData.orderId}`,
         failure: `${process.env.NEXTAUTH_URL}/cliente?payment=failed&order=${orderData.orderId}`,
-        pending: `${process.env.NEXTAUTH_URL}/cliente?payment=pending&order=${orderData.orderId}`,
+        pending: `${process.env.NEXTAUTH_URL}/cliente?payment=pending&order=${orderData.orderId}`
       }
       auto_return: 'approved',
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
       external_reference: orderData.orderId,
       expires: true,
       expiration_date_from: new Date().toISOString()
-      expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
-      payment_methods: {
+      expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas,      payment_methods: {
         excluded_payment_methods: [],
         excluded_payment_types: [],
         installments: 12
       }
     }
 
-    // Usar SDK do Mercado Pago real
-    console.log('Criando preferência MP:', preferenceData)
+    // Usar SDK do Mercado Pago real,    console.log('Criando preferência MP:', preferenceData)
     
-    // Importar e usar SDK do MercadoPago
-    const { MercadoPagoConfig, Preference } = await import('mercadopago')
+    // Importar e usar SDK do MercadoPago,    const { MercadoPagoConfig, Preference } = await import('mercadopago')
     
     const client = new MercadoPagoConfig({
       accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!
@@ -180,7 +167,6 @@ async function createMercadoPagoPayment(orderData: {
     
   } catch (error) {
     console.error('Erro ao criar pagamento MP:', error)
-    // Fallback para checkout interno
-    return null
+    // Fallback para checkout interno,    return null
   }
 }

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para criar interação,const createInteractionSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),  channel: z.string().min(1, 'Canal é obrigatório'),  direction: z.enum(['inbound', 'outbound']),  subject: z.string().optional(),  content: z.string().min(1, 'Conteúdo é obrigatório'),  response: z.string().optional(),  scheduledAt: z.string().datetime().optional()
-  completedAt: z.string().datetime().optional()
+// Schema para criar interação,const createInteractionSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),  channel: z.string().min(1, 'Canal é obrigatório'),  direction: z.enum(['inbound', 'outbound']),  subject: z.string().optional(),  content: z.string().min(1, 'Conteúdo é obrigatório'),  response: z.string().optional(),  scheduledAt: z.string().datetime().optional(),  completedAt: z.string().datetime().optional()
 })
 
 // GET /api/interactions - Listar interações,
@@ -15,15 +14,13 @@ const type = searchParams.get('type')
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
-    
+    // Construir filtros,    const where: any = {},    
     if (clientId) {,      where.clientId = clientId
     },    
     if (type && type !== 'ALL') {,      where.type = type
     }
 
-    // Buscar interações,    const [interactions, total] = await Promise.all([,      prisma.interaction.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          client: {,            select: { ,              id: true, ,              name: true, ,              email: true, ,              phone: true
-              status: true
+    // Buscar interações,    const [interactions, total] = await Promise.all([,      prisma.interaction.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          client: {,            select: { ,              id: true, ,              name: true, ,              email: true, ,              phone: true,              status: true
             }
           }
         }
@@ -44,18 +41,15 @@ const type = searchParams.get('type')
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
     
-    // Validar dados
-    const validatedData = createInteractionSchema.parse(body)
+    // Validar dados,    const validatedData = createInteractionSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+    // Verificar se cliente existe,    const client = await prisma.client.findUnique({,      where: { id: validatedData.clientId }
     }),
     if (!client) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Criar interação,    const interaction = await prisma.interaction.create({
-      data: {
+    // Criar interação,    const interaction = await prisma.interaction.create({,      data: {
         ...validatedData,        scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,        completedAt: validatedData.completedAt ? new Date(validatedData.completedAt) : null
       },      include: {,        client: {,          select: { ,            id: true, ,            name: true, ,            email: true,            status: true
           }
@@ -63,8 +57,7 @@ export async function POST(request: NextRequest) {,  try {
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({,      data: {,        type: 'EMAIL',        action: 'create_interaction',        clientId: validatedData.clientId,        details: {,          timestamp: new Date().toISOString()
-          action: 'automated_action'
+    // Log da criação,    await prisma.automationLog.create({,      data: {,        type: 'EMAIL',        action: 'create_interaction',        clientId: validatedData.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),

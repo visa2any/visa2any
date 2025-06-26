@@ -30,7 +30,7 @@ export default function robots(): MetadataRoute.Robots {
           '/checkout/*',
           '/_next/*',
           '/static/*'
-        ],
+        ]
       },
       {
         userAgent: 'Googlebot',
@@ -43,10 +43,10 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/*',
           '/cliente/*',
           '/api/*'
-        ],
+        ]
       }
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
+    host: baseUrl
   }
 }

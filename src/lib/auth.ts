@@ -13,8 +13,7 @@ export interface AuthUser {
 // Verificar autenticação em API routes
 export async function verifyAuth(request: NextRequest): Promise<AuthUser | null> {
   try {
-    // Buscar token no header ou cookie
-    const authHeader = request.headers.get('authorization')
+    // Buscar token no header ou cookie,    const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
     
     const token = authHeader?.replace('Bearer ', '') || cookieToken
@@ -23,18 +22,15 @@ export async function verifyAuth(request: NextRequest): Promise<AuthUser | null>
       return null
     }
 
-    // ✅ Verificar se JWT secret está configurado
-    const jwtSecret = process.env.NEXTAUTH_SECRET
+    // ✅ Verificar se JWT secret está configurado,    const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return null
     }
 
-    // Verificar e decodificar token
-    const decoded = jwt.verify(token, jwtSecret) as any
+    // Verificar e decodificar token,    const decoded = jwt.verify(token, jwtSecret) as any
 
-    // Buscar usuário no banco
-    const user = await prisma.user.findUnique({
+    // Buscar usuário no banco,    const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,

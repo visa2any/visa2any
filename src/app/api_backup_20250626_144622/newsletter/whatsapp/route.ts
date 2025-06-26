@@ -6,16 +6,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, phone, countries, terms } = body
 
-    // Validação
-    if (!name || !phone || !terms) {
+    // Validação,    if (!name || !phone || !terms) {
       return NextResponse.json(
         { error: 'Nome, telefone e aceite dos termos são obrigatórios' }
         { status: 400 }
       )
     }
 
-    // Validar formato do telefone
-    const phoneRegex = /^\+[1-9]\d{1,14}$/
+    // Validar formato do telefone,    const phoneRegex = /^\+[1-9]\d{1,14}$/
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
         { error: 'Formato de telefone inválido. Use +55 11 99999-9999' }
@@ -23,8 +21,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já existe
-    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
+    // Verificar se já existe,    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
       where: { phone }
     })
 
@@ -35,8 +32,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar novo assinante
-    const subscriber = await prisma.whatsAppSubscriber.create({
+    // Criar novo assinante,    const subscriber = await prisma.whatsAppSubscriber.create({
       data: {
         name
         phone,
@@ -46,16 +42,13 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Enviar mensagem de boas-vindas via WhatsApp
-    try {
+    // Enviar mensagem de boas-vindas via WhatsApp,    try {
       await sendWelcomeMessage(phone, name)
     } catch (error) {
       console.error('Erro ao enviar mensagem de boas-vindas:', error)
-      // Não falhar o cadastro se a mensagem não for enviada
-    }
+      // Não falhar o cadastro se a mensagem não for enviada    }
 
-    // Log da atividade
-    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
+    // Log da atividade,    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
 
     return NextResponse.json({
       success: true
@@ -98,8 +91,7 @@ Para acessar nosso blog completo: https://visa2any.com/blog
 
 _Para cancelar, responda SAIR_`
 
-  // Aqui você integraria com sua API do WhatsApp
-  // Por exemplo
+  // Aqui você integraria com sua API do WhatsApp,  // Por exemplo
  usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
   
   const whatsappResponse = await fetch('http://localhost:3000/api/whatsapp/send', {
@@ -132,7 +124,7 @@ export async function GET() {
       total: subscribers.length,
       byCountry: subscribers.reduce((acc, sub) => {
         sub.countries.forEach(country => {
-          acc[country] = (acc[country] || 0) + 1,
+          acc[country] = (acc[country] || 0) + 1
         })
         return acc
       }, {} as Record<string, number>)

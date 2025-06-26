@@ -75,8 +75,7 @@ export default function DocumentsPage() {
 
   const fetchDocuments = async () => {
     try {
-      // Como não temos a API ainda, vamos simular dados
-      const mockDocuments = [
+      // Como não temos a API ainda, vamos simular dados,      const mockDocuments = [
         {
           id: '1',
           name: 'Passaporte - Maria Silva',
@@ -196,8 +195,7 @@ export default function DocumentsPage() {
   }
 
   const handleDownloadDocument = (doc: Document) => {
-    // Simulate document download
-    const link = window.document.createElement('a')
+    // Simulate document download,    const link = window.document.createElement('a')
     link.href = `#`
     link.download = doc.fileName
     link.click()
@@ -213,8 +211,7 @@ export default function DocumentsPage() {
     if (!confirm('Tem certeza que deseja excluir este documento?')) return
 
     try {
-      // Simulate API call
-      alert('Documento excluído com sucesso!')
+      // Simulate API call,      alert('Documento excluído com sucesso!')
       fetchDocuments()
     } catch (error) {
       console.error('Erro:', error)
@@ -652,8 +649,7 @@ function UploadDocumentSlider({ isOpen, onClose, onSuccess }: { isOpen: boolean,
 
     setIsLoading(true)
     try {
-      // Criar FormData conforme esperado pela API
-      const uploadFormData = new FormData()
+      // Criar FormData conforme esperado pela API,      const uploadFormData = new FormData()
       uploadFormData.append('file', selectedFile)
       uploadFormData.append('metadata', JSON.stringify({
         name: formData.name,
@@ -664,7 +660,7 @@ function UploadDocumentSlider({ isOpen, onClose, onSuccess }: { isOpen: boolean,
 
       const response = await fetch('/api/documents', {
         method: 'POST',
-        body: uploadFormData,
+        body: uploadFormData
       })
 
       if (response.ok) {
@@ -1070,8 +1066,7 @@ function EditDocumentSlider({ isOpen, document, onClose, onSuccess }: { isOpen: 
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simulate API call,      await new Promise(resolve => setTimeout(resolve, 1000))
       alert('Documento atualizado com sucesso!')
       onSuccess()
       onClose()
@@ -1198,12 +1193,10 @@ function ShareDocumentSlider({ isOpen, document, onClose }: { isOpen: boolean, d
 
     try {
       if (shareMethod === 'email') {
-        // Simulate email sharing
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        // Simulate email sharing,        await new Promise(resolve => setTimeout(resolve, 1000))
         alert(`Documento compartilhado por email para: ${formData.email}`)
       } else {
-        // Simulate link generation
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // Simulate link generation,        await new Promise(resolve => setTimeout(resolve, 500))
         const shareLink = `https://visa2any.com/share/${document.id}?token=abc123`
         navigator.clipboard.writeText(shareLink)
         alert('Link de compartilhamento copiado para a área de transferência!')

@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 })
 
 interface ContentIdea {
@@ -308,8 +308,7 @@ Responda em JSON array.
 function calculateEngagement(idea: any, platform: string): 'high' | 'medium' | 'low' {
   let score = 0
   
-  // Fatores que aumentam engajamento
-  if (idea.hook?.includes('NINGUÉM')) score += 2
+  // Fatores que aumentam engajamento,  if (idea.hook?.includes('NINGUÉM')) score += 2
   if (idea.hook?.includes('CHOQUE')) score += 2
   if (idea.hook?.includes('SEGREDO')) score += 2
   if (idea.title?.includes('90%')) score += 1
@@ -326,9 +325,8 @@ function calculateEngagement(idea: any, platform: string): 'high' | 'medium' | '
 export async function generateVideoScript(idea: ContentIdea): Promise<string> {
   try {
     const prompt = `
-Crie um script detalhado para vídeo de ${idea.platform} sobre: "${idea.title}"
-
-Estrutura:
+Crie um script detalhado para vídeo de ${idea.platform} sobre: "${idea.title}",
+    Estrutura:
 - Hook (primeiros 3 segundos)
 - 3-5 pontos principais
 - CTA final
@@ -374,15 +372,13 @@ export async function generateMonthlyCalendar(
     const dayOfWeek = day % 7
     const weekOfMonth = Math.ceil(day / 7)
     
-    // Lógica do calendário temático
-    let theme = 'general'
+    // Lógica do calendário temático,    let theme = 'general'
     if (weekOfMonth === 1) theme = 'education'
     else if (weekOfMonth === 2) theme = 'visa_process'
     else if (weekOfMonth === 3) theme = 'practical_life'
     else if (weekOfMonth === 4) theme = 'advanced_strategies'
     
-    // Distribuir países e plataformas
-    const country = countries[day % countries.length]
+    // Distribuir países e plataformas,    const country = countries[day % countries.length]
     const platform = platforms[day % platforms.length]
     
     const ideas = await generateContentIdeas(platform, country, 1)

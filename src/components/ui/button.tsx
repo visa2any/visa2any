@@ -20,7 +20,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       destructive: "bg-red-600 text-white hover:bg-red-700",
       outline: "border border-blue-600 bg-background text-blue-600 hover:bg-blue-50",
       ghost: "hover:bg-accent hover:text-accent-foreground",
-      gradient: "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200",
+      gradient: "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
     }
     
     const sizes = {
@@ -28,7 +28,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       sm: "h-9 rounded-md px-3",
       lg: "h-11 rounded-md px-8",
       xl: "h-14 rounded-lg px-10 text-base",
-      icon: "h-10 w-10",
+      icon: "h-10 w-10"
     }
 
     const Comp = asChild ? 'span' : 'button'

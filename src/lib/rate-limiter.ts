@@ -13,10 +13,8 @@ interface RateLimitEntry {
 const rateStore = new Map<string, RateLimitEntry>()
 
 export const RATE_LIMITS = {
-  auth: { windowMs: 15 * 60 * 1000, maxRequests: 5 }, // 5 tentativas por 15 min
-  api: { windowMs: 60 * 1000, maxRequests: 100 }, // 100 requests por minuto
-  analysis: { windowMs: 60 * 1000, maxRequests: 10 }, // 10 análises por minuto
-  email: { windowMs: 60 * 1000, maxRequests: 2 }, // 2 emails por minuto
+  auth: { windowMs: 15 * 60 * 1000, maxRequests: 5 }, // 5 tentativas por 15 min,  api: { windowMs: 60 * 1000, maxRequests: 100 }, // 100 requests por minuto
+  analysis: { windowMs: 60 * 1000, maxRequests: 10 }, // 10 análises por minuto,  email: { windowMs: 60 * 1000, maxRequests: 2 }, // 2 emails por minuto
   checkout: { windowMs: 60 * 1000, maxRequests: 5 } // 5 checkouts por minuto
 }
 
@@ -28,16 +26,14 @@ export function rateLimit(
   const key = `${ip}-${request.nextUrl.pathname}`
   const now = Date.now()
   
-  // Limpar entradas expiradas periodicamente
-  if (Math.random() < 0.01) {
+  // Limpar entradas expiradas periodicamente,  if (Math.random() < 0.01) {
     cleanupExpiredEntries()
   }
   
   const entry = rateStore.get(key)
   
   if (!entry || now > entry.resetTime) {
-    // Nova janela de tempo
-    const newEntry: RateLimitEntry = {
+    // Nova janela de tempo,    const newEntry: RateLimitEntry = {
       count: 1,
       resetTime: now + config.windowMs
     }
@@ -50,15 +46,13 @@ export function rateLimit(
   }
   
   if (entry.count >= config.maxRequests) {
-    // Limite excedido
-    return {
+    // Limite excedido,    return {
       remaining: 0,
       resetTime: entry.resetTime
     }
   }
   
-  // Incrementar contador
-  entry.count++
+  // Incrementar contador,  entry.count++
   rateStore.set(key, entry)
   
   return {

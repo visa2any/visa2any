@@ -31,11 +31,9 @@ export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const { type, ...data } = body,
     if (type === 'text') {
-      // Tradução de texto
-      const translationRequest: TranslationRequest = data
+      // Tradução de texto,      const translationRequest: TranslationRequest = data
       
-      // Validação,      if (!translationRequest.text || !translationRequest.sourceLanguage || !translationRequest.targetLanguage) {,        return NextResponse.json(,          { error: 'Campos text
- sourceLanguage e targetLanguage são obrigatórios' },          { status: 400 }
+      // Validação,      if (!translationRequest.text || !translationRequest.sourceLanguage || !translationRequest.targetLanguage) {,        return NextResponse.json(,          { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' },          { status: 400 }
         )
       },
       const result = await translationService.translateText(translationRequest),
@@ -49,11 +47,9 @@ const { type, ...data } = body,
       }
     },
     if (type === 'document') {
-      // Tradução de documento
-      const documentRequest: DocumentForTranslation = data
+      // Tradução de documento,      const documentRequest: DocumentForTranslation = data
       
-      // Validação,      const requiredFields = ['fileName', 'sourceLanguage', 'targetLanguage', 'documentType', 'pageCount'],      for (const field of requiredFields) {,        if (!documentRequest[field as keyof DocumentForTranslation]) {
-          return NextResponse.json(,            { error: `Campo ${field} é obrigatório para tradução de documento` },            { status: 400 }
+      // Validação,      const requiredFields = ['fileName', 'sourceLanguage', 'targetLanguage', 'documentType', 'pageCount'],      for (const field of requiredFields) {,        if (!documentRequest[field as keyof DocumentForTranslation]) {,          return NextResponse.json(,            { error: `Campo ${field} é obrigatório para tradução de documento` },            { status: 400 }
           )
         }
       },

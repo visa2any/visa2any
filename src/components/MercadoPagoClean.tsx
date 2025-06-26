@@ -35,8 +35,7 @@ export default function MercadoPagoClean({
   const [initializationAttempted, setInitializationAttempted] = useState(false)
 
   useEffect(() => {
-    // Garantir que só executa uma vez
-    if (initializationAttempted) return
+    // Garantir que só executa uma vez,    if (initializationAttempted) return
     
     setInitializationAttempted(true)
     initializePayment()
@@ -44,19 +43,16 @@ export default function MercadoPagoClean({
 
   const initializePayment = async () => {
     try {
-      // Limpar completamente o container primeiro
-      if (containerRef.current) {
+      // Limpar completamente o container primeiro,      if (containerRef.current) {
         containerRef.current.innerHTML = ''
       }
 
-      // Carregar SDK se não existe
-      if (!window.MercadoPago) {
+      // Carregar SDK se não existe,      if (!window.MercadoPago) {
         console.log('🔄 Carregando SDK...')
         await loadSDK()
       }
 
-      // Configurar MercadoPago
-      console.log('🔧 Configurando MercadoPago...')
+      // Configurar MercadoPago,      console.log('🔧 Configurando MercadoPago...')
       console.log(`📋 Dados da configuração:`, {
         publicKey,
         preferenceId,
@@ -68,8 +64,7 @@ export default function MercadoPagoClean({
         locale: 'pt-BR'
       })
 
-      // Criar brick
-      console.log('🧱 Criando Payment Brick...')
+      // Criar brick,      console.log('🧱 Criando Payment Brick...')
       const bricksBuilder = mp.bricks()
       
       const config = {
@@ -141,8 +136,7 @@ export default function MercadoPagoClean({
       
       console.log('🎯 Configuração final do brick:', JSON.stringify(config, null, 2))
       
-      // Configuração com tipos de pagamento especificados
-      await bricksBuilder.create('payment', 'payment-container-clean', config)
+      // Configuração com tipos de pagamento especificados,      await bricksBuilder.create('payment', 'payment-container-clean', config)
 
     } catch (error) {
       console.error('❌ Erro geral:', error)
@@ -153,22 +147,19 @@ export default function MercadoPagoClean({
 
   const loadSDK = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Verificar se já existe script
-      const existingScript = document.querySelector('script[src*="mercadopago"]')
+      // Verificar se já existe script,      const existingScript = document.querySelector('script[src*="mercadopago"]')
       if (existingScript) {
         if (window.MercadoPago) {
           resolve()
         } else {
-          // Script existe mas SDK não carregou
- aguardar
+          // Script existe mas SDK não carregou, aguardar
           existingScript.addEventListener('load', () => resolve())
           existingScript.addEventListener('error', () => reject(new Error('Falha no script existente')))
         }
         return
       }
 
-      // Criar novo script
-      const script = document.createElement('script')
+      // Criar novo script,      const script = document.createElement('script')
       script.src = 'https://sdk.mercadopago.com/js/v2'
       script.async = true
       

@@ -9,8 +9,7 @@ export async function GET(,  request: NextRequest,
     )
     }
 
-    // Mock timeline data for the client
-    const mockTimeline = [,      {
+    // Mock timeline data for the client,    const mockTimeline = [,      {
         id: '1',        type: 'status_change',        title: 'Status alterado para Qualificado',        description: 'Cliente passou pela qualificação inicial e foi aprovado para próximas etapas',        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),        author: 'Ana Silva',        metadata: {,          oldValue: 'LEAD',          newValue: 'QUALIFIED'
         }
       },      {
@@ -44,8 +43,7 @@ export async function GET(,  request: NextRequest,
       }
     ]
 
-    // Sort timeline by timestamp (newest first),    const sortedTimeline = mockTimeline.sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    // Sort timeline by timestamp (newest first),    const sortedTimeline = mockTimeline.sort((a, b) => ,      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     ),
     return NextResponse.json({,      timeline: sortedTimeline,      total: sortedTimeline.length
     })

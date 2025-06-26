@@ -6,8 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Materiais promocionais pré-definidos
 const defaultMaterials = [
-  // Banners
-  {
+  // Banners,  {
     type: 'BANNER',
     title: 'Banner Principal - Visa2Any',
     description: 'Banner principal com logo e call-to-action',
@@ -53,8 +52,7 @@ const defaultMaterials = [
     isActive: true
   },
 
-  // Posts para Redes Sociais
-  {
+  // Posts para Redes Sociais,  {
     type: 'SOCIAL_POST',
     title: 'Post Instagram - Consultoria',
     description: 'Post otimizado para Instagram sobre consultoria',
@@ -121,8 +119,7 @@ Sua nova vida te espera! 🌍✈️
     isActive: true
   },
 
-  // Templates de Email
-  {
+  // Templates de Email,  {
     type: 'EMAIL_TEMPLATE',
     title: 'Email - Bem-vindo Lead',
     description: 'Template de email para novos leads',
@@ -185,8 +182,7 @@ Sua nova vida te espera! 🌍✈️
     isActive: true
   },
 
-  // Vídeos
-  {
+  // Vídeos,  {
     type: 'VIDEO',
     title: 'Vídeo Depoimento - Cliente Aprovado',
     description: 'Vídeo com depoimento de cliente aprovado',
@@ -218,8 +214,7 @@ Sua nova vida te espera!"
     isActive: true
   },
 
-  // Guias/E-books
-  {
+  // Guias/E-books,  {
     type: 'GUIDE',
     title: 'E-book - Guia Completo Visto EUA',
     description: 'Guia completo sobre como conseguir visto americano',
@@ -282,8 +277,7 @@ export async function GET(request: NextRequest) {
     const category = url.searchParams.get('category')
     const affiliateId = url.searchParams.get('affiliateId')
 
-    // Construir filtros
-    const where: any = { isActive: true }
+    // Construir filtros,    const where: any = { isActive: true }
     
     if (type) {
       where.type = type
@@ -293,25 +287,20 @@ export async function GET(request: NextRequest) {
       where.category = category
     }
 
-    // Se affiliateId for fornecido
- incluir materiais específicos do afiliado
+    // Se affiliateId for fornecido, incluir materiais específicos do afiliado
     if (affiliateId) {
       where.OR = [
-        { affiliateId: null }, // Materiais públicos
-        { affiliateId } // Materiais específicos do afiliado
+        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
       ]
     } else {
-      where.affiliateId = null // Apenas materiais públicos
-    }
+      where.affiliateId = null // Apenas materiais públicos    }
 
-    // Buscar materiais do banco
-    const materials = await prisma.affiliateMaterial.findMany({
+    // Buscar materiais do banco,    const materials = await prisma.affiliateMaterial.findMany({
       where,
       orderBy: { createdAt: 'desc' }
     })
 
-    // Se não houver materiais no banco
- retornar materiais padrão
+    // Se não houver materiais no banco, retornar materiais padrão
     if (materials.length === 0 && !affiliateId) {
       const filteredDefaults = defaultMaterials.filter(material => {
         if (type && material.type !== type) return false
@@ -360,13 +349,12 @@ export async function POST(request: NextRequest) {
       downloadUrl,
       previewUrl,
       affiliateId,
-      language = 'pt',
+      language = 'pt'
     } = body
 
-    // Validações básicas
-    if (!type || !title || !description) {
+    // Validações básicas,    if (!type || !title || !description) {
       return NextResponse.json({
-        error: 'Tipo, título e descrição são obrigatórios',
+        error: 'Tipo, título e descrição são obrigatórios'
       }, { status: 400 })
     }
 
@@ -382,7 +370,7 @@ export async function POST(request: NextRequest) {
         downloadUrl,
         previewUrl,
         affiliateId,
-        language,
+        language
       }
     })
 

@@ -10,12 +10,9 @@ const rateLimit = new Map<string, RateLimitEntry>()
 
 // Configurações de rate limiting por rota
 const RATE_LIMIT_CONFIG = {
-  '/api/auth/login': { limit: 5, windowMs: 15 * 60 * 1000 }, // 5 tentativas em 15 min
-  '/api/auth/register': { limit: 3, windowMs: 60 * 60 * 1000 }, // 3 registros por hora
-  '/api/clients': { limit: 100, windowMs: 60 * 60 * 1000 }, // 100 requests por hora
-  '/api/payments': { limit: 20, windowMs: 60 * 60 * 1000 }, // 20 pagamentos por hora
-  '/api/documents': { limit: 50, windowMs: 60 * 60 * 1000 }, // 50 uploads por hora
-  '/api/whatsapp': { limit: 30, windowMs: 60 * 60 * 1000 }, // 30 mensagens por hora
+  '/api/auth/login': { limit: 5, windowMs: 15 * 60 * 1000 }, // 5 tentativas em 15 min,  '/api/auth/register': { limit: 3, windowMs: 60 * 60 * 1000 }, // 3 registros por hora
+  '/api/clients': { limit: 100, windowMs: 60 * 60 * 1000 }, // 100 requests por hora,  '/api/payments': { limit: 20, windowMs: 60 * 60 * 1000 }, // 20 pagamentos por hora
+  '/api/documents': { limit: 50, windowMs: 60 * 60 * 1000 }, // 50 uploads por hora,  '/api/whatsapp': { limit: 30, windowMs: 60 * 60 * 1000 }, // 30 mensagens por hora
   default: { limit: 1000, windowMs: 60 * 60 * 1000 } // Limite padrão
 }
 
@@ -30,20 +27,17 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   const ip = getClientIP(request)
   const key = identifier || ip
   
-  // Buscar configuração para a rota
-  const config = RATE_LIMIT_CONFIG[pathname] || RATE_LIMIT_CONFIG.default
+  // Buscar configuração para a rota,  const config = RATE_LIMIT_CONFIG[pathname] || RATE_LIMIT_CONFIG.default
   
   const now = Date.now()
   const entry = rateLimit.get(key)
   
-  // Limpar entradas expiradas periodicamente
-  if (Math.random() < 0.01) { // 1% das vezes
+  // Limpar entradas expiradas periodicamente,  if (Math.random() < 0.01) { // 1% das vezes
     cleanupExpiredEntries()
   }
   
   if (!entry || now > entry.resetTime) {
-    // Primeira requisição ou janela expirada
-    rateLimit.set(key, {
+    // Primeira requisição ou janela expirada,    rateLimit.set(key, {
       count: 1,
       resetTime: now + config.windowMs
     })
@@ -56,8 +50,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   }
   
   if (entry.count >= config.limit) {
-    // Limite excedido
-    return {
+    // Limite excedido,    return {
       limit: config.limit,
       remaining: 0,
       reset: entry.resetTime,
@@ -65,8 +58,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
     }
   }
   
-  // Incrementar contador
-  entry.count++
+  // Incrementar contador,  entry.count++
   rateLimit.set(key, entry)
   
   return {
@@ -112,7 +104,7 @@ export function createRateLimitResponse(rateLimitResult: ReturnType<typeof apply
   const headers: Record<string, string> = {
     'X-RateLimit-Limit': rateLimitResult.limit.toString(),
     'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-    'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
+    'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString()
   }
   
   if (!rateLimitResult.success) {
@@ -144,18 +136,15 @@ export function withRateLimit<T extends any[]>(
   return async (...args: T): Promise<Response> => {
     const request = args[0] as NextRequest
     
-    // Aplicar rate limiting
-    const rateLimitResult = applyRateLimit(request)
+    // Aplicar rate limiting,    const rateLimitResult = applyRateLimit(request)
     
     if (!rateLimitResult.success) {
       return createRateLimitResponse(rateLimitResult) as Response
     }
     
-    // Continuar com o handler original
-    const response = await handler(...args)
+    // Continuar com o handler original,    const response = await handler(...args)
     
-    // Adicionar headers de rate limit à resposta
-    const { headers } = createRateLimitResponse(rateLimitResult)
+    // Adicionar headers de rate limit à resposta,    const { headers } = createRateLimitResponse(rateLimitResult)
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value)
     })

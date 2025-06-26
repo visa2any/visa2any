@@ -13,10 +13,8 @@ export class EmailMonitoringService {
 
   async init() {
     try {
-      // Configurar Gmail API (necessário OAuth2 setup)
-      const auth = new google.auth.GoogleAuth({
-        keyFile: './credentials/gmail-credentials.json', // Você precisa criar este arquivo
-        scopes: ['https://www.googleapis.com/auth/gmail.readonly']
+      // Configurar Gmail API (necessário OAuth2 setup),      const auth = new google.auth.GoogleAuth({
+        keyFile: './credentials/gmail-credentials.json', // Você precisa criar este arquivo,        scopes: ['https://www.googleapis.com/auth/gmail.readonly']
       })
 
       this.gmail = google.gmail({ version: 'v1', auth })
@@ -25,8 +23,7 @@ export class EmailMonitoringService {
     }
   }
 
-  // Palavras-chave para detectar vagas
-  private readonly keywords = [
+  // Palavras-chave para detectar vagas,  private readonly keywords = [
     'appointment available',
     'slot available', 
     'vaga disponível',
@@ -38,15 +35,13 @@ export class EmailMonitoringService {
     'consulate'
   ]
 
-  // Verificar emails recentes
-  async checkRecentEmails(): Promise<EmailAlert[]> {
+  // Verificar emails recentes,  async checkRecentEmails(): Promise<EmailAlert[]> {
     const alerts: EmailAlert[] = []
 
     try {
       if (!this.gmail) await this.init()
 
-      // Buscar emails das últimas 24 horas
-      const query = `newer_than:1d (${this.keywords.map(k => `"${k}"`).join(' OR ')})`
+      // Buscar emails das últimas 24 horas,      const query = `newer_than:1d (${this.keywords.map(k => `"${k}"`).join(' OR ')})`
       
       const response = await this.gmail.users.messages.list({
         userId: 'me',
@@ -56,8 +51,7 @@ export class EmailMonitoringService {
 
       if (!response.data.messages) return alerts
 
-      // Processar cada email
-      for (const message of response.data.messages) {
+      // Processar cada email,      for (const message of response.data.messages) {
         const email = await this.gmail.users.messages.get({
           userId: 'me',
           id: message.id
@@ -68,8 +62,7 @@ export class EmailMonitoringService {
         const from = headers.find((h: any) => h.name === 'From')?.value || ''
         const date = headers.find((h: any) => h.name === 'Date')?.value || ''
 
-        // Verificar se contém palavras-chave de slots
-        const hasSlots = this.keywords.some(keyword => 
+        // Verificar se contém palavras-chave de slots,        const hasSlots = this.keywords.some(keyword => 
           subject.toLowerCase().includes(keyword.toLowerCase()) ||
           (email.data.snippet || '').toLowerCase().includes(keyword.toLowerCase())
         )
@@ -91,8 +84,7 @@ export class EmailMonitoringService {
     return alerts
   }
 
-  // Monitorar remetentes específicos de consulados
-  async checkConsulateEmails(): Promise<EmailAlert[]> {
+  // Monitorar remetentes específicos de consulados,  async checkConsulateEmails(): Promise<EmailAlert[]> {
     const consulateEmails = [
       'noreply@ustraveldocs.com',
       'appointments@vfsglobal.com', 
@@ -139,8 +131,7 @@ export class EmailMonitoringService {
     return alerts
   }
 
-  // Notificar sobre emails relevantes
-  async notifyEmailAlerts(alerts: EmailAlert[]) {
+  // Notificar sobre emails relevantes,  async notifyEmailAlerts(alerts: EmailAlert[]) {
     if (alerts.length === 0) return
 
     const token = process.env.TELEGRAM_BOT_TOKEN

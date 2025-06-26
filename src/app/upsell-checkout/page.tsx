@@ -140,11 +140,9 @@ function UpsellCheckoutPageContent() {
     setIsLoading(true)
     
     try {
-      // Simular processamento de pagamento
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Simular processamento de pagamento,      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Redirecionar para página de sucesso
-      router.push(`/success?upsell=${offerId}&source=upsell`)
+      // Redirecionar para página de sucesso,      router.push(`/success?upsell=${offerId}&source=upsell`)
     } catch (error) {
       console.error('Erro no pagamento:', error)
     } finally {

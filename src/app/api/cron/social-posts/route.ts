@@ -4,16 +4,14 @@ import { processScheduledPosts } from '@/lib/social-automation'
 // Esta rota deve ser chamada por um cron job (ex: Vercel Cron, GitHub Actions),
 export async function POST(request: NextRequest) {
   try {
-    // Verificar authorization header se necessário
-    const authHeader =  
+    // Verificar authorization header se necessário,    const authHeader =  
 const cronSecret = process.env.CRON_SECRET,    
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {,      return NextResponse.json(,        { error: 'Unauthorized' },        { status: 401 }
       )
     },
     console.log('🤖 Iniciando processamento de posts agendados...')
     
-    // Processar posts agendados,    await processScheduledPosts()
-    
+    // Processar posts agendados,    await processScheduledPosts(),    
     console.log('✅ Processamento de posts agendados concluído'),    
     return NextResponse.json({,      success: true,      message: 'Posts agendados processados com sucesso',      timestamp: new Date().toISOString()
     })

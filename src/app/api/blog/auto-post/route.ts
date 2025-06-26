@@ -6,20 +6,17 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
 const {,      title,      excerpt,      content,      category,      author,      tags,      country,      flag,      difficulty,      type,      sourceUrl,      urgent,      trending
     } = body
 
-    // Validação básica,    if (!title || !excerpt || !content || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: title, excerpt, content
- category' },        { status: 400 }
+    // Validação básica,    if (!title || !excerpt || !content || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: title, excerpt, content, category' },        { status: 400 }
       )
     }
 
-    // Verificar se já existe um post com o mesmo título,    const existingPost = await prisma.blogPost.findFirst({
-      where: { title }
+    // Verificar se já existe um post com o mesmo título,    const existingPost = await prisma.blogPost.findFirst({,      where: { title }
     }),
     if (existingPost) {,      return NextResponse.json(,        { error: 'Post com este título já existe' },        { status: 409 }
       )
     }
 
-    // Criar novo post no banco,    const newPost = await prisma.blogPost.create({,      data: {,        title,        excerpt,        content,        category,        author: author || 'Visa2Any Auto'
-        tags: tags || []
+    // Criar novo post no banco,    const newPost = await prisma.blogPost.create({,      data: {,        title,        excerpt,        content,        category,        author: author || 'Visa2Any Auto',        tags: tags || []
         country: country || 'Global',        flag: flag || '🌍',        difficulty: difficulty || 'Intermediário',        type: type || 'Notícia',        sourceUrl,        urgent: urgent || false,        trending: trending || false,        publishDate: new Date(),        readTime: calculateReadTime(content),        views: 0,        likes: 0,        comments: 0,        featured: urgent || trending || false
       }
     })
@@ -47,8 +44,7 @@ export async function GET() {,  try {,    const recentPosts = await prisma.blogP
   }
 }
 
-// Função auxiliar para calcular tempo de leitura,function calculateReadTime(content: string): string {
-  const wordsPerMinute =  
+// Função auxiliar para calcular tempo de leitura,function calculateReadTime(content: string): string {,  const wordsPerMinute =  
 const words = content.split(' ').length
   const minutes = Math.ceil(words / wordsPerMinute),  return `${minutes} min`
 }

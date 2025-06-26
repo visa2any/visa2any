@@ -6,14 +6,12 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Buscar todas as consultorias
-    const consultations = await prisma.consultation.findMany({
+    // Buscar todas as consultorias,    const consultations = await prisma.consultation.findMany({
       include: {
         client: {
           select: {
@@ -34,10 +32,8 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Gerar CSV
-    const csvRows = [
-      // Header
-      [
+    // Gerar CSV,    const csvRows = [
+      // Header,      [
         'ID',
         'Tipo',
         'Status', 
@@ -53,8 +49,7 @@ export async function GET(request: NextRequest) {
         'Data Criação'
       ].join(',')
       
-      // Dados das consultorias
-      ...consultations.map(consultation => [
+      // Dados das consultorias,      ...consultations.map(consultation => [
         consultation.id,
         consultation.type,
         consultation.status,
@@ -73,14 +68,13 @@ export async function GET(request: NextRequest) {
 
     const csvContent = csvRows.join('\n')
     
-    // Adicionar BOM para suporte ao UTF-8 no Excel
-    const bom = '\uFEFF'
+    // Adicionar BOM para suporte ao UTF-8 no Excel,    const bom = '\uFEFF'
     const finalCsv = bom + csvContent
     
     return new NextResponse(finalCsv, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="consultorias-${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Disposition': `attachment; filename="consultorias-${new Date().toISOString().split('T')[0]}.csv"`
       }
     })
 

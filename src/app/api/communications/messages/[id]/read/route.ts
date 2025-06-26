@@ -6,8 +6,7 @@ export async function PATCH(,  request: NextRequest,  { params }: { params: { id
     )
     }
 
-    // Here you would update the message status in the database
-    // For now, we'll simulate the update,    const updatedMessage = {,      id: messageId,      status: 'read'
+    // Here you would update the message status in the database,    // For now, we'll simulate the update,    const updatedMessage = {,      id: messageId,      status: 'read'
       readAt: new Date().toISOString()
     }
 

@@ -46,8 +46,7 @@ export default function MercadoPagoCheckoutPro({
 
   const initializeCheckoutPro = async () => {
     try {
-      // Carregar SDK se necessário
-      if (!window.MercadoPago) {
+      // Carregar SDK se necessário,      if (!window.MercadoPago) {
         console.log('📦 Carregando SDK...')
         await loadSDK()
       }
@@ -58,16 +57,13 @@ export default function MercadoPagoCheckoutPro({
         throw new Error('Container não encontrado')
       }
 
-      // Limpar container
-      containerRef.current.innerHTML = ''
+      // Limpar container,      containerRef.current.innerHTML = ''
 
-      // Criar instância do MercadoPago
-      const mp = new window.MercadoPago(publicKey, {
+      // Criar instância do MercadoPago,      const mp = new window.MercadoPago(publicKey, {
         locale: 'pt-BR'
       })
 
-      // Usar Checkout Pro (modo mais simples e confiável)
-      const checkout = mp.checkout({
+      // Usar Checkout Pro (modo mais simples e confiável),      const checkout = mp.checkout({
         preference: {
           id: preferenceId
         },

@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Verificando status do pagamento:', paymentId)
 
-    // Buscar informações do pagamento no MercadoPago
-    const result = await payment.get({ id: paymentId })
+    // Buscar informações do pagamento no MercadoPago,    const result = await payment.get({ id: paymentId })
     
     console.log('📊 Status atual:', result.status)
     console.log('📋 Detalhes:', {

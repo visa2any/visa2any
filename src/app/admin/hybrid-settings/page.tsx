@@ -112,8 +112,7 @@ export default function HybridSettingsPage() {
       additionalFees: 95,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees'
-
+      officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees',
       isActive: true
     },
     {
@@ -124,9 +123,8 @@ export default function HybridSettingsPage() {
       additionalFees: 120,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment'
-
-      isActive: true
+      officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment',
+    isActive: true
     },
     {
       country: 'FRANCA',
@@ -136,9 +134,8 @@ export default function HybridSettingsPage() {
       additionalFees: 100,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
-
-      isActive: true
+      officialPaymentUrl: 'https://france-visas.gouv.fr/payment',
+    isActive: true
     }
   ]
 
@@ -230,8 +227,7 @@ export default function HybridSettingsPage() {
               onSave={() => setEditingCountry(null)}
               onCancel={() => {
                 setEditingCountry(null)
-                loadSettings() // Reload original values
-              }}
+                loadSettings() // Reload original values              }}
               onUpdate={(field: string, value: any) => updateFee(fee.country, field, value)}
               onRemove={() => removeCountry(fee.country)}
             />
@@ -284,8 +280,7 @@ function CountryFeeCard({ fee, isEditing, onEdit, onSave, onCancel, onUpdate, on
   }, [fee])
 
   const handleSave = () => {
-    // Update parent state
-    Object.keys(localFee).forEach(key => {
+    // Update parent state,    Object.keys(localFee).forEach(key => {
       onUpdate(key, localFee[key])
     })
     onSave()

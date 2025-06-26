@@ -26,12 +26,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = leadCaptureSchema.parse(body)
 
-    // Obter IP do cliente
-    const forwarded = request.headers.get('x-forwarded-for')
+    // Obter IP do cliente,    const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
 
-    // Verificar se lead já existe
-    let existingClient = await prisma.client.findUnique({
+    // Verificar se lead já existe,    let existingClient = await prisma.client.findUnique({
       where: { email: validatedData.email }
     })
 
@@ -39,8 +37,7 @@ export async function POST(request: NextRequest) {
     let isNewLead = false
 
     if (existingClient) {
-      // Atualizar lead existente
-      client = await prisma.client.update({
+      // Atualizar lead existente,      client = await prisma.client.update({
         where: { id: existingClient.id }
         data: {
           name: validatedData.name,
@@ -49,8 +46,7 @@ export async function POST(request: NextRequest) {
         }
       })
     } else {
-      // Criar novo lead
-      client = await prisma.client.create({
+      // Criar novo lead,      client = await prisma.client.create({
         data: {
           name: validatedData.name,
           email: validatedData.email,
@@ -67,8 +63,7 @@ export async function POST(request: NextRequest) {
       isNewLead = true
     }
 
-    // Calcular lead score baseado em dados disponíveis
-    const leadScore = calculateLeadScore({
+    // Calcular lead score baseado em dados disponíveis,    const leadScore = calculateLeadScore({
       source: validatedData.source,
       leadMagnet: validatedData.leadMagnet,
       hasPhone: !!validatedData.phone,
@@ -76,8 +71,7 @@ export async function POST(request: NextRequest) {
       utmMedium: validatedData.utmMedium
     })
 
-    // Salvar interação de captura
-    await prisma.interaction.create({
+    // Salvar interação de captura,    await prisma.interaction.create({
       data: {
         type: 'LEAD_CAPTURE',
         channel: getChannelFromSource(validatedData.source)
@@ -94,8 +88,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da captura
-    await prisma.automationLog.create({
+    // Log da captura,    await prisma.automationLog.create({
       data: {
         type: 'LEAD_CAPTURED',
         action: 'capture_lead',
@@ -110,8 +103,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Disparar automações baseadas no lead score
-    if (isNewLead) {
+    // Disparar automações baseadas no lead score,    if (isNewLead) {
       await triggerWelcomeSequence(client.id, validatedData.leadMagnet)
     }
 
@@ -119,16 +111,15 @@ export async function POST(request: NextRequest) {
       await triggerHighPriorityActions(client.id, leadScore)
     }
 
-    // Resposta baseada no lead score
-    let responseMessage = 'Lead capturado com sucesso'
+    // Resposta baseada no lead score,    let responseMessage = 'Lead capturado com sucesso'
     let recommendations = []
 
     if (leadScore >= 80) {
       responseMessage = 'Lead de alta qualidade capturado'
-      recommendations = ['priority_contact', 'premium_offer'],
+      recommendations = ['priority_contact', 'premium_offer']
     } else if (leadScore >= 60) {
       responseMessage = 'Lead qualificado capturado'
-      recommendations = ['nurture_sequence', 'assessment_offer'],
+      recommendations = ['nurture_sequence', 'assessment_offer']
     } else {
       recommendations = ['basic_nurture', 'educational_content']
     }
@@ -166,30 +157,26 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '30' // dias
-    const days = parseInt(period)
+    const period = searchParams.get('period') || '30' // dias,    const days = parseInt(period)
     
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
 
-    // Buscar estatísticas
-    const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
+    // Buscar estatísticas,    const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
       // Total de leads
 
       prisma.client.count({
         where: { status: 'LEAD' }
       })
       
-      // Novos leads no período
-      prisma.client.count({
+      // Novos leads no período,      prisma.client.count({
         where: {
           status: 'LEAD',
           createdAt: { gte: startDate }
         }
       })
       
-      // Leads por fonte
-      prisma.client.groupBy({
+      // Leads por fonte,      prisma.client.groupBy({
         by: ['source'],
         where: {
           status: 'LEAD',
@@ -198,8 +185,7 @@ export async function GET(request: NextRequest) {
         _count: { id: true }
       })
       
-      // Leads por lead magnet
-      prisma.interaction.groupBy({
+      // Leads por lead magnet,      prisma.interaction.groupBy({
         by: ['details'],
         where: {
           type: 'LEAD_CAPTURE',
@@ -220,8 +206,7 @@ export async function GET(request: NextRequest) {
           source: item.source,
           count: item._count.id
         }))
-        leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
-        period: `${days} dias`,
+        leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10,        period: `${days} dias`
       }
     })
 
@@ -240,12 +225,11 @@ function calculateLeadScore(factors: {
   leadMagnet?: string
   hasPhone: boolean
   utmSource?: string
-  utmMedium?: string,
+  utmMedium?: string
 }) {
   let score = 0
 
-  // Score por fonte
-  const sourceScores: Record<string, number> = {
+  // Score por fonte,  const sourceScores: Record<string, number> = {
     'lead_magnet': 30,
     'assessment': 40,
     'pricing_page': 50,
@@ -258,8 +242,7 @@ function calculateLeadScore(factors: {
   }
   score += sourceScores[factors.source || ''] || 10
 
-  // Score por lead magnet (interesse específico)
-  const magnetScores: Record<string, number> = {
+  // Score por lead magnet (interesse específico),  const magnetScores: Record<string, number> = {
     'ebook-50-erros': 25,
     'checklist-documentos': 20,
     'calculadora-tempo': 35,
@@ -269,16 +252,13 @@ function calculateLeadScore(factors: {
   }
   score += magnetScores[factors.leadMagnet || ''] || 0
 
-  // Score por ter telefone (mais engajado)
-  if (factors.hasPhone) score += 15
+  // Score por ter telefone (mais engajado),  if (factors.hasPhone) score += 15
 
-  // Score por UTM (campanhas específicas)
-  if (factors.utmMedium === 'paid') score += 10
+  // Score por UTM (campanhas específicas),  if (factors.utmMedium === 'paid') score += 10
   if (factors.utmSource === 'google') score += 5
   if (factors.utmSource === 'facebook') score += 8
 
-  // Normalizar para 0-100
-  return Math.min(score, 100)
+  // Normalizar para 0-100,  return Math.min(score, 100)
 }
 
 // Determinar canal baseado na fonte
@@ -300,8 +280,7 @@ function getChannelFromSource(source: string): string {
 // Disparar sequência de boas-vindas
 async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
   try {
-    // Enviar email de boas-vindas imediato
-    await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
+    // Enviar email de boas-vindas imediato,    await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
@@ -313,8 +292,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
       })
     })
 
-    // Agendar emails de nurturing
-    // Em produção
+    // Agendar emails de nurturing,    // Em produção
  usar queue/scheduler
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
@@ -326,8 +304,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
 // Disparar ações para leads de alta prioridade
 async function triggerHighPriorityActions(clientId: string, leadScore: number) {
   try {
-    // Notificar equipe de vendas
-    await prisma.automationLog.create({
+    // Notificar equipe de vendas,    await prisma.automationLog.create({
       data: {
         type: 'HIGH_PRIORITY_LEAD',
         action: 'notify_sales_team',
@@ -340,8 +317,7 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
       }
     })
 
-    // Em produção: enviar notificação Slack/Teams para vendas
-    console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
+    // Em produção: enviar notificação Slack/Teams para vendas,    console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
     
   } catch (error) {
     console.error('Erro ao processar lead de alta prioridade:', error)

@@ -4,13 +4,11 @@ import { useState } from 'react'
 import { ArrowRight, ArrowLeft, Shield, Star, CreditCard, Check, User, FileText, Zap, Clock, Users, CheckCircle } from 'lucide-react'
 
 interface FormData {
-  // Etapa 1
-  name: string
+  // Etapa 1,  name: string
   email: string
   whatsapp: string
   
-  // Etapa 2
-  cpf: string
+  // Etapa 2,  cpf: string
   terms: boolean
   contract: boolean
   installments: number
@@ -63,8 +61,7 @@ export default function CheckoutWizard() {
     if (installments <= 3) {
       return basePrice / installments
     } else {
-      // Taxa de 2.5% por mês a partir da 4ª parcela
-      const monthlyRate = 0.025
+      // Taxa de 2.5% por mês a partir da 4ª parcela,      const monthlyRate = 0.025
       const totalWithInterest = basePrice * (1 + (monthlyRate * (installments - 3)))
       return totalWithInterest / installments
     }
@@ -135,8 +132,7 @@ export default function CheckoutWizard() {
       const data = await response.json()
 
       if (data.success && data.init_point) {
-        // Salvar dados para após pagamento
-        localStorage.setItem('checkout-data', JSON.stringify(formData))
+        // Salvar dados para após pagamento,        localStorage.setItem('checkout-data', JSON.stringify(formData))
         window.location.href = data.init_point
       } else {
         alert(`Erro: ${data.error || 'Erro desconhecido'}`)

@@ -39,21 +39,18 @@ export default function MonitoringDashboard() {
 
   useEffect(() => {
     loadMonitoringData()
-    const interval = setInterval(loadMonitoringData, 60000) // Atualizar a cada minuto
-    return () => clearInterval(interval)
+    const interval = setInterval(loadMonitoringData, 60000) // Atualizar a cada minuto,    return () => clearInterval(interval)
   }, [])
 
   const loadMonitoringData = async () => {
     try {
-      // Dados simulados dos canais de monitoramento
-      const mockChannels: MonitoringChannel[] = [
+      // Dados simulados dos canais de monitoramento,      const mockChannels: MonitoringChannel[] = [
         {
           id: 'vaga_express',
           name: 'Vaga Express',
           type: 'telegram',
-          url: 'https://t.me/vagaexpress'
-
-          status: 'active',
+          url: 'https://t.me/vagaexpress',
+    status: 'active',
           lastUpdate: '2024-01-15T12:30:00Z',
           foundVacancies: 23,
           description: 'Canal principal de vagas de consulados',
@@ -64,9 +61,8 @@ export default function MonitoringDashboard() {
           id: 'vaga_consulado_usa',
           name: 'Vagas Consulado EUA',
           type: 'telegram',
-          url: 'https://t.me/vaga_consulado_usa'
-
-          status: 'active',
+          url: 'https://t.me/vaga_consulado_usa',
+    status: 'active',
           lastUpdate: '2024-01-15T12:25:00Z',
           foundVacancies: 15,
           description: 'Especializado em vagas para EUA',
@@ -77,9 +73,8 @@ export default function MonitoringDashboard() {
           id: 'vagas_visto_canada',
           name: 'Vagas Visto Canadá',
           type: 'telegram',
-          url: 'https://t.me/vagas_visto_canada'
-
-          status: 'active',
+          url: 'https://t.me/vagas_visto_canada',
+    status: 'active',
           lastUpdate: '2024-01-15T12:20:00Z',
           foundVacancies: 8,
           description: 'Monitoramento VFS Global Canadá',
@@ -90,9 +85,8 @@ export default function MonitoringDashboard() {
           id: 'casv_monitor',
           name: 'CASV Monitor',
           type: 'web',
-          url: 'https://cgifederal.secure.force.com'
-
-          status: 'active',
+          url: 'https://cgifederal.secure.force.com',
+    status: 'active',
           lastUpdate: '2024-01-15T12:35:00Z',
           foundVacancies: 12,
           description: 'Monitoramento direto CASV',
@@ -103,9 +97,8 @@ export default function MonitoringDashboard() {
           id: 'vfs_global_monitor',
           name: 'VFS Global Monitor',
           type: 'web',
-          url: 'https://visa.vfsglobal.com'
-
-          status: 'active',
+          url: 'https://visa.vfsglobal.com',
+    status: 'active',
           lastUpdate: '2024-01-15T12:32:00Z',
           foundVacancies: 6,
           description: 'Monitoramento VFS Global',
@@ -172,8 +165,7 @@ export default function MonitoringDashboard() {
 
   const toggleChannel = async (channelId: string, enabled: boolean) => {
     try {
-      // Simular API call para ativar/desativar canal
-      setChannels(prev => prev.map(channel => 
+      // Simular API call para ativar/desativar canal,      setChannels(prev => prev.map(channel => 
         channel.id === channelId 
           ? { ...channel, status: enabled ? 'active' : 'inactive' }
           : channel
@@ -204,8 +196,7 @@ export default function MonitoringDashboard() {
       const alert = alerts.find(a => a.id === alertId)
       if (!alert) return
 
-      // Simular notificação ao cliente
-      const response = await fetch('/api/notifications', {
+      // Simular notificação ao cliente,      const response = await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

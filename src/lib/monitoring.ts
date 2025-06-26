@@ -24,13 +24,11 @@ class SimpleMonitoring {
 
     this.logs.push(logEntry)
     
-    // Manter apenas os logs mais recentes
-    if (this.logs.length > this.maxLogs) {
+    // Manter apenas os logs mais recentes,    if (this.logs.length > this.maxLogs) {
       this.logs = this.logs.slice(-this.maxLogs)
     }
 
-    // Log no console para desenvolvimento
-    if (process.env.NODE_ENV === 'development') {
+    // Log no console para desenvolvimento,    if (process.env.NODE_ENV === 'development') {
       console.log(`[${logEntry.level.toUpperCase()}] ${logEntry.message}`, logEntry.metadata)
     }
   }
@@ -47,8 +45,7 @@ class SimpleMonitoring {
     this.log({ level: 'error', message, metadata })
   }
 
-  // Monitorar performance de endpoints
-  trackEndpoint(request: NextRequest, statusCode: number, duration: number) {
+  // Monitorar performance de endpoints,  trackEndpoint(request: NextRequest, statusCode: number, duration: number) {
     const endpoint = request.nextUrl.pathname
     const ip = this.getClientIP(request)
     
@@ -68,8 +65,7 @@ class SimpleMonitoring {
     })
   }
 
-  // Monitorar erros de aplicação
-  trackError(error: Error, context?: Record<string, any>) {
+  // Monitorar erros de aplicação,  trackError(error: Error, context?: Record<string, any>) {
     this.error(`Application Error: ${error.message}`, {
       stack: error.stack,
       name: error.name,
@@ -77,13 +73,11 @@ class SimpleMonitoring {
     })
   }
 
-  // Monitorar eventos de negócio
-  trackBusinessEvent(event: string, data: Record<string, any>) {
+  // Monitorar eventos de negócio,  trackBusinessEvent(event: string, data: Record<string, any>) {
     this.info(`Business Event: ${event}`, data)
   }
 
-  // Obter estatísticas dos logs
-  getStats() {
+  // Obter estatísticas dos logs,  getStats() {
     const now = Date.now()
     const oneHourAgo = now - (60 * 60 * 1000)
     const oneDayAgo = now - (24 * 60 * 60 * 1000)
@@ -136,22 +130,18 @@ class SimpleMonitoring {
     }
   }
 
-  // Obter logs recentes
-  getRecentLogs(limit = 100) {
+  // Obter logs recentes,  getRecentLogs(limit = 100) {
     return this.logs.slice(-limit).reverse()
   }
 
-  // Calcular score de saúde da aplicação
-  private calculateHealthScore(logs: MonitoringData[]): number {
+  // Calcular score de saúde da aplicação,  private calculateHealthScore(logs: MonitoringData[]): number {
     if (logs.length === 0) return 100
 
     const errorRate = logs.filter(log => log.level === 'error').length / logs.length
     const warnRate = logs.filter(log => log.level === 'warn').length / logs.length
     
-    // Score baseado em taxas de erro e warning
-    let score = 100
-    score -= errorRate * 80 // Cada erro reduz muito o score
-    score -= warnRate * 20  // Warnings reduzem menos
+    // Score baseado em taxas de erro e warning,    let score = 100
+    score -= errorRate * 80 // Cada erro reduz muito o score,    score -= warnRate * 20  // Warnings reduzem menos
 
     return Math.max(Math.round(score), 0)
   }

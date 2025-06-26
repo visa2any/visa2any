@@ -25,8 +25,7 @@ const eligibilityAnalysisSchema = z.object({
 
 // POST /api/visa-analysis - Analisar elegibilidade
 export async function POST(request: NextRequest) {
-  // Aplicar rate limiting para análise
-  const rateLimitResult = rateLimit(request, RATE_LIMITS.analysis)
+  // Aplicar rate limiting para análise,  const rateLimitResult = rateLimit(request, RATE_LIMITS.analysis)
   
   if (!rateLimitResult.success) {
     return createRateLimitResponse(rateLimitResult.resetTime)
@@ -36,8 +35,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = eligibilityAnalysisSchema.parse(body)
 
-    // Verificar se cliente existe
-    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
     })
 
@@ -47,8 +45,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Buscar requisitos para o país/visto
-    const requirements = await prisma.visaRequirement.findMany({
+    // Buscar requisitos para o país/visto,    const requirements = await prisma.visaRequirement.findMany({
       where: {
         country: { contains: validatedData.targetCountry, mode: 'insensitive' }
         isActive: true,
@@ -64,22 +61,19 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // Analisar elegibilidade para cada tipo de visto
-    const analyses = await Promise.all(
+    // Analisar elegibilidade para cada tipo de visto,    const analyses = await Promise.all(
       requirements.map(async (requirement) => {
         const analysis = await analyzeEligibility(validatedData.profile, requirement)
         return {
           ...requirement
-          analysis,
+          analysis
         }
       })
     )
 
-    // Ordenar por score de elegibilidade
-    analyses.sort((a, b) => b.analysis.totalScore - a.analysis.totalScore)
+    // Ordenar por score de elegibilidade,    analyses.sort((a, b) => b.analysis.totalScore - a.analysis.totalScore)
 
-    // Criar consultoria automática com o resultado
-    const consultation = await prisma.consultation.create({
+    // Criar consultoria automática com o resultado,    const consultation = await prisma.consultation.create({
       data: {
         type: 'AI_ANALYSIS',
         status: 'COMPLETED',
@@ -99,8 +93,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar cliente com informações
-    await prisma.client.update({
+    // Atualizar cliente com informações,    await prisma.client.update({
       where: { id: validatedData.clientId }
       data: {
         targetCountry: validatedData.targetCountry,
@@ -110,8 +103,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da análise
-    await prisma.automationLog.create({
+    // Log da análise,    await prisma.automationLog.create({
       data: {
         type: 'ELIGIBILITY_ANALYSIS',
         action: 'analyze_eligibility',
@@ -127,8 +119,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         consultation
-        analyses: analyses.slice(0, 3), // Top 3 opções
-        summary: {
+        analyses: analyses.slice(0, 3), // Top 3 opções,        summary: {
           bestOption: analyses[0],
           totalOptionsAnalyzed: analyses.length,
           recommendationLevel: getRecommendationLevel(analyses[0]?.analysis.totalScore || 0)
@@ -164,8 +155,7 @@ async function analyzeEligibility(profile: any, requirement: any) {
   const feedback: string[] = []
   const blockers: string[] = []
 
-  // Análise por país específico
-  switch (requirement.country.toLowerCase()) {
+  // Análise por país específico,  switch (requirement.country.toLowerCase()) {
     case 'canadá':
     case 'canada':
       return analyzeCanadaEligibility(profile, requirement)
@@ -190,24 +180,21 @@ async function analyzeEligibility(profile: any, requirement: any) {
 // Análise específica para Canadá (Express Entry)
 function analyzeCanadaEligibility(profile: any, requirement: any) {
   let totalScore = 0
-  const maxScore = 1200 // CRS Score máximo
-  const feedback: string[] = []
+  const maxScore = 1200 // CRS Score máximo,  const feedback: string[] = []
   const blockers: string[] = []
 
-  // Idade (máximo 110 pontos)
-  let ageScore = 0
+  // Idade (máximo 110 pontos),  let ageScore = 0
   if (profile.age >= 18 && profile.age <= 35) {
-    ageScore = 110,
+    ageScore = 110
   } else if (profile.age <= 39) {
-    ageScore = 105,
+    ageScore = 105
   } else if (profile.age <= 45) {
     ageScore = 95 - (profile.age - 39) * 5
   }
   totalScore += ageScore
   feedback.push(`Idade: ${ageScore}/110 pontos`)
 
-  // Educação (máximo 150 pontos)
-  let educationScore = 0
+  // Educação (máximo 150 pontos),  let educationScore = 0
   switch (profile.education.toLowerCase()) {
     case 'phd':
     case 'doutorado':
@@ -232,57 +219,52 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
   totalScore += educationScore
   feedback.push(`Educação: ${educationScore}/150 pontos`)
 
-  // Idioma inglês (máximo 136 pontos)
-  let languageScore = 0
+  // Idioma inglês (máximo 136 pontos),  let languageScore = 0
   const englishLevel = profile.language?.english || 0
   if (englishLevel >= 9) {
-    languageScore = 136,
+    languageScore = 136
   } else if (englishLevel >= 8) {
-    languageScore = 124,
+    languageScore = 124
   } else if (englishLevel >= 7) {
-    languageScore = 110,
+    languageScore = 110
   } else if (englishLevel >= 6) {
-    languageScore = 74,
+    languageScore = 74
   } else {
     blockers.push('Nível de inglês insuficiente (mínimo CLB 7)')
   }
   totalScore += languageScore
   feedback.push(`Inglês: ${languageScore}/136 pontos`)
 
-  // Experiência (máximo 80 pontos)
-  let experienceScore = 0
+  // Experiência (máximo 80 pontos),  let experienceScore = 0
   if (profile.workExperience >= 6) {
-    experienceScore = 80,
+    experienceScore = 80
   } else if (profile.workExperience >= 4) {
-    experienceScore = 70,
+    experienceScore = 70
   } else if (profile.workExperience >= 2) {
-    experienceScore = 53,
+    experienceScore = 53
   } else if (profile.workExperience >= 1) {
-    experienceScore = 40,
+    experienceScore = 40
   } else {
     blockers.push('Experiência profissional insuficiente (mínimo 1 ano)')
   }
   totalScore += experienceScore
   feedback.push(`Experiência: ${experienceScore}/80 pontos`)
 
-  // Fundos suficientes
-  const requiredFunds = 13310 // CAD para pessoa solteira
+  // Fundos suficientes,  const requiredFunds = 13310 // CAD para pessoa solteira
   if (profile.funds < requiredFunds) {
     blockers.push(`Fundos insuficientes (requerido: CAD $${requiredFunds})`)
   } else {
     feedback.push('✅ Fundos suficientes comprovados')
   }
 
-  // Cálculo final (CRS to percentage)
-  const percentageScore = Math.min((totalScore / 470) * 100, 100)
+  // Cálculo final (CRS to percentage),  const percentageScore = Math.min((totalScore / 470) * 100, 100)
 
   return {
     totalScore: Math.round(percentageScore)
     feedback
     blockers,
     eligible: blockers.length === 0 && totalScore >= 67,
-    estimatedDrawScore: 480 // Score típico dos últimos draws
-  }
+    estimatedDrawScore: 480 // Score típico dos últimos draws  }
 }
 
 // Análise específica para Austrália
@@ -291,48 +273,44 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
   const feedback: string[] = []
   const blockers: string[] = []
 
-  // Idade (máximo 30 pontos)
-  let ageScore = 0
+  // Idade (máximo 30 pontos),  let ageScore = 0
   if (profile.age >= 25 && profile.age <= 32) {
-    ageScore = 30,
+    ageScore = 30
   } else if (profile.age >= 33 && profile.age <= 39) {
-    ageScore = 25,
+    ageScore = 25
   } else if (profile.age >= 40 && profile.age <= 44) {
-    ageScore = 15,
+    ageScore = 15
   } else if (profile.age >= 45) {
     blockers.push('Idade acima do limite (máximo 44 anos)')
   }
   totalScore += ageScore
 
-  // Inglês (máximo 20 pontos)
-  let englishScore = 0
+  // Inglês (máximo 20 pontos),  let englishScore = 0
   const englishLevel = profile.language?.english || 0
   if (englishLevel >= 8) {
-    englishScore = 20,
+    englishScore = 20
   } else if (englishLevel >= 7) {
-    englishScore = 10,
+    englishScore = 10
   } else if (englishLevel >= 6) {
-    englishScore = 0,
+    englishScore = 0
   } else {
     blockers.push('IELTS insuficiente (mínimo 6.0 cada banda)')
   }
   totalScore += englishScore
 
-  // Experiência (máximo 20 pontos)
-  let experienceScore = 0
+  // Experiência (máximo 20 pontos),  let experienceScore = 0
   if (profile.workExperience >= 8) {
-    experienceScore = 20,
+    experienceScore = 20
   } else if (profile.workExperience >= 5) {
-    experienceScore = 15,
+    experienceScore = 15
   } else if (profile.workExperience >= 3) {
-    experienceScore = 10,
+    experienceScore = 10
   } else {
     blockers.push('Experiência insuficiente (mínimo 3 anos)')
   }
   totalScore += experienceScore
 
-  // Educação (máximo 20 pontos)
-  let educationScore = 0
+  // Educação (máximo 20 pontos),  let educationScore = 0
   switch (profile.education.toLowerCase()) {
     case 'phd':
     case 'doutorado':
@@ -368,25 +346,21 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
   const blockers: string[] = []
   let score = 100 // Começa com 100% e deduz pontos
 
-  // Rendimento mínimo (€760/mês)
-  const minimumIncome = 760
-  const monthlyIncome = profile.funds / 12 // Assumindo fundos são anuais
-  
+  // Rendimento mínimo (€760/mês),  const minimumIncome = 760
+  const monthlyIncome = profile.funds / 12 // Assumindo fundos são anuais,  
   if (monthlyIncome < minimumIncome) {
     blockers.push(`Rendimento insuficiente (mínimo €${minimumIncome}/mês)`)
-    score -= 40,
+    score -= 40
   } else {
     feedback.push('✅ Rendimento suficiente comprovado')
   }
 
-  // Idade (preferencial mas não obrigatório)
-  if (profile.age > 65) {
+  // Idade (preferencial mas não obrigatório),  if (profile.age > 65) {
     score -= 10
     feedback.push('Idade acima da faixa preferencial')
   }
 
-  // Sem criminalidade (assumido)
-  feedback.push('✅ Registo criminal necessário')
+  // Sem criminalidade (assumido),  feedback.push('✅ Registo criminal necessário')
 
   const eligible = blockers.length === 0
 
@@ -394,7 +368,7 @@ function analyzePortugalEligibility(profile: any, requirement: any) {
     totalScore: Math.max(score, 0)
     feedback,
     blockers,
-    eligible,
+    eligible
   }
 }
 
@@ -404,10 +378,9 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
   const blockers: string[] = []
   let score = 0
 
-  // EB-1A é muito específico para pessoas extraordinárias
-  if (profile.workExperience < 5) {
+  // EB-1A é muito específico para pessoas extraordinárias,  if (profile.workExperience < 5) {
     blockers.push('EB-1A requer experiência excepcional (5+ anos)')
-    score = 20,
+    score = 20
   } else if (profile.workExperience >= 10) {
     score = 80
     feedback.push('Experiência sólida para EB-1A')
@@ -416,16 +389,14 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
     feedback.push('Experiência adequada, mas evidências extraordinárias necessárias')
   }
 
-  // Educação avançada ajuda
-  if (profile.education.toLowerCase().includes('phd')) {
+  // Educação avançada ajuda,  if (profile.education.toLowerCase().includes('phd')) {
     score += 15
     feedback.push('PhD é vantajoso para EB-1A')
   } else if (profile.education.toLowerCase().includes('masters')) {
     score += 10
   }
 
-  // EB-1A é complexo e requer evidências específicas
-  feedback.push('EB-1A requer portfólio robusto de evidências extraordinárias')
+  // EB-1A é complexo e requer evidências específicas,  feedback.push('EB-1A requer portfólio robusto de evidências extraordinárias')
   feedback.push('Considere consulta especializada para avaliar chances reais')
 
   return {
@@ -438,12 +409,10 @@ function analyzeUSAEligibility(profile: any, requirement: any) {
 
 // Análise genérica para outros países
 function analyzeGenericEligibility(profile: any, requirement: any) {
-  let score = 70 // Score base
-  const feedback: string[] = []
+  let score = 70 // Score base,  const feedback: string[] = []
   const blockers: string[] = []
 
-  // Análise básica baseada em critérios comuns
-  if (profile.age > 50) {
+  // Análise básica baseada em critérios comuns,  if (profile.age > 50) {
     score -= 10
     feedback.push('Idade pode ser um fator limitante')
   }
@@ -485,7 +454,7 @@ function generateRecommendation(analysis: any): string {
   } else if (score >= 70) {
     return `Bom perfil para ${analysis.country}. Algumas melhorias podem aumentar suas chances. Considere otimizar os pontos fracos identificados.`
   } else if (score >= 50) {
-    return `Perfil com potencial para ${analysis.country}, mas requer preparação. Foque em melhorar os critérios principais antes de aplicar.`,
+    return `Perfil com potencial para ${analysis.country}, mas requer preparação. Foque em melhorar os critérios principais antes de aplicar.`
   } else {
     return `Perfil atual não atende aos requisitos mínimos para ${analysis.country}. Recomendamos buscar alternativas ou melhorar qualificações.`
   }
@@ -519,8 +488,7 @@ function generateNextSteps(analysis: any): string[] {
   const blockers = analysis.analysis.blockers || []
   const score = analysis.analysis.totalScore
   
-  // Adicionar steps específicos baseado nos blockers
-  if (blockers.some((b: string) => b.includes('inglês') || b.includes('IELTS'))) {
+  // Adicionar steps específicos baseado nos blockers,  if (blockers.some((b: string) => b.includes('inglês') || b.includes('IELTS'))) {
     steps.push('Melhore seu nível de inglês e faça o teste IELTS/CELPIP')
   }
   

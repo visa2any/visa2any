@@ -45,8 +45,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros
-    const where: any = { isActive: true }
+    // Construir filtros,    const where: any = { isActive: true }
     
     if (country) {
       where.country = { contains: country }
@@ -64,8 +63,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Buscar requisitos
-    const [requirements, total] = await Promise.all([,
+    // Buscar requisitos,    const [requirements, total] = await Promise.all([,
       prisma.visaRequirement.findMany({
         where,
         skip,
@@ -73,13 +71,12 @@ export async function GET(request: NextRequest) {
         orderBy: [
           { country: 'asc' }
           { visaType: 'asc' }
-        ],
+        ]
       })
       prisma.visaRequirement.count({ where })
     ])
 
-    // Estatísticas
-    const countries = await prisma.visaRequirement.groupBy({
+    // Estatísticas,    const countries = await prisma.visaRequirement.groupBy({
       by: ['country'],
       _count: { country: true }
       where: { isActive: true }
@@ -134,8 +131,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = visaRequirementSchema.parse(body)
 
-    // Verificar se já existe
-    const existing = await prisma.visaRequirement.findUnique({
+    // Verificar se já existe,    const existing = await prisma.visaRequirement.findUnique({
       where: {
         country_visaType_visaSubtype: {
           country: validatedData.country
@@ -152,8 +148,7 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Criar requisitos
-    const requirement = await prisma.visaRequirement.create({
+    // Criar requisitos,    const requirement = await prisma.visaRequirement.create({
       data: {
         ...validatedData
         visaSubtype: validatedData.visaSubtype || null,
@@ -161,8 +156,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da criação
-    await prisma.automationLog.create({
+    // Log da criação,    await prisma.automationLog.create({
       data: {
         type: 'VISA_REQUIREMENT_CREATED',
         action: 'create_visa_requirement',
@@ -221,8 +215,7 @@ export async function PUT(request: NextRequest) {
       }
     })
 
-    // Log da atualização
-    await prisma.automationLog.create({
+    // Log da atualização,    await prisma.automationLog.create({
       data: {
         type: 'VISA_REQUIREMENT_UPDATED',
         action: 'update_visa_requirement',

@@ -23,8 +23,7 @@ interface UKFormData {
     maritalStatus: string
     spouseName?: string
     children: number
-    nino?: string // National Insurance Number se aplicável
-  }
+    nino?: string // National Insurance Number se aplicável  }
   
   contactInfo: {
     homeAddress: string
@@ -89,8 +88,7 @@ interface UKFormData {
     maintenanceFunds: number
     healthInsurance: boolean
     insuranceProvider?: string
-    ihsPayment: boolean // Immigration Health Surcharge
-  }
+    ihsPayment: boolean // Immigration Health Surcharge  }
   
   healthInfo: {
     hasHealthIssues: boolean
@@ -249,17 +247,14 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
     }
   }
 
-  // Calculadora de pontos para Skilled Worker visa
-  const calculatePointsBasedScore = () => {
+  // Calculadora de pontos para Skilled Worker visa,  const calculatePointsBasedScore = () => {
     let points = 0
     
-    // Mandatory requirements (50 points)
-    if (formData.workInfo.hasJobOfferUK) points += 20
+    // Mandatory requirements (50 points),    if (formData.workInfo.hasJobOfferUK) points += 20
     if (formData.workInfo.skillsAssessment) points += 20
     if (formData.educationInfo.languageSkills.english === 'advanced') points += 10
     
-    // Tradeable requirements
-    if (formData.workInfo.monthlyIncome >= 2500) points += 20 // £30k+ annually
+    // Tradeable requirements,    if (formData.workInfo.monthlyIncome >= 2500) points += 20 // £30k+ annually
     if (formData.educationInfo.highestEducation === 'phd') points += 20
     if (formData.educationInfo.languageSkills.english === 'native') points += 10
     
@@ -429,8 +424,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 3: // Detalhes do Visto
-        return (
+      case 3: // Detalhes do Visto,        return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
@@ -592,8 +586,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 4: // Educação - placeholder simples para outros casos
-        return (
+      case 4: // Educação - placeholder simples para outros casos,        return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-700 text-sm">
@@ -603,8 +596,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 5: // Trabalho - placeholder simples
-        return (
+      case 5: // Trabalho - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-700 text-sm">
@@ -614,8 +606,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 6: // Finanças - placeholder simples
-        return (
+      case 6: // Finanças - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-700 text-sm">
@@ -625,8 +616,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 7: // Saúde - placeholder simples
-        return (
+      case 7: // Saúde - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-700 text-sm">
@@ -636,8 +626,7 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
           </div>
         )
 
-      case 8: // Informações Adicionais - placeholder simples
-        return (
+      case 8: // Informações Adicionais - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-700 text-sm">

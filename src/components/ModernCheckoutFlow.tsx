@@ -85,8 +85,7 @@ export default function ModernCheckoutFlow({
     newsletter: true
   })
 
-  // Upsells inteligentes baseados no produto
-  const getUpsellOffers = (): UpsellOffer[] => {
+  // Upsells inteligentes baseados no produto,  const getUpsellOffers = (): UpsellOffer[] => {
     const offers: UpsellOffer[] = []
 
     if (productId.includes('vip')) {
@@ -132,8 +131,7 @@ export default function ModernCheckoutFlow({
   const upsellOffers = getUpsellOffers()
   const productData = PRODUCT_DATA[productId] || {}
 
-  // Cálculos de preço
-  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
+  // Cálculos de preço,  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
   const upsellsTotal = selectedUpsellsData.reduce((sum, offer) => sum + offer.discountedPrice, 0)
   const totalSavings = selectedUpsellsData.reduce((sum, offer) => sum + offer.savings, 0)
   const subtotal = price + upsellsTotal

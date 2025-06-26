@@ -21,11 +21,9 @@ export default function CustomerLogin() {
     setIsLoading(true)
     setError('')
 
-    // BYPASS TEMPORÁRIO PARA DEMONSTRAÇÃO
-    // Simular login bem-sucedido com dados de exemplo
+    // BYPASS TEMPORÁRIO PARA DEMONSTRAÇÃO,    // Simular login bem-sucedido com dados de exemplo
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simular delay de API
-      
+      await new Promise(resolve => setTimeout(resolve, 1000)) // Simular delay de API,      
       const mockCustomerData = {
         id: 'cliente-demo-1',
         name: name || 'Cliente Demonstração',
@@ -37,16 +35,14 @@ export default function CustomerLogin() {
         eligibilityScore: 85
       }
 
-      // Salvar dados no localStorage
-      if (typeof window !== 'undefined') {
+      // Salvar dados no localStorage,      if (typeof window !== 'undefined') {
         localStorage.setItem('customer-token', 'demo-token-123')
         localStorage.setItem('customer', JSON.stringify(mockCustomerData))
       }
       
       console.log('✅ Login de demonstração realizado com sucesso')
       
-      // Redirecionar para o dashboard
-      router.push('/cliente')
+      // Redirecionar para o dashboard,      router.push('/cliente')
       
     } catch (error) {
       console.error('Erro na autenticação:', error)

@@ -61,9 +61,8 @@ export default function SimpleMonitoringDashboard() {
           id: 'vaga_express',
           name: 'Vaga Express',
           type: 'telegram',
-          url: 'https://t.me/vagaexpress'
-
-          status: 'active',
+          url: 'https://t.me/vagaexpress',
+    status: 'active',
           lastUpdate: '2024-01-15T12:30:00Z',
           foundVacancies: 23,
           description: 'Canal principal de vagas de consulados',
@@ -74,9 +73,8 @@ export default function SimpleMonitoringDashboard() {
           id: 'vaga_consulado_usa',
           name: 'Vagas Consulado EUA',
           type: 'telegram',
-          url: 'https://t.me/vaga_consulado_usa'
-
-          status: 'active',
+          url: 'https://t.me/vaga_consulado_usa',
+    status: 'active',
           lastUpdate: '2024-01-15T12:25:00Z',
           foundVacancies: 15,
           description: 'Especializado em vagas para EUA',
@@ -87,9 +85,8 @@ export default function SimpleMonitoringDashboard() {
           id: 'vagas_visto_canada',
           name: 'Vagas Visto Canadá',
           type: 'telegram',
-          url: 'https://t.me/vagas_visto_canada'
-
-          status: 'active',
+          url: 'https://t.me/vagas_visto_canada',
+    status: 'active',
           lastUpdate: '2024-01-15T12:20:00Z',
           foundVacancies: 8,
           description: 'Monitoramento VFS Global Canadá',
@@ -100,9 +97,8 @@ export default function SimpleMonitoringDashboard() {
           id: 'casv_monitor',
           name: 'CASV Monitor',
           type: 'web',
-          url: 'https://cgifederal.secure.force.com'
-
-          status: 'active',
+          url: 'https://cgifederal.secure.force.com',
+    status: 'active',
           lastUpdate: '2024-01-15T12:35:00Z',
           foundVacancies: 12,
           description: 'Monitoramento direto CASV',
@@ -149,8 +145,7 @@ export default function SimpleMonitoringDashboard() {
     setButtonLoading(prev => ({ ...prev, [`toggle_${channelId}`]: true }))
     
     try {
-      // Simular call para API de ativação
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simular call para API de ativação,      await new Promise(resolve => setTimeout(resolve, 1000))
       
       setChannels(prev => prev.map(channel => 
         channel.id === channelId 
@@ -189,8 +184,7 @@ export default function SimpleMonitoringDashboard() {
     setButtonLoading(prev => ({ ...prev, [`notify_${alertId}`]: true }))
     
     try {
-      // Simular call para API de notificação
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Simular call para API de notificação,      await new Promise(resolve => setTimeout(resolve, 800))
       
       setAlerts(prev => prev.map(a => 
         a.id === alertId ? { ...a, notified: true } : a

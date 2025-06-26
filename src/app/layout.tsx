@@ -22,7 +22,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: {
     template: '%s | Visa2Any - Sua Jornada Internacional Simplificada',
-    default: 'Visa2Any - Plataforma Líder em Assessoria de Vistos e Imigração',
+    default: 'Visa2Any - Plataforma Líder em Assessoria de Vistos e Imigração'
   },
   description: 'A Visa2Any é a plataforma mais completa para assessoria de vistos, imigração e relocação. Simplifique sua jornada internacional com nossa tecnologia avançada e expertise especializada.',
   keywords: ['visto', 'imigração', 'relocação', 'assessoria de visto', 'documentação internacional', 'cidadania', 'passaporte'],
@@ -32,35 +32,34 @@ export const metadata: Metadata = {
   formatDetection: {
     email: false,
     address: false,
-    telephone: false,
+    telephone: false
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com')
 
   alternates: {
-    canonical: '/',
+    canonical: '/'
   },
   openGraph: {
     title: 'Visa2Any - Plataforma Líder em Assessoria de Vistos',
     description: 'Simplifique sua jornada internacional com a plataforma mais completa de assessoria de vistos e imigração.',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'
-
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com',
     siteName: 'Visa2Any',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Visa2Any - Sua Jornada Internacional Simplificada',
-      },
+        alt: 'Visa2Any - Sua Jornada Internacional Simplificada'
+      }
     ],
     locale: 'pt_BR',
-    type: 'website',
+    type: 'website'
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Visa2Any - Plataforma Líder em Assessoria de Vistos',
     description: 'Simplifique sua jornada internacional com nossa tecnologia avançada.',
-    images: ['/twitter-image.jpg'],
+    images: ['/twitter-image.jpg']
   },
   robots: {
     index: true,
@@ -70,16 +69,16 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+      'max-snippet': -1
+    }
   },
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
-  },
+    google: process.env.GOOGLE_SITE_VERIFICATION
+  }
 }
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {

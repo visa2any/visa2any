@@ -6,14 +6,13 @@ import { useNotifications } from '@/components/NotificationSystem'
 export function useSystemNotifications() {
   const { addNotification } = useNotifications()
 
-  // Function to check for new system events
-  const checkForUpdates = async () => {
+  // Function to check for new system events,  const checkForUpdates = async () => {
     try {
       const response = await fetch('/api/notifications/system', {
         method: 'GET',
         headers: {
-          'Cache-Control': 'no-cache',
-        },
+          'Cache-Control': 'no-cache'
+        }
       })
 
       if (response.ok) {
@@ -29,8 +28,7 @@ export function useSystemNotifications() {
     }
   }
 
-  // Check for updates every 30 seconds when page is visible
-  useEffect(() => {
+  // Check for updates every 30 seconds when page is visible,  useEffect(() => {
     let interval: NodeJS.Timeout
 
     const startPolling = () => {
@@ -48,16 +46,13 @@ export function useSystemNotifications() {
         stopPolling()
       } else {
         startPolling()
-        checkForUpdates() // Check immediately when page becomes visible
-      }
+        checkForUpdates() // Check immediately when page becomes visible      }
     }
 
-    // Start polling initially
-    checkForUpdates()
+    // Start polling initially,    checkForUpdates()
     startPolling()
 
-    // Listen for visibility changes
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    // Listen for visibility changes,    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
       stopPolling()
@@ -65,8 +60,7 @@ export function useSystemNotifications() {
     }
   }, [])
 
-  // Listen for custom notification events
-  useEffect(() => {
+  // Listen for custom notification events,  useEffect(() => {
     const handleCustomNotification = (event: CustomEvent) => {
       addNotification(event.detail)
     }
@@ -79,8 +73,7 @@ export function useSystemNotifications() {
   }, [addNotification])
 
   return {
-    // Utility functions for common notification types
-    notifySuccess: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
+    // Utility functions for common notification types,    notifySuccess: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
       addNotification({
         type: 'success',
         title,
@@ -120,8 +113,7 @@ export function useSystemNotifications() {
       })
     },
 
-    // Function to trigger global notification from anywhere
-    triggerGlobalNotification: (notification: {
+    // Function to trigger global notification from anywhere,    triggerGlobalNotification: (notification: {
       type: 'success' | 'error' | 'warning' | 'info'
       title: string
       message: string

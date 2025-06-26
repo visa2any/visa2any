@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         total: clinics.length,
         message: clinics.length > 0 
           ? `${clinics.length} clínicas encontradas para ${country}` 
-          : `Nenhuma clínica encontrada para ${country}`,
+          : `Nenhuma clínica encontrada para ${country}`
       })
     }
 
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         total: exams.length,
         message: exams.length > 0 
           ? `${exams.length} tipos de exame requeridos para ${country}` 
-          : `Nenhum exame específico encontrado para ${country}`,
+          : `Nenhum exame específico encontrado para ${country}`
       })
     }
 
@@ -73,11 +73,10 @@ export async function POST(request: NextRequest) {
       appointmentDate, 
       appointmentTime, 
       totalCost,
-      notes ,
+      notes 
     } = body
 
-    // Validação dos campos obrigatórios
-    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {
+    // Validação dos campos obrigatórios,    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {
       return NextResponse.json(
         { error: 'Campos applicantId, clinicId, examTypes, appointmentDate e appointmentTime são obrigatórios' }
         { status: 400 }
@@ -91,15 +90,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fazer agendamento
-    const result = await medicalExamService.bookMedicalExam({
+    // Fazer agendamento,    const result = await medicalExamService.bookMedicalExam({
       applicantId
       clinicId,
       examTypes,
       appointmentDate,
       appointmentTime,
       totalCost,
-      notes,
+      notes
     })
 
     if (result.success) {

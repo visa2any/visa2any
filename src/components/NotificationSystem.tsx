@@ -41,8 +41,7 @@ interface NotificationProviderProps {
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  // Load notifications from localStorage on mount
-  useEffect(() => {
+  // Load notifications from localStorage on mount,  useEffect(() => {
     const stored = localStorage.getItem('visa2any-notifications')
     if (stored) {
       try {
@@ -57,8 +56,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     }
   }, [])
 
-  // Save notifications to localStorage
-  useEffect(() => {
+  // Save notifications to localStorage,  useEffect(() => {
     localStorage.setItem('visa2any-notifications', JSON.stringify(notifications))
   }, [notifications])
 
@@ -72,8 +70,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       read: false
     }
     
-    setNotifications(prev => [newNotification, ...prev].slice(0, 50)) // Keep only last 50
-  }
+    setNotifications(prev => [newNotification, ...prev].slice(0, 50)) // Keep only last 50  }
 
   const markAsRead = (id: string) => {
     setNotifications(prev => 
@@ -269,8 +266,7 @@ export function ToastNotification({ notification, onClose }: ToastNotificationPr
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false)
-      setTimeout(onClose, 300) // Wait for fade out animation
-    }, 5000)
+      setTimeout(onClose, 300) // Wait for fade out animation    }, 5000)
 
     return () => clearTimeout(timer)
   }, [onClose])
@@ -349,12 +345,10 @@ export function ToastContainer() {
   const { notifications } = useNotifications()
 
   useEffect(() => {
-    // Show toasts for new notifications
-    const newNotifications = notifications.filter(n => 
+    // Show toasts for new notifications,    const newNotifications = notifications.filter(n => 
       !n.read && 
       !toasts.find(t => t.id === n.id) &&
-      (Date.now() - n.timestamp.getTime()) < 1000 // Only show for very recent notifications
-    )
+      (Date.now() - n.timestamp.getTime()) < 1000 // Only show for very recent notifications    )
 
     if (newNotifications.length > 0) {
       setToasts(prev => [...prev, ...newNotifications])

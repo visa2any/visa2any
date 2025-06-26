@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle, Globe, FileText, Clock, Shield, Users, Award }
 
 export const metadata = {
   title: 'Assessoria de Vistos - Visa2Any',
-  description: 'Serviços especializados em assessoria de vistos para turismo, trabalho, estudo e investimento. Taxa de aprovação de 98%.',
+  description: 'Serviços especializados em assessoria de vistos para turismo, trabalho, estudo e investimento. Taxa de aprovação de 98%.'
 }
 
 export default function VistosPage() {

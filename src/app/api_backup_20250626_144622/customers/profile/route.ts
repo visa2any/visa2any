@@ -62,8 +62,7 @@ export async function GET(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Calcular progresso baseado no status
-    const progressMap: Record<string, number> = {
+    // Calcular progresso baseado no status,    const progressMap: Record<string, number> = {
       'LEAD': 10,
       'QUALIFIED': 20,
       'CONSULTATION_SCHEDULED': 30,
@@ -76,16 +75,14 @@ export async function GET(request: NextRequest) {
 
     const progress = progressMap[customer.status] || 10
 
-    // Simular dados do consultor (posteriormente buscar da base)
-    const consultant = {
+    // Simular dados do consultor (posteriormente buscar da base),    const consultant = {
       name: 'Ana Silva',
       email: 'ana.silva@visa2any.com',
       phone: '+55 11 99999-9999',
       avatar: null
     }
 
-    // Simular próximo milestone
-    const nextMilestone = {
+    // Simular próximo milestone,    const nextMilestone = {
       title: customer.status === 'LEAD' ? 'Análise de Elegibilidade' :
              customer.status === 'QUALIFIED' ? 'Agendamento de Consultoria' :
              customer.status === 'CONSULTATION_SCHEDULED' ? 'Consultoria Inicial' :
@@ -97,8 +94,7 @@ export async function GET(request: NextRequest) {
       description: 'Próxima etapa do seu processo de imigração'
     }
 
-    // Simular timeline
-    const timeline = [
+    // Simular timeline,    const timeline = [
       {
         id: '1',
         title: 'Cadastro Inicial',
@@ -119,7 +115,7 @@ export async function GET(request: NextRequest) {
         description: 'Reunião com consultor para estratégia personalizada',
         date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming',
+                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming'
       }
       {
         id: '4',
@@ -127,7 +123,7 @@ export async function GET(request: NextRequest) {
         description: 'Preparação de toda documentação necessária',
         date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming',
+                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming'
       }
       {
         id: '5',
@@ -135,7 +131,7 @@ export async function GET(request: NextRequest) {
         description: 'Envio oficial da aplicação para as autoridades',
         date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming',
+                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming'
       }
       {
         id: '6',
@@ -147,8 +143,7 @@ export async function GET(request: NextRequest) {
       }
     ]
 
-    // Simular documentos
-    const documents = customer.documents.map(doc => ({
+    // Simular documentos,    const documents = customer.documents.map(doc => ({
       id: doc.id,
       name: doc.fileName || 'Documento',
       status: doc.status?.toLowerCase() || 'pending',
@@ -156,8 +151,7 @@ export async function GET(request: NextRequest) {
       comments: doc.notes
     }))
 
-    // Adicionar documentos simulados se não houver nenhum
-    if (documents.length === 0) {
+    // Adicionar documentos simulados se não houver nenhum,    if (documents.length === 0) {
       documents.push(
         {
           id: 'doc1',
@@ -176,8 +170,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Simular pagamentos
-    const payments = customer.payments.map(payment => ({
+    // Simular pagamentos,    const payments = customer.payments.map(payment => ({
       id: payment.id,
       description: payment.description || 'Pagamento de serviço',
       amount: payment.amount,
@@ -186,8 +179,7 @@ export async function GET(request: NextRequest) {
       paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined
     }))
 
-    // Adicionar pagamentos simulados se não houver nenhum
-    if (payments.length === 0) {
+    // Adicionar pagamentos simulados se não houver nenhum,    if (payments.length === 0) {
       payments.push({
         id: 'pay1',
         description: 'Taxa de Consultoria',
@@ -198,8 +190,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Simular notificações
-    const notifications = [
+    // Simular notificações,    const notifications = [
       {
         id: 'notif1',
         title: 'Bem-vindo ao Portal!',

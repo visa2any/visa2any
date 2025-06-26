@@ -17,8 +17,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
   })
 
   useEffect(() => {
-    // Simular atividade em tempo real
-    const interval = setInterval(() => {
+    // Simular atividade em tempo real,    const interval = setInterval(() => {
       setMetrics(prev => ({
         recentViews: prev.recentViews + Math.floor(Math.random() * 3),
         activeUsers: Math.max(1, prev.activeUsers + (Math.random() > 0.5 ? 1 : -1)),
@@ -30,8 +29,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
     return () => clearInterval(interval)
   }, [])
 
-  // 1. Estilo Sutil - Indicadores discretos e elegantes
-  if (style === 'subtle') {
+  // 1. Estilo Sutil - Indicadores discretos e elegantes,  if (style === 'subtle') {
     return (
       <div className={`flex flex-wrap gap-6 text-sm justify-center items-center ${className}`}>
         <div className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-full border border-green-200">
@@ -50,8 +48,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
     )
   }
 
-  // 2. Estilo Flutuante - Pequeno widget no canto
-  if (style === 'floating') {
+  // 2. Estilo Flutuante - Pequeno widget no canto,  if (style === 'floating') {
     return (
       <div className={`fixed bottom-6 right-6 bg-white rounded-lg shadow-lg border p-4 max-w-xs z-40 ${className}`}>
         <div className="space-y-2">
@@ -74,8 +71,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
     )
   }
 
-  // 3. Estilo Inline - Integrado ao conteúdo
-  if (style === 'inline') {
+  // 3. Estilo Inline - Integrado ao conteúdo,  if (style === 'inline') {
     return (
       <div className={`bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500 ${className}`}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -100,8 +96,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
     )
   }
 
-  // 4. Estilo Sidebar - Barra lateral discreta
-  if (style === 'sidebar') {
+  // 4. Estilo Sidebar - Barra lateral discreta,  if (style === 'sidebar') {
     return (
       <div className={`fixed left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-r-lg shadow-lg p-2 z-40 ${className}`}>
         <div className="space-y-3 text-xs">
@@ -120,8 +115,7 @@ export default function ActivityIndicators({ style = 'subtle', className = '' }:
     )
   }
 
-  // 5. Estilo Ticker - Texto rolante (menos intrusivo)
-  if (style === 'ticker') {
+  // 5. Estilo Ticker - Texto rolante (menos intrusivo),  if (style === 'ticker') {
     return (
       <div className={`bg-blue-600 text-white py-2 overflow-hidden ${className}`}>
         <div className="animate-marquee whitespace-nowrap text-sm">

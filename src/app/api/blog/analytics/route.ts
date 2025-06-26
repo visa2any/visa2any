@@ -8,8 +8,7 @@ const periodDays = parseInt(period)
     
     const dateFrom = new Date(),    dateFrom.setDate(dateFrom.getDate() - periodDays)
 
-    // Estatísticas gerais,    const [,      totalPosts,      totalViews,      totalLikes,      totalComments,      publishedPosts,      featuredPosts,      trendingPosts
-      urgentPosts
+    // Estatísticas gerais,    const [,      totalPosts,      totalViews,      totalLikes,      totalComments,      publishedPosts,      featuredPosts,      trendingPosts,      urgentPosts
     ] = await Promise.all([,      prisma.blogPost.count(),      prisma.blogPost.aggregate({,        _sum: { views: true }
       }),      prisma.blogPost.aggregate({,        _sum: { likes: true }
       }),      prisma.blogPost.aggregate({,        _sum: { comments: true }
@@ -20,16 +19,14 @@ const periodDays = parseInt(period)
       })
     ])
 
-    // Posts mais populares,    const topPosts = await prisma.blogPost.findMany({,      where: {,        published: true,        publishDate: {
-          gte: dateFrom
+    // Posts mais populares,    const topPosts = await prisma.blogPost.findMany({,      where: {,        published: true,        publishDate: {,          gte: dateFrom
         }
       },      select: {,        id: true,        title: true,        views: true,        likes: true,        comments: true,        publishDate: true,        category: true,        country: true,        flag: true
       },      orderBy: {,        views: 'desc'
       },      take: 10
     })
 
-    // Distribuição por categoria,    const categoryStats = await prisma.blogPost.groupBy({,      by: ['category'],      where: {
-        published: true
+    // Distribuição por categoria,    const categoryStats = await prisma.blogPost.groupBy({,      by: ['category'],      where: {,        published: true
       },      _count: {,        category: true
       },      _sum: {,        views: true,        likes: true
       },      orderBy: {,        _count: {,          category: 'desc'
@@ -37,8 +34,7 @@ const periodDays = parseInt(period)
       }
     })
 
-    // Distribuição por país,    const countryStats = await prisma.blogPost.groupBy({,      by: ['country'],      where: {,        published: true,        country: {
-          not: null
+    // Distribuição por país,    const countryStats = await prisma.blogPost.groupBy({,      by: ['country'],      where: {,        published: true,        country: {,          not: null
         }
       },      _count: {,        country: true
       },      _sum: {,        views: true,        likes: true
@@ -47,36 +43,31 @@ const periodDays = parseInt(period)
       },      take: 10
     })
 
-    // Distribuição por dificuldade,    const difficultyStats = await prisma.blogPost.groupBy({,      by: ['difficulty'],      where: {
-        published: true
+    // Distribuição por dificuldade,    const difficultyStats = await prisma.blogPost.groupBy({,      by: ['difficulty'],      where: {,        published: true
       },      _count: {,        difficulty: true
       },      _sum: {,        views: true
       }
     })
 
-    // Distribuição por tipo,    const typeStats = await prisma.blogPost.groupBy({,      by: ['type'],      where: {
-        published: true
+    // Distribuição por tipo,    const typeStats = await prisma.blogPost.groupBy({,      by: ['type'],      where: {,        published: true
       },      _count: {,        type: true
       },      _sum: {,        views: true
       }
     })
 
-    // Estatísticas de comentários recentes,    const recentComments = await prisma.blogPostComment.count({,      where: {,        createdAt: {
-          gte: dateFrom
+    // Estatísticas de comentários recentes,    const recentComments = await prisma.blogPostComment.count({,      where: {,        createdAt: {,          gte: dateFrom
         }
       }
     })
 
-    // Posts publicados por período,    const postsOverTime = await prisma.blogPost.groupBy({,      by: ['publishDate'],      where: {,        published: true,        publishDate: {
-          gte: dateFrom
+    // Posts publicados por período,    const postsOverTime = await prisma.blogPost.groupBy({,      by: ['publishDate'],      where: {,        published: true,        publishDate: {,          gte: dateFrom
         }
       },      _count: {,        publishDate: true
       },      orderBy: {,        publishDate: 'asc'
       }
     })
 
-    // Calcular taxa de engajamento média,    const avgEngagement = totalPosts > 0 ? {,      viewsPerPost: Math.round((totalViews._sum.views || 0) / totalPosts),      likesPerPost: Math.round((totalLikes._sum.likes || 0) / totalPosts)
-      commentsPerPost: Math.round((totalComments._sum.comments || 0) / totalPosts)
+    // Calcular taxa de engajamento média,    const avgEngagement = totalPosts > 0 ? {,      viewsPerPost: Math.round((totalViews._sum.views || 0) / totalPosts),      likesPerPost: Math.round((totalLikes._sum.likes || 0) / totalPosts),      commentsPerPost: Math.round((totalComments._sum.comments || 0) / totalPosts)
     } : { viewsPerPost: 0, likesPerPost: 0, commentsPerPost: 0 },
     return NextResponse.json({,      analytics: {,        overview: {,          totalPosts,          publishedPosts,          totalViews: totalViews._sum.views || 0,          totalLikes: totalLikes._sum.likes || 0,          totalComments: totalComments._sum.comments || 0,          recentComments,          featuredPosts,          trendingPosts,          urgentPosts,          avgEngagement
         },        topPosts: topPosts.map(post => ({

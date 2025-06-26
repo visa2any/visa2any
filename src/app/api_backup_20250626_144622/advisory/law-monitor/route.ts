@@ -17,14 +17,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = lawMonitorSchema.parse(body)
 
-    // Verificar mudanças recentes
-    const recentChanges = await checkRecentLawChanges(
+    // Verificar mudanças recentes,    const recentChanges = await checkRecentLawChanges(
       validatedData.country,
       validatedData.visaType
     )
 
-    // Configurar alertas se necessário
-    if (validatedData.clientId) {
+    // Configurar alertas se necessário,    if (validatedData.clientId) {
       await setupLawChangeAlerts(validatedData)
     }
 
@@ -100,15 +98,11 @@ export async function GET(request: NextRequest) {
 
 // Verificar mudanças recentes nas leis
 async function checkRecentLawChanges(country: string, visaType?: string) {
-  // Simular integração com fontes oficiais
-  const mockChanges = await getLawChanges(country, 30, visaType)
+  // Simular integração com fontes oficiais,  const mockChanges = await getLawChanges(country, 30, visaType)
   
-  // Em produção
- integrar com:
-  // - APIs governamentais
-  // - RSS feeds de departamentos de imigração
-  // - Web scraping de sites oficiais
-  // - Serviços de monitoramento legal
+  // Em produção, integrar com:
+  // - APIs governamentais,  // - RSS feeds de departamentos de imigração
+  // - Web scraping de sites oficiais,  // - Serviços de monitoramento legal
   
   return mockChanges
 }
@@ -118,8 +112,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - days)
 
-  // Base de dados simulada de mudanças legais
-  const lawChangesDatabase: Record<string, any[]> = {
+  // Base de dados simulada de mudanças legais,  const lawChangesDatabase: Record<string, any[]> = {
     'Canada': [
       {
         id: 'ca-2024-001',
@@ -130,7 +123,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
         impact: 'high',
         source: 'IRCC',
         category: 'requirements',
-        affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program'],
+        affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program']
       },
       {
         id: 'ca-2024-002', 
@@ -146,8 +139,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
     ]
   }
 
-  // Filtrar por tipo de visto se especificado
-  const allChanges = lawChangesDatabase[country] || []
+  // Filtrar por tipo de visto se especificado,  const allChanges = lawChangesDatabase[country] || []
   const filteredChanges = visaType 
     ? allChanges.filter(change => 
         change.visaTypes.includes(visaType.toUpperCase()) || 
@@ -155,8 +147,7 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
       )
     : allChanges
 
-  // Filtrar por período
-  return filteredChanges.filter(change => {
+  // Filtrar por período,  return filteredChanges.filter(change => {
     const changeDate = new Date(change.date)
     return changeDate >= startDate
   })
@@ -178,20 +169,16 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     recommendations: [] as string[]
   }
 
-  // Analisar cada mudança
-  changes.forEach(change => {
-    // Contar por categoria
-    analysis.categories[change.category] = (analysis.categories[change.category] || 0) + 1
+  // Analisar cada mudança,  changes.forEach(change => {
+    // Contar por categoria,    analysis.categories[change.category] = (analysis.categories[change.category] || 0) + 1
     
-    // Identificar programas afetados
-    if (change.affectedPrograms) {
+    // Identificar programas afetados,    if (change.affectedPrograms) {
       change.affectedPrograms.forEach((program: string) => {
         analysis.affectedPrograms.add(program)
       })
     }
     
-    // Analisar timeline
-    const effectiveDate = change.details?.effectiveDate
+    // Analisar timeline,    const effectiveDate = change.details?.effectiveDate
     if (effectiveDate) {
       const daysUntilEffective = Math.ceil(
         (new Date(effectiveDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -203,16 +190,14 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
     }
   })
 
-  // Determinar nível de impacto geral
-  const highImpactChanges = changes.filter(c => c.impact === 'high').length
+  // Determinar nível de impacto geral,  const highImpactChanges = changes.filter(c => c.impact === 'high').length
   const mediumImpactChanges = changes.filter(c => c.impact === 'medium').length
   
   if (highImpactChanges > 0) analysis.impactLevel = 'high'
   else if (mediumImpactChanges > 0) analysis.impactLevel = 'medium'
   else analysis.impactLevel = 'low'
 
-  // Gerar recomendações baseadas na análise
-  if (analysis.impactLevel === 'high') {
+  // Gerar recomendações baseadas na análise,  if (analysis.impactLevel === 'high') {
     analysis.recommendations.push('Revisar estratégia de aplicação imediatamente')
     analysis.recommendations.push('Considerar acelerar timeline de aplicação')
   }
@@ -230,12 +215,9 @@ async function analyzeLawChanges(changes: any[], country: string, visaType?: str
 
 // Configurar alertas de mudanças legais
 async function setupLawChangeAlerts(data: any) {
-  // Em produção
- configurar sistema de alertas
-  // - Email notifications
-  // - SMS alerts
-  // - In-app notifications
-  // - Webhook integrations
+  // Em produção, configurar sistema de alertas
+  // - Email notifications,  // - SMS alerts
+  // - In-app notifications,  // - Webhook integrations
   
   await prisma.automationLog.create({
     data: {
@@ -258,8 +240,7 @@ async function setupLawChangeAlerts(data: any) {
 function generateLawChangeRecommendations(changes: any[], analysis: any) {
   const recommendations = []
   
-  // Recomendações específicas por tipo de mudança
-  const requirementChanges = changes.filter(c => c.category === 'requirements')
+  // Recomendações específicas por tipo de mudança,  const requirementChanges = changes.filter(c => c.category === 'requirements')
   if (requirementChanges.length > 0) {
     recommendations.push({
       priority: 'high',
@@ -292,8 +273,7 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
     })
   }
   
-  // Recomendações gerais baseadas no nível de impacto
-  if (analysis.impactLevel === 'high') {
+  // Recomendações gerais baseadas no nível de impacto,  if (analysis.impactLevel === 'high') {
     recommendations.push({
       priority: 'urgent',
       category: 'strategy',

@@ -14,20 +14,17 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // 1. Testar configuração de email
-  console.log('🧪 Testando sistema de comunicações...')
+  // 1. Testar configuração de email,  console.log('🧪 Testando sistema de comunicações...')
   
   try {
-    // Verificar configurações de email
-    const hasEmailConfig = !!(
+    // Verificar configurações de email,    const hasEmailConfig = !!(
       process.env.SENDGRID_API_KEY || 
       process.env.RESEND_API_KEY
     )
     
     results.summary.email.configured = hasEmailConfig
     
-    // Testar envio de email
-    if (hasEmailConfig) {
+    // Testar envio de email,    if (hasEmailConfig) {
       const emailResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -61,16 +58,14 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 2. Testar configuração de WhatsApp
-    const hasWhatsAppConfig = !!(
+    // 2. Testar configuração de WhatsApp,    const hasWhatsAppConfig = !!(
       process.env.WHATSAPP_API_TOKEN && 
       process.env.WHATSAPP_PHONE_NUMBER_ID
     )
     
     results.summary.whatsapp.configured = hasWhatsAppConfig
     
-    // Testar envio de WhatsApp
-    const whatsappResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
+    // Testar envio de WhatsApp,    const whatsappResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
@@ -89,8 +84,7 @@ export async function GET(request: NextRequest) {
       details: whatsappResult.data
     })
 
-    // 3. Testar webhook de pagamento (simulação)
-    try {
+    // 3. Testar webhook de pagamento (simulação),    try {
       const mockPayment = {
         id: 'test_payment',
         clientId: 'test_client',
@@ -104,8 +98,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Simular automações de pagamento aprovado
-      console.log('🔄 Simulando automações de pagamento...')
+      // Simular automações de pagamento aprovado,      console.log('🔄 Simulando automações de pagamento...')
       
       results.tests.push({
         type: 'webhook_simulation',
@@ -122,8 +115,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 4. Retornar resultados
-    return NextResponse.json({
+    // 4. Retornar resultados,    return NextResponse.json({
       data: results
       message: 'Testes de comunicação concluídos'
     })

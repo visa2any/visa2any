@@ -74,26 +74,21 @@ export function AustraliaVisaForm({ onSubmit, initialData }: AustraliaVisaFormPr
   const { notifySuccess, notifyError } = useSystemNotifications()
 
   const visaTypes = [
-    // VISTOS ONLINE SEM ENTREVISTA
-    { value: 'eta', label: 'ETA (Electronic Travel Authority)', desc: 'Autorização eletrônica - 100% online para turismo/negócios até 90 dias' },
+    // VISTOS ONLINE SEM ENTREVISTA,    { value: 'eta', label: 'ETA (Electronic Travel Authority)', desc: 'Autorização eletrônica - 100% online para turismo/negócios até 90 dias' },
     { value: 'evisitor', label: 'eVisitor', desc: 'Visto online gratuito para cidadãos europeus - turismo/negócios até 90 dias' },
-    // VISTOS TRADICIONAIS
-    { value: 'visitor', label: 'Visitor Visa (Subclass 600)', desc: 'Visto de visitante para turismo ou negócios' },
+    // VISTOS TRADICIONAIS,    { value: 'visitor', label: 'Visitor Visa (Subclass 600)', desc: 'Visto de visitante para turismo ou negócios' },
     { value: 'student', label: 'Student Visa (Subclass 500)', desc: 'Visto de estudante' },
     { value: 'working-holiday', label: 'Working Holiday (Subclass 417)', desc: 'Trabalho e viagem para jovens (18-30 anos)' },
     { value: 'work-and-holiday', label: 'Work and Holiday (Subclass 462)', desc: 'Trabalho e viagem para países elegíveis' },
-    // IMIGRAÇÃO E TRABALHO
-    { value: 'skilled-independent', label: 'Skilled Independent (Subclass 189)', desc: 'Residência permanente independente baseada em pontos' },
+    // IMIGRAÇÃO E TRABALHO,    { value: 'skilled-independent', label: 'Skilled Independent (Subclass 189)', desc: 'Residência permanente independente baseada em pontos' },
     { value: 'skilled-nominated', label: 'Skilled Nominated (Subclass 190)', desc: 'Residência permanente com indicação estadual' },
     { value: 'skilled-work', label: 'Skilled Work Regional (Subclass 491)', desc: 'Visto temporário para áreas regionais' },
     { value: 'employer-sponsored', label: 'Employer Sponsored (Subclass 186)', desc: 'Residência permanente patrocinada pelo empregador' },
     { value: 'temporary-skill-shortage', label: 'Temporary Skill Shortage (Subclass 482)', desc: 'Visto temporário de trabalho especializado' },
-    // NEGÓCIOS E INVESTIMENTO
-    { value: 'business-innovation', label: 'Business Innovation (Subclass 188)', desc: 'Visto temporário para empresários e investidores' },
+    // NEGÓCIOS E INVESTIMENTO,    { value: 'business-innovation', label: 'Business Innovation (Subclass 188)', desc: 'Visto temporário para empresários e investidores' },
     { value: 'business-talent', label: 'Business Talent (Subclass 132)', desc: 'Residência permanente para empresários estabelecidos' },
     { value: 'investor', label: 'Investor (Subclass 891)', desc: 'Residência permanente para investidores' },
-    // FAMÍLIA
-    { value: 'partner', label: 'Partner Visa (Subclass 820/801)', desc: 'Visto para parceiros/cônjuges de residentes australianos' },
+    // FAMÍLIA,    { value: 'partner', label: 'Partner Visa (Subclass 820/801)', desc: 'Visto para parceiros/cônjuges de residentes australianos' },
     { value: 'parent', label: 'Parent Visa', desc: 'Visto para pais de cidadãos/residentes australianos' },
     { value: 'child', label: 'Child Visa', desc: 'Visto para filhos de cidadãos/residentes australianos' }
   ]

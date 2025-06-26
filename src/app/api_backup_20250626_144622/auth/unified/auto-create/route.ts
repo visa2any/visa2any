@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       targetCountry,
       source,
       product,
-      amount,
+      amount
     })
 
     if (!result.success) {
@@ -35,20 +35,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar cookie de autenticação automática
-    const response = NextResponse.json({
+    // Criar cookie de autenticação automática,    const response = NextResponse.json({
       user: result.user,
       token: result.token,
       message: 'Conta criada e login automático realizado'
     })
 
-    // Configurar cookie httpOnly
-    response.cookies.set('auth-token', result.token!, {
+    // Configurar cookie httpOnly,    response.cookies.set('auth-token', result.token!, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
+      maxAge: 7 * 24 * 60 * 60, // 7 dias,      path: '/'
     })
 
     return response

@@ -70,14 +70,12 @@ export default function ConsultationsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  // System notifications
-  const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
+  // System notifications,  const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
   useEffect(() => {
     fetchConsultations()
     
-    // Verificar se deve abrir slider de nova consultoria
-    if (searchParams.get('action') === 'new') {
+    // Verificar se deve abrir slider de nova consultoria,    if (searchParams.get('action') === 'new') {
       setShowNewConsultationSlider(true)
     }
   }, [])
@@ -135,11 +133,9 @@ export default function ConsultationsPage() {
 
   const safeConsultations = Array.isArray(consultations) ? consultations : []
   
-  // Enhanced filtering and sorting logic
-  const filteredAndSortedConsultations = safeConsultations
+  // Enhanced filtering and sorting logic,  const filteredAndSortedConsultations = safeConsultations
     .filter(consultation => {
-      // Enhanced search across multiple fields
-      const searchLower = searchTerm.toLowerCase()
+      // Enhanced search across multiple fields,      const searchLower = searchTerm.toLowerCase()
       const matchesSearch = searchTerm === '' || 
         (consultation.client?.name || '').toLowerCase().includes(searchLower) ||
         (consultation.client?.email || '').toLowerCase().includes(searchLower) ||
@@ -181,8 +177,7 @@ export default function ConsultationsPage() {
       return 0
     })
   
-  // For backwards compatibility
-  const filteredConsultations = filteredAndSortedConsultations
+  // For backwards compatibility,  const filteredConsultations = filteredAndSortedConsultations
 
   const handleNewConsultation = () => {
     setShowNewConsultationSlider(true)
@@ -249,8 +244,7 @@ export default function ConsultationsPage() {
   }
 
   const handleVideoCall = (consultation: Consultation) => {
-    // Generate meeting link and start video call
-    const meetingId = Math.random().toString(36).substring(2, 15)
+    // Generate meeting link and start video call,    const meetingId = Math.random().toString(36).substring(2, 15)
     const meetingUrl = `https://meet.visa2any.com/room/${meetingId}`
     window.open(meetingUrl, '_blank')
     notifyInfo('Videochamada iniciada', 'Link da reunião foi aberto em nova aba')
@@ -631,8 +625,7 @@ export default function ConsultationsPage() {
             </div>
           ) : (
             viewMode === 'list' ? (
-              // Modern Table View with Inline Editing
-              <div className="card-elevated overflow-hidden">
+              // Modern Table View with Inline Editing,              <div className="card-elevated overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -764,8 +757,7 @@ export default function ConsultationsPage() {
                 </div>
               </div>
             ) : (
-              // Grid View (simplified cards)
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              // Grid View (simplified cards),              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredConsultations.map((consultation) => {
                   const TypeIcon = typeIcons[consultation.type] || MessageSquare
                   return (
@@ -918,8 +910,7 @@ function NewConsultationSlider({
   useEffect(() => {
     if (isOpen) {
       fetchClients()
-      // Set default scheduled time to next hour
-      const nextHour = new Date()
+      // Set default scheduled time to next hour,      const nextHour = new Date()
       nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0)
       setFormData(prev => ({
         ...prev,
@@ -954,9 +945,9 @@ function NewConsultationSlider({
       const response = await fetch('/api/consultations', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(consultationData),
+        body: JSON.stringify(consultationData)
       })
 
       if (response.ok) {
@@ -967,8 +958,7 @@ function NewConsultationSlider({
           `Consultoria ${typeLabels[formData.type] || formData.type} foi agendada com sucesso`
         )
         
-        // Reset form
-        setFormData({
+        // Reset form,        setFormData({
           clientId: '',
           type: '',
           scheduledAt: '',

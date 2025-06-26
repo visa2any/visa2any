@@ -44,8 +44,7 @@ export default function MercadoPagoInlineFixed({
     initializeCheckout()
     
     return () => {
-      // Cleanup
-      if (containerRef.current) {
+      // Cleanup,      if (containerRef.current) {
         containerRef.current.innerHTML = ''
       }
     }
@@ -55,33 +54,27 @@ export default function MercadoPagoInlineFixed({
     try {
       console.log('1️⃣ Carregando SDK...')
       
-      // Carregar SDK se necessário
-      if (!window.MercadoPago) {
+      // Carregar SDK se necessário,      if (!window.MercadoPago) {
         await loadSDK()
       }
 
       console.log('2️⃣ Inicializando MercadoPago...')
       
-      // Aguardar DOM estar pronto
-      if (!containerRef.current) {
+      // Aguardar DOM estar pronto,      if (!containerRef.current) {
         throw new Error('Container não encontrado')
       }
 
-      // Limpar container
-      containerRef.current.innerHTML = ''
+      // Limpar container,      containerRef.current.innerHTML = ''
 
-      // Criar instância do MercadoPago
-      const mp = new window.MercadoPago(publicKey, {
+      // Criar instância do MercadoPago,      const mp = new window.MercadoPago(publicKey, {
         locale: 'pt-BR'
       })
 
       console.log('3️⃣ Criando Checkout Bricks...')
 
-      // Usar Checkout Bricks (não Payment Bricks)
-      const bricks = mp.bricks()
+      // Usar Checkout Bricks (não Payment Bricks),      const bricks = mp.bricks()
 
-      // CORREÇÃO: Usar preferenceId diretamente no lugar de amount
-      const settings = {
+      // CORREÇÃO: Usar preferenceId diretamente no lugar de amount,      const settings = {
         initialization: {
           preferenceId: preferenceId
         },
@@ -101,11 +94,10 @@ export default function MercadoPagoInlineFixed({
             console.log('💳 Pagamento enviado:', { selectedPaymentMethod, formData })
             
             try {
-              // Processar pagamento via nossa API
-              const response = await fetch('/api/payments/process-payment', {
+              // Processar pagamento via nossa API,              const response = await fetch('/api/payments/process-payment', {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
+                  'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                   selectedPaymentMethod,
@@ -122,8 +114,7 @@ export default function MercadoPagoInlineFixed({
                   setPaymentResult(result)
                   setShowPixCode(true)
                   
-                  // Enviar email PIX
-                  sendPixEmail(result.qr_code)
+                  // Enviar email PIX,                  sendPixEmail(result.qr_code)
                 } else {
                   onSuccess?.(result)
                 }
@@ -145,8 +136,7 @@ export default function MercadoPagoInlineFixed({
       console.log('4️⃣ Configuração:', settings)
       console.log('5️⃣ Criando wallet brick...')
 
-      // CORREÇÃO: Usar 'wallet' em vez de 'payment'
-      await bricks.create('wallet', 'checkout-container', settings)
+      // CORREÇÃO: Usar 'wallet' em vez de 'payment',      await bricks.create('wallet', 'checkout-container', settings)
       
       console.log('🎉 Checkout criado com sucesso!')
 
@@ -159,8 +149,7 @@ export default function MercadoPagoInlineFixed({
 
   const loadSDK = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Remover scripts existentes para evitar conflitos
-      document.querySelectorAll('script[src*="mercadopago"]').forEach(script => {
+      // Remover scripts existentes para evitar conflitos,      document.querySelectorAll('script[src*="mercadopago"]').forEach(script => {
         script.remove()
       })
 
@@ -187,7 +176,7 @@ export default function MercadoPagoInlineFixed({
       await fetch('/api/communications/send', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           type: 'email',
@@ -220,8 +209,7 @@ export default function MercadoPagoInlineFixed({
     }
   }
 
-  // Tela PIX
-  if (showPixCode && paymentResult) {
+  // Tela PIX,  if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-2xl mx-auto px-4">

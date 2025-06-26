@@ -7,8 +7,7 @@ import { Loader2, Sparkles } from 'lucide-react'
 
 // Dados dos produtos expandidos
 const PRODUCTS: Record<string, any> = {
-  // Vaga Express
-  'vaga-express-basic': {
+  // Vaga Express,  'vaga-express-basic': {
     name: '🥉 Vaga Express Basic',
     price: 297,
     description: 'Monitoramento inteligente por 30 dias - Perfeito para 1 consulado',
@@ -58,8 +57,7 @@ const PRODUCTS: Record<string, any> = {
     supportsQuantity: true
   },
   
-  // Produtos da Página Principal
-  'pre-analise': {
+  // Produtos da Página Principal,  'pre-analise': {
     name: '🆓 Análise Gratuita',
     price: 0,
     description: 'Perfeita para começar',
@@ -101,8 +99,7 @@ const PRODUCTS: Record<string, any> = {
     supportsQuantity: false
   },
 
-  // Produtos de Países (padrão base)
-  'usa-free': {
+  // Produtos de Países (padrão base),  'usa-free': {
     name: '🇺🇸 EUA - Análise Gratuita',
     price: 0,
     description: 'Análise inicial gratuita para EUA',
@@ -139,10 +136,8 @@ function CheckoutContent() {
   
   let product = PRODUCTS[productId as keyof typeof PRODUCTS]
   
-  // Fallback para produtos dinâmicos (países/vistos)
-  if (!product) {
-    // Tentar encontrar produto baseado em padrões
-    if (productId.includes('-free')) {
+  // Fallback para produtos dinâmicos (países/vistos),  if (!product) {
+    // Tentar encontrar produto baseado em padrões,    if (productId.includes('-free')) {
       const country = productId.split('-')[0]
       product = {
         name: `${country.toUpperCase()} - Análise Gratuita`,
@@ -173,8 +168,7 @@ function CheckoutContent() {
         supportsQuantity: false
       }
     } else {
-      // Produto genérico
-      product = {
+      // Produto genérico,      product = {
         name: 'Serviço Personalizado',
         price: 97,
         description: 'Serviço especializado para seu caso',
@@ -190,8 +184,7 @@ function CheckoutContent() {
     }
   }
 
-  // Para produtos que não suportam quantidade
- usar valores padrão
+  // Para produtos que não suportam quantidade, usar valores padrão
   const finalAdults = product.supportsQuantity ? adults : 1
   const finalChildren = product.supportsQuantity ? children : 0
   const finalPrice = (product.supportsQuantity && totalFromUrl > 0) ? totalFromUrl : product.price

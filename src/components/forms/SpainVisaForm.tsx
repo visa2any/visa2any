@@ -22,8 +22,7 @@ interface SpainFormData {
     maritalStatus: string
     spouseName?: string
     children: number
-    nie?: string // Número de Identificación de Extranjero
-  }
+    nie?: string // Número de Identificación de Extranjero  }
   
   contactInfo: {
     homeAddress: string
@@ -247,10 +246,8 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
     }
   }
 
-  // Calculadora para visto não-lucrativo
-  const calculateNonLucrativeRequirements = () => {
-    const minMonthlyIncome = 2400 // IPREM 2024 x 4
-    const additionalFamilyMember = 600 // IPREM por familiar adicional
+  // Calculadora para visto não-lucrativo,  const calculateNonLucrativeRequirements = () => {
+    const minMonthlyIncome = 2400 // IPREM 2024 x 4,    const additionalFamilyMember = 600 // IPREM por familiar adicional
     
     const requiredIncome = minMonthlyIncome + (formData.personalInfo.children * additionalFamilyMember)
     const meetsRequirement = formData.financialInfo.monthlyIncome >= requiredIncome
@@ -428,8 +425,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 3: // Detalhes do Visto
-        return (
+      case 3: // Detalhes do Visto,        return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
@@ -618,8 +614,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 4: // Educação - placeholder simples
-        return (
+      case 4: // Educação - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-700 text-sm">
@@ -629,8 +624,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 5: // Trabalho - placeholder simples
-        return (
+      case 5: // Trabalho - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-700 text-sm">
@@ -640,8 +634,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 6: // Finanças - placeholder simples
-        return (
+      case 6: // Finanças - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-700 text-sm">
@@ -651,8 +644,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 7: // Saúde - placeholder simples
-        return (
+      case 7: // Saúde - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-700 text-sm">
@@ -662,8 +654,7 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
           </div>
         )
 
-      case 8: // Informações Adicionais - placeholder simples
-        return (
+      case 8: // Informações Adicionais - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-yellow-700 text-sm">

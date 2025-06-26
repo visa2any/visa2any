@@ -4,13 +4,10 @@ import { prisma } from '@/lib/prisma'
 // POST /api/visa-requirements/seed - Popular base de conhecimento
 export async function POST(request: NextRequest) {
   try {
-    // Limpar dados existentes
-    await prisma.visaRequirement.deleteMany({})
+    // Limpar dados existentes,    await prisma.visaRequirement.deleteMany({})
 
-    // Dados de exemplo para popular a base
-    const visaRequirements = [
-      // CANADÁ
-      {
+    // Dados de exemplo para popular a base,    const visaRequirements = [
+      // CANADÁ,      {
         country: 'Canadá',
         visaType: 'Express Entry',
         visaSubtype: 'Federal Skilled Worker',
@@ -121,11 +118,10 @@ export async function POST(request: NextRequest) {
             name: 'Calculadora CRS',
             url: 'https://www.cic.gc.ca/english/immigrate/skilled/crs-tool.asp'
           }
-        ],
+        ]
       }
 
-      // AUSTRÁLIA
-      {
+      // AUSTRÁLIA,      {
         country: 'Austrália',
         visaType: 'Skilled Independent',
         visaSubtype: 'Subclass 189',
@@ -217,11 +213,10 @@ export async function POST(request: NextRequest) {
             name: 'SkillSelect',
             url: 'https://www.skillselect.gov.au/'
           }
-        ],
+        ]
       }
 
-      // PORTUGAL
-      {
+      // PORTUGAL,      {
         country: 'Portugal',
         visaType: 'D7 Visa',
         visaSubtype: 'Rendimento Próprio',
@@ -308,11 +303,10 @@ export async function POST(request: NextRequest) {
             name: 'Portal do Cidadão',
             url: 'https://www.portaldocidadao.pt/'
           }
-        ],
+        ]
       }
 
-      // ESTADOS UNIDOS
-      {
+      // ESTADOS UNIDOS,      {
         country: 'Estados Unidos',
         visaType: 'EB-1A',
         visaSubtype: 'Extraordinary Ability',
@@ -379,8 +373,7 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    // Inserir todos os requisitos
-    const created = await Promise.all(
+    // Inserir todos os requisitos,    const created = await Promise.all(
       visaRequirements.map(requirement => 
         prisma.visaRequirement.create({
           data: {
@@ -392,8 +385,7 @@ export async function POST(request: NextRequest) {
       )
     )
 
-    // Log da população
-    await prisma.automationLog.create({
+    // Log da população,    await prisma.automationLog.create({
       data: {
         type: 'VISA_REQUIREMENTS_SEEDED',
         action: 'seed_visa_requirements',
@@ -410,7 +402,7 @@ export async function POST(request: NextRequest) {
         created: created.length
         requirements: created
       }
-      message: `${created.length} requisitos de visto criados com sucesso`,
+      message: `${created.length} requisitos de visto criados com sucesso`
     })
 
   } catch (error) {

@@ -11,8 +11,7 @@ interface MedicalClinic {
   phone: string
   email: string
   website: string
-  approvedFor: string[] // países que aprovam esta clínica
-  services: string[] // tipos de exames oferecidos
+  approvedFor: string[] // países que aprovam esta clínica,  services: string[] // tipos de exames oferecidos
   languages: string[]
   rating: number
   operatingHours: {
@@ -33,15 +32,12 @@ interface MedicalExam {
   id: string
   name: string
   description: string
-  requiredFor: string[] // países que exigem este exame
-  ageRestrictions?: {
+  requiredFor: string[] // países que exigem este exame,  ageRestrictions?: {
     min?: number
     max?: number
   }
-  validity: number // validade em meses
-  components: string[] // componentes do exame
-  preparation: string[] // preparação necessária
-  cost: number
+  validity: number // validade em meses,  components: string[] // componentes do exame
+  preparation: string[] // preparação necessária,  cost: number
   duration: string // tempo de duração do exame
 }
 
@@ -65,8 +61,7 @@ interface ExamBooking {
 
 class MedicalExamService {
   private readonly approvedClinics: MedicalClinic[] = [
-    // BRASIL - Clínicas para EUA
-    {
+    // BRASIL - Clínicas para EUA,    {
       id: 'usa-brazil-hcor',
       name: 'Hospital do Coração (HCor)',
       address: 'Rua Desembargador Eliseu Guilherme, 147',
@@ -75,9 +70,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 3053-6611',
       email: 'exames.internacionais@hcor.com.br',
-      website: 'https://www.hcor.com.br'
-
-      approvedFor: ['usa'],
+      website: 'https://www.hcor.com.br',
+    approvedFor: ['usa'],
       services: ['medical_exam_usa', 'vaccination', 'chest_xray', 'blood_tests'],
       languages: ['portuguese', 'english'],
       rating: 4.8,
@@ -114,9 +108,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 5014-7700',
       email: 'atendimento@fleury.com.br',
-      website: 'https://www.fleury.com.br'
-
-      approvedFor: ['usa'],
+      website: 'https://www.fleury.com.br',
+    approvedFor: ['usa'],
       services: ['medical_exam_usa', 'vaccination', 'chest_xray', 'blood_tests'],
       languages: ['portuguese', 'english'],
       rating: 4.7,
@@ -145,8 +138,7 @@ class MedicalExamService {
       notes: 'Várias unidades em SP. Aceita diversos planos de saúde para parte dos exames.'
     },
     
-    // BRASIL - Clínicas para Canadá
-    {
+    // BRASIL - Clínicas para Canadá,    {
       id: 'canada-brazil-dasa',
       name: 'DASA (Diagnósticos da América)',
       address: 'Av. Brigadeiro Luís Antônio, 4315',
@@ -155,9 +147,8 @@ class MedicalExamService {
       country: 'Brazil',
       phone: '+55 11 4020-6464',
       email: 'central.atendimento@dasa.com.br',
-      website: 'https://www.dasa.com.br'
-
-      approvedFor: ['canada'],
+      website: 'https://www.dasa.com.br',
+    approvedFor: ['canada'],
       services: ['medical_exam_canada', 'chest_xray', 'blood_tests', 'urine_tests'],
       languages: ['portuguese', 'english', 'french'],
       rating: 4.6,
@@ -185,8 +176,7 @@ class MedicalExamService {
       notes: 'Médico credenciado pelo governo canadense. Envio direto dos resultados para IRCC.'
     },
 
-    // CLÍNICAS INTERNACIONAIS
-    {
+    // CLÍNICAS INTERNACIONAIS,    {
       id: 'usa-global-iom',
       name: 'International Organization for Migration (IOM)',
       address: 'Varies by location',
@@ -195,9 +185,8 @@ class MedicalExamService {
       country: 'Global',
       phone: '+1-202-862-1826',
       email: 'health@iom.int',
-      website: 'https://www.iom.int/health-assessments'
-
-      approvedFor: ['usa', 'canada', 'australia', 'uk'],
+      website: 'https://www.iom.int/health-assessments',
+    approvedFor: ['usa', 'canada', 'australia', 'uk'],
       services: ['refugee_medical', 'immigration_medical', 'vaccination', 'mental_health'],
       languages: ['english', 'spanish', 'french', 'arabic', 'portuguese'],
       rating: 4.9,
@@ -321,8 +310,7 @@ class MedicalExamService {
     }
   ]
 
-  // Buscar clínicas por país e cidade
-  async getApprovedClinics(country: string, city?: string, state?: string): Promise<MedicalClinic[]> {
+  // Buscar clínicas por país e cidade,  async getApprovedClinics(country: string, city?: string, state?: string): Promise<MedicalClinic[]> {
     let clinics = this.approvedClinics.filter(clinic => 
       clinic.approvedFor.includes(country.toLowerCase())
     )
@@ -339,23 +327,20 @@ class MedicalExamService {
       )
     }
 
-    // Simular disponibilidade de horários
-    for (const clinic of clinics) {
+    // Simular disponibilidade de horários,    for (const clinic of clinics) {
       clinic.availableSlots = await this.generateAvailableSlots(clinic.id)
     }
 
     return clinics.sort((a, b) => b.rating - a.rating)
   }
 
-  // Buscar tipos de exame por país
-  getRequiredExams(country: string): MedicalExam[] {
+  // Buscar tipos de exame por país,  getRequiredExams(country: string): MedicalExam[] {
     return this.examTypes.filter(exam => 
       exam.requiredFor.includes(country.toLowerCase())
     )
   }
 
-  // Agendar exame médico
-  async bookMedicalExam(booking: Omit<ExamBooking, 'bookingId' | 'status'>): Promise<{
+  // Agendar exame médico,  async bookMedicalExam(booking: Omit<ExamBooking, 'bookingId' | 'status'>): Promise<{
     success: boolean
     bookingId?: string
     confirmationCode?: string
@@ -367,8 +352,7 @@ class MedicalExamService {
       if (!clinic) {
       }
 
-      // Verificar se a data está disponível
-      const isAvailable = await this.checkSlotAvailability(
+      // Verificar se a data está disponível,      const isAvailable = await this.checkSlotAvailability(
         booking.clinicId, 
         booking.appointmentDate, 
         booking.appointmentTime
@@ -377,12 +361,10 @@ class MedicalExamService {
       if (!isAvailable) {
       }
 
-      // Gerar ID do agendamento
-      const bookingId = `MED-${Date.now()}-${booking.applicantId}`
+      // Gerar ID do agendamento,      const bookingId = `MED-${Date.now()}-${booking.applicantId}`
       const confirmationCode = this.generateConfirmationCode()
 
-      // Simular agendamento
-      await this.delay(1000)
+      // Simular agendamento,      await this.delay(1000)
 
       const instructions = this.generateBookingInstructions(clinic, booking.examTypes)
 
@@ -397,18 +379,15 @@ class MedicalExamService {
     }
   }
 
-  // Verificar status do exame
-  async getExamStatus(bookingId: string): Promise<{
+  // Verificar status do exame,  async getExamStatus(bookingId: string): Promise<{
     success: boolean
     booking?: ExamBooking
     error?: string
   }> {
     try {
-      // Simular busca no banco
-      await this.delay(500)
+      // Simular busca no banco,      await this.delay(500)
 
-      // Mock data
-      const mockBooking: ExamBooking = {
+      // Mock data,      const mockBooking: ExamBooking = {
         bookingId,
         applicantId: 'user123',
         clinicId: 'usa-brazil-hcor',
@@ -430,8 +409,7 @@ class MedicalExamService {
     }
   }
 
-  // Cancelar exame
-  async cancelExam(bookingId: string): Promise<{ success: boolean; message: string }> {
+  // Cancelar exame,  async cancelExam(bookingId: string): Promise<{ success: boolean; message: string }> {
     try {
       await this.delay(800)
       return { 
@@ -441,8 +419,7 @@ class MedicalExamService {
     }
   }
 
-  // Reagendar exame
-  async rescheduleExam(
+  // Reagendar exame,  async rescheduleExam(
     bookingId: string, 
     newDate: string, 
     newTime: string
@@ -465,27 +442,23 @@ class MedicalExamService {
     const slots: string[] = []
     const today = new Date()
     
-    // Gerar slots para os próximos 30 dias
-    for (let i = 1; i <= 30; i++) {
+    // Gerar slots para os próximos 30 dias,    for (let i = 1; i <= 30; i++) {
       const date = new Date(today)
       date.setDate(today.getDate() + i)
       
-      // Pular fins de semana para a maioria das clínicas
-      if (date.getDay() === 0 || date.getDay() === 6) continue
+      // Pular fins de semana para a maioria das clínicas,      if (date.getDay() === 0 || date.getDay() === 6) continue
       
       const dateStr = date.toISOString().split('T')[0]
       const times = ['08:00', '09:30', '11:00', '14:00', '15:30']
       
       times.forEach(time => {
-        // Simular 70% de disponibilidade
-        if (Math.random() > 0.3) {
+        // Simular 70% de disponibilidade,        if (Math.random() > 0.3) {
           slots.push(`${dateStr}T${time}`)
         }
       })
     }
     
-    return slots.slice(0, 20) // Retornar até 20 slots
-  }
+    return slots.slice(0, 20) // Retornar até 20 slots  }
 
   private async checkSlotAvailability(
     clinicId: string, 
@@ -493,8 +466,7 @@ class MedicalExamService {
     time: string
   ): Promise<boolean> {
     await this.delay(300)
-    return Math.random() > 0.2 // 80% de chance de estar disponível
-  }
+    return Math.random() > 0.2 // 80% de chance de estar disponível  }
 
   private generateConfirmationCode(): string {
     return 'MED' + Math.random().toString(36).substr(2, 8).toUpperCase()

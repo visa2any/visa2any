@@ -13,87 +13,73 @@ import Footer from '@/components/Footer'
 
 // Definir produtos disponíveis
 const PRODUCTS = {
-  // EUA - B1/B2 Turismo/Negócios
-  'usa-b1b2-pre-analise': { name: 'Pré-Análise B1/B2', price: 0, description: 'Análise gratuita turismo EUA' },
+  // EUA - B1/B2 Turismo/Negócios,  'usa-b1b2-pre-analise': { name: 'Pré-Análise B1/B2', price: 0, description: 'Análise gratuita turismo EUA' },
   'usa-b1b2-relatorio': { name: 'Relatório B1/B2', price: 147, description: 'Assessoria completa turismo EUA' },
   'usa-b1b2-consultoria': { name: 'Consultoria B1/B2', price: 397, description: 'Especialista 1:1 turismo EUA' },
   'usa-b1b2-vip': { name: 'VIP B1/B2', price: 1997, description: 'Serviço completo turismo EUA' },
   
-  // EUA - F1 Estudante
-  'usa-f1-pre-analise': { name: 'Pré-Análise F1', price: 0, description: 'Análise gratuita estudante EUA' },
+  // EUA - F1 Estudante,  'usa-f1-pre-analise': { name: 'Pré-Análise F1', price: 0, description: 'Análise gratuita estudante EUA' },
   'usa-f1-relatorio': { name: 'Relatório F1', price: 247, description: 'Assessoria estudante EUA' },
   'usa-f1-consultoria': { name: 'Consultoria F1', price: 597, description: 'Especialista estudante EUA' },
   'usa-f1-vip': { name: 'VIP F1', price: 2497, description: 'Serviço completo estudante EUA' },
   
-  // EUA - H1B Trabalho
-  'usa-h1b-pre-analise': { name: 'Pré-Análise H1B', price: 97, description: 'Análise trabalho EUA' },
+  // EUA - H1B Trabalho,  'usa-h1b-pre-analise': { name: 'Pré-Análise H1B', price: 97, description: 'Análise trabalho EUA' },
   'usa-h1b-relatorio': { name: 'Relatório H1B', price: 497, description: 'Assessoria trabalho EUA' },
   'usa-h1b-consultoria': { name: 'Consultoria H1B', price: 997, description: 'Especialista trabalho EUA' },
   'usa-h1b-vip': { name: 'VIP H1B', price: 3997, description: 'Serviço completo trabalho EUA' },
   
-  // EUA - O1 Habilidade Extraordinária
-  'usa-o1-pre-analise': { name: 'Pré-Análise O1', price: 197, description: 'Análise extraordinário EUA' },
+  // EUA - O1 Habilidade Extraordinária,  'usa-o1-pre-analise': { name: 'Pré-Análise O1', price: 197, description: 'Análise extraordinário EUA' },
   'usa-o1-relatorio': { name: 'Relatório O1', price: 797, description: 'Assessoria O1 EUA' },
   'usa-o1-consultoria': { name: 'Consultoria O1', price: 1497, description: 'Especialista O1 EUA' },
   'usa-o1-vip': { name: 'VIP O1', price: 4997, description: 'Serviço completo O1 EUA' },
   
-  // Canadá - Turismo
-  'canada-turismo-pre-analise': { name: 'Pré-Análise Turismo CAN', price: 0, description: 'Análise gratuita turismo Canadá' },
+  // Canadá - Turismo,  'canada-turismo-pre-analise': { name: 'Pré-Análise Turismo CAN', price: 0, description: 'Análise gratuita turismo Canadá' },
   'canada-turismo-relatorio': { name: 'Relatório Turismo CAN', price: 127, description: 'Assessoria turismo Canadá' },
   'canada-turismo-consultoria': { name: 'Consultoria Turismo CAN', price: 297, description: 'Especialista turismo Canadá' },
   'canada-turismo-vip': { name: 'VIP Turismo CAN', price: 1497, description: 'Serviço completo turismo Canadá' },
   
-  // Canadá - Estudo
-  'canada-estudo-pre-analise': { name: 'Pré-Análise Estudo CAN', price: 0, description: 'Análise gratuita estudo Canadá' },
+  // Canadá - Estudo,  'canada-estudo-pre-analise': { name: 'Pré-Análise Estudo CAN', price: 0, description: 'Análise gratuita estudo Canadá' },
   'canada-estudo-relatorio': { name: 'Relatório Estudo CAN', price: 197, description: 'Assessoria estudo Canadá' },
   'canada-estudo-consultoria': { name: 'Consultoria Estudo CAN', price: 497, description: 'Especialista estudo Canadá' },
   'canada-estudo-vip': { name: 'VIP Estudo CAN', price: 2497, description: 'Serviço completo estudo Canadá' },
   
-  // Canadá - Trabalho
-  'canada-trabalho-pre-analise': { name: 'Pré-Análise Trabalho CAN', price: 97, description: 'Análise trabalho Canadá' },
+  // Canadá - Trabalho,  'canada-trabalho-pre-analise': { name: 'Pré-Análise Trabalho CAN', price: 97, description: 'Análise trabalho Canadá' },
   'canada-trabalho-relatorio': { name: 'Relatório Trabalho CAN', price: 297, description: 'Assessoria trabalho Canadá' },
   'canada-trabalho-consultoria': { name: 'Consultoria Trabalho CAN', price: 697, description: 'Especialista trabalho Canadá' },
   'canada-trabalho-vip': { name: 'VIP Trabalho CAN', price: 3497, description: 'Serviço completo trabalho Canadá' },
   
-  // Austrália - Turismo
-  'australia-turismo-pre-analise': { name: 'Pré-Análise Turismo AUS', price: 0, description: 'Análise gratuita turismo Austrália' },
+  // Austrália - Turismo,  'australia-turismo-pre-analise': { name: 'Pré-Análise Turismo AUS', price: 0, description: 'Análise gratuita turismo Austrália' },
   'australia-turismo-relatorio': { name: 'Relatório Turismo AUS', price: 147, description: 'Assessoria turismo Austrália' },
   'australia-turismo-consultoria': { name: 'Consultoria Turismo AUS', price: 397, description: 'Especialista turismo Austrália' },
   'australia-turismo-vip': { name: 'VIP Turismo AUS', price: 1997, description: 'Serviço completo turismo Austrália' },
   
-  // Austrália - Estudante
-  'australia-estudante-pre-analise': { name: 'Pré-Análise Estudante AUS', price: 97, description: 'Análise estudante Austrália' },
+  // Austrália - Estudante,  'australia-estudante-pre-analise': { name: 'Pré-Análise Estudante AUS', price: 97, description: 'Análise estudante Austrália' },
   'australia-estudante-relatorio': { name: 'Relatório Estudante AUS', price: 397, description: 'Assessoria estudante Austrália' },
   'australia-estudante-consultoria': { name: 'Consultoria Estudante AUS', price: 797, description: 'Especialista estudante Austrália' },
   'australia-estudante-vip': { name: 'VIP Estudante AUS', price: 3997, description: 'Serviço completo estudante Austrália' },
   
-  // Tier 3 - Europa (Portugal/Espanha)
-  'europa-turismo-pre-analise': { name: 'Pré-Análise Europa', price: 0, description: 'Análise gratuita Europa' },
+  // Tier 3 - Europa (Portugal/Espanha),  'europa-turismo-pre-analise': { name: 'Pré-Análise Europa', price: 0, description: 'Análise gratuita Europa' },
   'europa-turismo-relatorio': { name: 'Relatório Europa', price: 97, description: 'Assessoria Europa' },
   'europa-turismo-consultoria': { name: 'Consultoria Europa', price: 297, description: 'Especialista Europa' },
   'europa-turismo-vip': { name: 'VIP Europa', price: 1497, description: 'Serviço completo Europa' },
   
-  // Reino Unido
-  'uk-turismo-pre-analise': { name: 'Pré-Análise UK', price: 0, description: 'Análise gratuita Reino Unido' },
+  // Reino Unido,  'uk-turismo-pre-analise': { name: 'Pré-Análise UK', price: 0, description: 'Análise gratuita Reino Unido' },
   'uk-turismo-relatorio': { name: 'Relatório UK', price: 147, description: 'Assessoria Reino Unido' },
   'uk-turismo-consultoria': { name: 'Consultoria UK', price: 397, description: 'Especialista Reino Unido' },
   'uk-turismo-vip': { name: 'VIP UK', price: 1997, description: 'Serviço completo Reino Unido' },
   
-  // Ásia (China, Japão
- etc.)
+  // Ásia (China, Japão, etc.)
   'asia-turismo-pre-analise': { name: 'Pré-Análise Ásia', price: 0, description: 'Análise gratuita Ásia' },
   'asia-turismo-relatorio': { name: 'Relatório Ásia', price: 127, description: 'Assessoria Ásia' },
   'asia-turismo-consultoria': { name: 'Consultoria Ásia', price: 347, description: 'Especialista Ásia' },
   'asia-turismo-vip': { name: 'VIP Ásia', price: 1797, description: 'Serviço completo Ásia' },
   
-  // Serviços Especiais Originais
-  'passaporte-urgente': { name: 'Passaporte Urgente', price: 127, description: 'Assessoria PF + Emergência' },
+  // Serviços Especiais Originais,  'passaporte-urgente': { name: 'Passaporte Urgente', price: 127, description: 'Assessoria PF + Emergência' },
   'seguro-viagem': { name: 'Seguro Viagem', price: 67, description: 'Europa/Schengen + Assessoria' },
   'cidadania-dupla': { name: 'Cidadania Dupla', price: 497, description: 'Portuguesa/Italiana/Espanhola' },
   'mercosul-express': { name: 'Mercosul Express', price: 47, description: 'Países sem visto + Apoio' },
   
-  // PRODUTOS ESSENCIAIS - Documentação
-  'apostila-haia-simples': { name: 'Apostila de Haia Simples', price: 147, description: 'Legalização de 1 documento' },
+  // PRODUTOS ESSENCIAIS - Documentação,  'apostila-haia-simples': { name: 'Apostila de Haia Simples', price: 147, description: 'Legalização de 1 documento' },
   'apostila-haia-express': { name: 'Apostila de Haia Express', price: 197, description: 'Legalização urgente em 24h' },
   'apostila-haia-multipla': { name: 'Apostila de Haia Múltipla', price: 297, description: 'Legalização de 3+ documentos' },
   
@@ -104,8 +90,7 @@ const PRODUCTS = {
   'antecedentes-criminais': { name: 'Antecedentes Criminais', price: 97, description: 'PF + Estadual + apostila' },
   'antecedentes-express': { name: 'Antecedentes Express', price: 247, description: 'Processamento prioritário' },
   
-  // PRODUTOS ESSENCIAIS - Serviços Consulares
-  'agendamento-usa': { name: 'Agendamento Consular EUA', price: 497, description: 'Agendamento prioritário + preparação' },
+  // PRODUTOS ESSENCIAIS - Serviços Consulares,  'agendamento-usa': { name: 'Agendamento Consular EUA', price: 497, description: 'Agendamento prioritário + preparação' },
   'agendamento-canada': { name: 'Agendamento Consular Canadá', price: 397, description: 'Biometria + VAC appointment' },
   'agendamento-uk': { name: 'Agendamento Reino Unido', price: 447, description: 'VFS Premium + prioridade' },
   'agendamento-australia': { name: 'Agendamento Austrália', price: 497, description: 'Appointment + health examination' },
@@ -114,8 +99,7 @@ const PRODUCTS = {
   'entrevista-uk': { name: 'Preparação Entrevista UK', price: 347, description: 'Treinamento específico Reino Unido' },
   'entrevista-vip': { name: 'Preparação VIP Premium', price: 797, description: 'Ex-consul + 3 sessões + material' },
   
-  // PRODUTOS DE CONVENIÊNCIA
-  'kit-documentacao-basic': { name: 'Kit Documentação Básico', price: 97, description: 'Checklist + templates' },
+  // PRODUTOS DE CONVENIÊNCIA,  'kit-documentacao-basic': { name: 'Kit Documentação Básico', price: 97, description: 'Checklist + templates' },
   'kit-documentacao-premium': { name: 'Kit Documentação Premium', price: 147, description: 'Checklist + templates + alertas' },
   'kit-documentacao-vip': { name: 'Kit Documentação VIP', price: 197, description: 'Kit Premium + consultoria' },
   
@@ -128,8 +112,7 @@ const PRODUCTS = {
   'curso-imigracao-europa': { name: 'Curso Imigração Europa', price: 197, description: 'Portugal, Espanha, Alemanha' },
   'curso-imigracao-vip': { name: 'Curso VIP Todos Países', price: 497, description: 'Acesso completo + mentoria' },
   
-  // PRODUTOS FINANCEIROS
-  'cambio-vip-pequeno': { name: 'Câmbio VIP até $10k', price: 297, description: 'Taxa preferencial + assessoria' },
+  // PRODUTOS FINANCEIROS,  'cambio-vip-pequeno': { name: 'Câmbio VIP até $10k', price: 297, description: 'Taxa preferencial + assessoria' },
   'cambio-vip-medio': { name: 'Câmbio VIP até $50k', price: 497, description: 'Taxa VIP + acompanhamento' },
   'cambio-vip-alto': { name: 'Câmbio VIP +$50k', price: 997, description: 'Taxa premium + gerente dedicado' },
   
@@ -141,8 +124,7 @@ const PRODUCTS = {
   'golden-visa-espanha': { name: 'Golden Visa Espanha', price: 4500, description: 'Investimento EUR 500k+' },
   'start-up-visa-canada': { name: 'Start-up Visa Canadá', price: 7500, description: 'Programa empreendedor completo' },
   
-  // PRODUTOS POR PAÍS ESPECÍFICO
-  'esta-renovacao': { name: 'ESTA Renovação Automática', price: 97, description: 'Renovação + monitoramento' },
+  // PRODUTOS POR PAÍS ESPECÍFICO,  'esta-renovacao': { name: 'ESTA Renovação Automática', price: 97, description: 'Renovação + monitoramento' },
   'renovacao-visto-usa': { name: 'Renovação Visto EUA', price: 397, description: 'Renovação sem entrevista' },
   'social-security-usa': { name: 'Social Security EUA', price: 297, description: 'Consultoria SSN + ITIN' },
   
@@ -158,8 +140,7 @@ const PRODUCTS = {
   'nhs-registration': { name: 'NHS Registration', price: 197, description: 'Registo sistema saúde UK' },
   'brp-collection': { name: 'BRP Collection Service', price: 297, description: 'Serviço coleta cartão residência' },
   
-  // RELOCAÇÃO E MUDANÇA
-  'relocacao-express-pequena': { name: 'Relocação Express Pequena', price: 2997, description: 'Até 3m³ + seguro' },
+  // RELOCAÇÃO E MUDANÇA,  'relocacao-express-pequena': { name: 'Relocação Express Pequena', price: 2997, description: 'Até 3m³ + seguro' },
   'relocacao-express-media': { name: 'Relocação Express Média', price: 6997, description: 'Até 10m³ + desembaraço' },
   'relocacao-express-grande': { name: 'Relocação Express Grande', price: 12997, description: 'Container 20ft completo' },
   
@@ -167,14 +148,12 @@ const PRODUCTS = {
   'pet-relocacao-internacional': { name: 'Pet Relocação Internacional', price: 4997, description: 'Transporte + quarentena' },
   'pet-relocacao-vip': { name: 'Pet Relocação VIP', price: 8997, description: 'Múltiplos pets + acompanhamento' },
   
-  // Produtos Genéricos do Novo Sistema
-  'pre-analise': { name: 'Análise Gratuita', price: 0, description: 'Análise gratuita universal' },
+  // Produtos Genéricos do Novo Sistema,  'pre-analise': { name: 'Análise Gratuita', price: 0, description: 'Análise gratuita universal' },
   'relatorio-premium': { name: 'Relatório Premium', price: 97, description: 'Relatório completo' },
   'consultoria-express': { name: 'Consultoria Express', price: 297, description: 'Consultoria 1:1' },
   'assessoria-vip': { name: 'Assessoria VIP', price: 1997, description: 'Serviço VIP completo' },
   
-  // EUA - Simplificado
-  'usa-turismo-relatorio': { name: 'Relatório EUA Turismo', price: 197, description: 'Relatório para turismo EUA' },
+  // EUA - Simplificado,  'usa-turismo-relatorio': { name: 'Relatório EUA Turismo', price: 197, description: 'Relatório para turismo EUA' },
   'usa-turismo-consultoria': { name: 'Consultoria EUA Turismo', price: 497, description: 'Consultoria turismo EUA' },
   'usa-turismo-vip': { name: 'VIP EUA Turismo', price: 2497, description: 'Serviço completo turismo EUA' },
   'usa-estudo-relatorio': { name: 'Relatório EUA Estudo', price: 197, description: 'Relatório para estudo EUA' },
@@ -199,8 +178,7 @@ const PRODUCTS = {
   'usa-aposentadoria-consultoria': { name: 'Consultoria EUA Aposentadoria', price: 447, description: 'Consultoria aposentadoria EUA' },
   'usa-aposentadoria-vip': { name: 'VIP EUA Aposentadoria', price: 2197, description: 'Serviço completo aposentadoria EUA' },
   
-  // Canadá - Simplificado
-  'canada-turismo-relatorio': { name: 'Relatório Canadá Turismo', price: 147, description: 'Relatório para turismo Canadá' },
+  // Canadá - Simplificado,  'canada-turismo-relatorio': { name: 'Relatório Canadá Turismo', price: 147, description: 'Relatório para turismo Canadá' },
   'canada-turismo-consultoria': { name: 'Consultoria Canadá Turismo', price: 397, description: 'Consultoria turismo Canadá' },
   'canada-turismo-vip': { name: 'VIP Canadá Turismo', price: 1997, description: 'Serviço completo turismo Canadá' },
   'canada-estudo-relatorio': { name: 'Relatório Canadá Estudo', price: 147, description: 'Relatório para estudo Canadá' },
@@ -225,8 +203,7 @@ const PRODUCTS = {
   'canada-aposentadoria-consultoria': { name: 'Consultoria Canadá Aposentadoria', price: 347, description: 'Consultoria aposentadoria Canadá' },
   'canada-aposentadoria-vip': { name: 'VIP Canadá Aposentadoria', price: 1797, description: 'Serviço completo aposentadoria Canadá' },
   
-  // Austrália - Simplificado
-  'australia-turismo-relatorio': { name: 'Relatório Austrália Turismo', price: 197, description: 'Relatório para turismo Austrália' },
+  // Austrália - Simplificado,  'australia-turismo-relatorio': { name: 'Relatório Austrália Turismo', price: 197, description: 'Relatório para turismo Austrália' },
   'australia-turismo-consultoria': { name: 'Consultoria Austrália Turismo', price: 497, description: 'Consultoria turismo Austrália' },
   'australia-turismo-vip': { name: 'VIP Austrália Turismo', price: 2497, description: 'Serviço completo turismo Austrália' },
   'australia-estudo-relatorio': { name: 'Relatório Austrália Estudo', price: 197, description: 'Relatório para estudo Austrália' },
@@ -251,8 +228,7 @@ const PRODUCTS = {
   'australia-aposentadoria-consultoria': { name: 'Consultoria Austrália Aposentadoria', price: 447, description: 'Consultoria aposentadoria Austrália' },
   'australia-aposentadoria-vip': { name: 'VIP Austrália Aposentadoria', price: 2197, description: 'Serviço completo aposentadoria Austrália' },
   
-  // Portugal/Europa - Simplificado
-  'europa-turismo-relatorio': { name: 'Relatório Europa Turismo', price: 97, description: 'Relatório para turismo Europa' },
+  // Portugal/Europa - Simplificado,  'europa-turismo-relatorio': { name: 'Relatório Europa Turismo', price: 97, description: 'Relatório para turismo Europa' },
   'europa-turismo-consultoria': { name: 'Consultoria Europa Turismo', price: 297, description: 'Consultoria turismo Europa' },
   'europa-turismo-vip': { name: 'VIP Europa Turismo', price: 1497, description: 'Serviço completo turismo Europa' },
   'europa-estudo-relatorio': { name: 'Relatório Europa Estudo', price: 97, description: 'Relatório para estudo Europa' },
@@ -277,8 +253,7 @@ const PRODUCTS = {
   'europa-aposentadoria-consultoria': { name: 'Consultoria Europa Aposentadoria', price: 247, description: 'Consultoria aposentadoria Europa' },
   'europa-aposentadoria-vip': { name: 'VIP Europa Aposentadoria', price: 1197, description: 'Serviço completo aposentadoria Europa' },
   
-  // Outros países - Todas as categorias
-  'outros-turismo-relatorio': { name: 'Relatório Outros Turismo', price: 127, description: 'Relatório para turismo outros países' },
+  // Outros países - Todas as categorias,  'outros-turismo-relatorio': { name: 'Relatório Outros Turismo', price: 127, description: 'Relatório para turismo outros países' },
   'outros-turismo-consultoria': { name: 'Consultoria Outros Turismo', price: 347, description: 'Consultoria turismo outros países' },
   'outros-turismo-vip': { name: 'VIP Outros Turismo', price: 1797, description: 'Serviço completo turismo outros países' },
   'outros-estudo-relatorio': { name: 'Relatório Outros Estudo', price: 147, description: 'Relatório para estudo outros países' },
@@ -303,8 +278,7 @@ const PRODUCTS = {
   'outros-aposentadoria-consultoria': { name: 'Consultoria Outros Aposentadoria', price: 317, description: 'Consultoria aposentadoria outros países' },
   'outros-aposentadoria-vip': { name: 'VIP Outros Aposentadoria', price: 1597, description: 'Serviço completo aposentadoria outros países' },
   
-  // Reino Unido - Todas as categorias
-  'uk-turismo-relatorio': { name: 'Relatório UK Turismo', price: 167, description: 'Relatório para turismo Reino Unido' },
+  // Reino Unido - Todas as categorias,  'uk-turismo-relatorio': { name: 'Relatório UK Turismo', price: 167, description: 'Relatório para turismo Reino Unido' },
   'uk-turismo-consultoria': { name: 'Consultoria UK Turismo', price: 447, description: 'Consultoria turismo Reino Unido' },
   'uk-turismo-vip': { name: 'VIP UK Turismo', price: 2197, description: 'Serviço completo turismo Reino Unido' },
   'uk-estudo-relatorio': { name: 'Relatório UK Estudo', price: 197, description: 'Relatório para estudo Reino Unido' },
@@ -329,18 +303,15 @@ const PRODUCTS = {
   'uk-aposentadoria-consultoria': { name: 'Consultoria UK Aposentadoria', price: 397, description: 'Consultoria aposentadoria Reino Unido' },
   'uk-aposentadoria-vip': { name: 'VIP UK Aposentadoria', price: 1997, description: 'Serviço completo aposentadoria Reino Unido' },
   
-  // Certidões - Nascimento
-  'certidao-nascimento-individual': { name: 'Certidão de Nascimento Individual', price: 89, description: 'Uma certidão de nascimento', originalPrice: 149, features: ['Nascimento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  // Certidões - Nascimento,  'certidao-nascimento-individual': { name: 'Certidão de Nascimento Individual', price: 89, description: 'Uma certidão de nascimento', originalPrice: 149, features: ['Nascimento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
   'certidao-nascimento-familiar': { name: 'Kit Familiar Nascimento', price: 249, description: 'Até 3 certidões de nascimento', originalPrice: 399, features: ['Nascimento para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
   'certidao-nascimento-completo': { name: 'Pacote Completo Nascimento', price: 449, description: 'Certidões de nascimento ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] },
 
-  // Certidões - Casamento
-  'certidao-casamento-individual': { name: 'Certidão de Casamento Individual', price: 89, description: 'Uma certidão de casamento', originalPrice: 149, features: ['Casamento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  // Certidões - Casamento,  'certidao-casamento-individual': { name: 'Certidão de Casamento Individual', price: 89, description: 'Uma certidão de casamento', originalPrice: 149, features: ['Casamento individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
   'certidao-casamento-familiar': { name: 'Kit Familiar Casamento', price: 249, description: 'Até 3 certidões de casamento', originalPrice: 399, features: ['Casamento para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
   'certidao-casamento-completo': { name: 'Pacote Completo Casamento', price: 449, description: 'Certidões de casamento ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] },
 
-  // Certidões - Óbito
-  'certidao-obito-individual': { name: 'Certidão de Óbito Individual', price: 89, description: 'Uma certidão de óbito', originalPrice: 149, features: ['Óbito individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
+  // Certidões - Óbito,  'certidao-obito-individual': { name: 'Certidão de Óbito Individual', price: 89, description: 'Uma certidão de óbito', originalPrice: 149, features: ['Óbito individual', 'Válida em todo território nacional', 'PDF enviado por email', 'Via física por correios (opcional)', 'Suporte especializado', 'Garantia de autenticidade'] },
   'certidao-obito-familiar': { name: 'Kit Familiar Óbito', price: 249, description: 'Até 3 certidões de óbito', originalPrice: 399, features: ['Óbito para toda a família', 'Desconto de 30%', 'Entrega simultânea em PDF', 'SEDEX incluído para via física', 'Prioridade no atendimento', 'Validação prévia gratuita'] },
   'certidao-obito-completo': { name: 'Pacote Completo Óbito', price: 449, description: 'Certidões de óbito ilimitadas + extras', originalPrice: 699, features: ['Certidões ilimitadas', 'Validação jurídica incluída', 'PDF prioritário em 24-48h', 'Entrega expressa por motoboy', 'Suporte prioritário 24/7', 'Garantia estendida 6 meses', 'Consultoria documental gratuita'] }
 }
@@ -370,11 +341,9 @@ function CheckoutPageContent() {
   useEffect(() => {
     const id = searchParams.get('product') || 'relatorio-premium'
     setProductId(id)
-    // Adicionar um pequeno delay para evitar flash da mensagem de erro
-    setTimeout(() => setIsLoading(false), 100)
+    // Adicionar um pequeno delay para evitar flash da mensagem de erro,    setTimeout(() => setIsLoading(false), 100)
     
-    // Capturar IP e timestamp para assinatura digital
-    fetch('https://api.ipify.org?format=json')
+    // Capturar IP e timestamp para assinatura digital,    fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => setIpAddress(data.ip))
       .catch(() => setIpAddress('IP não disponível'))
@@ -410,27 +379,21 @@ function CheckoutPageContent() {
     )
   }
 
-  // Estratégia de preços detalhada
-  const getAdultPrice = () => product.price
-  const getChildPrice = () => Math.round(product.price * 0.7) // 30% desconto
-  const getChildDiscount = () => Math.round(product.price * 0.3) // Economia por criança
+  // Estratégia de preços detalhada,  const getAdultPrice = () => product.price
+  const getChildPrice = () => Math.round(product.price * 0.7) // 30% desconto,  const getChildDiscount = () => Math.round(product.price * 0.3) // Economia por criança
   
   const getQuantityDiscount = (adultCount: number) => {
-    // Desconto por quantidade aplica SOMENTE aos adultos (crianças já têm 30% off)
-    if (adultCount >= 5) return 0.15 // 15% desconto para 5+ adultos
-    if (adultCount >= 3) return 0.10 // 10% desconto para 3-4 adultos
-    return 0
+    // Desconto por quantidade aplica SOMENTE aos adultos (crianças já têm 30% off),    if (adultCount >= 5) return 0.15 // 15% desconto para 5+ adultos
+    if (adultCount >= 3) return 0.10 // 10% desconto para 3-4 adultos,    return 0
   }
   
-  const getPIXDiscount = () => paymentMethod === 'pix' ? 0.05 : 0 // 5% desconto PIX
-  
+  const getPIXDiscount = () => paymentMethod === 'pix' ? 0.05 : 0 // 5% desconto PIX,  
   const calculateSubtotal = () => {
     return (adults * getAdultPrice()) + (children * getChildPrice())
   }
   
   const getQuantityDiscountAmount = () => {
-    // Desconto de quantidade aplica SOMENTE no valor dos adultos
-    const adultSubtotal = adults * getAdultPrice()
+    // Desconto de quantidade aplica SOMENTE no valor dos adultos,    const adultSubtotal = adults * getAdultPrice()
     const discount = getQuantityDiscount(adults)
     return Math.round(adultSubtotal * discount)
   }
@@ -562,8 +525,7 @@ Economia total: R$ ${getTotalSavings().toFixed(2).replace('.', ',')}
 
 Obrigado ${customerInfo.name}! Você receberá um email em ${customerInfo.email} com as próximas instruções.`)
       
-      // Simular redirecionamento baseado no produto
-      if (productId === 'relatorio-premium') {
+      // Simular redirecionamento baseado no produto,      if (productId === 'relatorio-premium') {
         window.open('/download/relatorio-premium-sample.pdf', '_blank')
       }
       

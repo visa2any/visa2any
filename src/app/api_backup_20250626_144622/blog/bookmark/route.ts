@@ -5,8 +5,7 @@ import jwt from 'jsonwebtoken'
 // POST /api/blog/bookmark - Toggle bookmark on blog post
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const authToken = request.cookies.get('auth-token')?.value
+    // Check authentication,    const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
         { error: 'Não autorizado' },
@@ -14,8 +13,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify token
-    const jwtSecret = process.env.NEXTAUTH_SECRET
+    // Verify token,    const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
@@ -45,12 +43,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'add') {
-      // Check if already bookmarked
-      const existingBookmark = await prisma.blogPostBookmark.findUnique({
+      // Check if already bookmarked,      const existingBookmark = await prisma.blogPostBookmark.findUnique({
         where: {
           userId_postId: {
             userId,
-            postId,
+            postId
           }
         }
       })
@@ -59,7 +56,7 @@ export async function POST(request: NextRequest) {
         await prisma.blogPostBookmark.create({
           data: {
             userId,
-            postId,
+            postId
           }
         })
       }
@@ -67,7 +64,7 @@ export async function POST(request: NextRequest) {
       await prisma.blogPostBookmark.deleteMany({
         where: {
           userId,
-          postId,
+          postId
         }
       })
     }

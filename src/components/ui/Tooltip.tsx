@@ -57,8 +57,7 @@ export function Tooltip({
         break
     }
 
-    // Ajustar para manter dentro da viewport
-    x = Math.max(8, Math.min(x, viewport.width - tooltipRect.width - 8))
+    // Ajustar para manter dentro da viewport,    x = Math.max(8, Math.min(x, viewport.width - tooltipRect.width - 8))
     y = Math.max(8, Math.min(y, viewport.height - tooltipRect.height - 8))
 
     setPosition({ x, y })
@@ -113,7 +112,7 @@ export function Tooltip({
       className={`fixed z-[9999] px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg pointer-events-none transition-opacity duration-200 max-w-xs ${className}`}
       style={{
         left: position.x,
-        top: position.y,
+        top: position.y
       }}
     >
       {content}

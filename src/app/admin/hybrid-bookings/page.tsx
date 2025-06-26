@@ -55,8 +55,7 @@ export default function HybridBookingsPage() {
   useEffect(() => {
     fetchBookings()
     
-    // Auto-refresh a cada 30 segundos
-    const interval = setInterval(fetchBookings, 30000)
+    // Auto-refresh a cada 30 segundos,    const interval = setInterval(fetchBookings, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -87,8 +86,7 @@ export default function HybridBookingsPage() {
       })
 
       if (response.ok) {
-        fetchBookings() // Recarregar lista
-      }
+        fetchBookings() // Recarregar lista      }
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
     }

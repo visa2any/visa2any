@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para envio de email,const sendEmailSchema = z.object({,  to: z.string().email('Email é obrigatório'),  subject: z.string().min(1, 'Assunto é obrigatório').optional(),  message: z.string().min(1, 'Mensagem é obrigatória').optional(),  template: z.string().optional(),  clientId: z.string().optional()
-  variables: z.record(z.any()).optional()
+// Schema para envio de email,const sendEmailSchema = z.object({,  to: z.string().email('Email é obrigatório'),  subject: z.string().min(1, 'Assunto é obrigatório').optional(),  message: z.string().min(1, 'Mensagem é obrigatória').optional(),  template: z.string().optional(),  clientId: z.string().optional(),  variables: z.record(z.any()).optional()
 })
 
-// Templates de email prontos,const EMAIL_TEMPLATES = {,  payment_confirmation: {,    subject: '✅ Pagamento Confirmado - Visa2Any'
-    html: `
+// Templates de email prontos,const EMAIL_TEMPLATES = {,  payment_confirmation: {,    subject: '✅ Pagamento Confirmado - Visa2Any',    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
           <h1 style="margin: 0; font-size: 28px;">🎉 Pagamento Confirmado!</h1>
@@ -75,24 +73,20 @@ const validatedData = sendEmailSchema.parse(body)
     let emailContent = {,      subject: validatedData.subject || 'Mensagem da Visa2Any',      html: validatedData.message || ''
     }
 
-    // Se usar template, carregar template e processar variáveis,    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
-      const template = EMAIL_TEMPLATES[validatedData.template]
+    // Se usar template, carregar template e processar variáveis,    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {,      const template = EMAIL_TEMPLATES[validatedData.template]
       emailContent.subject = template.subject,      emailContent.html = template.html
 
-      // Processar variáveis no template,      if (validatedData.variables) {,        Object.entries(validatedData.variables).forEach(([key, value]) => {,          emailContent.html = emailContent.html.replace(,            new RegExp(`{${key}}`, 'g') 
-            String(value)
+      // Processar variáveis no template,      if (validatedData.variables) {,        Object.entries(validatedData.variables).forEach(([key, value]) => {,          emailContent.html = emailContent.html.replace(,            new RegExp(`{${key}}`, 'g') ,            String(value)
           ),          emailContent.subject = emailContent.subject.replace(,            new RegExp(`{${key}}`, 'g') ,            String(value)
           )
         })
       }
     }
 
-    // Enviar email usando o provedor configurado,    const emailResult = await sendEmailWithProvider({,      to: validatedData.to,      subject: emailContent.subject
-      html: emailContent.html
+    // Enviar email usando o provedor configurado,    const emailResult = await sendEmailWithProvider({,      to: validatedData.to,      subject: emailContent.subject,      html: emailContent.html
     })
 
-    // Log do envio,    await prisma.automationLog.create({,      data: {,        type: 'EMAIL',        action: 'send_email',        success: emailResult.success,        clientId: validatedData.clientId || null,        error: emailResult.error || null,        details: {,          timestamp: new Date().toISOString()
-          action: 'automated_action'
+    // Log do envio,    await prisma.automationLog.create({,      data: {,        type: 'EMAIL',        action: 'send_email',        success: emailResult.success,        clientId: validatedData.clientId || null,        error: emailResult.error || null,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),
@@ -109,10 +103,8 @@ const validatedData = sendEmailSchema.parse(body)
   }
 }
 
-// Função para enviar email usando SMTP Hostinger configurado,async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string
- html: string }) {
-  // Usar SMTP Hostinger (já configurado),  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {,    try {
-      const nodemailer =  
+// Função para enviar email usando SMTP Hostinger configurado,async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
+  // Usar SMTP Hostinger (já configurado),  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {,    try {,      const nodemailer =  
 const transporter = nodemailer.createTransport({,        host: process.env.SMTP_HOST,        port: parseInt(process.env.SMTP_PORT || '587'),        secure: process.env.SMTP_SECURE === 'true',        auth: {,          user: process.env.SMTP_USER,          pass: process.env.SMTP_PASS
         }
       }),
@@ -125,8 +117,7 @@ const transporter = nodemailer.createTransport({,        host: process.env.SMTP_
     }
   }
 
-  // Fallback: Tentar SendGrid se configurado,  if (process.env.SENDGRID_API_KEY) {,    try {,      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {,        method: 'POST'
-        headers: {,          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,          'Content-Type': 'application/json'
+  // Fallback: Tentar SendGrid se configurado,  if (process.env.SENDGRID_API_KEY) {,    try {,      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {,        method: 'POST',        headers: {,          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,          'Content-Type': 'application/json'
         },        body: JSON.stringify({,          personalizations: [{,            to: [{ email: to }]
             subject: subject
           }]

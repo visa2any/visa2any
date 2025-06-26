@@ -9,14 +9,12 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '30' // dias
-    const periodDays = parseInt(period)
+    const period = searchParams.get('period') || '30' // dias,    const periodDays = parseInt(period)
     
     const dateFrom = new Date()
     dateFrom.setDate(dateFrom.getDate() - periodDays)
 
-    // Estatísticas gerais
-    const [
+    // Estatísticas gerais,    const [
       totalPosts,
       totalViews,
       totalLikes,
@@ -50,8 +48,7 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    // Posts mais populares
-    const topPosts = await prisma.blogPost.findMany({
+    // Posts mais populares,    const topPosts = await prisma.blogPost.findMany({
       where: {
         published: true,
         publishDate: {
@@ -75,8 +72,7 @@ export async function GET(request: NextRequest) {
       take: 10
     })
 
-    // Distribuição por categoria
-    const categoryStats = await prisma.blogPost.groupBy({
+    // Distribuição por categoria,    const categoryStats = await prisma.blogPost.groupBy({
       by: ['category'],
       where: {
         published: true
@@ -95,8 +91,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Distribuição por país
-    const countryStats = await prisma.blogPost.groupBy({
+    // Distribuição por país,    const countryStats = await prisma.blogPost.groupBy({
       by: ['country'],
       where: {
         published: true,
@@ -119,8 +114,7 @@ export async function GET(request: NextRequest) {
       take: 10
     })
 
-    // Distribuição por dificuldade
-    const difficultyStats = await prisma.blogPost.groupBy({
+    // Distribuição por dificuldade,    const difficultyStats = await prisma.blogPost.groupBy({
       by: ['difficulty'],
       where: {
         published: true
@@ -133,8 +127,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Distribuição por tipo
-    const typeStats = await prisma.blogPost.groupBy({
+    // Distribuição por tipo,    const typeStats = await prisma.blogPost.groupBy({
       by: ['type'],
       where: {
         published: true
@@ -147,8 +140,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Estatísticas de comentários recentes
-    const recentComments = await prisma.blogPostComment.count({
+    // Estatísticas de comentários recentes,    const recentComments = await prisma.blogPostComment.count({
       where: {
         createdAt: {
           gte: dateFrom
@@ -156,8 +148,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Posts publicados por período
-    const postsOverTime = await prisma.blogPost.groupBy({
+    // Posts publicados por período,    const postsOverTime = await prisma.blogPost.groupBy({
       by: ['publishDate'],
       where: {
         published: true,
@@ -173,8 +164,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Calcular taxa de engajamento média
-    const avgEngagement = totalPosts > 0 ? {
+    // Calcular taxa de engajamento média,    const avgEngagement = totalPosts > 0 ? {
       viewsPerPost: Math.round((totalViews._sum.views || 0) / totalPosts),
       likesPerPost: Math.round((totalLikes._sum.likes || 0) / totalPosts),
       commentsPerPost: Math.round((totalComments._sum.comments || 0) / totalPosts)
@@ -192,7 +182,7 @@ export async function GET(request: NextRequest) {
           featuredPosts,
           trendingPosts,
           urgentPosts,
-          avgEngagement,
+          avgEngagement
         },
         topPosts: topPosts.map(post => ({
           ...post,

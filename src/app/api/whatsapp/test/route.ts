@@ -20,8 +20,7 @@ const { phone, message } = body,
     )
     }
 
-    // Simular envio bem-sucedido,    const messageId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+    // Simular envio bem-sucedido,    const messageId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,    
     console.log('📱 WHATSAPP INTEGRADO - SIMULAÇÃO:'),    console.log('Para:', phone),    console.log('Mensagem:', message),    console.log('MessageID:', messageId),    console.log('---'),
     return NextResponse.json({,      data: {,        messageId,        phone,        sent: true,        backend: 'Next.js integrado',        timestamp: new Date().toISOString()
       },      message: 'Mensagem enviada com sucesso (simulação)'

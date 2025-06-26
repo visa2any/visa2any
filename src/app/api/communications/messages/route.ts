@@ -6,8 +6,7 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 const type = searchParams.get('type')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    // Mock data for communications
-    const mockMessages = [,      {
+    // Mock data for communications,    const mockMessages = [,      {
         id: '1',        clientId: '1',        client: { name: 'João Silva', email: 'joao@email.com', phone: '+55119999999' },        type: 'whatsapp',        direction: 'inbound',        content: 'Olá, gostaria de saber sobre o visto americano',        subject: null,        status: 'read',        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),        assignedTo: 'Ana Silva',        tags: ['visto-americano', 'primeira-conversa']
         priority: 'medium',        attachments: []
         metadata: {,          responseTime: 120,          sentiment: 'positive'
@@ -40,8 +39,7 @@ const type = searchParams.get('type')
 
     let filteredMessages = mockMessages
 
-    // Apply filters,    if (clientId) {
-      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
+    // Apply filters,    if (clientId) {,      filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
     },
     if (type && type !== 'all') {,      filteredMessages = filteredMessages.filter(msg => msg.type === type)
     }
@@ -59,8 +57,7 @@ const type = searchParams.get('type')
 export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
 const { type, content, clientId, subject, attachments } = body
 
-    // Here you would integrate with actual communication providers
-    // For now, we'll simulate message sending
+    // Here you would integrate with actual communication providers,    // For now, we'll simulate message sending
 
     const newMessage = {,      id: Date.now().toString(),      clientId,      client: { name: 'Client Name', email: 'client@email.com' },      type,      direction: 'outbound',      content,      subject,      status: 'sent',      timestamp: new Date().toISOString(),      assignedTo: 'Current User',      tags: []
       priority: 'medium',      attachments: attachments || []

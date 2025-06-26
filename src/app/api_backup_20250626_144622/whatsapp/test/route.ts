@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Simular envio bem-sucedido
-    const messageId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    // Simular envio bem-sucedido,    const messageId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     
     console.log('📱 WHATSAPP INTEGRADO - SIMULAÇÃO:')
     console.log('Para:', phone)

@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'search_slots':
-        // Buscar vagas com Playwright
-        const result = await costEffectiveSolutions.playwrightAutomation(country, visaType)
+        // Buscar vagas com Playwright,        const result = await costEffectiveSolutions.playwrightAutomation(country, visaType)
         
         return NextResponse.json({
           success: result.success,
@@ -37,8 +36,7 @@ export async function POST(request: NextRequest) {
         })
 
       case 'start_monitoring':
-        // Iniciar monitoramento contínuo
-        const monitoring = await costEffectiveSolutions.setupVacancyMonitoring([country])
+        // Iniciar monitoramento contínuo,        const monitoring = await costEffectiveSolutions.setupVacancyMonitoring([country])
         
         return NextResponse.json({
           success: monitoring.success,
@@ -51,7 +49,7 @@ export async function POST(request: NextRequest) {
             'Email instantâneo',  
             'Telegram bot',
             'Dashboard web'
-          ],
+          ]
         })
 
       default:
@@ -78,8 +76,7 @@ export async function GET(request: NextRequest) {
 
     switch (action) {
       case 'status':
-        // Status geral do sistema de automação
-        return NextResponse.json({
+        // Status geral do sistema de automação,        return NextResponse.json({
           success: true,
           automation: {
             playwright: {
@@ -115,8 +112,7 @@ export async function GET(request: NextRequest) {
         })
 
       case 'supported_countries':
-        // Países suportados pela automação
-        return NextResponse.json({
+        // Países suportados pela automação,        return NextResponse.json({
           success: true,
           countries: [
             {
@@ -165,8 +161,7 @@ export async function GET(request: NextRequest) {
         })
 
       case 'costs':
-        // Custos detalhados da automação
-        return NextResponse.json({
+        // Custos detalhados da automação,        return NextResponse.json({
           success: true,
           pricing: {
             setup: {

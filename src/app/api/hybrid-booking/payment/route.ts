@@ -7,17 +7,13 @@ interface ConsularFees {,  [key: string]: {,    visaFee: number,    serviceFee: 
   }
 }
 
-// Tabela completa de taxas consulares atualizadas,const CONSULAR_FEES: ConsularFees = {,  'EUA': {,    visaFee: 950, // USD 185 ≈ R$ 950,    serviceFee: 150, // Basic,    currency: 'BRL'
-    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+// Tabela completa de taxas consulares atualizadas,const CONSULAR_FEES: ConsularFees = {,  'EUA': {,    visaFee: 950, // USD 185 ≈ R$ 950,    serviceFee: 150, // Basic,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment'
-  },  'CANADA': {,    visaFee: 380, // CAD 100 ≈ R$ 380,    serviceFee: 200,    biometricFee: 320, // CAD 85 ≈ R$ 320,    additionalFees: 95, // Taxa VAC,    currency: 'BRL'
-    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'CANADA': {,    visaFee: 380, // CAD 100 ≈ R$ 380,    serviceFee: 200,    biometricFee: 320, // CAD 85 ≈ R$ 320,    additionalFees: 95, // Taxa VAC,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees'
-  },  'REINO_UNIDO': {,    visaFee: 650, // GBP 100 ≈ R$ 650,    serviceFee: 180,    biometricFee: 125, // GBP 19.20 ≈ R$ 125,    additionalFees: 120, // Taxa TLS,    currency: 'BRL'
-    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'REINO_UNIDO': {,    visaFee: 650, // GBP 100 ≈ R$ 650,    serviceFee: 180,    biometricFee: 125, // GBP 19.20 ≈ R$ 125,    additionalFees: 120, // Taxa TLS,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment'
-  },  'FRANCA': {,    visaFee: 480, // EUR 80 ≈ R$ 480,    serviceFee: 160,    biometricFee: 120,    additionalFees: 100,    currency: 'BRL'
-    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'FRANCA': {,    visaFee: 480, // EUR 80 ≈ R$ 480,    serviceFee: 160,    biometricFee: 120,    additionalFees: 100,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
   }
 }
@@ -31,14 +27,12 @@ const PLAN_MULTIPLIERS = {,  'BASIC': 1.0,  'PREMIUM': 2.2,  'VIP': 3.0
 
 export async function POST(request: NextRequest) {,  try {,    const data: PaymentRequest = await request.json()
 
-    // 1. Validar país suportado,    const countryKey = data.country.toUpperCase().replace(' ', '_')
-    const countryFees = CONSULAR_FEES[countryKey]
+    // 1. Validar país suportado,    const countryKey = data.country.toUpperCase().replace(' ', '_'),    const countryFees = CONSULAR_FEES[countryKey]
     ,    if (!countryFees) {,      return NextResponse.json({,        error: 'País não suportado no momento',        supportedCountries: Object.keys(CONSULAR_FEES)
       }, { status: 400 })
     }
 
-    // 2. Calcular custos detalhados
-    const multiplier =  
+    // 2. Calcular custos detalhados,    const multiplier =  
 const baseFee = Math.round(countryFees.serviceFee * multiplier)
     
     const costs = {,      breakdown: {,        visaFee: countryFees.visaFee,        serviceFee: baseFee,        biometricFee: countryFees.biometricFee || 0,        additionalFees: countryFees.additionalFees || 0
@@ -48,28 +42,23 @@ const baseFee = Math.round(countryFees.serviceFee * multiplier)
     },
     costs.total.withoutDiscount = costs.subtotal,    costs.total.withPixDiscount = costs.subtotal - costs.discounts.pix
 
-    // 3. Buscar dados do cliente,    const client = await prisma.client.findUnique({,      where: { id: data.clientId },      select: {,        id: true,        name: true,        email: true
-        phone: true
+    // 3. Buscar dados do cliente,    const client = await prisma.client.findUnique({,      where: { id: data.clientId },      select: {,        id: true,        name: true,        email: true,        phone: true
       }
     }),
     if (!client) {,      return NextResponse.json({,        error: 'Cliente não encontrado'
       }, { status: 404 })
     }
 
-    // 4. Criar registro de cobrança híbrida,    const payment = await prisma.hybridPayment.create({,      data: {,        clientId: data.clientId,        country: data.country,        consulate: data.consulate,        availableDates: data.availableDates,        plan: data.plan,        urgency: data.urgency,        costs: costs,        status: 'PENDING',        expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
-        createdAt: new Date()
+    // 4. Criar registro de cobrança híbrida,    const payment = await prisma.hybridPayment.create({,      data: {,        clientId: data.clientId,        country: data.country,        consulate: data.consulate,        availableDates: data.availableDates,        plan: data.plan,        urgency: data.urgency,        costs: costs,        status: 'PENDING',        expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos,        createdAt: new Date()
       }
     })
 
-    // 5. Gerar links de pagamento,    const paymentLinks = await generatePaymentLinks(payment.id, costs
- client)
+    // 5. Gerar links de pagamento,    const paymentLinks = await generatePaymentLinks(payment.id, costs, client)
 
-    // 6. Notificar consultor via Telegram,    await notifyConsultant({,      paymentId: payment.id,      client: client,      country: data.country,      consulate: data.consulate,      plan: data.plan,      urgency: data.urgency,      costs: costs
-      availableDates: data.availableDates
+    // 6. Notificar consultor via Telegram,    await notifyConsultant({,      paymentId: payment.id,      client: client,      country: data.country,      consulate: data.consulate,      plan: data.plan,      urgency: data.urgency,      costs: costs,      availableDates: data.availableDates
     })
 
-    // 7. Notificar cliente sobre cobrança,    await notifyClientAboutPayment(client, {,      paymentId: payment.id,      costs: costs,      paymentLinks: paymentLinks,      expiresIn: 30,      country: data.country
-      consulate: data.consulate
+    // 7. Notificar cliente sobre cobrança,    await notifyClientAboutPayment(client, {,      paymentId: payment.id,      costs: costs,      paymentLinks: paymentLinks,      expiresIn: 30,      country: data.country,      consulate: data.consulate
     }),
     return NextResponse.json({,      payment: {,        id: payment.id,        costs: costs,        paymentLinks: paymentLinks,        expiresAt: payment.expiresAt,        officialPaymentUrl: countryFees.officialPaymentUrl
       },      client: {,        name: client.name,        email: client.email
@@ -84,8 +73,7 @@ const baseFee = Math.round(countryFees.serviceFee * multiplier)
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const paymentId =  
 const clientId = searchParams.get('clientId'),
     if (paymentId) {
-      // Buscar pagamento específico,      const payment = await prisma.hybridPayment.findUnique({,        where: { id: paymentId },        include: {,          client: {,            select: {,              name: true,              email: true
-              phone: true
+      // Buscar pagamento específico,      const payment = await prisma.hybridPayment.findUnique({,        where: { id: paymentId },        include: {,          client: {,            select: {,              name: true,              email: true,              phone: true
             }
           }
         }
@@ -97,8 +85,7 @@ const clientId = searchParams.get('clientId'),
       })
     },
     if (clientId) {
-      // Buscar pagamentos do cliente,      const payments = await prisma.hybridPayment.findMany({,        where: { clientId },        orderBy: { createdAt: 'desc' },        take: 10,        include: {,          client: {,            select: {,              name: true
-              email: true
+      // Buscar pagamentos do cliente,      const payments = await prisma.hybridPayment.findMany({,        where: { clientId },        orderBy: { createdAt: 'desc' },        take: 10,        include: {,          client: {,            select: {,              name: true,              email: true
             }
           }
         }
@@ -114,21 +101,17 @@ const clientId = searchParams.get('clientId'),
   }
 }
 
-// Gerar links de pagamento para diferentes métodos,async function generatePaymentLinks(paymentId: string, costs: any, client: any) {,  const links = {,    pix: null as string | null,    card: null as string | null
-    boleto: null as string | null
+// Gerar links de pagamento para diferentes métodos,async function generatePaymentLinks(paymentId: string, costs: any, client: any) {,  const links = {,    pix: null as string | null,    card: null as string | null,    boleto: null as string | null
   },
   try {
-    // PIX (com desconto),    const pixPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withPixDiscount,      title: 'Vaga Express - Agendamento de Visto (PIX)',      description: `${client.name} - Taxa consular + serviço (5% desconto PIX)`,      paymentMethods: ['pix']
-      discount: costs.discounts.pix
+    // PIX (com desconto),    const pixPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withPixDiscount,      title: 'Vaga Express - Agendamento de Visto (PIX)',      description: `${client.name} - Taxa consular + serviço (5% desconto PIX)`,      paymentMethods: ['pix'],      discount: costs.discounts.pix
     }),    links.pix = pixPreference?.init_point || null
 
-    // Cartão de Crédito,    const cardPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withoutDiscount,      title: 'Vaga Express - Agendamento de Visto (Cartão)',      description: `${client.name} - Taxa consular + serviço`
-      paymentMethods: ['credit_card', 'debit_card']
+    // Cartão de Crédito,    const cardPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withoutDiscount,      title: 'Vaga Express - Agendamento de Visto (Cartão)',      description: `${client.name} - Taxa consular + serviço`,      paymentMethods: ['credit_card', 'debit_card']
       installments: 12
     }),    links.card = cardPreference?.init_point || null
 
-    // Boleto,    const boletoPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withoutDiscount,      title: 'Vaga Express - Agendamento de Visto (Boleto)',      description: `${client.name} - Taxa consular + serviço`
-      paymentMethods: ['ticket']
+    // Boleto,    const boletoPreference = await createMercadoPagoPreference({,      paymentId,      amount: costs.total.withoutDiscount,      title: 'Vaga Express - Agendamento de Visto (Boleto)',      description: `${client.name} - Taxa consular + serviço`,      paymentMethods: ['ticket']
     }),    links.boleto = boletoPreference?.init_point || null
 
   } catch (error) {,    console.error('Erro ao gerar links de pagamento:', error)
@@ -136,8 +119,7 @@ const clientId = searchParams.get('clientId'),
   return links
 }
 
-// Criar preferência no MercadoPago,async function createMercadoPagoPreference(options: any) {,  try {,    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {,      method: 'POST'
-      headers: {,        'Content-Type': 'application/json',        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+// Criar preferência no MercadoPago,async function createMercadoPagoPreference(options: any) {,  try {,    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {,      method: 'POST',      headers: {,        'Content-Type': 'application/json',        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
       },      body: JSON.stringify({,        items: [{,          title: options.title,          description: options.description,          quantity: 1,          currency_id: 'BRL',          unit_price: options.amount
         }]
         external_reference: options.paymentId,        payment_methods: {,          excluded_payment_types: options.paymentMethods ? [] : ['credit_card', 'debit_card', 'ticket', 'digital_wallet']
@@ -154,8 +136,7 @@ const clientId = searchParams.get('clientId'),
   }
 }
 
-// Notificar consultor via Telegram,async function notifyConsultant(data: any) {
-  const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
+// Notificar consultor via Telegram,async function notifyConsultant(data: any) {,  const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
   },
   const planEmoji = {,    'BASIC': '🥉',    'PREMIUM': '🥈',    'VIP': '🥇'
   },
@@ -228,8 +209,7 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
       })
     })
 
-    // Enviar email com detalhes completos,    await fetch('/api/notifications/email', {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        to: client.email,        subject: `🎯 Vaga Encontrada - Pagamento Necessário`,        template: 'hybrid-payment-notification',        data: {,          clientName: client.name,          country: data.country,          consulate: data.consulate,          costs: data.costs,          paymentLinks: data.paymentLinks,          paymentId: data.paymentId
-          expiresIn: data.expiresIn
+    // Enviar email com detalhes completos,    await fetch('/api/notifications/email', {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        to: client.email,        subject: `🎯 Vaga Encontrada - Pagamento Necessário`,        template: 'hybrid-payment-notification',        data: {,          clientName: client.name,          country: data.country,          consulate: data.consulate,          costs: data.costs,          paymentLinks: data.paymentLinks,          paymentId: data.paymentId,          expiresIn: data.expiresIn
         }
       })
     })

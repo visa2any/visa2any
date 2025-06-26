@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
-// Configurar MercadoPago,const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN,if (!accessToken) {
-  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
+// Configurar MercadoPago,const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN,if (!accessToken) {,  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
 },
 const client = new MercadoPagoConfig({,  accessToken: accessToken!
 }),
@@ -14,8 +13,7 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     },
     console.log('🔍 Verificando status do pagamento:', paymentId)
 
-    // Buscar informações do pagamento no MercadoPago,    const result = await payment.get({ id: paymentId })
-    
+    // Buscar informações do pagamento no MercadoPago,    const result = await payment.get({ id: paymentId }),    
     console.log('📊 Status atual:', result.status),    console.log('📋 Detalhes:', {,      id: result.id,      status: result.status,      status_detail: result.status_detail,      payment_method: result.payment_method_id
     }),
     return NextResponse.json({,      payment_id: result.id,      status: result.status,      status_detail: result.status_detail,      payment_method: result.payment_method_id,      transaction_amount: result.transaction_amount,      date_created: result.date_created,      date_approved: result.date_approved,      payer_email: result.payer?.email,      external_reference: result.external_reference

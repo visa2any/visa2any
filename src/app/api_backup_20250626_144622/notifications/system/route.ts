@@ -5,8 +5,7 @@ import { verifyAuth } from '@/lib/auth'
 // GET /api/notifications/system - Get system notifications for current user
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await verifyAuth(request)
+    // Verify authentication,    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
         { status: 401 }
@@ -15,12 +14,10 @@ export async function GET(request: NextRequest) {
 
     const userId = user.id
 
-    // Get recent automation logs that should generate notifications
-    const recentLogs = await prisma.automationLog.findMany({
+    // Get recent automation logs that should generate notifications,    const recentLogs = await prisma.automationLog.findMany({
       where: {
         executedAt: {
-          gte: new Date(Date.now() - 5 * 60 * 1000) // Last 5 minutes
-        }
+          gte: new Date(Date.now() - 5 * 60 * 1000) // Last 5 minutes        }
         type: {
           in: [
             'EMAIL_SENT'
@@ -29,7 +26,7 @@ export async function GET(request: NextRequest) {
             'DOCUMENT_VALIDATED',
             'PAYMENT_CONFIRMED',
             'CLIENT_STATUS_CHANGED'
-          ],
+          ]
         }
       }
       include: {
@@ -47,8 +44,7 @@ export async function GET(request: NextRequest) {
       take: 10
     })
 
-    // Convert automation logs to notifications
-    const notifications = recentLogs.map(log => {
+    // Convert automation logs to notifications,    const notifications = recentLogs.map(log => {
       const baseNotification = {
         type: 'info' as const,
         title: '',
@@ -131,13 +127,11 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Also check for pending tasks that need attention
-    const pendingConsultations = await prisma.consultation.count({
+    // Also check for pending tasks that need attention,    const pendingConsultations = await prisma.consultation.count({
       where: {
         status: 'SCHEDULED',
         scheduledAt: {
-          lte: new Date(Date.now() + 60 * 60 * 1000) // Next hour
-        }
+          lte: new Date(Date.now() + 60 * 60 * 1000) // Next hour        }
       }
     })
 
@@ -147,8 +141,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Add system notifications for pending items
-    if (pendingConsultations > 0) {
+    // Add system notifications for pending items,    if (pendingConsultations > 0) {
       notifications.push({
         type: 'warning' as const,
         title: 'Consultorias pendentes',
@@ -169,8 +162,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      notifications: notifications.slice(0, 5) // Return max 5 notifications
-    })
+      notifications: notifications.slice(0, 5) // Return max 5 notifications    })
 
   } catch (error) {
     console.error('Erro ao buscar notificações do sistema:', error)
@@ -184,8 +176,7 @@ export async function GET(request: NextRequest) {
 // POST /api/notifications/system - Mark system notifications as read (optional)
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const user = await verifyAuth(request)
+    // Verify authentication,    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
         { status: 401 }
@@ -195,10 +186,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { notificationIds } = body
 
-    // In a real implementation
- you might want to store read status
-    // For now
- we'll just return success
+    // In a real implementation, you might want to store read status
+    // For now, we'll just return success
     console.log(`User ${user.id} marked notifications as read:`, notificationIds)
 
     return NextResponse.json({

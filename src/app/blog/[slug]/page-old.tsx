@@ -378,8 +378,7 @@ export default function BlogPostPage() {
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authAction, setAuthAction] = useState<'like' | 'bookmark' | 'comment'>('like')
-  const [isLoggedIn, setIsLoggedIn] = useState(false) // Será verificado via API/Context
-  const [newComment, setNewComment] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(false) // Será verificado via API/Context,  const [newComment, setNewComment] = useState('')
   const [comments, setComments] = useState([
     {
       id: '1',
@@ -406,19 +405,16 @@ export default function BlogPostPage() {
   const [replyText, setReplyText] = useState('')
 
   useEffect(() => {
-    // Buscar post pelo slug (usando ID como slug por enquanto)
-    const foundPost = blogPosts.find(p => p.slug === slug || p.id === slug)
+    // Buscar post pelo slug (usando ID como slug por enquanto),    const foundPost = blogPosts.find(p => p.slug === slug || p.id === slug)
     if (foundPost) {
       setPost(foundPost)
       
-      // Buscar posts relacionados (mesma categoria)
-      const related = blogPosts
+      // Buscar posts relacionados (mesma categoria),      const related = blogPosts
         .filter(p => p.id !== foundPost.id && p.category === foundPost.category)
         .slice(0, 3)
       setRelatedPosts(related)
 
-      // Agendar posts automáticos nas redes sociais (apenas para posts novos/urgentes)
-      if (foundPost.urgent || foundPost.trending) {
+      // Agendar posts automáticos nas redes sociais (apenas para posts novos/urgentes),      if (foundPost.urgent || foundPost.trending) {
         scheduleAutomaticPosts(foundPost).then(result => {
           if (result.success) {
             console.log(`📱 Posts automáticos agendados para ${result.postsScheduled} redes sociais`)
@@ -431,10 +427,8 @@ export default function BlogPostPage() {
     setLoading(false)
   }, [slug])
 
-  // Verificar se usuário está logado
-  useEffect(() => {
-    // Aqui você verificaria o estado de autenticação via Context/API
-    const checkAuth = async () => {
+  // Verificar se usuário está logado,  useEffect(() => {
+    // Aqui você verificaria o estado de autenticação via Context/API,    const checkAuth = async () => {
       try {
         console.log('🔍 Blog: Checking authentication...')
         const response = await fetch('/api/auth/me', {
@@ -459,8 +453,7 @@ export default function BlogPostPage() {
     
     checkAuth()
     
-    // Listen for login events
-    const handleUserLogin = () => {
+    // Listen for login events,    const handleUserLogin = () => {
       console.log('🎯 Blog: Received user-login event')
       setTimeout(checkAuth, 100)
     }
@@ -487,8 +480,7 @@ export default function BlogPostPage() {
     setLiked(!liked)
     if (post) {
       post.likes += liked ? -1 : 1
-      // Aqui você faria a chamada para a API para salvar o like
-      fetch('/api/blog/like', {
+      // Aqui você faria a chamada para a API para salvar o like,      fetch('/api/blog/like', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId: post.id, action: liked ? 'unlike' : 'like' })
@@ -500,8 +492,7 @@ export default function BlogPostPage() {
     if (!requireAuth('bookmark')) return
     
     setBookmarked(!bookmarked)
-    // Salvar bookmark via API
-    if (post) {
+    // Salvar bookmark via API,    if (post) {
       fetch('/api/blog/bookmark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -512,8 +503,7 @@ export default function BlogPostPage() {
 
   const handleComment = () => {
     if (!requireAuth('comment')) return
-    // Scroll to comments section
-    const commentsSection = document.getElementById('comments-section')
+    // Scroll to comments section,    const commentsSection = document.getElementById('comments-section')
     if (commentsSection) {
       commentsSection.scrollIntoView({ behavior: 'smooth' })
     }
@@ -538,8 +528,7 @@ export default function BlogPostPage() {
         window.open(`https://wa.me/?text=${encodeURIComponent(`${title}\n\n${url}`)}`, '_blank')
         break
       case 'instagram':
-        // Instagram doesn't support direct sharing via URL
- copy to clipboard instead
+        // Instagram doesn't support direct sharing via URL, copy to clipboard instead
         navigator.clipboard.writeText(`${title}\n\n${url}\n\n#visa2any #imigração #visto`)
         alert('Texto copiado! Cole no seu Instagram Stories ou post.')
         break
@@ -554,11 +543,9 @@ export default function BlogPostPage() {
   const handleSubmitComment = async () => {
     if (!newComment.trim()) return
     
-    // Add new comment to local state
-    const comment = {
+    // Add new comment to local state,    const comment = {
       id: Date.now().toString(),
-      author: 'Usuário Logado', // Should come from user context
-      avatar: 'U',
+      author: 'Usuário Logado', // Should come from user context,      avatar: 'U',
       content: newComment,
       timestamp: 'agora',
       likes: 0,
@@ -569,8 +556,7 @@ export default function BlogPostPage() {
     setComments([comment, ...comments])
     setNewComment('')
     
-    // Here you would also call the API
-    try {
+    // Here you would also call the API,    try {
       await fetch('/api/blog/comment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1143,12 +1129,10 @@ export default function BlogPostPage() {
           console.log('✅ Login realizado com sucesso:', user)
           setIsLoggedIn(true)
           setShowAuthModal(false)
-          // Executar ação após login
-          if (authAction === 'like') handleLike()
+          // Executar ação após login,          if (authAction === 'like') handleLike()
           else if (authAction === 'bookmark') handleBookmark()
           else if (authAction === 'comment') {
-            // Scroll para seção de comentários
-            document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })
+            // Scroll para seção de comentários,            document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })
           }
         }}
       />

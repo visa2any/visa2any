@@ -11,16 +11,14 @@ export async function POST(request: NextRequest) {
       options: HybridBookingOptions 
     } = body
 
-    // Validação dos campos obrigatórios
-    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {
+    // Validação dos campos obrigatórios,    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {
       return NextResponse.json(
         { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' }
         { status: 400 }
       )
     }
 
-    // Configurações padrão se não fornecidas
-    const defaultOptions: HybridBookingOptions = {
+    // Configurações padrão se não fornecidas,    const defaultOptions: HybridBookingOptions = {
       preferredMethod: 'auto',
       fallbackEnabled: true,
       urgency: 'normal',
@@ -28,16 +26,14 @@ export async function POST(request: NextRequest) {
       ...options
     }
 
-    // Log da tentativa de agendamento
-    console.log(`Agendamento híbrido iniciado:`, {
+    // Log da tentativa de agendamento,    console.log(`Agendamento híbrido iniciado:`, {
       consulate: bookingRequest.consulate,
       visaType: bookingRequest.visaType,
       method: defaultOptions.preferredMethod,
       urgency: defaultOptions.urgency
     })
 
-    // Executar agendamento híbrido
-    const result = await hybridBookingSystem.bookAppointment(bookingRequest, defaultOptions)
+    // Executar agendamento híbrido,    const result = await hybridBookingSystem.bookAppointment(bookingRequest, defaultOptions)
 
     if (result.success) {
       return NextResponse.json({
@@ -51,7 +47,7 @@ export async function POST(request: NextRequest) {
         }
         attempts: result.attempts,
         warnings: result.warnings,
-        message: `Agendamento realizado via ${result.method} (${result.provider})`,
+        message: `Agendamento realizado via ${result.method} (${result.provider})`
       })
     } else {
       return NextResponse.json({
@@ -85,8 +81,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Buscar vagas em todos os métodos
-    const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
+    // Buscar vagas em todos os métodos,    const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
 
     return NextResponse.json({
       country

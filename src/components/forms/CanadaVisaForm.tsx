@@ -50,11 +50,9 @@ export function CanadaVisaForm({ onSubmit, initialData }: CanadaVisaFormProps) {
     { value: 'work-permit', label: 'Work Permit', desc: 'Permissão de trabalho' },
     { value: 'visitor', label: 'Visitor Visa', desc: 'Visto de visitante' },
     { value: 'family-class', label: 'Family Class', desc: 'Reunificação familiar' },
-    // VISTOS DE TRÂNSITO CRÍTICOS
-    { value: 'transit', label: 'Transit Visa', desc: 'Trânsito no Canadá (escalas até 48h)' },
+    // VISTOS DE TRÂNSITO CRÍTICOS,    { value: 'transit', label: 'Transit Visa', desc: 'Trânsito no Canadá (escalas até 48h)' },
     { value: 'transit-without-visa', label: 'Transit Without Visa (TWOV)', desc: 'Trânsito sem visto para cidadãos elegíveis' },
-    // VISTOS ONLINE SEM ENTREVISTA
-    { value: 'eta', label: 'eTA (Electronic Travel Authorization)', desc: 'Autorização eletrônica de viagem' }
+    // VISTOS ONLINE SEM ENTREVISTA,    { value: 'eta', label: 'eTA (Electronic Travel Authorization)', desc: 'Autorização eletrônica de viagem' }
   ]
 
   const { notifySuccess, notifyError } = useSystemNotifications()

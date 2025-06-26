@@ -144,11 +144,9 @@ export function ClientUnifiedView({ clients, filters, onFiltersChange, onClientS
 
     setIsLoading(true)
     try {
-      // Implementar ações em lote
-      notifyInfo('Processando', `Executando ${action} para ${selectedClients.length} clientes`)
+      // Implementar ações em lote,      notifyInfo('Processando', `Executando ${action} para ${selectedClients.length} clientes`)
       
-      // Simular processamento
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Simular processamento,      await new Promise(resolve => setTimeout(resolve, 2000))
       
       notifySuccess('Sucesso', `${action} executado para ${selectedClients.length} clientes`)
       setSelectedClients([])
@@ -175,8 +173,7 @@ export function ClientUnifiedView({ clients, filters, onFiltersChange, onClientS
     setSelectedClients([])
   }
 
-  // Funções para navegar para Central de Comunicação
-  const handleEmailClient = async (client: Client, e: React.MouseEvent) => {
+  // Funções para navegar para Central de Comunicação,  const handleEmailClient = async (client: Client, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
       if (onCommunicationSelect) {

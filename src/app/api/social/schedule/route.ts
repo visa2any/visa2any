@@ -6,18 +6,15 @@ export async function POST(request: NextRequest) {,  try {,    const body = awai
 const {,      blogPostId,      platform,      content,      imageUrl,      hashtags,      scheduledAt
     } = body
 
-    // Validar dados obrigatórios,    if (!blogPostId || !platform || !content) {,      return NextResponse.json(,        { error: 'blogPostId
- platform e content são obrigatórios' },        { status: 400 }
+    // Validar dados obrigatórios,    if (!blogPostId || !platform || !content) {,      return NextResponse.json(,        { error: 'blogPostId, platform e content são obrigatórios' },        { status: 400 }
       )
     }
 
-    // Converter platform string para enum,    const platformEnum = platform.toUpperCase(),    if (!['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].includes(platformEnum)) {
-      return NextResponse.json(,        { error: 'Plataforma inválida' },        { status: 400 }
+    // Converter platform string para enum,    const platformEnum = platform.toUpperCase(),    if (!['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].includes(platformEnum)) {,      return NextResponse.json(,        { error: 'Plataforma inválida' },        { status: 400 }
       )
     }
 
-    // Criar post agendado,    const socialPost = await prisma.socialPost.create({,      data: {,        blogPostId,        platform: platformEnum as any,        content,        imageUrl,        hashtags: hashtags || [],        scheduledAt: new Date(scheduledAt || Date.now())
-        status: 'SCHEDULED'
+    // Criar post agendado,    const socialPost = await prisma.socialPost.create({,      data: {,        blogPostId,        platform: platformEnum as any,        content,        imageUrl,        hashtags: hashtags || [],        scheduledAt: new Date(scheduledAt || Date.now()),        status: 'SCHEDULED'
       }
     }),
     return NextResponse.json({,      success: true,      message: 'Post agendado com sucesso',      socialPost: {,        id: socialPost.id,        platform: socialPost.platform,        scheduledAt: socialPost.scheduledAt,        status: socialPost.status

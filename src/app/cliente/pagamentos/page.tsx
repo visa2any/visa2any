@@ -52,8 +52,7 @@ export default function PagamentosPage() {
 
   const loadData = () => {
     try {
-      // Load customer data
-      const storedCustomer = localStorage.getItem('customer')
+      // Load customer data,      const storedCustomer = localStorage.getItem('customer')
       if (storedCustomer) {
         setCustomerData(JSON.parse(storedCustomer))
       } else {
@@ -68,8 +67,7 @@ export default function PagamentosPage() {
         })
       }
 
-      // Load payments
-      setPayments([
+      // Load payments,      setPayments([
         {
           id: '1',
           description: 'Plano Premium - Janeiro 2024',
@@ -115,8 +113,7 @@ export default function PagamentosPage() {
         }
       ])
 
-      // Load packageData
-      setPackage({
+      // Load packageData,      setPackage({
         id: 'sub_1',
         packageData: 'Premium',
         price: 599,

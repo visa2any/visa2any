@@ -6,14 +6,12 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     const action =  
 const targetId = searchParams.get('targetId'),
     if (action === 'targets') {
-      // Listar targets disponíveis,      const targets = webScrapingService.getAvailableTargets()
-      
+      // Listar targets disponíveis,      const targets = webScrapingService.getAvailableTargets(),      
       return NextResponse.json({,        success: true,        targets,        total: targets.length,        warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',        message: 'Targets de scraping listados'
       })
     },
     if (action === 'slots' && targetId) {
-      // Buscar slots via scraping,      const result = await webScrapingService.scrapeAvailableSlots(targetId)
-      
+      // Buscar slots via scraping,      const result = await webScrapingService.scrapeAvailableSlots(targetId),      
       return NextResponse.json({,        success: result.success,        slots: result.slots,        error: result.error,        lastUpdated: result.lastUpdated,        source: result.source,        warning: 'Dados obtidos via web scraping - podem estar desatualizados',        disclaimer: 'Este serviço é apenas para fins informativos'
       })
     },
@@ -48,8 +46,7 @@ const { action, targetId, enabled, legalConfirmation } = body,
         )
       }
 
-      // Iniciar monitoramento em background,      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30)
-      
+      // Iniciar monitoramento em background,      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30),      
       return NextResponse.json({,        success: true,        monitoring: {,          targets: targetIds,          interval: intervalMinutes || 30,          status: 'started'
         },        message: 'Monitoramento iniciado',        warning: 'Monitoramento contínuo pode ser detectado pelos sites'
       })

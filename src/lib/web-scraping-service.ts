@@ -15,8 +15,7 @@ interface ScrapingTarget {
     bookingButton: string
     confirmationCode: string
   }
-  rateLimit: number // requests per minute
-  lastAccess: number
+  rateLimit: number // requests per minute,  lastAccess: number
   enabled: boolean
   reliability: number
 }
@@ -43,9 +42,8 @@ class WebScrapingService {
     {
       id: 'casv_brazil',
       name: 'CASV Brasil (CGI Federal)',
-      url: 'https://cgifederal.secure.force.com'
-
-      country: 'usa',
+      url: 'https://cgifederal.secure.force.com',
+    country: 'usa',
       selectors: {
         availability: '.calendar-day.available',
         dates: '.calendar-date',
@@ -53,17 +51,14 @@ class WebScrapingService {
         bookingButton: '#confirmBooking',
         confirmationCode: '.confirmation-number'
       },
-      rateLimit: 10, // 10 requests per minute
-      lastAccess: 0,
-      enabled: false, // Disabled by default - requires legal approval
-      reliability: 0.75
+      rateLimit: 10, // 10 requests per minute,      lastAccess: 0,
+      enabled: false, // Disabled by default - requires legal approval,      reliability: 0.75
     },
     {
       id: 'vfs_sao_paulo',
       name: 'VFS Global São Paulo',
-      url: 'https://visa.vfsglobal.com/bra/en/gbr'
-
-      country: 'uk',
+      url: 'https://visa.vfsglobal.com/bra/en/gbr',
+    country: 'uk',
       selectors: {
         availability: '.calendar-available',
         dates: '.available-date',
@@ -79,9 +74,8 @@ class WebScrapingService {
     {
       id: 'consulado_alemao',
       name: 'Consulado Alemão São Paulo',
-      url: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do'
-
-      country: 'germany',
+      url: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do',
+    country: 'germany',
       selectors: {
         availability: '.buchbar',
         dates: '.nat_calendar_day',
@@ -97,9 +91,8 @@ class WebScrapingService {
     {
       id: 'consulado_frances',
       name: 'TLS Contact França',
-      url: 'https://appointment.tlscontact.com/br2fr'
-
-      country: 'france',
+      url: 'https://appointment.tlscontact.com/br2fr',
+    country: 'france',
       selectors: {
         availability: '.calendar-day-available',
         dates: '.calendar-date-available',
@@ -115,9 +108,8 @@ class WebScrapingService {
     {
       id: 'consulado_canadense',
       name: 'VFS Global Canadá',
-      url: 'https://visa.vfsglobal.com/bra/en/can'
-
-      country: 'canada',
+      url: 'https://visa.vfsglobal.com/bra/en/can',
+    country: 'canada',
       selectors: {
         availability: '.available-slot',
         dates: '.calendar-available-date',
@@ -146,15 +138,13 @@ class WebScrapingService {
     ]
   }
 
-  // Inicializar browser
-  async initBrowser(): Promise<void> {
+  // Inicializar browser,  async initBrowser(): Promise<void> {
     if (!this.browser) {
       this.browser = await puppeteer.launch(this.browserConfig)
     }
   }
 
-  // Buscar vagas disponíveis via scraping
-  async scrapeAvailableSlots(targetId: string): Promise<ScrapingResult> {
+  // Buscar vagas disponíveis via scraping,  async scrapeAvailableSlots(targetId: string): Promise<ScrapingResult> {
     const target = this.targets.find(t => t.id === targetId)
     
     if (!target) {
@@ -175,8 +165,7 @@ class WebScrapingService {
       }
     }
 
-    // Verificar rate limiting
-    const now = Date.now()
+    // Verificar rate limiting,    const now = Date.now()
     const timeSinceLastAccess = now - target.lastAccess
     const minInterval = (60 * 1000) / target.rateLimit // ms between requests
 
@@ -193,14 +182,12 @@ class WebScrapingService {
       await this.initBrowser()
       const page = await this.browser.newPage()
 
-      // Configurar user agent e headers para evitar detecção
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+      // Configurar user agent e headers para evitar detecção,      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
       await page.setExtraHTTPHeaders({
         'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8'
       })
 
-      // Implementação específica por target
-      let slots: ScrapedSlot[] = []
+      // Implementação específica por target,      let slots: ScrapedSlot[] = []
       
       switch (target.id) {
         case 'casv_brazil':
@@ -240,35 +227,26 @@ class WebScrapingService {
     }
   }
 
-  // Scraping específico para CASV (EUA)
-  private async scrapeCASV(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
+  // Scraping específico para CASV (EUA),  private async scrapeCASV(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
     try {
       await page.goto(target.url, { waitUntil: 'networkidle0', timeout: 30000 })
 
-      // ⚠️ IMPORTANTE: Este é um exemplo simplificado
-      // O site real da CASV tem proteções anti-bot complexas
+      // ⚠️ IMPORTANTE: Este é um exemplo simplificado,      // O site real da CASV tem proteções anti-bot complexas
       
-      // Simular login (seria necessário credenciais válidas)
-      // await page.type('#username', 'user')
-      // await page.type('#password', 'pass')
-      // await page.click('#login')
+      // Simular login (seria necessário credenciais válidas),      // await page.type('#username', 'user')
+      // await page.type('#password', 'pass'),      // await page.click('#login')
 
-      // Aguardar carregamento do calendário
-      await page.waitForSelector(target.selectors.availability, { timeout: 10000 })
+      // Aguardar carregamento do calendário,      await page.waitForSelector(target.selectors.availability, { timeout: 10000 })
 
-      // Extrair datas disponíveis
-      const availableDates = await page.$$eval(target.selectors.availability, (elements: any[]) => 
+      // Extrair datas disponíveis,      const availableDates = await page.$$eval(target.selectors.availability, (elements: any[]) => 
         elements.map(el => el.textContent?.trim())
       )
 
-      // Extrair horários (simplificado)
-      const slots: ScrapedSlot[] = []
-      for (const date of availableDates.slice(0, 10)) { // Limitar a 10 slots
-        if (date) {
+      // Extrair horários (simplificado),      const slots: ScrapedSlot[] = []
+      for (const date of availableDates.slice(0, 10)) { // Limitar a 10 slots,        if (date) {
           slots.push({
             date: this.parseDate(date),
-            time: '09:00', // Horário fixo para exemplo
-            available: true,
+            time: '09:00', // Horário fixo para exemplo,            available: true,
             location: 'Consulado Americano - São Paulo'
           })
         }
@@ -282,17 +260,14 @@ class WebScrapingService {
     }
   }
 
-  // Scraping específico para VFS Global
-  private async scrapeVFS(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
+  // Scraping específico para VFS Global,  private async scrapeVFS(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
     try {
       await page.goto(target.url, { waitUntil: 'networkidle0' })
 
-      // Navegar para página de agendamento
-      await page.click('.appointment-link')
+      // Navegar para página de agendamento,      await page.click('.appointment-link')
       await page.waitForSelector(target.selectors.dates, { timeout: 10000 })
 
-      // Extrair slots disponíveis
-      const slots = await page.evaluate((selectors: any) => {
+      // Extrair slots disponíveis,      const slots = await page.evaluate((selectors: any) => {
         const dateElements = document.querySelectorAll(selectors.dates)
         const timeElements = document.querySelectorAll(selectors.times)
         
@@ -320,13 +295,11 @@ class WebScrapingService {
     }
   }
 
-  // Scraping específico para Consulado Alemão
-  private async scrapeGermanConsulate(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
+  // Scraping específico para Consulado Alemão,  private async scrapeGermanConsulate(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
     try {
       await page.goto(target.url, { waitUntil: 'networkidle0' })
 
-      // Sistema alemão específico
-      await page.select('#calendar_select', 'visa_appointment')
+      // Sistema alemão específico,      await page.select('#calendar_select', 'visa_appointment')
       await page.waitForSelector(target.selectors.availability, { timeout: 10000 })
 
       const slots = await page.$$eval(target.selectors.availability, (elements: any[]) => 
@@ -346,13 +319,11 @@ class WebScrapingService {
     }
   }
 
-  // Scraping específico para TLS Contact (França)
-  private async scrapeTLSContact(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
+  // Scraping específico para TLS Contact (França),  private async scrapeTLSContact(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
     try {
       await page.goto(target.url, { waitUntil: 'networkidle0' })
 
-      // Navegar para calendário
-      await page.click('#appointment-calendar')
+      // Navegar para calendário,      await page.click('#appointment-calendar')
       await page.waitForSelector(target.selectors.availability, { timeout: 10000 })
 
       const slots = await page.evaluate(() => {
@@ -384,8 +355,7 @@ class WebScrapingService {
     }
   }
 
-  // Scraping genérico para outros sites
-  private async genericScrape(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
+  // Scraping genérico para outros sites,  private async genericScrape(page: any, target: ScrapingTarget): Promise<ScrapedSlot[]> {
     try {
       await page.goto(target.url, { waitUntil: 'networkidle0' })
       await page.waitForSelector(target.selectors.availability, { timeout: 10000 })
@@ -407,8 +377,7 @@ class WebScrapingService {
     }
   }
 
-  // Tentar fazer agendamento via scraping (MUITO ARRISCADO)
-  async attemptBooking(targetId: string, slotDetails: {
+  // Tentar fazer agendamento via scraping (MUITO ARRISCADO),  async attemptBooking(targetId: string, slotDetails: {
     date: string
     time: string
     applicantInfo: any
@@ -417,14 +386,12 @@ class WebScrapingService {
     confirmationCode?: string
     error?: string
   }> {
-    // ⚠️ EXTREMAMENTE ARRISCADO - pode violar ToS e causar problemas legais
-    return {
+    // ⚠️ EXTREMAMENTE ARRISCADO - pode violar ToS e causar problemas legais,    return {
       error: 'Agendamento via scraping desabilitado por questões legais e éticas'
     }
   }
 
-  // Monitoramento contínuo de vagas
-  async startMonitoring(targetIds: string[], intervalMinutes: number = 30): Promise<void> {
+  // Monitoramento contínuo de vagas,  async startMonitoring(targetIds: string[], intervalMinutes: number = 30): Promise<void> {
     console.log(`Iniciando monitoramento de ${targetIds.length} targets a cada ${intervalMinutes} minutos`)
 
     const monitor = async () => {
@@ -433,32 +400,27 @@ class WebScrapingService {
           const result = await this.scrapeAvailableSlots(targetId)
           if (result.success && result.slots.length > 0) {
             console.log(`[${targetId}] ${result.slots.length} vagas encontradas`)
-            // Aqui poderia notificar clientes interessados
-          }
+            // Aqui poderia notificar clientes interessados          }
         } catch (error) {
           console.error(`Erro no monitoramento de ${targetId}:`, error)
         }
         
-        // Aguardar entre targets para evitar sobrecarga
-        await this.delay(5000)
+        // Aguardar entre targets para evitar sobrecarga,        await this.delay(5000)
       }
     }
 
-    // Executar imediatamente e depois em intervalos
-    await monitor()
+    // Executar imediatamente e depois em intervalos,    await monitor()
     setInterval(monitor, intervalMinutes * 60 * 1000)
   }
 
-  // Fechar browser
-  async closeBrowser(): Promise<void> {
+  // Fechar browser,  async closeBrowser(): Promise<void> {
     if (this.browser) {
       await this.browser.close()
       this.browser = null
     }
   }
 
-  // Listar targets disponíveis
-  getAvailableTargets(): Array<{
+  // Listar targets disponíveis,  getAvailableTargets(): Array<{
     id: string
     name: string
     country: string
@@ -476,8 +438,7 @@ class WebScrapingService {
     }))
   }
 
-  // Habilitar/Desabilitar target (com confirmação de responsabilidade legal)
-  setTargetEnabled(targetId: string, enabled: boolean, legalConfirmation: boolean = false): boolean {
+  // Habilitar/Desabilitar target (com confirmação de responsabilidade legal),  setTargetEnabled(targetId: string, enabled: boolean, legalConfirmation: boolean = false): boolean {
     if (enabled && !legalConfirmation) {
       console.warn('Web scraping pode violar ToS dos sites. Use com responsabilidade legal.')
       return false
@@ -491,10 +452,8 @@ class WebScrapingService {
     return false
   }
 
-  // Métodos auxiliares
-  private parseDate(dateString: string): string {
-    // Converter diferentes formatos de data para ISO
-    try {
+  // Métodos auxiliares,  private parseDate(dateString: string): string {
+    // Converter diferentes formatos de data para ISO,    try {
       return new Date(dateString).toISOString().split('T')[0]
     } catch {
       return new Date().toISOString().split('T')[0]

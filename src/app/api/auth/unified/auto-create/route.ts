@@ -14,12 +14,10 @@ const { name, email, phone, country, nationality, targetCountry, source, product
       )
     }
 
-    // Criar cookie de autenticação automática,    const response = NextResponse.json({,      user: result.user,      token: result.token
-      message: 'Conta criada e login automático realizado'
+    // Criar cookie de autenticação automática,    const response = NextResponse.json({,      user: result.user,      token: result.token,      message: 'Conta criada e login automático realizado'
     })
 
-    // Configurar cookie httpOnly,    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
+    // Configurar cookie httpOnly,    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60, // 7 dias,      path: '/'
     }),
     return response
 

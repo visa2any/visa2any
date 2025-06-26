@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 export const metadata = {
   title: 'Portal do Cliente - Visa2Any',
-  description: 'Acompanhe o progresso da sua jornada internacional no portal exclusivo Visa2Any.',
+  description: 'Acompanhe o progresso da sua jornada internacional no portal exclusivo Visa2Any.'
 }
 
 interface CustomerLayoutProps {

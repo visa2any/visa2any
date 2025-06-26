@@ -93,29 +93,24 @@ export function CommunicationCenter({
     fetchMessages()
     
     if (autoRefresh) {
-      const interval = setInterval(fetchMessages, 10000) // Refresh a cada 10 segundos
-      return () => clearInterval(interval)
+      const interval = setInterval(fetchMessages, 10000) // Refresh a cada 10 segundos,      return () => clearInterval(interval)
     }
   }, [autoRefresh])
 
-  // Remove auto-scroll automático - apenas quando necessário
-  useEffect(() => {
-    // Apenas rolar ao mudar de conversa, não a cada atualização de mensagem
-    if (selectedConversation) {
+  // Remove auto-scroll automático - apenas quando necessário,  useEffect(() => {
+    // Apenas rolar ao mudar de conversa, não a cada atualização de mensagem,    if (selectedConversation) {
       scrollToBottom(true)
     }
   }, [selectedConversation])
 
-  // Auto-selecionar cliente quando passado como prop
-  useEffect(() => {
+  // Auto-selecionar cliente quando passado como prop,  useEffect(() => {
     if (selectedClient && selectedClient.id && selectedClient.id !== selectedConversation) {
       setSelectedConversation(selectedClient.id)
       notifyInfo('Cliente Selecionado', `Conversa aberta para ${selectedClient.name}`)
     }
   }, [selectedClient?.id, selectedConversation, notifyInfo])
 
-  // Auto-definir tipo de filtro baseado no modo selecionado
-  useEffect(() => {
+  // Auto-definir tipo de filtro baseado no modo selecionado,  useEffect(() => {
     if (selectedMode && selectedMode !== 'general') {
       if (selectedMode === 'whatsapp') {
         setFilterType('whatsapp')
@@ -169,8 +164,7 @@ export function CommunicationCenter({
         notifySuccess('Enviado', `Mensagem ${type} enviada com sucesso`)
         setNewMessage('')
         fetchMessages()
-        // Scroll to bottom after sending
-        setTimeout(() => scrollToBottom(true), 200)
+        // Scroll to bottom after sending,        setTimeout(() => scrollToBottom(true), 200)
       } else {
         throw new Error('Falha ao enviar mensagem')
       }
@@ -226,8 +220,7 @@ export function CommunicationCenter({
     if (selectedMode === 'whatsapp') return 'whatsapp'
     if (selectedMode === 'email') return 'email'
     if (selectedMode === 'phone') return 'sms'
-    return 'whatsapp' // default
-  }
+    return 'whatsapp' // default  }
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -244,8 +237,7 @@ export function CommunicationCenter({
     }
   }
 
-  // Filtrar e agrupar mensagens por cliente
-  const filteredMessages = messages.filter(message => {
+  // Filtrar e agrupar mensagens por cliente,  const filteredMessages = messages.filter(message => {
     const matchesSearch = searchTerm === '' || 
       message.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       message.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -261,8 +253,7 @@ export function CommunicationCenter({
     return matchesSearch && matchesType && matchesStatus
   })
 
-  // Agrupar mensagens por cliente
-  const groupedMessages = filteredMessages.reduce((groups, message) => {
+  // Agrupar mensagens por cliente,  const groupedMessages = filteredMessages.reduce((groups, message) => {
     const clientId = message.clientId
     if (!groups[clientId]) {
       groups[clientId] = []
@@ -271,8 +262,7 @@ export function CommunicationCenter({
     return groups
   }, {} as Record<string, Message[]>)
 
-  // Obter mensagens da conversa selecionada
-  const selectedMessages = selectedConversation ? (groupedMessages[selectedConversation] || []) : []
+  // Obter mensagens da conversa selecionada,  const selectedMessages = selectedConversation ? (groupedMessages[selectedConversation] || []) : []
 
   const templates = [
     { id: '1', name: 'Boas-vindas', content: 'Olá {nome}! Bem-vindo(a) à Visa2Any. Como posso ajudá-lo(a) hoje?', type: 'whatsapp' },

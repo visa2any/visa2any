@@ -164,8 +164,7 @@ function UnifiedAdminDashboardContent() {
     fetchDashboardData()
     fetchClients()
     
-    // Auto-refresh a cada 30 segundos
-    const interval = setInterval(() => {
+    // Auto-refresh a cada 30 segundos,    const interval = setInterval(() => {
       fetchDashboardData()
       fetchClients()
     }, 30000)
@@ -242,8 +241,7 @@ function UnifiedAdminDashboardContent() {
     return colors[priority] || 'text-gray-600 bg-gray-50 border-gray-200'
   }
 
-  // Filtrar clientes baseado na busca e filtros
-  const filteredClients = clients.filter(client => {
+  // Filtrar clientes baseado na busca e filtros,  const filteredClients = clients.filter(client => {
     const matchesSearch = searchTerm === '' || 
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -256,8 +254,7 @@ function UnifiedAdminDashboardContent() {
     return matchesSearch && matchesStatus && matchesPriority && matchesCountry
   })
 
-  // Handler para comunicação com cliente
-  const handleCommunicationSelect = (client: Client, mode: 'email' | 'whatsapp' | 'phone' | 'general') => {
+  // Handler para comunicação com cliente,  const handleCommunicationSelect = (client: Client, mode: 'email' | 'whatsapp' | 'phone' | 'general') => {
     setSelectedCommunicationClient(client)
     setCommunicationMode(mode)
     setSelectedView('communication')
@@ -497,12 +494,10 @@ function MonitoringView() {
   
   const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
-  // Carregar dados reais na inicialização
-  useEffect(() => {
+  // Carregar dados reais na inicialização,  useEffect(() => {
     loadMonitoringData()
     
-    // Atualizar dados a cada 30 segundos
-    const interval = setInterval(loadMonitoringData, 30000)
+    // Atualizar dados a cada 30 segundos,    const interval = setInterval(loadMonitoringData, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -536,8 +531,7 @@ function MonitoringView() {
         return
       }
       
-      // Marcar como notificado
-      const response = await fetch('/api/monitoring-data', {
+      // Marcar como notificado,      const response = await fetch('/api/monitoring-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -547,8 +541,7 @@ function MonitoringView() {
       })
 
       if (response.ok) {
-        // Atualizar estado local
-        setAlerts(prev => prev.map((a, i) => 
+        // Atualizar estado local,        setAlerts(prev => prev.map((a, i) => 
           i === alertIndex ? { ...a, notified: true } : a
         ))
         
@@ -572,8 +565,7 @@ function MonitoringView() {
         const result = await response.json()
         notifySuccess('Vaga Simulada', `Nova vaga criada: ${result.alert.country} - ${result.alert.type} em ${result.alert.location}`)
         
-        // Recarregar dados
-        loadMonitoringData()
+        // Recarregar dados,        loadMonitoringData()
       }
     } catch (error) {
       console.error('Erro ao simular vaga:', error)
@@ -840,15 +832,13 @@ function MonitoringView() {
                     notifySuccess('Web Scraping Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
                     notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
-                    // Forçar refresh dos dados para atualizar status
-                    await fetch('/api/monitoring-data', {
+                    // Forçar refresh dos dados para atualizar status,                    await fetch('/api/monitoring-data', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ action: 'refresh' })
                     })
                     
-                    loadMonitoringData() // Recarregar dados
-                  } else {
+                    loadMonitoringData() // Recarregar dados                  } else {
                     notifyError('Erro Web Scraping', `Erro ao ativar: ${result.error}`)
                   }
                 } catch (error) {
@@ -898,15 +888,13 @@ function MonitoringView() {
                     notifySuccess('Email Monitor Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
                     notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
-                    // Forçar refresh dos dados para atualizar status
-                    await fetch('/api/monitoring-data', {
+                    // Forçar refresh dos dados para atualizar status,                    await fetch('/api/monitoring-data', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ action: 'refresh' })
                     })
                     
-                    loadMonitoringData() // Recarregar dados
-                  } else {
+                    loadMonitoringData() // Recarregar dados                  } else {
                     notifyError('Erro Email Monitor', `Erro ao ativar: ${result.error}`)
                   }
                 } catch (error) {

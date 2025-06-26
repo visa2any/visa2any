@@ -16,16 +16,14 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Get client information
-    let client
+    // Get client information,    let client
     try {
       client = await prisma.client.findUnique({
         where: { id: clientId }
         select: { id: true, name: true, email: true, phone: true }
       })
     } catch (error) {
-      // If client not found in database
- use mock data
+      // If client not found in database, use mock data
       client = {
         id: clientId,
         name: 'Cliente',
@@ -40,8 +38,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Process template if provided
-    let processedContent = content
+    // Process template if provided,    let processedContent = content
     if (template && client) {
       processedContent = content
         .replace(/{nome}/g, client.name)
@@ -76,8 +73,7 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Create communication record
-    const communicationRecord = {
+    // Create communication record,    const communicationRecord = {
       id: deliveryResult.messageId
       clientId,
       client,
@@ -98,8 +94,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Here you would save to database
-    // await saveCommunicationRecord(communicationRecord)
+    // Here you would save to database,    // await saveCommunicationRecord(communicationRecord)
 
     return NextResponse.json({
       messageId: deliveryResult.messageId
@@ -118,8 +113,7 @@ export async function POST(request: NextRequest) {
 
 // Simulated communication functions
 async function sendWhatsApp(phone: string, message: string) {
-  // Simulate WhatsApp API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  // Simulate WhatsApp API call,  await new Promise(resolve => setTimeout(resolve, 1000))
   
   return {
     messageId: `wa_${Date.now()}`
@@ -128,8 +122,7 @@ async function sendWhatsApp(phone: string, message: string) {
 }
 
 async function sendEmail(email: string, subject: string, content: string) {
-  // Simulate Email API call
-  await new Promise(resolve => setTimeout(resolve, 800))
+  // Simulate Email API call,  await new Promise(resolve => setTimeout(resolve, 800))
   
   return {
     messageId: `email_${Date.now()}`
@@ -138,8 +131,7 @@ async function sendEmail(email: string, subject: string, content: string) {
 }
 
 async function sendSMS(phone: string, message: string) {
-  // Simulate SMS API call
-  await new Promise(resolve => setTimeout(resolve, 500))
+  // Simulate SMS API call,  await new Promise(resolve => setTimeout(resolve, 500))
   
   return {
     messageId: `sms_${Date.now()}`

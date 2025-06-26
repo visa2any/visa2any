@@ -6,8 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
@@ -18,8 +17,7 @@ export async function GET(request: NextRequest) {
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - period)
 
-    // Buscar dados do período
-    const [clients, consultations, payments] = await Promise.all([,
+    // Buscar dados do período,    const [clients, consultations, payments] = await Promise.all([,
       prisma.client.findMany({
         where: {
           createdAt: { gte: startDate }
@@ -57,13 +55,10 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    // Gerar CSV
-    const csvRows = [
-      // Header
-      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(',')
+    // Gerar CSV,    const csvRows = [
+      // Header,      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(',')
       
-      // Clientes
-      ...clients.map(client => [
+      // Clientes,      ...clients.map(client => [
         'Cliente',
         client.createdAt.toISOString().split('T')[0],
         `"${client.name}"`,
@@ -73,8 +68,7 @@ export async function GET(request: NextRequest) {
         'Novo cliente cadastrado'
       ].join(','))
       
-      // Consultorias
-      ...consultations.map(consultation => [
+      // Consultorias,      ...consultations.map(consultation => [
         'Consultoria',
         consultation.createdAt.toISOString().split('T')[0],
         `"${consultation.client?.name || 'N/A'}"`,
@@ -84,8 +78,7 @@ export async function GET(request: NextRequest) {
         `Consultoria ${consultation.type}`
       ].join(','))
       
-      // Pagamentos
-      ...payments.map(payment => [
+      // Pagamentos,      ...payments.map(payment => [
         'Pagamento',
         payment.createdAt.toISOString().split('T')[0],
         '',
@@ -98,11 +91,10 @@ export async function GET(request: NextRequest) {
 
     const csvContent = csvRows.join('\n')
     
-    // Retornar CSV como download
-    return new NextResponse(csvContent, {
+    // Retornar CSV como download,    return new NextResponse(csvContent, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`,
+        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`
       }
     })
 

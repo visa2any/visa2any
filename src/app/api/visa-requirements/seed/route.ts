@@ -4,13 +4,10 @@ import { prisma } from '@/lib/prisma'
 // POST /api/visa-requirements/seed - Popular base de conhecimento,
 export async function POST(request: NextRequest) {
   try {
-    // Limpar dados existentes
-    await prisma.visaRequirement.deleteMany({})
+    // Limpar dados existentes,    await prisma.visaRequirement.deleteMany({})
 
-    // Dados de exemplo para popular a base
-    const visaRequirements = [
-      // CANADÁ,      {
-        country: 'Canadá',        visaType: 'Express Entry',        visaSubtype: 'Federal Skilled Worker',        requiredDocuments: [,          {
+    // Dados de exemplo para popular a base,    const visaRequirements = [
+      // CANADÁ,      {,        country: 'Canadá',        visaType: 'Express Entry',        visaSubtype: 'Federal Skilled Worker',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte válido',            required: true,            description: 'Passaporte com validade mínima de 6 meses',            validityMonths: 6
           },          {
             type: 'DIPLOMA',            name: 'Diploma universitário',            required: true,            description: 'Diploma reconhecido de ensino superior',            validityMonths: null
@@ -51,8 +48,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // AUSTRÁLIA,      {
-        country: 'Austrália',        visaType: 'Skilled Independent',        visaSubtype: 'Subclass 189',        requiredDocuments: [,          {
+      // AUSTRÁLIA,      {,        country: 'Austrália',        visaType: 'Skilled Independent',        visaSubtype: 'Subclass 189',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte válido',            required: true,            description: 'Passaporte com validade mínima de 6 meses',            validityMonths: 6
           },          {
             type: 'DIPLOMA',            name: 'Qualificações educacionais',            required: true,            description: 'Diploma reconhecido pelo governo australiano',            validityMonths: null
@@ -87,8 +83,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // PORTUGAL,      {
-        country: 'Portugal',        visaType: 'D7 Visa',        visaSubtype: 'Rendimento Próprio',        requiredDocuments: [,          {
+      // PORTUGAL,      {,        country: 'Portugal',        visaType: 'D7 Visa',        visaSubtype: 'Rendimento Próprio',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte',            required: true,            description: 'Passaporte válido por mais de 3 meses',            validityMonths: 3
           },          {
             type: 'BANK_STATEMENT',            name: 'Comprovativo de rendimentos',            required: true,            description: 'Rendimento mínimo de €760/mês',            validityMonths: 3
@@ -121,8 +116,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // ESTADOS UNIDOS,      {
-        country: 'Estados Unidos',        visaType: 'EB-1A',        visaSubtype: 'Extraordinary Ability',        requiredDocuments: [,          {
+      // ESTADOS UNIDOS,      {,        country: 'Estados Unidos',        visaType: 'EB-1A',        visaSubtype: 'Extraordinary Ability',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passport',            required: true,            description: 'Valid passport for 6+ months',            validityMonths: 6
           },          {
             type: 'WORK_CERTIFICATE',            name: 'Evidence of extraordinary ability',            required: true,            description: 'Awards, publications, media coverage',            validityMonths: null
@@ -148,16 +142,14 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    // Inserir todos os requisitos,    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({
-          data: {
+    // Inserir todos os requisitos,    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({,          data: {
             ...requirement,            lastUpdated: new Date(),            isActive: true
           }
         })
       )
     )
 
-    // Log da população,    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {,          timestamp: new Date().toISOString()
-          action: 'automated_action'
+    // Log da população,    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),

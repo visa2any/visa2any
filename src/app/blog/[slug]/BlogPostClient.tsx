@@ -92,32 +92,26 @@ interface Props {
 }
 
 export default function BlogPostClient({ slug }: Props) {
-  // Estados
-  const [post, setPost] = useState<BlogPost | null>(null)
+  // Estados,  const [post, setPost] = useState<BlogPost | null>(null)
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([])
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   
-  // Estados para comentários
-  const [newComment, setNewComment] = useState('')
+  // Estados para comentários,  const [newComment, setNewComment] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyContent, setReplyContent] = useState('')
   
-  // Estados para interações
-  const [isLiked, setIsLiked] = useState(false)
+  // Estados para interações,  const [isLiked, setIsLiked] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [localLikes, setLocalLikes] = useState(0)
   
-  // Estados para compartilhamento
-  const [showShareMenu, setShowShareMenu] = useState(false)
+  // Estados para compartilhamento,  const [showShareMenu, setShowShareMenu] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   
-  // Estado de autenticação
-  const [user, setUser] = useState<any>(null)
+  // Estado de autenticação,  const [user, setUser] = useState<any>(null)
 
-  // Carregar dados do post
-  useEffect(() => {
+  // Carregar dados do post,  useEffect(() => {
     if (slug) {
       loadPost()
       loadComments()
@@ -142,10 +136,8 @@ export default function BlogPostClient({ slug }: Props) {
         setRelatedPosts(data.relatedPosts || [])
         setLocalLikes(data.post.likes)
         
-        // Agendar posts automáticos se for um post novo
-        // if (data.post.featured) {
-        //   await scheduleAutomaticPosts(data.post)
-        // }
+        // Agendar posts automáticos se for um post novo,        // if (data.post.featured) {
+        //   await scheduleAutomaticPosts(data.post),        // }
       } else {
         setError(data.error || 'Post não encontrado')
       }
@@ -272,8 +264,7 @@ export default function BlogPostClient({ slug }: Props) {
       
       if (data.success) {
         setNewComment('')
-        loadComments() // Recarregar comentários
-      }
+        loadComments() // Recarregar comentários      }
     } catch (err) {
       console.error('Erro ao comentar:', err)
     }
@@ -307,8 +298,7 @@ export default function BlogPostClient({ slug }: Props) {
       if (data.success) {
         setReplyContent('')
         setReplyingTo(null)
-        loadComments() // Recarregar comentários
-      }
+        loadComments() // Recarregar comentários      }
     } catch (err) {
       console.error('Erro ao responder:', err)
     }
@@ -325,8 +315,7 @@ export default function BlogPostClient({ slug }: Props) {
         shareUrlFinal = `https://wa.me/?text=${title} ${url}`
         break
       case 'instagram':
-        // Instagram não permite compartilhamento direto via URL
- então copiamos o link
+        // Instagram não permite compartilhamento direto via URL, então copiamos o link
         navigator.clipboard.writeText(shareUrl)
         alert('Link copiado! Cole no Instagram Stories.')
         return
@@ -352,8 +341,7 @@ export default function BlogPostClient({ slug }: Props) {
     setShowShareMenu(false)
   }
 
-  // Loading state
-  if (loading) {
+  // Loading state,  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -372,8 +360,7 @@ export default function BlogPostClient({ slug }: Props) {
     )
   }
 
-  // Error state
-  if (error || !post) {
+  // Error state,  if (error || !post) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

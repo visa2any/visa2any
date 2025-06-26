@@ -68,8 +68,7 @@ interface CountryData {
 }
 
 interface ComparisonCriteria {
-  immigration: number // weight 0-10
-  economy: number
+  immigration: number // weight 0-10,  economy: number
   quality: number
   personalPreference: number
 }
@@ -95,8 +94,7 @@ export function CountryComparison() {
 
   const { notifySuccess, notifyInfo } = useSystemNotifications()
 
-  // Mock country data
-  const countries: { [key: string]: CountryData } = {
+  // Mock country data,  const countries: { [key: string]: CountryData } = {
     USA: {
       code: 'USA',
       name: 'Estados Unidos',

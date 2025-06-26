@@ -45,12 +45,10 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
   const [isLoading, setIsLoading] = useState(true)
   const [dismissedOffers, setDismissedOffers] = useState<string[]>([])
 
-  // Sistema de scoring para determinar melhores upsells
-  const calculateUpsellScore = (recommendation: UpsellRecommendation): number => {
+  // Sistema de scoring para determinar melhores upsells,  const calculateUpsellScore = (recommendation: UpsellRecommendation): number => {
     let score = 0
 
-    // Score baseado no progresso do cliente
-    if (customerProfile.progress < 30 && recommendation.type === 'priority_processing') {
+    // Score baseado no progresso do cliente,    if (customerProfile.progress < 30 && recommendation.type === 'priority_processing') {
       score += 40
     }
     
@@ -58,39 +56,32 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
       score += 35
     }
 
-    // Score baseado na elegibilidade
-    if (customerProfile.eligibilityScore < 70 && recommendation.type === 'consultation_upgrade') {
+    // Score baseado na elegibilidade,    if (customerProfile.eligibilityScore < 70 && recommendation.type === 'consultation_upgrade') {
       score += 30
     }
 
-    // Score baseado no engajamento
-    if (customerProfile.engagementLevel === 'high') {
+    // Score baseado no engajamento,    if (customerProfile.engagementLevel === 'high') {
       score += 20
     } else if (customerProfile.engagementLevel === 'medium') {
       score += 10
     }
 
-    // Score baseado no comportamento
-    const signals = customerProfile.behaviorSignals
+    // Score baseado no comportamento,    const signals = customerProfile.behaviorSignals
     if (signals.consultationRequests > 2) score += 15
     if (signals.reportDownloads > 1) score += 10
-    if (signals.timeSpentInPortal > 3600) score += 10 // 1 hora
-    if (signals.lastActivityDays < 2) score += 5
+    if (signals.timeSpentInPortal > 3600) score += 10 // 1 hora,    if (signals.lastActivityDays < 2) score += 5
 
-    // Penalty para ofertas já rejeitadas
-    if (dismissedOffers.includes(recommendation.id)) {
+    // Penalty para ofertas já rejeitadas,    if (dismissedOffers.includes(recommendation.id)) {
       score -= 50
     }
 
     return Math.max(0, Math.min(100, score))
   }
 
-  // Gerar recomendações baseadas no perfil
-  const generateRecommendations = (): UpsellRecommendation[] => {
+  // Gerar recomendações baseadas no perfil,  const generateRecommendations = (): UpsellRecommendation[] => {
     const baseRecommendations: UpsellRecommendation[] = []
 
-    // Upgrade para VIP baseado no destino e score
-    if (customerProfile.currentPlan !== 'vip' && 
+    // Upgrade para VIP baseado no destino e score,    if (customerProfile.currentPlan !== 'vip' && 
         ['Estados Unidos', 'Canadá', 'Austrália'].includes(customerProfile.destinationCountry) &&
         customerProfile.eligibilityScore > 60) {
       baseRecommendations.push({
@@ -102,8 +93,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
         discountedPrice: 3497,
         discountPercentage: 30,
         urgency: 'high',
-        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias
-        reasons: [
+        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias,        reasons: [
           'Seu score de elegibilidade é excelente',
           'Destino de alta complexidade detectado',
           'Clientes VIP têm 99% de aprovação'
@@ -124,8 +114,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
       })
     }
 
-    // Processamento prioritário para casos urgentes
-    if (customerProfile.progress < 40 && 
+    // Processamento prioritário para casos urgentes,    if (customerProfile.progress < 40 && 
         customerProfile.behaviorSignals.consultationRequests > 1) {
       baseRecommendations.push({
         id: 'priority-processing',
@@ -136,8 +125,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
         discountedPrice: 697,
         discountPercentage: 30,
         urgency: 'medium',
-        validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 dias
-        reasons: [
+        validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 dias,        reasons: [
           'Identificamos interesse em agilizar o processo',
           'Fila prioritária disponível apenas hoje',
           'Economia de 4-6 semanas no timeline'
@@ -152,8 +140,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
       })
     }
 
-    // Consultoria adicional para scores baixos
-    if (customerProfile.eligibilityScore < 70) {
+    // Consultoria adicional para scores baixos,    if (customerProfile.eligibilityScore < 70) {
       baseRecommendations.push({
         id: 'consultation-boost',
         type: 'consultation_upgrade',
@@ -163,8 +150,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
         discountedPrice: 397,
         discountPercentage: 50,
         urgency: 'high',
-        validUntil: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 dias
-        reasons: [
+        validUntil: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 dias,        reasons: [
           'Score abaixo da média para seu destino',
           'Identificamos pontos de melhoria específicos',
           'Estratégias personalizadas disponíveis'
@@ -184,8 +170,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
       })
     }
 
-    // Serviço de acompanhamento para clientes avançados
-    if (customerProfile.progress > 60 && customerProfile.currentPlan === 'premium') {
+    // Serviço de acompanhamento para clientes avançados,    if (customerProfile.progress > 60 && customerProfile.currentPlan === 'premium') {
       baseRecommendations.push({
         id: 'followup-service',
         type: 'additional_service',
@@ -210,8 +195,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
       })
     }
 
-    // Preparação de entrevista para vistos que exigem
-    if (['Estados Unidos', 'Reino Unido'].includes(customerProfile.destinationCountry) &&
+    // Preparação de entrevista para vistos que exigem,    if (['Estados Unidos', 'Reino Unido'].includes(customerProfile.destinationCountry) &&
         customerProfile.progress > 50) {
       baseRecommendations.push({
         id: 'interview-prep',
@@ -244,10 +228,8 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
 
     return baseRecommendations
       .map(rec => ({ ...rec, score: calculateUpsellScore(rec) }))
-      .filter(rec => rec.score > 20) // Filtrar ofertas com score muito baixo
-      .sort((a, b) => b.score - a.score) // Ordenar por score
-      .slice(0, 3) // Máximo 3 recomendações
-  }
+      .filter(rec => rec.score > 20) // Filtrar ofertas com score muito baixo,      .sort((a, b) => b.score - a.score) // Ordenar por score
+      .slice(0, 3) // Máximo 3 recomendações  }
 
   useEffect(() => {
     setIsLoading(true)
@@ -260,8 +242,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
     setDismissedOffers(prev => [...prev, offerId])
     setRecommendations(prev => prev.filter(rec => rec.id !== offerId))
     
-    // Salvar no localStorage para persistir entre sessões
-    const dismissed = JSON.parse(localStorage.getItem('dismissed-offers') || '[]')
+    // Salvar no localStorage para persistir entre sessões,    const dismissed = JSON.parse(localStorage.getItem('dismissed-offers') || '[]')
     localStorage.setItem('dismissed-offers', JSON.stringify([...dismissed, offerId]))
   }
 
@@ -269,12 +250,10 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
     const offer = recommendations.find(rec => rec.id === offerId)
     if (!offer) return
 
-    // Redirecionar para página de checkout específica para upsells
-    const checkoutUrl = `/upsell-checkout?offer=${offerId}&price=${offer.discountedPrice || offer.originalPrice}`
+    // Redirecionar para página de checkout específica para upsells,    const checkoutUrl = `/upsell-checkout?offer=${offerId}&price=${offer.discountedPrice || offer.originalPrice}`
     window.open(checkoutUrl, '_blank')
     
-    // Rastrear conversão
-    if (typeof window !== 'undefined' && (window as any).gtag) {
+    // Rastrear conversão,    if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'upsell_accepted', {
         offer_id: offerId,
         offer_type: offer.type,
@@ -283,8 +262,7 @@ export const useIntelligentUpsells = (customerProfile: CustomerProfile) => {
     }
   }
 
-  // Carregar ofertas rejeitadas do localStorage
-  useEffect(() => {
+  // Carregar ofertas rejeitadas do localStorage,  useEffect(() => {
     const dismissed = JSON.parse(localStorage.getItem('dismissed-offers') || '[]')
     setDismissedOffers(dismissed)
   }, [])

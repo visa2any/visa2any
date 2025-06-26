@@ -14,8 +14,7 @@ export async function GET(request: NextRequest) {
     const country = searchParams.get('country') || ''
     const offset = (page - 1) * limit
 
-    // Construir filtros
-    const where: any = {}
+    // Construir filtros,    const where: any = {}
 
     if (search) {
       where.OR = [
@@ -36,8 +35,7 @@ export async function GET(request: NextRequest) {
       where.targetCountry = country
     }
 
-    // Buscar clientes com fallback em caso de erro
-    let clients: any[] = []
+    // Buscar clientes com fallback em caso de erro,    let clients: any[] = []
     let total = 0
 
     try {
@@ -67,8 +65,7 @@ export async function GET(request: NextRequest) {
       ])
     } catch (dbError) {
       console.error('Erro na consulta do banco:', dbError)
-      // Retornar dados simulados em caso de erro
-      clients = []
+      // Retornar dados simulados em caso de erro,      clients = []
       total = 0
     }
 
@@ -88,8 +85,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Erro ao buscar clientes:', error)
     
-    // Retornar resposta de fallback
-    return NextResponse.json({
+    // Retornar resposta de fallback,    return NextResponse.json({
       data: {
         clients: [],
         pagination: {
@@ -108,8 +104,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validação básica
-    const { name, email, phone, profession, nationality, targetCountry, visaType } = body
+    // Validação básica,    const { name, email, phone, profession, nationality, targetCountry, visaType } = body
     
     if (!name || !email) {
       return NextResponse.json(
@@ -120,8 +115,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se cliente já existe
-    const existingClient = await prisma.client.findFirst({
+    // Verificar se cliente já existe,    const existingClient = await prisma.client.findFirst({
       where: { email }
     })
 
@@ -134,8 +128,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar cliente
-    const client = await prisma.client.create({
+    // Criar cliente,    const client = await prisma.client.create({
       data: {
         name,
         email,

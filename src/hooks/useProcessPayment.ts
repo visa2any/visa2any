@@ -47,19 +47,15 @@ export function useProcessPayment() {
     setError(null)
 
     try {
-      // Preparar dados do pagamento com todos os campos obrigatórios
-      const paymentRequest = {
+      // Preparar dados do pagamento com todos os campos obrigatórios,      const paymentRequest = {
         token: paymentData.token,
         transaction_amount: paymentData.amount,
         installments: paymentData.installments,
-        payment_method_id: 'credit_card', // Será determinado pelo token
-        issuer_id: null, // Será determinado pelo token
+        payment_method_id: 'credit_card', // Será determinado pelo token,        issuer_id: null, // Será determinado pelo token
         
-        // Device ID para prevenção de fraudes
-        device_id: paymentData.deviceId,
+        // Device ID para prevenção de fraudes,        device_id: paymentData.deviceId,
         
-        // Dados completos do pagador
-        payer: {
+        // Dados completos do pagador,        payer: {
           email: paymentData.customer.email,
           first_name: paymentData.customer.name.split(' ')[0] || '',
           last_name: paymentData.customer.name.split(' ').slice(1).join(' ') || '',
@@ -80,8 +76,7 @@ export function useProcessPayment() {
           } : undefined
         },
 
-        // Dados dos items
-        additional_info: {
+        // Dados dos items,        additional_info: {
           items: paymentData.items.map(item => ({
             id: item.id,
             title: item.title,
@@ -101,37 +96,29 @@ export function useProcessPayment() {
           }
         },
 
-        // Referência externa para correlação
-        external_reference: paymentData.external_reference || `visa2any-${Date.now()}`,
+        // Referência externa para correlação,        external_reference: paymentData.external_reference || `visa2any-${Date.now()}`,
         
-        // URL de notificação webhook
-        notification_url: `${window.location.origin}/api/payments/webhook/mercadopago`,
+        // URL de notificação webhook,        notification_url: `${window.location.origin}/api/payments/webhook/mercadopago`,
         
-        // Descrição na fatura do cartão
-        statement_descriptor: 'VISA2ANY',
+        // Descrição na fatura do cartão,        statement_descriptor: 'VISA2ANY',
         
-        // Captura automática
-        capture: true,
+        // Captura automática,        capture: true,
         
-        // Modo binário para aprovação imediata
-        binary_mode: true,
+        // Modo binário para aprovação imediata,        binary_mode: true,
 
-        // Dados de segurança
-        metadata: {
+        // Dados de segurança,        metadata: {
           platform: 'visa2any',
           version: '1.0',
           device_id: paymentData.deviceId,
           user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '',
-          ip_address: '', // Será preenchido no backend
-          session_id: paymentData.external_reference
+          ip_address: '', // Será preenchido no backend,          session_id: paymentData.external_reference
         }
       }
 
-      // Enviar para API de pagamento
-      const response = await fetch('/api/payments/process-payment', {
+      // Enviar para API de pagamento,      const response = await fetch('/api/payments/process-payment', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(paymentRequest)
       })

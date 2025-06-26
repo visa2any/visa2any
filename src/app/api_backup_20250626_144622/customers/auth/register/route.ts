@@ -13,12 +13,11 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email || !password) {
       return NextResponse.json({
-        error: 'Nome, email e senha são obrigatórios',
+        error: 'Nome, email e senha são obrigatórios'
       }, { status: 400 })
     }
 
-    // Verificar se já existe cliente com este email
-    const existingCustomer = await prisma.client.findUnique({
+    // Verificar se já existe cliente com este email,    const existingCustomer = await prisma.client.findUnique({
       where: { email }
     })
 
@@ -28,11 +27,9 @@ export async function POST(request: NextRequest) {
       }, { status: 409 })
     }
 
-    // Hash da senha
-    const hashedPassword = await bcrypt.hash(password, 12)
+    // Hash da senha,    const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Criar novo cliente
-    const customer = await prisma.client.create({
+    // Criar novo cliente,    const customer = await prisma.client.create({
       data: {
         name,
         email,
@@ -46,8 +43,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Gerar token JWT
-    const jwtSecret = process.env.JWT_SECRET
+    // Gerar token JWT,    const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
@@ -65,12 +61,10 @@ export async function POST(request: NextRequest) {
       { expiresIn: '7d' }
     )
 
-    // Enviar email de boas-vindas (implementar posteriormente)
-    // await sendWelcomeEmail(customer.email
+    // Enviar email de boas-vindas (implementar posteriormente),    // await sendWelcomeEmail(customer.email
  customer.name)
 
-    // Configurar resposta com cookie
-    const response = NextResponse.json({
+    // Configurar resposta com cookie,    const response = NextResponse.json({
       message: 'Conta criada com sucesso',
       customer: {
         id: customer.id,
@@ -80,16 +74,14 @@ export async function POST(request: NextRequest) {
         status: customer.status,
         eligibilityScore: customer.eligibilityScore
       }
-      token,
+      token
     })
 
-    // Definir cookie httpOnly
-    response.cookies.set('customer-token', token, {
+    // Definir cookie httpOnly,    response.cookies.set('customer-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
+      maxAge: 60 * 60 * 24 * 7, // 7 dias,      path: '/'
     })
 
     return response

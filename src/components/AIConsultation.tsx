@@ -50,8 +50,7 @@ export default function AIConsultation() {
   const [messages, setMessages] = useState<ConsultationMessage[]>([])
   const [userProfile, setUserProfile] = useState<Partial<UserProfile>>({})
   const [isTyping, setIsTyping] = useState(false)
-  const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutos
-  const [consultationResult, setConsultationResult] = useState<ConsultationResult | null>(null)
+  const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutos,  const [consultationResult, setConsultationResult] = useState<ConsultationResult | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const consultationQuestions = [
@@ -139,7 +138,7 @@ export default function AIConsultation() {
       field: 'family',
       type: 'select',
       options: ['Sozinho', 'Com cônjuge', 'Com cônjuge + filhos', 'Família grande (5+)']
-    },
+    }
   ]
 
   useEffect(() => {
@@ -201,13 +200,11 @@ export default function AIConsultation() {
       [currentQuestion.field]: answer
     }))
 
-    // Encontrar próxima pergunta válida
-    let nextStep = currentStep + 1
+    // Encontrar próxima pergunta válida,    let nextStep = currentStep + 1
     while (nextStep < consultationQuestions.length) {
       const nextQuestion = consultationQuestions[nextStep]
       
-      // Verificar se a pergunta deve ser mostrada
-      if (nextQuestion.showIf) {
+      // Verificar se a pergunta deve ser mostrada,      if (nextQuestion.showIf) {
         const conditionValue = userProfile[nextQuestion.showIf as keyof UserProfile]
         if (Array.isArray(nextQuestion.showValue)) {
           if (!nextQuestion.showValue.includes(conditionValue as string)) {
@@ -228,8 +225,7 @@ export default function AIConsultation() {
         addAIMessage(consultationQuestions[nextStep].question)
       }, 1000)
     } else {
-      // Finalizar consultoria e gerar análise
-      setTimeout(() => {
+      // Finalizar consultoria e gerar análise,      setTimeout(() => {
         generateConsultationResult()
       }, 1000)
     }
@@ -238,86 +234,68 @@ export default function AIConsultation() {
   const generateConsultationResult = () => {
     const profile = userProfile as UserProfile
     
-    // Algoritmo de análise (simplificado)
-    let score = 50 // Base score
+    // Algoritmo de análise (simplificado),    let score = 50 // Base score
     let complexityLevel: 'simple' | 'moderate' | 'complex' = 'simple'
     let needsHuman = false
     const warnings: string[] = []
 
-    // Análise de educação
-    const educationScores: Record<string, number> = {
+    // Análise de educação,    const educationScores: Record<string, number> = {
       'Doutorado': 20, 'Mestrado': 18, 'Pós-graduação': 15,
       'Superior completo': 12, 'Superior incompleto': 8,
       'Ensino médio': 5, 'Ensino fundamental': 2
     }
     score += educationScores[profile.education] || 0
 
-    // Análise de experiência
-    const expScores: Record<string, number> = {
+    // Análise de experiência,    const expScores: Record<string, number> = {
       'Mais de 10 anos': 15, '5-10 anos': 12, '3-5 anos': 8,
       '1-3 anos': 5, 'Menos de 1 ano': 2
     }
     score += expScores[profile.experience] || 0
 
-    // Análise de idioma
-    const langScores: Record<string, number> = {
+    // Análise de idioma,    const langScores: Record<string, number> = {
       'Nativo': 15, 'Fluente': 12, 'Avançado': 8,
       'Intermediário': 5, 'Básico': 2
     }
     score += langScores[profile.language] || 0
 
-    // Bonificações por país e perfil baseadas na nacionalidade
-    if (profile.country === 'Portugal') {
+    // Bonificações por país e perfil baseadas na nacionalidade,    if (profile.country === 'Portugal') {
       if (profile.nationality === 'Brasileira') {
-        score += 20 // Facilidades CPLP para brasileiros
-        if (profile.visaType === 'Cidadania por descendência') score += 15
+        score += 20 // Facilidades CPLP para brasileiros,        if (profile.visaType === 'Cidadania por descendência') score += 15
       } else if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(profile.nationality)) {
-        score += 25 // Outros países CPLP têm ainda mais facilidades
-      } else {
-        score += 5 // Outros têm menos facilidades
-      }
+        score += 25 // Outros países CPLP têm ainda mais facilidades      } else {
+        score += 5 // Outros têm menos facilidades      }
     }
     
     if (profile.country === 'Canadá') {
-      // Redução por restrições 2024/2025
-      score -= 5
-      // Bonificação por francês
-      if (profile.french === 'Fluente') score += 20
+      // Redução por restrições 2024/2025,      score -= 5
+      // Bonificação por francês,      if (profile.french === 'Fluente') score += 20
       else if (profile.french === 'Avançado') score += 15
       else if (profile.french === 'Intermediário') score += 10
       
-      // Setores prioritários
-      if (profile.sector && ['Saúde (médico, enfermeiro, etc)', 'Trades (eletricitista, encanador, etc)'].includes(profile.sector)) {
+      // Setores prioritários,      if (profile.sector && ['Saúde (médico, enfermeiro, etc)', 'Trades (eletricitista, encanador, etc)'].includes(profile.sector)) {
         score += 15
       }
     }
     
     if (profile.country === 'Alemanha') {
-      score += 10 // Chancenkarte facilitando entrada
-      if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
+      score += 10 // Chancenkarte facilitando entrada,      if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
     }
     
     if (profile.country === 'Estados Unidos') {
-      // Diferenciações por nacionalidade
-      if (profile.nationality === 'Brasileira') {
-        score += 5 // Brasil tem boas relações com EUA
-        if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
-          score += 15 // EB-2 NIW facilitado para brasileiros qualificados
-        }
+      // Diferenciações por nacionalidade,      if (profile.nationality === 'Brasileira') {
+        score += 5 // Brasil tem boas relações com EUA,        if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
+          score += 15 // EB-2 NIW facilitado para brasileiros qualificados        }
       } else if (['Mexicana', 'Centro-americana'].includes(profile.nationality)) {
-        score -= 10 // Processos mais rigorosos
-        warnings.push('Nacionalidade requer análise mais cuidadosa')
+        score -= 10 // Processos mais rigorosos,        warnings.push('Nacionalidade requer análise mais cuidadosa')
       }
       warnings.push('Processos mais rigorosos em 2025 - varia por nacionalidade')
     }
     
-    // Análise de idade
-    if (profile.age >= 25 && profile.age <= 35) score += 10
+    // Análise de idade,    if (profile.age >= 25 && profile.age <= 35) score += 10
     else if (profile.age >= 18 && profile.age <= 45) score += 5
     else warnings.push('Idade pode ser um fator limitante para alguns programas')
 
-    // Análise de orçamento
-    const budgetScores: Record<string, number> = {
+    // Análise de orçamento,    const budgetScores: Record<string, number> = {
       'Acima de R$ 500.000': 15,
       'R$ 300.000 - R$ 500.000': 12,
       'R$ 100.000 - R$ 300.000': 8,
@@ -326,8 +304,7 @@ export default function AIConsultation() {
     }
     score += budgetScores[profile.budget] || 0
 
-    // Determinar complexidade e necessidade de consultor humano
-    if (profile.visaType === 'Refugio/Asilo' || profile.visaType === 'Outro') {
+    // Determinar complexidade e necessidade de consultor humano,    if (profile.visaType === 'Refugio/Asilo' || profile.visaType === 'Outro') {
       complexityLevel = 'complex'
       needsHuman = true
       warnings.push('Caso complexo requer análise especializada')
@@ -341,8 +318,7 @@ export default function AIConsultation() {
       warnings.push('Perfil requer estratégia personalizada')
     }
 
-    // Gerar recomendações
-    let recommendation = ''
+    // Gerar recomendações,    let recommendation = ''
     let timeline = ''
     let cost = ''
     let documents: string[] = []
@@ -383,8 +359,7 @@ export default function AIConsultation() {
 
     setConsultationResult(result)
     
-    // Apresentar resultado
-    addAIMessage(
+    // Apresentar resultado,    addAIMessage(
       `✅ Análise concluída, ${profile.name}! Seu score para ${profile.country} é ${Math.min(score, 100)}%. ${recommendation}`
     )
 

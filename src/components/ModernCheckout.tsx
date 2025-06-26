@@ -52,8 +52,7 @@ export default function ModernCheckout({
     targetCountry: ''
   })
   
-  // Upsells inteligentes baseados no pacote selecionado
-  const getUpsellOffers = (): UpsellOffer[] => {
+  // Upsells inteligentes baseados no pacote selecionado,  const getUpsellOffers = (): UpsellOffer[] => {
     const baseOffers: UpsellOffer[] = []
     
     if (productId.includes('relatorio') || variant === 'premium') {
@@ -109,15 +108,13 @@ export default function ModernCheckout({
 
   const upsellOffers = getUpsellOffers()
   
-  // Cálculo de preços
-  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
+  // Cálculo de preços,  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
   const upsellsTotal = selectedUpsellsData.reduce((sum, offer) => sum + offer.discountedPrice, 0)
   const subtotal = price + upsellsTotal
   const discount = selectedUpsellsData.reduce((sum, offer) => sum + (offer.originalPrice - offer.discountedPrice), 0)
   const total = subtotal
   
-  // Estilos do card baseado na variante
-  const getCardStyles = () => {
+  // Estilos do card baseado na variante,  const getCardStyles = () => {
     if (disabled) return 'opacity-50 cursor-not-allowed'
     
     switch (variant) {
@@ -134,8 +131,7 @@ export default function ModernCheckout({
     if (disabled) return
     
     if (price === 0) {
-      // Para produtos gratuitos
- ir direto para o formulário
+      // Para produtos gratuitos, ir direto para o formulário
       window.open('/consultoria-ia', '_blank')
       return
     }

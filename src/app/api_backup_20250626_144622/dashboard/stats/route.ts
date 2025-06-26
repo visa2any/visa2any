@@ -7,39 +7,32 @@ export const dynamic = 'force-dynamic'
 // GET /api/dashboard/stats - Estatísticas do dashboard
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
         { status: 401 }
       )
     }
 
-    // Verificar se é admin
-    if (!isAdmin(user)) {
+    // Verificar se é admin,    if (!isAdmin(user)) {
       return NextResponse.json(
         { status: 403 }
       )
     }
     const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '30' // dias
-    const days = parseInt(period)
+    const period = searchParams.get('period') || '30' // dias,    const days = parseInt(period)
     
-    // Data de início do período
-    const startDate = new Date()
+    // Data de início do período,    const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
 
-    // Buscar dados básicos
-    const [totalClients, totalUsers, allClients] = await Promise.all([
+    // Buscar dados básicos,    const [totalClients, totalUsers, allClients] = await Promise.all([
       // Total de clientes
 
       prisma.client.count().catch(() => 0)
       
-      // Total de usuários 
-      prisma.user.count().catch(() => 0)
+      // Total de usuários ,      prisma.user.count().catch(() => 0)
       
-      // Todos os clientes para análise
-      prisma.client.findMany({
+      // Todos os clientes para análise,      prisma.client.findMany({
         select: {
           id: true,
           status: true,
@@ -48,35 +41,29 @@ export async function GET(request: NextRequest) {
       }).catch(() => [])
     ])
 
-    // Filtrar dados por período
-    const newClientsThisPeriod = allClients.filter(client => 
+    // Filtrar dados por período,    const newClientsThisPeriod = allClients.filter(client => 
       new Date(client.createdAt) >= startDate
     ).length
 
-    // Agrupar clientes por status
-    const clientsByStatus = allClients.reduce((acc, client) => {
+    // Agrupar clientes por status,    const clientsByStatus = allClients.reduce((acc, client) => {
       const existing = acc.find(item => item.status === client.status)
       if (existing) {
-        existing.count++,
+        existing.count++
       } else {
         acc.push({ status: client.status, count: 1 })
       }
       return acc
     }, [] as Array<{ status: string, count: number }>)
 
-    // Dados simulados para demonstração
-    const simulatedData = {
+    // Dados simulados para demonstração,    const simulatedData = {
       overview: {
         totalClients,
         newClientsThisPeriod,
-        clientsGrowth: Math.floor(Math.random() * 20) - 5, // -5% a +15%
-        activeConsultations: Math.floor(totalClients * 0.3)
+        clientsGrowth: Math.floor(Math.random() * 20) - 5, // -5% a +15%,        activeConsultations: Math.floor(totalClients * 0.3)
         completedConsultations: Math.floor(totalClients * 0.15)
-        conversionRate: Math.floor(Math.random() * 30) + 15, // 15% a 45%
-        totalRevenue: totalClients * 2500 + Math.floor(Math.random() * 50000)
+        conversionRate: Math.floor(Math.random() * 30) + 15, // 15% a 45%,        totalRevenue: totalClients * 2500 + Math.floor(Math.random() * 50000)
         revenueThisPeriod: newClientsThisPeriod * 2200 + Math.floor(Math.random() * 25000)
-        revenueGrowth: Math.floor(Math.random() * 25) - 5, // -5% a +20%
-        averageTicket: 2200 + Math.floor(Math.random() * 800)
+        revenueGrowth: Math.floor(Math.random() * 25) - 5, // -5% a +20%,        averageTicket: 2200 + Math.floor(Math.random() * 800)
       }
       clientsByStatus: clientsByStatus.length > 0 ? clientsByStatus : [
         { status: 'LEAD', count: Math.floor(totalClients * 0.4) }
@@ -100,8 +87,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error)
     
-    // Retornar dados de fallback em caso de erro
-    return NextResponse.json({
+    // Retornar dados de fallback em caso de erro,    return NextResponse.json({
       data: {
         overview: {
           totalClients: 156
@@ -133,23 +119,20 @@ export async function GET(request: NextRequest) {
             type: 'CLIENT_REGISTRATION',
             action: 'Novo cliente cadastrado',
             client: { name: 'Maria Silva', email: 'maria@email.com' }
-            executedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 min atrás
-          }
+            executedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 min atrás          }
           {
             id: '2',
             type: 'EMAIL',
             action: 'Consultoria concluída',
             client: { name: 'João Santos', email: 'joao@email.com' }
-            executedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2h atrás
-          }
+            executedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2h atrás          }
           {
             id: '3',
             type: 'DOCUMENT_ANALYSIS',
             action: 'Análise de documento iniciada',
             client: { name: 'Ana Costa', email: 'ana@email.com' }
-            executedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() // 4h atrás
-          }
-        ],
+            executedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() // 4h atrás          }
+        ]
       }
     })
   }
@@ -157,39 +140,24 @@ export async function GET(request: NextRequest) {
 
 async function generateRecentActivity(startDate: Date) {
   try {
-    // Retornar atividade simulada (comentar busca real temporariamente)
-    // const logs = await prisma.automationLog.findMany({
-    //   where: {
-    //     executedAt: {
-    //       gte: startDate
-    //     }
-    //   }
-    //   orderBy: {
-    //     executedAt: 'desc'
-    //   }
-    //   take: 10,
-    //   include: {
-    //     client: {
-    //       select: {
-    //         id: true,
-    //         name: true,
-    //         email: true
-    //       }
-    //     }
-    //   }
+    // Retornar atividade simulada (comentar busca real temporariamente),    // const logs = await prisma.automationLog.findMany({
+    //   where: {,    //     executedAt: {
+    //       gte: startDate,    //     }
+    //   },    //   orderBy: {
+    //     executedAt: 'desc',    //   }
+    //   take: 10,,    //   include: {
+    //     client: {,    //       select: {
+    //         id: true,,    //         name: true,
+    //         email: true,    //       }
+    //     },    //   }
     // })
 
-    // return logs.map(log => ({
-    //   id: log.id
-    //   type: log.type,
-    //   action: log.action,
-    //   client: log.client,
-    //   success: log.success,
-    //   executedAt: log.executedAt.toISOString()
-    // }))
+    // return logs.map(log => ({,    //   id: log.id
+    //   type: log.type,,    //   action: log.action,
+    //   client: log.client,,    //   success: log.success,
+    //   executedAt: log.executedAt.toISOString(),    // }))
     
-    // Retornar atividade simulada
-    return [
+    // Retornar atividade simulada,    return [
       {
         id: '1'
         type: 'USER_LOGIN',
@@ -206,8 +174,7 @@ async function generateRecentActivity(startDate: Date) {
       }
     ]
   } catch (error) {
-    // Retornar atividade simulada
-    return [
+    // Retornar atividade simulada,    return [
       {
         id: '1'
         type: 'USER_LOGIN',
@@ -222,6 +189,6 @@ async function generateRecentActivity(startDate: Date) {
         client: null,
         executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
-    ],
+    ]
   }
 }

@@ -43,14 +43,12 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value
 
-    // Apply formatting if provided
-    if (formatValue) {
+    // Apply formatting if provided,    if (formatValue) {
       value = formatValue(value)
       e.target.value = value
     }
 
-    // Clear local error when user starts typing
-    if (localError) {
+    // Clear local error when user starts typing,    if (localError) {
       setLocalError(null)
     }
 
@@ -60,8 +58,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(({
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false)
 
-    // Validate on blur if validation function provided
-    if (validation && e.target.value) {
+    // Validate on blur if validation function provided,    if (validation && e.target.value) {
       const validationError = validation(e.target.value)
       setLocalError(validationError)
     }

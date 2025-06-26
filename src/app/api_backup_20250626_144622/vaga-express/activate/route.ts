@@ -4,8 +4,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validar webhook secret
-    const headers = request.headers
+    // Validar webhook secret,    const headers = request.headers
     const webhookSecret = headers.get('x-webhook-secret')
     
     if (webhookSecret !== 'visa2any_webhook_secret_2024') {
@@ -14,8 +13,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Dados do pagamento confirmado
-    const {
+    // Dados do pagamento confirmado,    const {
       purchaseId,
       clientId,
       clientName,
@@ -30,25 +28,22 @@ export async function POST(request: NextRequest) {
       currentAppointmentDate,
       preferredDateStart,
       preferredDateEnd,
-      urgencyLevel,
+      urgencyLevel
     } = body
 
-    // Validar que pagamento foi aprovado
-    if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
+    // Validar que pagamento foi aprovado,    if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
       return NextResponse.json({
         error: 'Payment not completed'
       }, { status: 400 })
     }
 
-    // Preparar dados para webhook N8N
-    const n8nWebhookData = {
+    // Preparar dados para webhook N8N,    const n8nWebhookData = {
       purchaseId,
       clientId,
       clientName,
       clientEmail,
       clientPhone,
-      plan: plan.toUpperCase(), // BASIC, PREMIUM
- VIP
+      plan: plan.toUpperCase(), // BASIC, PREMIUM, VIP
       amount,
       currency: 'BRL',
       paymentStatus: 'COMPLETED',
@@ -63,15 +58,14 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString()
     }
 
-    // Enviar para webhook N8N que ativa o Vaga Express
-    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/vaga-express-purchase'
+    // Enviar para webhook N8N que ativa o Vaga Express,    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/vaga-express-purchase'
     
     try {
       const n8nResponse = await fetch(n8nWebhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Webhook-Secret': 'visa2any_webhook_secret_2024',
+          'X-Webhook-Secret': 'visa2any_webhook_secret_2024'
         }
         body: JSON.stringify(n8nWebhookData)
       })
@@ -85,12 +79,10 @@ export async function POST(request: NextRequest) {
 
     } catch (n8nError) {
       console.error('❌ Erro ao enviar para N8N:', n8nError)
-      // Não falhar a API por isso
- apenas logar
+      // Não falhar a API por isso, apenas logar
     }
 
-    // Salvar no banco de dados local (simulado)
-    console.log('💾 Salvando Vaga Express no banco:', {
+    // Salvar no banco de dados local (simulado),    console.log('💾 Salvando Vaga Express no banco:', {
       purchaseId,
       plan,
       clientName,
@@ -98,8 +90,7 @@ export async function POST(request: NextRequest) {
       status: 'ACTIVE'
     })
 
-    // Aqui salvaria no SQLite usando as tabelas do vaga_express_tables.sql
-    // INSERT INTO vaga_express_subscriptions (...)
+    // Aqui salvaria no SQLite usando as tabelas do vaga_express_tables.sql,    // INSERT INTO vaga_express_subscriptions (...)
 
     return NextResponse.json({
       message: 'Vaga Express activated successfully'

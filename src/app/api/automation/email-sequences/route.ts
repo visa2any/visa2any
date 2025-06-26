@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 
-// Templates de email por sequência,const EMAIL_TEMPLATES = {
-  hot_lead_immediate: [,    {
+// Templates de email por sequência,const EMAIL_TEMPLATES = {,  hot_lead_immediate: [,    {
       delay: 0, // Imediato,      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',      template: `,Olá {name}
 
 Acabei de analisar sua qualificação e tenho ÓTIMAS notícias! 🎉,
@@ -134,21 +133,17 @@ const { sequence, clientId, email, name, category, responses, destinationCountry
       }, { status: 404 })
     }
 
-    // Calcular score se não fornecido
-    const score = responses ? calculateScoreFromResponses(responses) : 70
+    // Calcular score se não fornecido,    const score = responses ? calculateScoreFromResponses(responses) : 70
 
-    // Criar jobs de email para cada template da sequência,    for (const template of templates) {,      const sendAt = new Date()
-      sendAt.setMinutes(sendAt.getMinutes() + template.delay)
+    // Criar jobs de email para cada template da sequência,    for (const template of templates) {,      const sendAt = new Date(),      sendAt.setMinutes(sendAt.getMinutes() + template.delay)
 
-      // Processar template com variáveis,      const processedSubject = processTemplate(template.subject, {,        name,        destinationCountry,        score,        urgency
-        budget
+      // Processar template com variáveis,      const processedSubject = processTemplate(template.subject, {,        name,        destinationCountry,        score,        urgency,        budget
       }),
       const processedBody = processTemplate(template.template, {,        name,        destinationCountry,        score,        urgency,        budget,        schedulingLink: 'https://visa2any.com/agendar',        whatsappLink: 'https://wa.me/5511999999999',        aiAnalysisLink: 'https://visa2any.com/consultoria-ia',        leadMagnetsLink: 'https://visa2any.com/lead-magnets',        consultationLink: 'https://visa2any.com/precos',        educationalContentLink: 'https://visa2any.com/lead-magnets'
         ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
-      // Agendar email (implementar com serviço de queue posteriormente),      await scheduleEmail({,        to: email,        subject: processedSubject,        body: processedBody,        sendAt,        sequence,        clientId
-        templateIndex: templates.indexOf(template)
+      // Agendar email (implementar com serviço de queue posteriormente),      await scheduleEmail({,        to: email,        subject: processedSubject,        body: processedBody,        sendAt,        sequence,        clientId,        templateIndex: templates.indexOf(template)
       })
     },
     return NextResponse.json({,      message: `Sequência ${sequence} ativada para ${email}`,      emailsScheduled: templates.length
@@ -179,19 +174,15 @@ function calculateScoreFromResponses(responses: any): number {
 },
 async function scheduleEmail(emailData: {,  to: string,  subject: string,  body: string,  sendAt: Date,  sequence: string,  clientId?: string,  templateIndex: number
 }) {,  try {
-    // Em produção
- usar serviço de queue como Bull/Redis
-    // Por enquanto, simular agendamento
-    
+    // Em produção, usar serviço de queue como Bull/Redis
+    // Por enquanto, simular agendamento,    
     console.log(`Email agendado:`, {,      to: emailData.to,      subject: emailData.subject,      sendAt: emailData.sendAt,      sequence: emailData.sequence,      templateIndex: emailData.templateIndex
     })
 
-    // Se o delay for 0 (imediato), enviar agora,    if (emailData.sendAt <= new Date()) {
-      await sendEmailNow(emailData)
+    // Se o delay for 0 (imediato), enviar agora,    if (emailData.sendAt <= new Date()) {,      await sendEmailNow(emailData)
     }
 
-    // Salvar na base para controle,    if (emailData.clientId) {,      await prisma.interaction.create({,        data: {,          clientId: emailData.clientId,          type: 'AUTOMATED_EMAIL',          channel: 'email',          direction: 'outbound',          subject: emailData.subject,          content: `Email agendado: ${emailData.subject}`
-          completedAt: new Date()
+    // Salvar na base para controle,    if (emailData.clientId) {,      await prisma.interaction.create({,        data: {,          clientId: emailData.clientId,          type: 'AUTOMATED_EMAIL',          channel: 'email',          direction: 'outbound',          subject: emailData.subject,          content: `Email agendado: ${emailData.subject}`,          completedAt: new Date()
         }
       })
     }
@@ -201,11 +192,9 @@ async function scheduleEmail(emailData: {,  to: string,  subject: string,  body:
 },
 async function sendEmailNow(emailData: {,  to: string,  subject: string,  body: string,  sequence: string,  clientId?: string
 }) {,  try {
-    // Usar serviço de email (Resend, SendGrid, etc.)
-    console.log(`Enviando email imediato para ${emailData.to}`)
+    // Usar serviço de email (Resend, SendGrid, etc.),    console.log(`Enviando email imediato para ${emailData.to}`)
     
-    // Simular envio por enquanto,    const response = await fetch('/api/notifications/email', {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        to: emailData.to,        subject: emailData.subject,        html: emailData.body.replace(/\n/g, '<br>'),        template: 'automation',        variables: {
-          content: emailData.body
+    // Simular envio por enquanto,    const response = await fetch('/api/notifications/email', {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        to: emailData.to,        subject: emailData.subject,        html: emailData.body.replace(/\n/g, '<br>'),        template: 'automation',        variables: {,          content: emailData.body
         }
       })
     }),

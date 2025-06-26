@@ -31,8 +31,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = qualityAssessmentSchema.parse(body)
 
-    // Buscar dados do cliente
-    const client = await prisma.client.findUnique({
+    // Buscar dados do cliente,    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
       include: {
         documents: {
@@ -55,32 +54,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Realizar avaliação de qualidade
-    const qualityAssessment = await performQualityAssessment(
+    // Realizar avaliação de qualidade,    const qualityAssessment = await performQualityAssessment(
       client
       validatedData.assessmentType,
       validatedData.scope,
       validatedData.criteria
     )
 
-    // Gerar relatório detalhado
-    const detailedReport = await generateQualityReport(
+    // Gerar relatório detalhado,    const detailedReport = await generateQualityReport(
       qualityAssessment,
       client,
       validatedData.assessmentType
     )
 
-    // Criar checklist de ações
-    const actionChecklist = generateActionChecklist(
+    // Criar checklist de ações,    const actionChecklist = generateActionChecklist(
       qualityAssessment,
       validatedData.assessmentType
     )
 
-    // Calcular score de prontidão
-    const readinessScore = calculateReadinessScore(qualityAssessment)
+    // Calcular score de prontidão,    const readinessScore = calculateReadinessScore(qualityAssessment)
 
-    // Salvar avaliação
-    await prisma.automationLog.create({
+    // Salvar avaliação,    await prisma.automationLog.create({
       data: {
         type: 'QUALITY_ASSESSMENT',
         action: `quality_${validatedData.assessmentType}`,
@@ -157,8 +151,7 @@ export async function GET(request: NextRequest) {
       take: 20
     })
 
-    // Analisar tendências
-    const trends = analyzeQualityTrends(assessments)
+    // Analisar tendências,    const trends = analyzeQualityTrends(assessments)
 
     return NextResponse.json({
       data: {
@@ -205,8 +198,7 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     metrics: {} as any
   }
 
-  // Avaliar documentos
-  if (scope?.includeDocuments !== false) {
+  // Avaliar documentos,  if (scope?.includeDocuments !== false) {
     const documentAssessment = await assessDocumentQuality(client.documents, criteria)
     assessment.breakdown.documents.score = documentAssessment.score
     assessment.issues.push(...documentAssessment.issues)
@@ -215,8 +207,7 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     assessment.metrics.documents = documentAssessment.metrics
   }
 
-  // Avaliar perfil do cliente
-  if (scope?.includeProfile !== false) {
+  // Avaliar perfil do cliente,  if (scope?.includeProfile !== false) {
     const profileAssessment = assessClientProfile(client)
     assessment.breakdown.profile.score = profileAssessment.score
     assessment.issues.push(...profileAssessment.issues)
@@ -225,8 +216,7 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     assessment.metrics.profile = profileAssessment.metrics
   }
 
-  // Avaliar compliance
-  if (scope?.includeCompliance !== false) {
+  // Avaliar compliance,  if (scope?.includeCompliance !== false) {
     const complianceAssessment = await assessCompliance(client, criteria)
     assessment.breakdown.compliance.score = complianceAssessment.score
     assessment.issues.push(...complianceAssessment.issues)
@@ -235,8 +225,7 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     assessment.metrics.compliance = complianceAssessment.metrics
   }
 
-  // Avaliar estratégia
-  if (scope?.includeStrategy !== false) {
+  // Avaliar estratégia,  if (scope?.includeStrategy !== false) {
     const strategyAssessment = assessApplicationStrategy(client)
     assessment.breakdown.strategy.score = strategyAssessment.score
     assessment.issues.push(...strategyAssessment.issues)
@@ -245,13 +234,11 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
     assessment.metrics.strategy = strategyAssessment.metrics
   }
 
-  // Calcular score geral
-  assessment.overallScore = Object.values(assessment.breakdown).reduce(
+  // Calcular score geral,  assessment.overallScore = Object.values(assessment.breakdown).reduce(
     (sum, category) => sum + (category.score * category.weight), 0
   )
 
-  // Determinar nível de prontidão
-  assessment.readinessLevel = determineReadinessLevel(
+  // Determinar nível de prontidão,  assessment.readinessLevel = determineReadinessLevel(
     assessment.overallScore,
     assessment.issues
   )
@@ -277,39 +264,33 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
     }
   }
 
-  // Documentos obrigatórios por tipo de aplicação
-  const requiredDocuments = [
+  // Documentos obrigatórios por tipo de aplicação,  const requiredDocuments = [
     'passport', 'identity_card', 'birth_certificate', 
     'diploma', 'employment_letter', 'bank_statement'
   ]
 
-  // Verificar documentos obrigatórios
-  const documentTypes = documents.map(d => d.type.toLowerCase())
+  // Verificar documentos obrigatórios,  const documentTypes = documents.map(d => d.type.toLowerCase())
   const missingDocs = requiredDocuments.filter(req => 
     !documentTypes.some(type => type.includes(req))
   )
   assessment.metrics.missingDocuments = missingDocs
 
-  // Avaliar documentos processados
-  const processedDocs = documents.filter(d => d.status === 'PROCESSED' && d.ocrData)
+  // Avaliar documentos processados,  const processedDocs = documents.filter(d => d.status === 'PROCESSED' && d.ocrData)
   assessment.metrics.processedDocuments = processedDocs.length
 
   if (processedDocs.length > 0) {
-    // Calcular métricas de qualidade
-    const confidences = processedDocs.map(d => d.confidence || 0)
+    // Calcular métricas de qualidade,    const confidences = processedDocs.map(d => d.confidence || 0)
     const qualities = processedDocs.map(d => d.ocrData?.documentAnalysis?.quality?.overallScore || 0)
     
     assessment.metrics.averageConfidence = confidences.reduce((sum, c) => sum + c, 0) / confidences.length
     assessment.metrics.averageQuality = qualities.reduce((sum, q) => sum + q, 0) / qualities.length
 
-    // Identificar documentos de baixa qualidade
-    const lowQualityThreshold = criteria?.documentQuality || 70
+    // Identificar documentos de baixa qualidade,    const lowQualityThreshold = criteria?.documentQuality || 70
     assessment.metrics.lowQualityDocuments = processedDocs.filter(d => 
       (d.ocrData?.documentAnalysis?.quality?.overallScore || 0) < lowQualityThreshold
     )
 
-    // Verificar documentos expirados ou próximos do vencimento
-    const now = new Date()
+    // Verificar documentos expirados ou próximos do vencimento,    const now = new Date()
     const sixMonthsFromNow = new Date(now.getTime() + 6 * 30 * 24 * 60 * 60 * 1000)
     
     assessment.metrics.expiredDocuments = documents.filter(d => {
@@ -319,31 +300,25 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
     })
   }
 
-  // Calcular score de documentos
-  let documentScore = 0
+  // Calcular score de documentos,  let documentScore = 0
   
-  // Score por completude (40%)
-  const completenessScore = Math.max(0, 100 - (missingDocs.length * 20))
+  // Score por completude (40%),  const completenessScore = Math.max(0, 100 - (missingDocs.length * 20))
   documentScore += completenessScore * 0.4
   
-  // Score por qualidade (30%)
-  const qualityScore = assessment.metrics.averageQuality || 0
+  // Score por qualidade (30%),  const qualityScore = assessment.metrics.averageQuality || 0
   documentScore += qualityScore * 0.3
   
-  // Score por status processamento (20%)
-  const processingScore = documents.length > 0 ? 
+  // Score por status processamento (20%),  const processingScore = documents.length > 0 ? 
     (assessment.metrics.processedDocuments / documents.length) * 100 : 0
   documentScore += processingScore * 0.2
   
-  // Score por validade (10%)
-  const validityScore = documents.length > 0 ? 
+  // Score por validade (10%),  const validityScore = documents.length > 0 ? 
     Math.max(0, 100 - (assessment.metrics.expiredDocuments.length * 25)) : 100
   documentScore += validityScore * 0.1
   
   assessment.score = Math.min(100, documentScore)
 
-  // Gerar issues e recomendações
-  if (missingDocs.length > 0) {
+  // Gerar issues e recomendações,  if (missingDocs.length > 0) {
     assessment.issues.push({
       type: 'missing_documents',
       severity: 'critical',
@@ -354,7 +329,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       priority: 'high',
       category: 'documents',
       action: 'Provide missing required documents',
-      details: `Missing: ${missingDocs.join(', ')}`,
+      details: `Missing: ${missingDocs.join(', ')}`
     })
   }
 
@@ -388,8 +363,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
     })
   }
 
-  // Identificar pontos fortes
-  if (assessment.metrics.averageConfidence > 85) {
+  // Identificar pontos fortes,  if (assessment.metrics.averageConfidence > 85) {
     assessment.strengths.push({
       type: 'high_ocr_confidence',
       message: 'Documents have high OCR extraction confidence'
@@ -422,19 +396,16 @@ function assessClientProfile(client: any) {
     }
   }
 
-  // Campos obrigatórios
-  const requiredFields = [
+  // Campos obrigatórios,  const requiredFields = [
     'name', 'email', 'phone', 'targetCountry', 'visaType',
     'education', 'experience', 'maritalStatus'
   ]
 
-  // Verificar completude
-  const missingFields = requiredFields.filter(field => !client[field] || client[field] === '')
+  // Verificar completude,  const missingFields = requiredFields.filter(field => !client[field] || client[field] === '')
   assessment.metrics.missingFields = missingFields
   assessment.metrics.completenessScore = Math.max(0, 100 - (missingFields.length * 12.5))
 
-  // Verificar consistência (exemplo simplificado)
-  const inconsistentFields = []
+  // Verificar consistência (exemplo simplificado),  const inconsistentFields = []
   if (client.email && !client.email.includes('@')) {
     inconsistentFields.push('email')
   }
@@ -444,18 +415,15 @@ function assessClientProfile(client: any) {
   assessment.metrics.inconsistentFields = inconsistentFields
   assessment.metrics.consistencyScore = Math.max(0, 100 - (inconsistentFields.length * 20))
 
-  // Accuracy score (simplificado)
-  assessment.metrics.accuracyScore = 85 // Baseado em validações
+  // Accuracy score (simplificado),  assessment.metrics.accuracyScore = 85 // Baseado em validações
 
-  // Score geral do perfil
-  assessment.score = (
+  // Score geral do perfil,  assessment.score = (
     assessment.metrics.completenessScore * 0.5 +
     assessment.metrics.accuracyScore * 0.3 +
     assessment.metrics.consistencyScore * 0.2
   )
 
-  // Gerar issues e recomendações
-  if (missingFields.length > 0) {
+  // Gerar issues e recomendações,  if (missingFields.length > 0) {
     assessment.issues.push({
       type: 'incomplete_profile',
       severity: 'medium',
@@ -466,7 +434,7 @@ function assessClientProfile(client: any) {
       priority: 'medium',
       category: 'profile',
       action: 'Complete profile information',
-      details: `Missing: ${missingFields.join(', ')}`,
+      details: `Missing: ${missingFields.join(', ')}`
     })
   }
 
@@ -481,12 +449,11 @@ function assessClientProfile(client: any) {
       priority: 'low',
       category: 'profile',
       action: 'Correct profile inconsistencies',
-      details: `Review: ${inconsistentFields.join(', ')}`,
+      details: `Review: ${inconsistentFields.join(', ')}`
     })
   }
 
-  // Pontos fortes
-  if (assessment.metrics.completenessScore > 90) {
+  // Pontos fortes,  if (assessment.metrics.completenessScore > 90) {
     assessment.strengths.push({
       type: 'complete_profile',
       message: 'Profile is comprehensive and complete'
@@ -511,8 +478,7 @@ async function assessCompliance(client: any, criteria: any) {
     }
   }
 
-  // Avaliar compliance de documentos (simplificado)
-  const documentsWithValidation = client.documents.filter((d: any) => 
+  // Avaliar compliance de documentos (simplificado),  const documentsWithValidation = client.documents.filter((d: any) => 
     d.ocrData?.validationResults
   )
   
@@ -523,26 +489,21 @@ async function assessCompliance(client: any, criteria: any) {
       return totalResults > 0 ? (validResults / totalResults) * 100 : 100
     })
     
-    assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length,
+    assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length
   } else {
-    assessment.metrics.documentCompliance = 50 // Penalizar falta de validação
-  }
+    assessment.metrics.documentCompliance = 50 // Penalizar falta de validação  }
 
-  // Avaliar timeline compliance
-  assessment.metrics.timelineCompliance = 80 // Simplificado
+  // Avaliar timeline compliance,  assessment.metrics.timelineCompliance = 80 // Simplificado
 
-  // Avaliar requirement compliance
-  assessment.metrics.requirementCompliance = 75 // Simplificado
+  // Avaliar requirement compliance,  assessment.metrics.requirementCompliance = 75 // Simplificado
 
-  // Score geral de compliance
-  assessment.score = (
+  // Score geral de compliance,  assessment.score = (
     assessment.metrics.documentCompliance * 0.5 +
     assessment.metrics.timelineCompliance * 0.3 +
     assessment.metrics.requirementCompliance * 0.2
   )
 
-  // Determinar nível de risco
-  if (assessment.score < 60) assessment.metrics.riskLevel = 'high'
+  // Determinar nível de risco,  if (assessment.score < 60) assessment.metrics.riskLevel = 'high'
   else if (assessment.score < 80) assessment.metrics.riskLevel = 'medium'
   else assessment.metrics.riskLevel = 'low'
 
@@ -563,8 +524,7 @@ function assessApplicationStrategy(client: any) {
     }
   }
 
-  // Simplificado para demonstração
-  assessment.score = 75
+  // Simplificado para demonstração,  assessment.score = 75
   assessment.metrics.strategyAlignment = 80
   assessment.metrics.timelineRealism = 70
   assessment.metrics.preparationLevel = 75
@@ -616,28 +576,24 @@ function groupIssuesBySeverity(issues: any[]) {
 function generateActionChecklist(assessment: any, assessmentType: string) {
   const checklist = []
   
-  // Ações críticas
-  const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical')
+  // Ações críticas,  const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical')
   criticalIssues.forEach((issue: any) => {
     checklist.push({
       priority: 'critical',
       action: `Resolve: ${issue.message}`,
       category: issue.type,
       completed: false,
-      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias
-    })
+      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias    })
   })
   
-  // Ações de alta prioridade
-  const highPriorityRecs = assessment.recommendations.filter((r: any) => r.priority === 'high')
+  // Ações de alta prioridade,  const highPriorityRecs = assessment.recommendations.filter((r: any) => r.priority === 'high')
   highPriorityRecs.forEach((rec: any) => {
     checklist.push({
       priority: 'high',
       action: rec.action,
       category: rec.category,
       completed: false,
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 dias
-    })
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 dias    })
   })
   
   return checklist
@@ -665,8 +621,7 @@ function prioritizeRecommendations(recommendations: any[]) {
 function generateQualityTimeline(assessment: any) {
   const timeline = []
   
-  // Timeline baseado nos issues
-  const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical').length
+  // Timeline baseado nos issues,  const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical').length
   const highIssues = assessment.issues.filter((i: any) => i.severity === 'high').length
   
   if (criticalIssues > 0) {
@@ -736,6 +691,6 @@ function analyzeQualityTrends(assessments: any[]) {
     trend: scoreChange > 5 ? 'improving' : scoreChange < -5 ? 'declining' : 'stable'
     scoreChange: scoreChange,
     improvement: scoreChange > 0,
-    averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length,
+    averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length
   }
 }

@@ -25,8 +25,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros
-    const where: any = {}
+    // Construir filtros,    const where: any = {}
     
     if (status && status !== 'all') {
       where.status = status
@@ -44,8 +43,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Buscar afiliados
-    const [affiliates, total] = await Promise.all([,
+    // Buscar afiliados,    const [affiliates, total] = await Promise.all([,
       prisma.affiliate.findMany({
         where,
         skip,
@@ -64,8 +62,7 @@ export async function GET(request: NextRequest) {
       prisma.affiliate.count({ where })
     ])
 
-    // Buscar estatísticas gerais
-    const stats = await prisma.affiliate.aggregate({
+    // Buscar estatísticas gerais,    const stats = await prisma.affiliate.aggregate({
       _count: { id: true },
       _sum: {
         totalEarnings: true,
@@ -126,18 +123,16 @@ export async function POST(request: NextRequest) {
       website,
       bio,
       socialMedia = {},
-      commissionRate = 0.10,
+      commissionRate = 0.10
     } = body
 
-    // Validações básicas
-    if (!name || !email) {
+    // Validações básicas,    if (!name || !email) {
       return NextResponse.json({
         error: 'Nome e email são obrigatórios'
       }, { status: 400 })
     }
 
-    // Verificar se email já existe
-    const existingAffiliate = await prisma.affiliate.findUnique({
+    // Verificar se email já existe,    const existingAffiliate = await prisma.affiliate.findUnique({
       where: { email }
     })
 
@@ -147,8 +142,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Gerar código de referência único
-    let referralCode = generateReferralCode(name)
+    // Gerar código de referência único,    let referralCode = generateReferralCode(name)
     let attempts = 0
     
     while (attempts < 10) {
@@ -162,8 +156,7 @@ export async function POST(request: NextRequest) {
       referralCode = generateReferralCode(name) + attempts
     }
 
-    // Criar afiliado
-    const affiliate = await prisma.affiliate.create({
+    // Criar afiliado,    const affiliate = await prisma.affiliate.create({
       data: {
         name,
         email,
@@ -174,14 +167,12 @@ export async function POST(request: NextRequest) {
         socialMedia,
         referralCode,
         commissionRate,
-        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto
-        status: 'PENDING', // Aguardando aprovação
+        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto,        status: 'PENDING', // Aguardando aprovação
         tier: 'BRONZE'
       }
     })
 
-    // TODO: Enviar email de confirmação
-    // await sendAffiliateWelcomeEmail(affiliate)
+    // TODO: Enviar email de confirmação,    // await sendAffiliateWelcomeEmail(affiliate)
 
     return NextResponse.json({
       data: affiliate,

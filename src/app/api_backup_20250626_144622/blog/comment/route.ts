@@ -12,8 +12,7 @@ const commentSchema = z.object({
 // POST /api/blog/comment - Add comment to blog post
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const authToken = request.cookies.get('auth-token')?.value
+    // Check authentication,    const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
         { error: 'Token de autenticação é obrigatório' },
@@ -21,8 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify token
-    const jwtSecret = process.env.NEXTAUTH_SECRET
+    // Verify token,    const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
@@ -46,8 +44,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = commentSchema.parse(body)
 
-    // Get user info
-    const user = await prisma.user.findUnique({
+    // Get user info,    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, name: true, email: true }
     })
@@ -59,8 +56,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create comment
-    const comment = await prisma.blogPostComment.create({
+    // Create comment,    const comment = await prisma.blogPostComment.create({
       data: {
         userId,
         postId: validatedData.postId,
@@ -129,8 +125,7 @@ export async function GET(request: NextRequest) {
     const comments = await prisma.blogPostComment.findMany({
       where: {
         postId,
-        parentId: null // Only root comments
-      },
+        parentId: null // Only root comments      },
       include: {
         user: {
           select: {

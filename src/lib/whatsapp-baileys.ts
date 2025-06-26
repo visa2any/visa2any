@@ -12,10 +12,8 @@ class WhatsAppBaileysService {
   private baileysUrl: string
 
   constructor() {
-    // URL do serviço Baileys que já existe no projeto
-    this.baileysUrl = process.env.WHATSAPP_BAILEYS_URL || 'http://localhost:3001'
-    this.isConfigured = true // Baileys já está configurado
-    
+    // URL do serviço Baileys que já existe no projeto,    this.baileysUrl = process.env.WHATSAPP_BAILEYS_URL || 'http://localhost:3001'
+    this.isConfigured = true // Baileys já está configurado,    
     console.log('📱 WhatsApp Baileys Service configurado')
     console.log('🔗 URL:', this.baileysUrl)
   }
@@ -28,13 +26,11 @@ class WhatsAppBaileysService {
   }> {
     
     try {
-      // Formatar número para padrão brasileiro
-      const formattedNumber = this.formatPhoneNumber(messageData.to)
+      // Formatar número para padrão brasileiro,      const formattedNumber = this.formatPhoneNumber(messageData.to)
       
       console.log('📤 Enviando WhatsApp via Baileys:', formattedNumber)
 
-      // Tentar usar o serviço Baileys existente
-      const response = await fetch(`${this.baileysUrl}/send-message`, {
+      // Tentar usar o serviço Baileys existente,      const response = await fetch(`${this.baileysUrl}/send-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,8 +39,7 @@ class WhatsAppBaileysService {
           number: formattedNumber,
           message: messageData.message
         }),
-        signal: AbortSignal.timeout(5000) // Timeout de 5 segundos
-      })
+        signal: AbortSignal.timeout(5000) // Timeout de 5 segundos      })
 
       if (response.ok) {
         const result = await response.json()
@@ -64,16 +59,14 @@ class WhatsAppBaileysService {
     }
   }
 
-  // Fallback: usar webhook ou simulação
-  private async sendWithFallback(messageData: WhatsAppMessage): Promise<{ 
+  // Fallback: usar webhook ou simulação,  private async sendWithFallback(messageData: WhatsAppMessage): Promise<{ 
     success: boolean; 
     messageId?: string; 
     queued?: boolean; 
     error?: string 
   }> {
     
-    // Opção 1: Webhook personalizado
-    if (process.env.WHATSAPP_WEBHOOK_URL) {
+    // Opção 1: Webhook personalizado,    if (process.env.WHATSAPP_WEBHOOK_URL) {
       try {
         const response = await fetch(process.env.WHATSAPP_WEBHOOK_URL, {
           method: 'POST',
@@ -97,8 +90,7 @@ class WhatsAppBaileysService {
       }
     }
 
-    // Opção 2: WhatsApp Business API (se configurado)
-    if (process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
+    // Opção 2: WhatsApp Business API (se configurado),    if (process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
       try {
         const formattedNumber = this.formatPhoneNumber(messageData.to)
         const baseUrl = `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}`
@@ -136,8 +128,7 @@ class WhatsAppBaileysService {
       }
     }
 
-    // Opção 3: Simular envio (sempre funciona)
-    console.log('📱 SIMULANDO WHATSAPP (serviços indisponíveis):')
+    // Opção 3: Simular envio (sempre funciona),    console.log('📱 SIMULANDO WHATSAPP (serviços indisponíveis):')
     console.log('Para:', messageData.to)
     console.log('Mensagem:', messageData.message.substring(0, 100) + '...')
     console.log('💡 Configure WHATSAPP_BAILEYS_URL ou inicie o serviço Baileys')
@@ -151,17 +142,14 @@ class WhatsAppBaileysService {
   }
 
   private formatPhoneNumber(phone: string): string {
-    // Remove caracteres especiais
-    let cleaned = phone.replace(/[^\d]/g, '')
+    // Remove caracteres especiais,    let cleaned = phone.replace(/[^\d]/g, '')
     
-    // Se começar com 0
- remove
+    // Se começar com 0, remove
     if (cleaned.startsWith('0')) {
       cleaned = cleaned.substring(1)
     }
     
-    // Se não tem código do país
- adiciona Brasil (+55)
+    // Se não tem código do país, adiciona Brasil (+55)
     if (cleaned.length === 11 && cleaned.startsWith('11')) {
       cleaned = '55' + cleaned
     } else if (cleaned.length === 10) {
@@ -188,8 +176,7 @@ class WhatsAppBaileysService {
     }
   }
 
-  // Função para testar conectividade
-  public async testConnection(): Promise<{ 
+  // Função para testar conectividade,  public async testConnection(): Promise<{ 
     baileys: boolean;
     webhook: boolean; 
     business_api: boolean; 
@@ -200,18 +187,15 @@ class WhatsAppBaileysService {
       business_api: false
     }
 
-    // Testar Baileys
-    try {
+    // Testar Baileys,    try {
       const response = await fetch(`${this.baileysUrl}/status`, {
         signal: AbortSignal.timeout(3000)
       })
       results.baileys = response.ok
     } catch (error) {
-      // Baileys não disponível
-    }
+      // Baileys não disponível    }
 
-    // Testar webhook
-    if (process.env.WHATSAPP_WEBHOOK_URL) {
+    // Testar webhook,    if (process.env.WHATSAPP_WEBHOOK_URL) {
       try {
         const response = await fetch(process.env.WHATSAPP_WEBHOOK_URL, {
           method: 'HEAD',
@@ -219,12 +203,10 @@ class WhatsAppBaileysService {
         })
         results.webhook = response.ok
       } catch (error) {
-        // Webhook não disponível
-      }
+        // Webhook não disponível      }
     }
 
-    // Testar Business API
-    if (process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
+    // Testar Business API,    if (process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
       try {
         const response = await fetch(`https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}`, {
           headers: {
@@ -234,8 +216,7 @@ class WhatsAppBaileysService {
         })
         results.business_api = response.ok
       } catch (error) {
-        // Business API não disponível
-      }
+        // Business API não disponível      }
     }
 
     return results

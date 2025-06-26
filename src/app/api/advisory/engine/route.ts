@@ -29,12 +29,10 @@ export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
     const validatedData = advisoryQuerySchema.parse(body)
 
-    // Obter expertise específica do país/visto,    const countryExpertise = await getCountrySpecificExpertise(,      validatedData.profile.targetCountry
-      validatedData.profile.visaType
+    // Obter expertise específica do país/visto,    const countryExpertise = await getCountrySpecificExpertise(,      validatedData.profile.targetCountry,      validatedData.profile.visaType
     )
 
-    // Realizar análise baseada no tipo de consulta,    let analysisResult,    switch (validatedData.queryType) {,      case 'eligibility_assessment':,        analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise),        break
-      
+    // Realizar análise baseada no tipo de consulta,    let analysisResult,    switch (validatedData.queryType) {,      case 'eligibility_assessment':,        analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise),        break,      
       case 'document_requirements':,        analysisResult = await analyzeDocumentRequirements(validatedData.profile, validatedData.documents || [], countryExpertise),        break,      
       case 'timeline_estimate':,        analysisResult = await estimateProcessingTimeline(validatedData.profile, countryExpertise),        break,      
       case 'success_probability':,        analysisResult = await calculateSuccessProbability(validatedData.profile, validatedData.documents || [], countryExpertise),        break,      
@@ -44,12 +42,10 @@ export async function POST(request: NextRequest) {,  try {
       default:,        analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise)
     }
 
-    // Gerar recomendações estratégicas,    const strategicRecommendations = await generateStrategicRecommendations(,      validatedData.profile,      analysisResult
-      countryExpertise
+    // Gerar recomendações estratégicas,    const strategicRecommendations = await generateStrategicRecommendations(,      validatedData.profile,      analysisResult,      countryExpertise
     )
 
-    // Log da consulta,    await prisma.automationLog.create({,      data: {,        type: 'ADVISORY_CONSULTATION',        action: `advisory_${validatedData.queryType}`,        clientId: validatedData.clientId || null,        success: true,        details: {,          queryType: validatedData.queryType,          targetCountry: validatedData.profile.targetCountry,          visaType: validatedData.profile.visaType
-          responseGenerated: true
+    // Log da consulta,    await prisma.automationLog.create({,      data: {,        type: 'ADVISORY_CONSULTATION',        action: `advisory_${validatedData.queryType}`,        clientId: validatedData.clientId || null,        success: true,        details: {,          queryType: validatedData.queryType,          targetCountry: validatedData.profile.targetCountry,          visaType: validatedData.profile.visaType,          responseGenerated: true
         }
       }
     }),
@@ -80,12 +76,10 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 }
 
-// Obter expertise específica do país/visto,async function getCountrySpecificExpertise(country: string, visaType: string) {,  const expertise = {,    source: 'internal_database',    lastUpdated: new Date().toISOString(),    confidenceLevel: 0.95
-    data: {} as any
+// Obter expertise específica do país/visto,async function getCountrySpecificExpertise(country: string, visaType: string) {,  const expertise = {,    source: 'internal_database',    lastUpdated: new Date().toISOString(),    confidenceLevel: 0.95,    data: {} as any
   }
 
-  // Base de conhecimento por país,  const countryKnowledge: Record<string, any> = {,    'Canada': {,      'SKILLED': {,        system: 'Express Entry',        minimumCRS: 470,        averageProcessingTime: '6-8 months'
-        keyRequirements: [,          'Language proficiency (CLB 7+)',          'Educational credential assessment',          'Work experience (3+ years)',          'Proof of funds (CAD $13,213 for single)'
+  // Base de conhecimento por país,  const countryKnowledge: Record<string, any> = {,    'Canada': {,      'SKILLED': {,        system: 'Express Entry',        minimumCRS: 470,        averageProcessingTime: '6-8 months',        keyRequirements: [,          'Language proficiency (CLB 7+)',          'Educational credential assessment',          'Work experience (3+ years)',          'Proof of funds (CAD $13,213 for single)'
         ]
         commonRejectionReasons: [,          'Insufficient CRS score',          'Incomplete documentation',          'Failed medical examination',          'Criminal background issues'
         ]
@@ -135,85 +129,71 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   const countryData = countryKnowledge[country],  if (countryData && countryData[visaType]) {,    expertise.data = countryData[visaType]
     expertise.confidenceLevel = 0.95
   } else {
-    // Fallback para países não mapeados,    expertise.data = {,      system: 'Standard processing',      averageProcessingTime: '6-12 months',      keyRequirements: ['Standard documentation']
-      note: 'Limited data available - contact specialist'
+    // Fallback para países não mapeados,    expertise.data = {,      system: 'Standard processing',      averageProcessingTime: '6-12 months',      keyRequirements: ['Standard documentation'],      note: 'Limited data available - contact specialist'
     },    expertise.confidenceLevel = 0.6
   },
   return expertise
 }
 
-// Realizar análise de elegibilidade,async function performEligibilityAssessment(profile: any, expertise: any) {,  const assessment = {,    overallScore: 0,    eligibilityLevel: 'low' as 'low' | 'medium' | 'high',    breakdown: {} as any,    blockers: [] as string[]
-    strengths: [] as string[]
+// Realizar análise de elegibilidade,async function performEligibilityAssessment(profile: any, expertise: any) {,  const assessment = {,    overallScore: 0,    eligibilityLevel: 'low' as 'low' | 'medium' | 'high',    breakdown: {} as any,    blockers: [] as string[],    strengths: [] as string[]
     recommendations: [] as string[]
   },
   const country = countryVar
     const visaType = profile.visaType
   const expertiseData = expertise.data
 
-  // Análise específica por país/visto,  if (country === 'Canada' && visaType === 'SKILLED') {,    assessment.breakdown = await assessCanadaExpress(profile
- expertiseData)
+  // Análise específica por país/visto,  if (country === 'Canada' && visaType === 'SKILLED') {,    assessment.breakdown = await assessCanadaExpress(profile, expertiseData)
   } else if (country === 'Australia' && visaType === 'SKILLED') {,    assessment.breakdown = await assessAustraliaSkilled(profile, expertiseData)
   } else if (country === 'Portugal') {,    assessment.breakdown = await assessPortugal(profile, expertiseData)
   } else {,    assessment.breakdown = await assessGeneric(profile, expertiseData)
   }
 
-  // Calcular score geral,  const scores = Object.values(assessment.breakdown).filter(v => typeof v === 'number'),  assessment.overallScore = scores.reduce((sum: number
- score: number) => sum + score, 0) / scores.length
+  // Calcular score geral,  const scores = Object.values(assessment.breakdown).filter(v => typeof v === 'number'),  assessment.overallScore = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length
 
   // Determinar nível de elegibilidade,  if (assessment.overallScore >= 80) assessment.eligibilityLevel = 'high',  else if (assessment.overallScore >= 60) assessment.eligibilityLevel = 'medium',  else assessment.eligibilityLevel = 'low'
 
   return assessment
 }
 
-// Análise específica para Canadá Express Entry,async function assessCanadaExpress(profile: any, expertise: any) {,  const breakdown = {,    ageScore: 0,    educationScore: 0,    languageScore: 0,    experienceScore: 0
-    estimatedCRS: 0
+// Análise específica para Canadá Express Entry,async function assessCanadaExpress(profile: any, expertise: any) {,  const breakdown = {,    ageScore: 0,    educationScore: 0,    languageScore: 0,    experienceScore: 0,    estimatedCRS: 0
   }
 
-  // Idade (máximo 110 pontos),  if (profile.age <= 29) breakdown.ageScore = 100,  else if (profile.age <= 35) breakdown.ageScore = 90,  else if (profile.age <= 40) breakdown.ageScore = 70,  else if (profile.age <= 45) breakdown.ageScore = 40
-  else breakdown.ageScore = 0
+  // Idade (máximo 110 pontos),  if (profile.age <= 29) breakdown.ageScore = 100,  else if (profile.age <= 35) breakdown.ageScore = 90,  else if (profile.age <= 40) breakdown.ageScore = 70,  else if (profile.age <= 45) breakdown.ageScore = 40,  else breakdown.ageScore = 0
 
-  // Educação,  const educationScores: Record<string
- number> = {,    'DOCTORATE': 90,    'MASTER': 85,    'BACHELOR': 75,    'COLLEGE': 60,    'HIGH_SCHOOL': 30
+  // Educação,  const educationScores: Record<string, number> = {,    'DOCTORATE': 90,    'MASTER': 85,    'BACHELOR': 75,    'COLLEGE': 60,    'HIGH_SCHOOL': 30
   },  breakdown.educationScore = educationScores[profile.education] || 40
 
-  // Experiência (simplificado),  if (profile.experience >= 6) breakdown.experienceScore = 90,  else if (profile.experience >= 4) breakdown.experienceScore = 80,  else if (profile.experience >= 2) breakdown.experienceScore = 70
-  else breakdown.experienceScore = 50
+  // Experiência (simplificado),  if (profile.experience >= 6) breakdown.experienceScore = 90,  else if (profile.experience >= 4) breakdown.experienceScore = 80,  else if (profile.experience >= 2) breakdown.experienceScore = 70,  else breakdown.experienceScore = 50
 
-  // Estimativa de idioma (assumindo CLB 8)
-  breakdown.languageScore = 80
+  // Estimativa de idioma (assumindo CLB 8),  breakdown.languageScore = 80
 
   // CRS estimado (simplificado),  breakdown.estimatedCRS = (breakdown.ageScore + breakdown.educationScore + breakdown.languageScore + breakdown.experienceScore) / 4
 
   return breakdown
 }
 
-// Análise específica para Austrália,async function assessAustraliaSkilled(profile: any, expertise: any) {,  const breakdown = {,    agePoints: 0,    educationPoints: 0,    englishPoints: 0,    experiencePoints: 0
-    totalPoints: 0
+// Análise específica para Austrália,async function assessAustraliaSkilled(profile: any, expertise: any) {,  const breakdown = {,    agePoints: 0,    educationPoints: 0,    englishPoints: 0,    experiencePoints: 0,    totalPoints: 0
   }
 
   // Sistema de pontos australiano,  if (profile.age >= 25 && profile.age <= 32) breakdown.agePoints = 30,  else if (profile.age >= 33 && profile.age <= 39) breakdown.agePoints = 25,  else if (profile.age >= 40 && profile.age <= 44) breakdown.agePoints = 15,  else breakdown.agePoints = 0
 
   const educationPoints: Record<string, number> = {,    'DOCTORATE': 20,    'MASTER': 15,    'BACHELOR': 15,    'TECHNICAL': 10
   },  breakdown.educationPoints = educationPoints[profile.education] || 0,
-  breakdown.englishPoints = 10 // Assumindo proficient English
-  
+  breakdown.englishPoints = 10 // Assumindo proficient English,  
   if (profile.experience >= 8) breakdown.experiencePoints = 15,  else if (profile.experience >= 5) breakdown.experiencePoints = 10,  else if (profile.experience >= 3) breakdown.experiencePoints = 5,  else breakdown.experiencePoints = 0,
   breakdown.totalPoints = breakdown.agePoints + breakdown.educationPoints + breakdown.englishPoints + breakdown.experiencePoints,
   return breakdown
 }
 
-// Análise para Portugal,async function assessPortugal(profile: any, expertise: any) {,  return {,    documentationScore: 85,    financialScore: profile.income ? 80 : 50,    timelineScore: 90
-    complianceScore: 85
+// Análise para Portugal,async function assessPortugal(profile: any, expertise: any) {,  return {,    documentationScore: 85,    financialScore: profile.income ? 80 : 50,    timelineScore: 90,    complianceScore: 85
   }
 }
 
-// Análise genérica,async function assessGeneric(profile: any, expertise: any) {,  return {,    profileScore: 70,    documentationScore: 60,    complianceScore: 75
-    timelineScore: 65
+// Análise genérica,async function assessGeneric(profile: any, expertise: any) {,  return {,    profileScore: 70,    documentationScore: 60,    complianceScore: 75,    timelineScore: 65
   }
 }
 
-// Outras funções (implementação simplificada para demonstração),async function analyzeDocumentRequirements(profile: any, documents: any[], expertise: any) {,  return {,    required: expertise.data.keyRequirements || []
-    missing: []
+// Outras funções (implementação simplificada para demonstração),async function analyzeDocumentRequirements(profile: any, documents: any[], expertise: any) {,  return {,    required: expertise.data.keyRequirements || [],    missing: []
     recommendations: ['Ensure all documents are apostilled', 'Translate to target language']
   }
 },
@@ -233,8 +213,7 @@ async function getEmbassySpecificInsights(profile: any, expertise: any) {,  retu
   }
 },
 async function getRecentLawUpdates(country: string, visaType: string) {
-  // Em produção, integrar com APIs de imigração ou feeds de notícias,  return {
-    updates: [,      {
+  // Em produção, integrar com APIs de imigração ou feeds de notícias,  return {,    updates: [,      {
         date: '2024-01-15',        title: 'New language requirements',        summary: 'Updated minimum language scores',        impact: 'medium'
       }
     ]

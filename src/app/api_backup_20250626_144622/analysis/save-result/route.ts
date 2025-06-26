@@ -12,15 +12,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar consultoria IA com o resultado
-    const consultation = await prisma.consultation.create({
+    // Criar consultoria IA com o resultado,    const consultation = await prisma.consultation.create({
       data: {
         clientId,
         type: 'AI_ANALYSIS',
         status: 'COMPLETED',
         completedAt: new Date(),
-        duration: 15, // 15 minutos estimados para análise IA
-        score,
+        duration: 15, // 15 minutos estimados para análise IA,        score,
         recommendation: recommendations.join('\n'),
         nextSteps: nextSteps.join('\n'),
         notes: `Análise de elegibilidade automática - Nível: ${level}`,
@@ -35,8 +33,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar score do cliente
-    await prisma.client.update({
+    // Atualizar score do cliente,    await prisma.client.update({
       where: { id: clientId },
       data: {
         score,
@@ -44,8 +41,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Criar interação de análise realizada
-    await prisma.interaction.create({
+    // Criar interação de análise realizada,    await prisma.interaction.create({
       data: {
         clientId,
         type: 'AUTOMATED_EMAIL',
@@ -57,8 +53,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Determinar próxima ação automática baseada no score
-    let automationAction = null
+    // Determinar próxima ação automática baseada no score,    let automationAction = null
     if (score >= 85) {
       automationAction = 'high_score_followup'
     } else if (score >= 60) {
@@ -67,8 +62,7 @@ export async function POST(request: NextRequest) {
       automationAction = 'low_score_education'
     }
 
-    // Criar log de automação
-    await prisma.automationLog.create({
+    // Criar log de automação,    await prisma.automationLog.create({
       data: {
         clientId,
         type: 'ANALYSIS_COMPLETED',
@@ -88,7 +82,7 @@ export async function POST(request: NextRequest) {
         consultationId: consultation.id,
         score,
         level,
-        automationAction,
+        automationAction
       }
     })
 

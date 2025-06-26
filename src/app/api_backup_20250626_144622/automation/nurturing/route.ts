@@ -30,8 +30,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = nurturingSchema.parse(body)
 
-    // Verificar se cliente existe
-    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId },
       include: {
         interactions: {
@@ -47,14 +46,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já existe sequência ativa
-    const existingSequence = await prisma.automationLog.findFirst({
+    // Verificar se já existe sequência ativa,    const existingSequence = await prisma.automationLog.findFirst({
       where: {
         clientId: validatedData.clientId,
         type: 'NURTURING_SEQUENCE',
         executedAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
-        }
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias        }
       }
     })
 
@@ -64,21 +61,17 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Obter configuração da sequência
-    const sequenceConfig = getNurturingSequence(validatedData.sequenceType, client)
+    // Obter configuração da sequência,    const sequenceConfig = getNurturingSequence(validatedData.sequenceType, client)
     
-    // Personalizar sequência baseada no perfil do cliente
-    const personalizedSequence = personalizeSequence(sequenceConfig, client, validatedData.triggerData)
+    // Personalizar sequência baseada no perfil do cliente,    const personalizedSequence = personalizeSequence(sequenceConfig, client, validatedData.triggerData)
 
-    // Agendar envios da sequência
-    const scheduledEmails = await scheduleNurturingEmails(
+    // Agendar envios da sequência,    const scheduledEmails = await scheduleNurturingEmails(
       validatedData.clientId,
       personalizedSequence,
       validatedData.customSchedule
     )
 
-    // Log do início da sequência
-    await prisma.automationLog.create({
+    // Log do início da sequência,    await prisma.automationLog.create({
       data: {
         type: 'NURTURING_SEQUENCE',
         action: 'start_sequence',
@@ -154,7 +147,7 @@ export async function GET(request: NextRequest) {
         sequenceType: (seq.details as { sequenceType?: string })?.sequenceType,
         status: seq.success ? 'active' : 'failed',
         createdAt: seq.executedAt,
-        emailsScheduled: (seq.details as { emailsScheduled?: number })?.emailsScheduled || 0,
+        emailsScheduled: (seq.details as { emailsScheduled?: number })?.emailsScheduled || 0
       }))
     })
 
@@ -181,7 +174,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 7, hour: 16, template: 'soft_sell', subject: 'Pronto para acelerar seu processo?' },
         { day: 10, hour: 13, template: 'urgency', subject: 'Últimas vagas - não perca!' },
         { day: 14, hour: 15, template: 'last_chance', subject: 'Última chance: oferta especial expira hoje' }
-      ],
+      ]
     },
 
     assessment_follow_up: {
@@ -193,7 +186,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 3, hour: 14, template: 'next_steps', subject: 'Próximos passos para seu visto' },
         { day: 5, hour: 10, template: 'consultation_offer', subject: 'Quer acelerar? Fale com especialista' },
         { day: 7, hour: 16, template: 'assessment_final', subject: 'Não deixe sua análise esquecida' }
-      ],
+      ]
     },
 
     cart_abandonment: {
@@ -203,7 +196,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 0, hour: 2, template: 'cart_reminder', subject: 'Esqueceu algo? Seu carrinho está esperando' },
         { day: 1, hour: 12, template: 'cart_discount', subject: '15% OFF para finalizar hoje!' }
         { day: 2, hour: 18, template: 'cart_urgency', subject: 'Último dia: itens saindo do estoque' }
-      ],
+      ]
     }
 
     post_purchase: {
@@ -217,7 +210,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 14, hour: 15, template: 'halfway_check', subject: 'Metade do caminho percorrido!' }
         { day: 21, hour: 13, template: 'final_preparations', subject: 'Preparativos finais' }
         { day: 30, hour: 16, template: 'success_followup', subject: 'Como foi sua experiência?' }
-      ],
+      ]
     }
 
     consultation_prep: {
@@ -226,7 +219,7 @@ function getNurturingSequence(type: string, client: any) {
       emails: [
         { day: 0, hour: 24, template: 'consultation_reminder', subject: 'Sua consultoria é amanhã! 📅' }
         { day: 0, hour: 2, template: 'consultation_prep', subject: 'Como se preparar para consultoria' }
-      ],
+      ]
     }
 
     document_submission: {
@@ -237,7 +230,7 @@ function getNurturingSequence(type: string, client: any) {
         { day: 2, hour: 10, template: 'docs_progress', subject: 'Análise em andamento...' }
         { day: 5, hour: 14, template: 'docs_feedback', subject: 'Feedback dos seus documentos' }
         { day: 7, hour: 16, template: 'docs_completion', subject: 'Documentos aprovados! 🎉' }
-      ],
+      ]
     }
   }
 
@@ -248,8 +241,7 @@ function getNurturingSequence(type: string, client: any) {
 function personalizeSequence(sequence: any, client: any, triggerData?: any) {
   const personalized = { ...sequence }
 
-  // Personalizar baseado no país de interesse
-  if (client.targetCountry) {
+  // Personalizar baseado no país de interesse,  if (client.targetCountry) {
     personalized.emails = personalized.emails.map((email: any) => ({
       ...email,
       variables: {
@@ -260,21 +252,16 @@ function personalizeSequence(sequence: any, client: any, triggerData?: any) {
     }))
   }
 
-  // Personalizar baseado no lead score
-  const leadScore = calculateClientScore(client)
+  // Personalizar baseado no lead score,  const leadScore = calculateClientScore(client)
   if (leadScore >= 70) {
-    // Lead quente: acelerar sequência
-    personalized.emails = personalized.emails.map((email: any) => ({
+    // Lead quente: acelerar sequência,    personalized.emails = personalized.emails.map((email: any) => ({
       ...email,
-      day: Math.floor(email.day / 2) // Reduzir delay pela metade
-    }))
+      day: Math.floor(email.day / 2) // Reduzir delay pela metade    }))
   }
 
-  // Personalizar baseado em interações anteriores
-  const hasHighEngagement = client.interactions?.length > 3
+  // Personalizar baseado em interações anteriores,  const hasHighEngagement = client.interactions?.length > 3
   if (hasHighEngagement) {
-    // Adicionar emails mais avançados
-    personalized.emails.push({
+    // Adicionar emails mais avançados,    personalized.emails.push({
       day: personalized.duration + 3,
       hour: 14,
       template: 'advanced_strategies',
@@ -294,8 +281,7 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
     sendAt.setDate(sendAt.getDate() + email.day)
     sendAt.setHours(email.hour || 10, 0, 0, 0)
 
-    // Em produção
- usar sistema de filas (Redis/Bull) para agendar
+    // Em produção, usar sistema de filas (Redis/Bull) para agendar
     console.log(`📅 Agendando email: ${email.template} para ${sendAt.toISOString()}`)
 
     scheduledEmails.push({
@@ -307,8 +293,7 @@ async function scheduleNurturingEmails(clientId: string, sequence: any, customSc
       day: email.day
     })
 
-    // Simular agendamento (em produção usar scheduler real)
-    setTimeout(async () => {
+    // Simular agendamento (em produção usar scheduler real),    setTimeout(async () => {
       await sendScheduledEmail(clientId, email.template, email.subject, email.variables)
     }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000))
   }
@@ -331,8 +316,7 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
 
     const result = await response.json()
 
-    // Log do envio
-    await prisma.automationLog.create({
+    // Log do envio,    await prisma.automationLog.create({
       data: {
         type: 'AUTOMATED_EMAIL',
         action: 'send_scheduled_email',
@@ -374,13 +358,11 @@ async function sendScheduledEmail(clientId: string, template: string, subject: s
 function calculateClientScore(client: any): number {
   let score = 0
 
-  // Score baseado em interações
-  if (client.interactions?.length > 0) score += 20
+  // Score baseado em interações,  if (client.interactions?.length > 0) score += 20
   if (client.interactions?.length > 3) score += 20
   if (client.interactions?.length > 5) score += 20
 
-  // Score baseado em dados completos
-  if (client.phone) score += 15
+  // Score baseado em dados completos,  if (client.phone) score += 15
   if (client.targetCountry) score += 15
   if (client.visaType) score += 10
 

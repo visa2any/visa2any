@@ -14,8 +14,7 @@ export async function PATCH(,
     )
     }
 
-    // Here you would update the message status in the database
-    // For now
+    // Here you would update the message status in the database,    // For now
  we'll simulate the update
     const updatedMessage = {
       id: messageId,
@@ -23,8 +22,7 @@ export async function PATCH(,
       readAt: new Date().toISOString()
     }
 
-    // Simulate database update delay
-    await new Promise(resolve => setTimeout(resolve, 200))
+    // Simulate database update delay,    await new Promise(resolve => setTimeout(resolve, 200))
 
     return NextResponse.json({
       message: 'Message marked as read'

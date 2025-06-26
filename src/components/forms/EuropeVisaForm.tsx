@@ -63,11 +63,9 @@ export function EuropeVisaForm({ onSubmit, initialData }: EuropeVisaFormProps) {
     { value: 'family', label: 'Visita Familiar', desc: 'Visita a familiares na Europa' },
     { value: 'study', label: 'Estudos', desc: 'Visto de estudante' },
     { value: 'work', label: 'Trabalho', desc: 'Visto de trabalho' },
-    // VISTOS DE TRÂNSITO CRÍTICOS EUROPA
-    { value: 'airport-transit', label: 'Airport Transit Visa (ATV)', desc: 'Trânsito em aeroportos da área Schengen' },
+    // VISTOS DE TRÂNSITO CRÍTICOS EUROPA,    { value: 'airport-transit', label: 'Airport Transit Visa (ATV)', desc: 'Trânsito em aeroportos da área Schengen' },
     { value: 'transit', label: 'Transit Visa', desc: 'Trânsito terrestre pela área Schengen' },
-    // VISTOS ONLINE SEM ENTREVISTA
-    { value: 'etias', label: 'ETIAS (2024+)', desc: 'Sistema Europeu de Informação e Autorização de Viagem' }
+    // VISTOS ONLINE SEM ENTREVISTA,    { value: 'etias', label: 'ETIAS (2024+)', desc: 'Sistema Europeu de Informação e Autorização de Viagem' }
   ]
 
   const europeanCountries = [

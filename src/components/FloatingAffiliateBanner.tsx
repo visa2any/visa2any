@@ -9,8 +9,7 @@ export default function FloatingAffiliateBanner() {
   const [isClosing, setIsClosing] = useState(false)
 
   useEffect(() => {
-    // Mostrar banner após 30 segundos
-    const timer = setTimeout(() => {
+    // Mostrar banner após 30 segundos,    const timer = setTimeout(() => {
       setIsVisible(true)
     }, 30000)
 

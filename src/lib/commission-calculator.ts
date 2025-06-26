@@ -21,36 +21,31 @@ export interface TierRequirement {
 
 // Regras de comissão por tier e tipo de conversão
 export const commissionRules: CommissionRule[] = [
-  // CONSULTATION
-  { tier: 'BRONZE', conversionType: 'CONSULTATION', rate: 0.15 },
+  // CONSULTATION,  { tier: 'BRONZE', conversionType: 'CONSULTATION', rate: 0.15 },
   { tier: 'SILVER', conversionType: 'CONSULTATION', rate: 0.20 },
   { tier: 'GOLD', conversionType: 'CONSULTATION', rate: 0.25 },
   { tier: 'PLATINUM', conversionType: 'CONSULTATION', rate: 0.30 },
   { tier: 'DIAMOND', conversionType: 'CONSULTATION', rate: 0.35 },
 
-  // VISA_PROCESS
-  { tier: 'BRONZE', conversionType: 'VISA_PROCESS', rate: 0.08 },
+  // VISA_PROCESS,  { tier: 'BRONZE', conversionType: 'VISA_PROCESS', rate: 0.08 },
   { tier: 'SILVER', conversionType: 'VISA_PROCESS', rate: 0.12 },
   { tier: 'GOLD', conversionType: 'VISA_PROCESS', rate: 0.15 },
   { tier: 'PLATINUM', conversionType: 'VISA_PROCESS', rate: 0.18 },
   { tier: 'DIAMOND', conversionType: 'VISA_PROCESS', rate: 0.20 },
 
-  // COURSE
-  { tier: 'BRONZE', conversionType: 'COURSE', rate: 0.30 },
+  // COURSE,  { tier: 'BRONZE', conversionType: 'COURSE', rate: 0.30 },
   { tier: 'SILVER', conversionType: 'COURSE', rate: 0.40 },
   { tier: 'GOLD', conversionType: 'COURSE', rate: 0.50 },
   { tier: 'PLATINUM', conversionType: 'COURSE', rate: 0.60 },
   { tier: 'DIAMOND', conversionType: 'COURSE', rate: 0.70 },
 
-  // VIP_SERVICE
-  { tier: 'BRONZE', conversionType: 'VIP_SERVICE', rate: 0.10 },
+  // VIP_SERVICE,  { tier: 'BRONZE', conversionType: 'VIP_SERVICE', rate: 0.10 },
   { tier: 'SILVER', conversionType: 'VIP_SERVICE', rate: 0.15 },
   { tier: 'GOLD', conversionType: 'VIP_SERVICE', rate: 0.20 },
   { tier: 'PLATINUM', conversionType: 'VIP_SERVICE', rate: 0.25 },
   { tier: 'DIAMOND', conversionType: 'VIP_SERVICE', rate: 0.30 },
 
-  // SUBSCRIPTION
-  { tier: 'BRONZE', conversionType: 'SUBSCRIPTION', rate: 0.20 },
+  // SUBSCRIPTION,  { tier: 'BRONZE', conversionType: 'SUBSCRIPTION', rate: 0.20 },
   { tier: 'SILVER', conversionType: 'SUBSCRIPTION', rate: 0.25 },
   { tier: 'GOLD', conversionType: 'SUBSCRIPTION', rate: 0.30 },
   { tier: 'PLATINUM', conversionType: 'SUBSCRIPTION', rate: 0.35 },
@@ -109,8 +104,7 @@ export function calculateCommission(
   )
 
   if (!rule) {
-    // Taxa padrão para casos não mapeados
-    const defaultRate = 0.10
+    // Taxa padrão para casos não mapeados,    const defaultRate = 0.10
     return {
       rate: defaultRate,
       amount: conversionValue * defaultRate
@@ -119,16 +113,14 @@ export function calculateCommission(
 
   let amount = conversionValue * rule.rate
 
-  // Aplicar limites se definidos
-  if (rule.minimumValue && amount < rule.minimumValue) {
+  // Aplicar limites se definidos,  if (rule.minimumValue && amount < rule.minimumValue) {
     amount = rule.minimumValue
   }
   if (rule.maximumValue && amount > rule.maximumValue) {
     amount = rule.maximumValue
   }
 
-  // Adicionar bônus se aplicável
-  if (rule.bonus) {
+  // Adicionar bônus se aplicável,  if (rule.bonus) {
     amount += rule.bonus
   }
 
@@ -149,8 +141,7 @@ export async function evaluateTierPromotion(affiliateId: string): Promise<{
   requirements?: TierRequirement
 }> {
   try {
-    // Buscar dados do afiliado
-    const affiliate = await prisma.affiliate.findUnique({
+    // Buscar dados do afiliado,    const affiliate = await prisma.affiliate.findUnique({
       where: { id: affiliateId }
     })
 
@@ -158,8 +149,7 @@ export async function evaluateTierPromotion(affiliateId: string): Promise<{
       throw new Error('Afiliado não encontrado')
     }
 
-    // Calcular métricas dos últimos 3 meses
-    const threeMonthsAgo = new Date()
+    // Calcular métricas dos últimos 3 meses,    const threeMonthsAgo = new Date()
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
 
     const recentCommissions = await prisma.affiliateCommission.aggregate({
@@ -175,8 +165,7 @@ export async function evaluateTierPromotion(affiliateId: string): Promise<{
     const monthlyEarnings = (recentCommissions._sum.amount || 0) / 3
     const monthlyConversions = (recentCommissions._count.id || 0) / 3
 
-    // Buscar tier mais alto para o qual o afiliado se qualifica
-    let recommendedTier = affiliate.tier
+    // Buscar tier mais alto para o qual o afiliado se qualifica,    let recommendedTier = affiliate.tier
     
     for (const requirement of tierRequirements.reverse()) {
       if (
@@ -222,11 +211,9 @@ export async function promoteTier(
       }
     })
 
-    // Registrar log da promoção
-    console.log(`Afiliado ${affiliateId} promovido para ${newTier}. Motivo: ${reason || 'Automático'}`)
+    // Registrar log da promoção,    console.log(`Afiliado ${affiliateId} promovido para ${newTier}. Motivo: ${reason || 'Automático'}`)
 
-    // TODO: Enviar notificação para o afiliado
-    // await sendTierPromotionNotification(affiliateId
+    // TODO: Enviar notificação para o afiliado,    // await sendTierPromotionNotification(affiliateId
  newTier)
 
   } catch (error) {
@@ -298,12 +285,10 @@ export async function calculateMonthlyBonus(
   year: number
 ): Promise<{ eligible: boolean; bonusAmount: number; reason?: string }> {
   try {
-    // Período do mês específico
-    const startDate = new Date(year, month - 1, 1)
+    // Período do mês específico,    const startDate = new Date(year, month - 1, 1)
     const endDate = new Date(year, month, 0)
 
-    // Buscar performance do mês
-    const monthlyStats = await prisma.affiliateCommission.aggregate({
+    // Buscar performance do mês,    const monthlyStats = await prisma.affiliateCommission.aggregate({
       where: {
         affiliateId,
         createdAt: { gte: startDate, lte: endDate },
@@ -316,8 +301,7 @@ export async function calculateMonthlyBonus(
     const monthlyEarnings = monthlyStats._sum.amount || 0
     const monthlyConversions = monthlyStats._count.id || 0
 
-    // Buscar tier atual do afiliado
-    const affiliate = await prisma.affiliate.findUnique({
+    // Buscar tier atual do afiliado,    const affiliate = await prisma.affiliate.findUnique({
       where: { id: affiliateId },
       select: { tier: true }
     })
@@ -326,8 +310,7 @@ export async function calculateMonthlyBonus(
       return { eligible: false, bonusAmount: 0, reason: 'Afiliado não encontrado' }
     }
 
-    // Critérios para bônus baseados no tier
-    const bonusCriteria = {
+    // Critérios para bônus baseados no tier,    const bonusCriteria = {
       BRONZE: { minEarnings: 500, minConversions: 3, bonusRate: 0.05 },
       SILVER: { minEarnings: 1500, minConversions: 8, bonusRate: 0.08 },
       GOLD: { minEarnings: 3500, minConversions: 20, bonusRate: 0.10 },
@@ -341,8 +324,7 @@ export async function calculateMonthlyBonus(
       return { eligible: false, bonusAmount: 0, reason: 'Tier inválido' }
     }
 
-    // Verificar elegibilidade
-    if (monthlyEarnings >= criteria.minEarnings && monthlyConversions >= criteria.minConversions) {
+    // Verificar elegibilidade,    if (monthlyEarnings >= criteria.minEarnings && monthlyConversions >= criteria.minConversions) {
       const bonusAmount = monthlyEarnings * criteria.bonusRate
       return {
         eligible: true,
@@ -386,21 +368,16 @@ export async function processMonthlyBonuses(month: number, year: number): Promis
         const bonus = await calculateMonthlyBonus(affiliate.id, month, year)
         
         if (bonus.eligible && bonus.bonusAmount > 0) {
-          // Criar comissão de bônus
-          await prisma.affiliateCommission.create({
+          // Criar comissão de bônus,          await prisma.affiliateCommission.create({
             data: {
               affiliateId: affiliate.id,
-              referralId: '', // Usar ID especial para bônus
-              amount: bonus.bonusAmount,
+              referralId: '', // Usar ID especial para bônus,              amount: bonus.bonusAmount,
               status: 'APPROVED',
-              type: 'SUBSCRIPTION', // Tipo genérico para bônus
-              description: `Bônus mensal - ${month}/${year}: ${bonus.reason}`,
-              dueDate: new Date(year, month, 15) // Pagamento no 15º do mês seguinte
-            }
+              type: 'SUBSCRIPTION', // Tipo genérico para bônus,              description: `Bônus mensal - ${month}/${year}: ${bonus.reason}`,
+              dueDate: new Date(year, month, 15) // Pagamento no 15º do mês seguinte            }
           })
 
-          // Atualizar saldos do afiliado
-          await prisma.affiliate.update({
+          // Atualizar saldos do afiliado,          await prisma.affiliate.update({
             where: { id: affiliate.id },
             data: {
               totalEarnings: { increment: bonus.bonusAmount },

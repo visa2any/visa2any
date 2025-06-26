@@ -8,18 +8,15 @@ export async function POST(request: NextRequest) {,  try {
 const { bookingRequest, options }: { ,      bookingRequest: BookingRequest,      options: HybridBookingOptions 
     } = body
 
-    // Validação dos campos obrigatórios,    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {,      return NextResponse.json(,        { error: 'Campos applicantInfo
- consulate e visaType são obrigatórios' },        { status: 400 }
+    // Validação dos campos obrigatórios,    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {,      return NextResponse.json(,        { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' },        { status: 400 }
       )
     }
 
-    // Configurações padrão se não fornecidas,    const defaultOptions: HybridBookingOptions = {,      preferredMethod: 'auto',      fallbackEnabled: true,      urgency: 'normal'
-      maxRetries: 3
+    // Configurações padrão se não fornecidas,    const defaultOptions: HybridBookingOptions = {,      preferredMethod: 'auto',      fallbackEnabled: true,      urgency: 'normal',      maxRetries: 3
       ...options
     }
 
-    // Log da tentativa de agendamento,    console.log(`Agendamento híbrido iniciado:`, {,      consulate: bookingRequest.consulate,      visaType: bookingRequest.visaType,      method: defaultOptions.preferredMethod
-      urgency: defaultOptions.urgency
+    // Log da tentativa de agendamento,    console.log(`Agendamento híbrido iniciado:`, {,      consulate: bookingRequest.consulate,      visaType: bookingRequest.visaType,      method: defaultOptions.preferredMethod,      urgency: defaultOptions.urgency
     })
 
     // Executar agendamento híbrido,    const result = await hybridBookingSystem.bookAppointment(bookingRequest, defaultOptions)

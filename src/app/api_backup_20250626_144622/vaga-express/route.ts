@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         await vagaExpressIntegration.processVagaExpressOrder(data)
         return NextResponse.json({
           message: 'Pedido processado e monitoramento ativado!',
-          orderId: `VE-${Date.now()}`,
+          orderId: `VE-${Date.now()}`
         })
 
       case 'simulate_vaga':
@@ -46,13 +46,11 @@ export async function GET(request: NextRequest) {
 
     switch (type) {
       case 'orders':
-        // Retornar lista de pedidos (em produção
- do banco de dados)
+        // Retornar lista de pedidos (em produção, do banco de dados)
         if (typeof window !== 'undefined') {
           const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
           return NextResponse.json({
-            orders: orders.slice(-10) // Últimos 10 pedidos
-          })
+            orders: orders.slice(-10) // Últimos 10 pedidos          })
         }
 
       case 'statistics':

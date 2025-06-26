@@ -106,14 +106,12 @@ const UPSELL_MATRIX = {
 export default function CheckoutUpsells({ currentProductId, currentPrice, onAddUpsell, className = '' }: CheckoutUpsellsProps) {
   const [selectedUpsells, setSelectedUpsells] = useState<Set<string>>(new Set())
   
-  // Determinar base do produto para buscar upsells
-  const getProductBase = (productId: string) => {
+  // Determinar base do produto para buscar upsells,  const getProductBase = (productId: string) => {
     if (productId.includes('pre-analise')) return 'pre-analise'
     if (productId.includes('relatorio') || productId.includes('premium')) return 'relatorio-premium'
     if (productId.includes('consultoria') || productId.includes('express')) return 'consultoria-express'
     if (productId.includes('vip') || productId.includes('assessoria')) return 'assessoria-vip'
-    return 'relatorio-premium' // fallback
-  }
+    return 'relatorio-premium' // fallback  }
   
   const productBase = getProductBase(currentProductId)
   const availableUpsells = UPSELL_MATRIX[productBase as keyof typeof UPSELL_MATRIX] || []

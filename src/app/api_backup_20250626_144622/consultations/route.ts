@@ -8,16 +8,14 @@ const createConsultationSchema = z.object({
   clientId: z.string().min(1, 'Cliente é obrigatório')
   type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']),
   scheduledAt: z.string().datetime().optional()
-  duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas
-  consultantId: z.string().optional()
+  duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas,  consultantId: z.string().optional()
   notes: z.string().optional()
 })
 
 // GET /api/consultations - Listar consultorias
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
@@ -30,8 +28,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros
-    const where: any = {}
+    // Construir filtros,    const where: any = {}
     
     if (status && status !== 'ALL') {
       where.status = status
@@ -45,8 +42,7 @@ export async function GET(request: NextRequest) {
       where.clientId = clientId
     }
 
-    // Buscar consultorias
-    const [consultations, total] = await Promise.all([,
+    // Buscar consultorias,    const [consultations, total] = await Promise.all([,
       prisma.consultation.findMany({
         where,
         skip,
@@ -99,18 +95,15 @@ export async function GET(request: NextRequest) {
 // POST /api/consultations - Criar nova consultoria
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const body = await request.json()
     
-    // Validar dados
-    const validatedData = createConsultationSchema.parse(body)
+    // Validar dados,    const validatedData = createConsultationSchema.parse(body)
 
-    // Verificar se cliente existe
-    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
     })
 
@@ -120,8 +113,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Se for consultoria humana
- verificar se consultor existe
+    // Se for consultoria humana, verificar se consultor existe
     if (validatedData.consultantId) {
       const consultant = await prisma.user.findUnique({
         where: { id: validatedData.consultantId }
@@ -134,13 +126,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Criar consultoria
-    const consultation = await prisma.consultation.create({
+    // Criar consultoria,    const consultation = await prisma.consultation.create({
       data: {
         ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
-        duration: validatedData.duration || 60, // Default 1 hora
-        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
+        duration: validatedData.duration || 60, // Default 1 hora,        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
       }
       include: {
         client: {
@@ -158,16 +148,14 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar status do cliente se necessário
-    if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
+    // Atualizar status do cliente se necessário,    if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
       await prisma.client.update({
         where: { id: validatedData.clientId }
         data: { status: 'CONSULTATION_SCHEDULED' }
       })
     }
 
-    // Log da criação
-    await prisma.automationLog.create({
+    // Log da criação,    await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_CREATED',
         action: 'create_consultation',

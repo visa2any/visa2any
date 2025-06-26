@@ -9,8 +9,7 @@ import {
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
 
 interface USAFormData {
-  // Personal Information
-  personalInfo: {
+  // Personal Information,  personalInfo: {
     fullName: string
     birthDate: string
     birthPlace: string
@@ -22,8 +21,7 @@ interface USAFormData {
     maritalStatus: string
   }
   
-  // Contact Information
-  contactInfo: {
+  // Contact Information,  contactInfo: {
     homeAddress: string
     city: string
     state: string
@@ -33,8 +31,7 @@ interface USAFormData {
     email: string
   }
   
-  // Travel Information
-  travelInfo: {
+  // Travel Information,  travelInfo: {
     visaType: string
     purposeOfTrip: string
     intendedArrival: string
@@ -45,8 +42,7 @@ interface USAFormData {
     refusalReason?: string
   }
   
-  // Employment/Education
-  backgroundInfo: {
+  // Employment/Education,  backgroundInfo: {
     currentOccupation: string
     employer: string
     employerAddress: string
@@ -55,8 +51,7 @@ interface USAFormData {
     languageProficiency: string
   }
   
-  // Security Questions
-  securityInfo: {
+  // Security Questions,  securityInfo: {
     criminalHistory: boolean
     drugViolations: boolean
     terrorism: boolean
@@ -65,8 +60,7 @@ interface USAFormData {
     communicableDisease: boolean
   }
   
-  // Supporting Documents
-  documents: {
+  // Supporting Documents,  documents: {
     passport: boolean
     photo: boolean
     bankStatements: boolean
@@ -151,11 +145,9 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
     { value: 'O1', label: 'O-1 (Habilidade Extraordinária)', desc: 'Indivíduos com habilidade extraordinária' },
     { value: 'EB1', label: 'EB-1 (Green Card Prioritário)', desc: 'Residência permanente para pessoas com habilidades extraordinárias' },
     { value: 'EB5', label: 'EB-5 (Investidor)', desc: 'Green Card por investimento de $800k+' },
-    // VISTOS DE TRÂNSITO CRÍTICOS
-    { value: 'C1', label: 'C-1 (Trânsito)', desc: 'Trânsito em território americano para outros países' },
+    // VISTOS DE TRÂNSITO CRÍTICOS,    { value: 'C1', label: 'C-1 (Trânsito)', desc: 'Trânsito em território americano para outros países' },
     { value: 'C1/D', label: 'C-1/D (Trânsito/Tripulação)', desc: 'Trânsito e trabalho como tripulante de embarcação/aeronave' },
-    // VISTOS ESPECIALIZADOS  
-    { value: 'A1', label: 'A-1 (Diplomático)', desc: 'Diplomatas e funcionários governamentais' },
+    // VISTOS ESPECIALIZADOS  ,    { value: 'A1', label: 'A-1 (Diplomático)', desc: 'Diplomatas e funcionários governamentais' },
     { value: 'A2', label: 'A-2 (Oficial Governamental)', desc: 'Outros funcionários governamentais e militares' },
     { value: 'D1', label: 'D-1 (Tripulação Marítima)', desc: 'Tripulantes de embarcações marítimas' },
     { value: 'D2', label: 'D-2 (Tripulação Aérea)', desc: 'Tripulantes de aeronaves' },
@@ -198,8 +190,7 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
 
   const handleSubmit = async () => {
     try {
-      // Validate required fields
-      const requiredFields = [
+      // Validate required fields,      const requiredFields = [
         formData.personalInfo.fullName,
         formData.personalInfo.birthDate,
         formData.personalInfo.nationality,

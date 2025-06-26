@@ -28,8 +28,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
@@ -62,8 +61,7 @@ export async function GET(
         },
         interactions: {
           orderBy: { createdAt: 'desc' },
-          take: 50 // Últimas 50 interações
-        }
+          take: 50 // Últimas 50 interações        }
       }
     })
 
@@ -92,19 +90,16 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
 
-    // Validar dados
-    const validatedData = updateClientSchema.parse(body)
+    // Validar dados,    const validatedData = updateClientSchema.parse(body)
 
-    // Verificar se cliente existe
-    const existingClient = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({
       where: { id }
     })
 
@@ -114,8 +109,7 @@ export async function PATCH(
       )
     }
 
-    // Atualizar cliente
-    const updatedClient = await prisma.client.update({
+    // Atualizar cliente,    const updatedClient = await prisma.client.update({
       where: { id },
       data: validatedData,
       include: {
@@ -125,8 +119,7 @@ export async function PATCH(
       }
     })
 
-    // Log da atualização
-    await prisma.automationLog.create({
+    // Log da atualização,    await prisma.automationLog.create({
       data: {
         type: 'CLIENT_UPDATED',
         action: 'inline_edit',
@@ -168,19 +161,16 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
 
-    // Validar dados
-    const validatedData = updateClientSchema.parse(body)
+    // Validar dados,    const validatedData = updateClientSchema.parse(body)
 
-    // Verificar se cliente existe
-    const existingClient = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({
       where: { id }
     })
 
@@ -190,8 +180,7 @@ export async function PUT(
       )
     }
 
-    // Atualizar cliente
-    const updatedClient = await prisma.client.update({
+    // Atualizar cliente,    const updatedClient = await prisma.client.update({
       where: { id },
       data: validatedData,
       include: {
@@ -201,8 +190,7 @@ export async function PUT(
       }
     })
 
-    // Log da atualização
-    await prisma.automationLog.create({
+    // Log da atualização,    await prisma.automationLog.create({
       data: {
         type: 'CLIENT_UPDATED',
         action: 'update_client',
@@ -244,15 +232,13 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação
-    const user = await verifyAuth(request)
+    // Verificar autenticação,    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
-    // Verificar se cliente existe
-    const existingClient = await prisma.client.findUnique({
+    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({
       where: { id }
     })
 
@@ -262,13 +248,11 @@ export async function DELETE(
       )
     }
 
-    // Deletar cliente (cascade irá deletar relacionamentos)
-    await prisma.client.delete({
+    // Deletar cliente (cascade irá deletar relacionamentos),    await prisma.client.delete({
       where: { id }
     })
 
-    // Log da deleção
-    await prisma.automationLog.create({
+    // Log da deleção,    await prisma.automationLog.create({
       data: {
         type: 'CLIENT_DELETED'
         action: 'delete_client',

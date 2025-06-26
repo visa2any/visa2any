@@ -15,8 +15,7 @@ const loginSchema = z.object({
 // POST /api/auth/login - Login de usuário com rate limiting
 export async function POST(request: NextRequest) {
   try {
-    // ✅ Aplicar rate limiting
-    const rateLimitResult = applyRateLimit(request)
+    // ✅ Aplicar rate limiting,    const rateLimitResult = applyRateLimit(request)
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { 
@@ -41,11 +40,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     
-    // Validar dados
-    const validatedData = loginSchema.parse(body)
+    // Validar dados,    const validatedData = loginSchema.parse(body)
 
-    // Buscar usuário
-    const user = await prisma.user.findUnique({
+    // Buscar usuário,    const user = await prisma.user.findUnique({
       where: { email: validatedData.email },
       select: {
         id: true,
@@ -63,15 +60,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se usuário está ativo
-    if (!user.isActive) {
+    // Verificar se usuário está ativo,    if (!user.isActive) {
       return NextResponse.json(
         { status: 401 }
       )
     }
 
-    // Verificar senha
-    const isPasswordValid = await bcrypt.compare(validatedData.password, user.password)
+    // Verificar senha,    const isPasswordValid = await bcrypt.compare(validatedData.password, user.password)
 
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -79,8 +74,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ✅ Verificar se JWT secret está configurado
-    const jwtSecret = process.env.NEXTAUTH_SECRET
+    // ✅ Verificar se JWT secret está configurado,    const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return NextResponse.json(
@@ -89,25 +83,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Gerar JWT token com configurações de segurança melhoradas
-    const token = jwt.sign(
+    // Gerar JWT token com configurações de segurança melhoradas,    const token = jwt.sign(
       { 
         userId: user.id,
         email: user.email, 
         role: user.role,
-        iat: Math.floor(Date.now() / 1000), // ✅ Issued at
-        jti: crypto.randomUUID() // ✅ JWT ID único
+        iat: Math.floor(Date.now() / 1000), // ✅ Issued at,        jti: crypto.randomUUID() // ✅ JWT ID único
       },
       jwtSecret,
       { 
-        expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)
-        issuer: 'visa2any-api',
+        expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro),        issuer: 'visa2any-api',
         audience: 'visa2any-client'
       }
     )
 
-    // Dados do usuário para retorno (sem senha)
-    const userData = {
+    // Dados do usuário para retorno (sem senha),    const userData = {
       id: user.id,
       name: user.name,
       email: user.email,
@@ -115,8 +105,7 @@ export async function POST(request: NextRequest) {
       isActive: user.isActive
     }
 
-    // Log do login (skip if fails)
-    try {
+    // Log do login (skip if fails),    try {
       await prisma.automationLog.create({
         data: {
           type: 'USER_LOGIN',
@@ -135,29 +124,25 @@ export async function POST(request: NextRequest) {
       console.warn('Failed to log login:', logError)
     }
 
-    // Configurar cookie httpOnly
-    const response = NextResponse.json({
+    // Configurar cookie httpOnly,    const response = NextResponse.json({
       data: {
         user: userData,
-        token,
+        token
       },
       message: 'Login realizado com sucesso'
     })
 
-    // ✅ Definir cookie seguro com configurações melhoradas
-    response.cookies.set('auth-token', token, {
+    // ✅ Definir cookie seguro com configurações melhoradas,    response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict', // ✅ Mais seguro que 'lax'
-      maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
+      sameSite: 'strict', // ✅ Mais seguro que 'lax',      maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
       path: '/',
       domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
     })
     
     console.log('🍪 Cookie auth-token definido com sucesso')
 
-    // ✅ Adicionar headers de rate limit
-    response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString())
+    // ✅ Adicionar headers de rate limit,    response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString())
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
     response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.reset).toISOString())
 

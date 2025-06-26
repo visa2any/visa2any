@@ -35,11 +35,9 @@ export default function AfiliadosPage() {
     setIsSubmitting(true)
     
     try {
-      // Implementar envio do formulário
-      console.log('Dados do formulário:', formData)
+      // Implementar envio do formulário,      console.log('Dados do formulário:', formData)
       
-      // Simular processo de envio
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Simular processo de envio,      await new Promise(resolve => setTimeout(resolve, 2000))
       
       alert('Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.')
       setFormData({

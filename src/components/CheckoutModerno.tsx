@@ -24,16 +24,14 @@ interface Product {
 }
 
 interface CheckoutModernoProps {
-  // Nova interface
-  title?: string
+  // Nova interface,  title?: string
   subtitle?: string
   ctaText?: string
   supportsQuantity?: boolean
   showGroupDiscount?: boolean
   products?: Product[]
   
-  // Interface legacy (para backward compatibility)
-  productId?: string
+  // Interface legacy (para backward compatibility),  productId?: string
   productName?: string
   price?: number
   originalPrice?: number
@@ -134,8 +132,7 @@ const loadFormData = (): SavedCheckoutData | null => {
     
     const data: SavedCheckoutData = JSON.parse(saved)
     
-    // Verificar se os dados não estão muito antigos (7 dias)
-    const daysSaved = (Date.now() - data.savedAt) / (1000 * 60 * 60 * 24)
+    // Verificar se os dados não estão muito antigos (7 dias),    const daysSaved = (Date.now() - data.savedAt) / (1000 * 60 * 60 * 24)
     if (daysSaved > 7) {
       localStorage.removeItem(STORAGE_KEY)
       return null
@@ -181,19 +178,16 @@ const PRODUCT_DATA: Record<string, any> = {
 }
 
 export default function CheckoutModerno(props: CheckoutModernoProps) {
-  // Detect if using new interface (with products array) or legacy interface
-  const isNewInterface = !!(props.products && props.products.length > 0)
+  // Detect if using new interface (with products array) or legacy interface,  const isNewInterface = !!(props.products && props.products.length > 0)
   
-  // Extract props based on interface type
-  const {
+  // Extract props based on interface type,  const {
     title,
     subtitle, 
     ctaText = "Contratar Agora",
     supportsQuantity = true,
     showGroupDiscount = true,
     products = [],
-    // Legacy props
-    productId = '',
+    // Legacy props,    productId = '',
     productName = '',
     price = 0,
     originalPrice,
@@ -204,8 +198,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     variant = 'default'
   } = props
   
-  // Use first product for calculations if new interface, otherwise use legacy props
-  const currentProduct = isNewInterface ? products[0] : {
+  // Use first product for calculations if new interface, otherwise use legacy props,  const currentProduct = isNewInterface ? products[0] : {
     id: productId,
     name: productName,
     description,
@@ -233,8 +226,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     contractAccepted: false
   })
   
-  // Carregar dados salvos apenas no cliente (após hidratação)
-  useEffect(() => {
+  // Carregar dados salvos apenas no cliente (após hidratação),  useEffect(() => {
     const savedData = loadFormData()
     if (savedData) {
       setCurrentAdults(savedData.adults)
@@ -262,16 +254,13 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
   const productData = PRODUCT_DATA[currentProduct.id] || {}
   
-  // Auto-save dos dados do formulário
-  useEffect(() => {
-    // Só salva se pelo menos o nome ou email estiver preenchido
-    if (customerData.name.trim() || customerData.email.trim()) {
+  // Auto-save dos dados do formulário,  useEffect(() => {
+    // Só salva se pelo menos o nome ou email estiver preenchido,    if (customerData.name.trim() || customerData.email.trim()) {
       setIsSaving(true)
       const timeoutId = setTimeout(() => {
         saveFormData(customerData, currentAdults, currentChildren)
         setIsSaving(false)
-      }, 1000) // Debounce de 1 segundo
-      
+      }, 1000) // Debounce de 1 segundo,      
       return () => {
         clearTimeout(timeoutId)
         setIsSaving(false)
@@ -279,44 +268,34 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }, [customerData, currentAdults, currentChildren])
 
-  // Preços base
-  const getBaseAdultPrice = () => currentProduct.originalPrice || currentProduct.currentPrice
+  // Preços base,  const getBaseAdultPrice = () => currentProduct.originalPrice || currentProduct.currentPrice
   const getBaseChildPrice = () => (currentProduct as any).childPrice || (currentProduct.originalPrice || currentProduct.currentPrice)
   
-  // Preços finais com desconto
-  const getFinalAdultPrice = () => {
+  // Preços finais com desconto,  const getFinalAdultPrice = () => {
     const basePrice = getBaseAdultPrice()
-    // 15% desconto APENAS se 4+ adultos
-    return currentAdults >= 4 ? Math.round(basePrice * 0.85) : basePrice
+    // 15% desconto APENAS se 4+ adultos,    return currentAdults >= 4 ? Math.round(basePrice * 0.85) : basePrice
   }
   
   const getFinalChildPrice = () => {
-    // Crianças SEMPRE têm 30% desconto do preço base
-    return Math.round(getBaseChildPrice() * 0.7)
+    // Crianças SEMPRE têm 30% desconto do preço base,    return Math.round(getBaseChildPrice() * 0.7)
   }
   
-  // Cálculo das economias
-  const getAdultGroupSavings = () => {
-    // Sempre calcular se tem 4+ adultos, independente do supportsQuantity para display
-    if (currentAdults < 4) return 0
+  // Cálculo das economias,  const getAdultGroupSavings = () => {
+    // Sempre calcular se tem 4+ adultos, independente do supportsQuantity para display,    if (currentAdults < 4) return 0
     const originalTotal = currentAdults * getBaseAdultPrice()
     const discountedTotal = currentAdults * getFinalAdultPrice()
     return originalTotal - discountedTotal
   }
   
   const getChildrenSavings = () => {
-    // Sempre calcular se tem crianças
- independente do supportsQuantity para display
-    if (currentChildren === 0) return 0
+    // Sempre calcular se tem crianças, independente do supportsQuantity para display,    if (currentChildren === 0) return 0
     const originalTotal = currentChildren * getBaseChildPrice()
     const discountedTotal = currentChildren * getFinalChildPrice()
     return originalTotal - discountedTotal
   }
   
-  // Total final calculado
-  const calculateCurrentTotal = () => {
-    // Se não suporta quantidade
- usar preço base
+  // Total final calculado,  const calculateCurrentTotal = () => {
+    // Se não suporta quantidade, usar preço base
     if (!supportsQuantity) {
       return price
     }
@@ -333,14 +312,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   const currentTotal = calculateCurrentTotal()
   const currentSavings = getCurrentSavings()
 
-  // Função para validar CPF
-  const validateCPF = (cpf: string): boolean => {
+  // Função para validar CPF,  const validateCPF = (cpf: string): boolean => {
     const cleanCPF = cpf.replace(/\D/g, '')
     if (cleanCPF.length !== 11) return false
-    if (/^(\d)\1{10}$/.test(cleanCPF)) return false // CPFs com números repetidos
-    
-    // Validação dos dígitos verificadores
-    let sum = 0
+    if (/^(\d)\1{10}$/.test(cleanCPF)) return false // CPFs com números repetidos,    
+    // Validação dos dígitos verificadores,    let sum = 0
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cleanCPF[i]) * (10 - i)
     }
@@ -359,16 +335,14 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     return true
   }
 
-  // Validação em tempo real
-  const validateField = (field: string, value: string): string => {
+  // Validação em tempo real,  const validateField = (field: string, value: string): string => {
     switch (field) {
       case 'name':
         return value.length < 2 ? 'Nome muito curto' : ''
       case 'email':
         return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Email inválido' : ''
       case 'phone':
-        // Validação básica - pelo menos 8 dígitos
-        const digitsOnly = value.replace(/\D/g, '')
+        // Validação básica - pelo menos 8 dígitos,        const digitsOnly = value.replace(/\D/g, '')
         return digitsOnly.length < 8 ? 'Telefone muito curto' : ''
       case 'cpf':
         return !validateCPF(value) ? 'CPF inválido' : ''
@@ -377,8 +351,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }
 
-  // Função para formatar CPF
-  const formatCPF = (value: string): string => {
+  // Função para formatar CPF,  const formatCPF = (value: string): string => {
     const numbers = value.replace(/\D/g, '')
     if (numbers.length <= 11) {
       return numbers
@@ -390,8 +363,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   }
 
   const handleInputChange = (field: keyof CustomerData, value: any) => {
-    // Aplicar formatação do CPF
-    if (field === 'cpf' && typeof value === 'string') {
+    // Aplicar formatação do CPF,    if (field === 'cpf' && typeof value === 'string') {
       value = formatCPF(value)
     }
     
@@ -413,8 +385,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     setIsProcessing(true)
     
     try {
-      // Combinar código do país + número de telefone
-      const fullPhone = `${customerData.phoneCountry} ${customerData.phone}`
+      // Combinar código do país + número de telefone,      const fullPhone = `${customerData.phoneCountry} ${customerData.phone}`
       
       const orderData = {
         ...customerData,
@@ -425,8 +396,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         children: children
       }
       
-      // Criar pagamento no MercadoPago
-      
+      // Criar pagamento no MercadoPago,      
       const paymentResponse = await fetch('/api/payments/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -462,14 +432,12 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       
       if (paymentData.success && paymentData.preference_id) {
         
-        // Configurar dados para checkout inline
-        setPaymentData({
+        // Configurar dados para checkout inline,        setPaymentData({
           preferenceId: paymentData.preference_id,
           publicKey: paymentData.public_key
         })
         
-        // Mostrar checkout inline
-        setShowInlineCheckout(true)
+        // Mostrar checkout inline,        setShowInlineCheckout(true)
         return
       } else {
         console.error('❌ Erro ao criar pagamento:', paymentData)
@@ -477,8 +445,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         return
       }
       
-      // Se for produto Vaga Express
- processar com integração
+      // Se for produto Vaga Express, processar com integração
       if (currentProduct.id.includes('vaga-express')) {
         console.log('Processando pedido Vaga Express:', orderData)
 
@@ -492,12 +459,10 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
           children: children,
           total: currentTotal,
           cpf: customerData.cpf,
-          paymentMethod: 'pix', // ou selectedPayment se disponível
-          createdAt: new Date().toISOString()
+          paymentMethod: 'pix', // ou selectedPayment se disponível,          createdAt: new Date().toISOString()
         }
 
-        // Processar via API Vaga Express
-        const response = await fetch('/api/vaga-express', {
+        // Processar via API Vaga Express,        const response = await fetch('/api/vaga-express', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -510,15 +475,13 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         
         if (result.success) {
           console.log('Pedido Vaga Express processado:', result)
-          // Redirecionar com informações específicas do Vaga Express
-          window.location.href = `/success?product=${currentProduct.id}&checkout=moderno&orderId=${result.orderId}&type=vaga-express`
+          // Redirecionar com informações específicas do Vaga Express,          window.location.href = `/success?product=${currentProduct.id}&checkout=moderno&orderId=${result.orderId}&type=vaga-express`
         } else {
           console.error('Erro ao processar Vaga Express:', result.error)
           alert('Erro ao ativar monitoramento. Contacte o suporte.')
         }
       } else {
-        // Produtos normais - fluxo original
-        window.location.href = `/success?product=${currentProduct.id}&checkout=moderno`
+        // Produtos normais - fluxo original,        window.location.href = `/success?product=${currentProduct.id}&checkout=moderno`
       }
       
     } catch (error) {
@@ -538,13 +501,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }
 
-  // Se checkout inline ativo
- usar componente real do MercadoPago
+  // Se checkout inline ativo, usar componente real do MercadoPago
   if (showInlineCheckout && paymentData) {
     return (
       <MercadoPagoSingle
-        key={`mp-${paymentData.preferenceId}`} // Key único para forçar re-mount limpo
-        preferenceId={paymentData.preferenceId}
+        key={`mp-${paymentData.preferenceId}`} // Key único para forçar re-mount limpo,        preferenceId={paymentData.preferenceId}
         publicKey={paymentData.publicKey}
         amount={currentTotal}
         customerData={{
@@ -554,10 +515,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         }}
         onSuccess={(payment) => {
           console.log('✅ Pagamento realizado com sucesso:', payment)
-          // Limpar dados salvos após sucesso
-          clearFormData()
-          // Redirecionar para página de sucesso
-          window.location.href = '/payment/success'
+          // Limpar dados salvos após sucesso,          clearFormData()
+          // Redirecionar para página de sucesso,          window.location.href = '/payment/success'
         }}
         onError={(error) => {
           console.error('❌ Erro no pagamento:', error)

@@ -74,13 +74,11 @@ export class PolicyMonitoringEngine {
     this.isMonitoring = true
     console.log('🔍 Iniciando monitoramento de políticas de imigração...')
 
-    // Verificação a cada 4 horas
-    setInterval(() => {
+    // Verificação a cada 4 horas,    setInterval(() => {
       this.performFullScan()
     }, 4 * 60 * 60 * 1000)
 
-    // Verificação inicial
-    await this.performFullScan()
+    // Verificação inicial,    await this.performFullScan()
   }
 
   /**
@@ -102,8 +100,7 @@ export class PolicyMonitoringEngine {
     for (const source of activeSources) {
       try {
         await this.scanSource(source)
-        await this.sleep(2000) // Rate limiting
-      } catch (error) {
+        await this.sleep(2000) // Rate limiting      } catch (error) {
         console.error(`Erro ao monitorar ${source.name}:`, error)
       }
     }
@@ -118,16 +115,14 @@ export class PolicyMonitoringEngine {
     console.log(`📡 Verificando ${source.name} (${source.country})...`)
 
     try {
-      // Simulação de busca por mudanças (em produção
- usaria web scraping real)
+      // Simulação de busca por mudanças (em produção, usaria web scraping real)
       const changes = await this.detectChanges(source)
       
       for (const change of changes) {
         await this.processPolicyChange(change)
       }
 
-      // Atualiza timestamp da última verificação
-      source.lastChecked = new Date().toISOString()
+      // Atualiza timestamp da última verificação,      source.lastChecked = new Date().toISOString()
       
     } catch (error) {
       console.error(`Erro ao escanear ${source.name}:`, error)
@@ -138,17 +133,13 @@ export class PolicyMonitoringEngine {
    * Detecta mudanças em uma fonte (simulado)
    */
   private async detectChanges(source: MonitoringSource): Promise<PolicyChange[]> {
-    // Em produção
- isto seria web scraping real ou API calls
-    // Por agora
- simulamos algumas mudanças baseadas em padrões reais
+    // Em produção, isto seria web scraping real ou API calls
+    // Por agora, simulamos algumas mudanças baseadas em padrões reais
     
     const mockChanges: PolicyChange[] = []
     
-    // Simula mudanças baseadas na data atual e fonte
-    const now = new Date()
-    const shouldGenerateChange = Math.random() > 0.85 // 15% chance de mudança
-    
+    // Simula mudanças baseadas na data atual e fonte,    const now = new Date()
+    const shouldGenerateChange = Math.random() > 0.85 // 15% chance de mudança,    
     if (shouldGenerateChange) {
       const change = this.generateMockChange(source, now)
       mockChanges.push(change)
@@ -231,8 +222,7 @@ export class PolicyMonitoringEngine {
     const selectedChange = countryChanges[Math.floor(Math.random() * countryChanges.length)]
     
     if (!selectedChange) {
-      // Fallback genérico
-      return this.createGenericChange(source, date)
+      // Fallback genérico,      return this.createGenericChange(source, date)
     }
 
     return {
@@ -243,8 +233,7 @@ export class PolicyMonitoringEngine {
       severity: severities[Math.floor(Math.random() * severities.length)],
       title: selectedChange.title,
       description: selectedChange.description,
-      effectiveDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 dias no futuro
-      source: source.name,
+      effectiveDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 dias no futuro,      source: source.name,
       sourceUrl: source.url,
       impact: selectedChange.impact,
       affectedClients: [],
@@ -314,25 +303,20 @@ export class PolicyMonitoringEngine {
    * Processa uma mudança de política detectada
    */
   private async processPolicyChange(change: PolicyChange): Promise<void> {
-    // Verifica se já conhecemos esta mudança
-    const existingChange = this.findSimilarChange(change)
+    // Verifica se já conhecemos esta mudança,    const existingChange = this.findSimilarChange(change)
     if (existingChange) {
       console.log(`🔄 Mudança similar já detectada: ${change.title}`)
       return
     }
 
-    // Armazena a mudança
-    this.changes.set(change.id, change)
+    // Armazena a mudança,    this.changes.set(change.id, change)
     console.log(`🚨 Nova mudança detectada: ${change.title} (${change.country})`)
 
-    // Identifica clientes afetados
-    change.affectedClients = await this.identifyAffectedClients(change)
+    // Identifica clientes afetados,    change.affectedClients = await this.identifyAffectedClients(change)
 
-    // Cria alertas apropriados
-    await this.createAlerts(change)
+    // Cria alertas apropriados,    await this.createAlerts(change)
 
-    // Verifica e marca como verificada se confiável
-    if (this.isReliableSource(change.source)) {
+    // Verifica e marca como verificada se confiável,    if (this.isReliableSource(change.source)) {
       change.verifiedAt = new Date().toISOString()
     }
   }
@@ -345,8 +329,7 @@ export class PolicyMonitoringEngine {
       if (
         existing.country === change.country &&
         existing.changeType === change.changeType &&
-        Math.abs(Date.parse(existing.detectedAt) - Date.parse(change.detectedAt)) < 24 * 60 * 60 * 1000 && // Dentro de 24h
-        this.calculateSimilarity(existing.title, change.title) > 0.7
+        Math.abs(Date.parse(existing.detectedAt) - Date.parse(change.detectedAt)) < 24 * 60 * 60 * 1000 && // Dentro de 24h,        this.calculateSimilarity(existing.title, change.title) > 0.7
       ) {
         return existing
       }
@@ -369,15 +352,12 @@ export class PolicyMonitoringEngine {
    * Identifica clientes afetados por uma mudança
    */
   private async identifyAffectedClients(change: PolicyChange): Promise<string[]> {
-    // Em produção
- consultaria o banco de dados de clientes
-    // Por agora
- simula alguns clientes afetados
+    // Em produção, consultaria o banco de dados de clientes
+    // Por agora, simula alguns clientes afetados
     const mockAffectedClients: string[] = []
     
     if (change.severity === 'high' || change.severity === 'critical') {
-      // Simula que mudanças críticas afetam mais clientes
-      const numAffected = Math.floor(Math.random() * 10) + 1
+      // Simula que mudanças críticas afetam mais clientes,      const numAffected = Math.floor(Math.random() * 10) + 1
       for (let i = 0; i < numAffected; i++) {
         mockAffectedClients.push(`client_${change.country.toLowerCase()}_${i + 1}`)
       }
@@ -390,8 +370,7 @@ export class PolicyMonitoringEngine {
    * Cria alertas apropriados para uma mudança
    */
   private async createAlerts(change: PolicyChange): Promise<void> {
-    // Alerta para equipe interna
-    const internalAlert: PolicyAlert = {
+    // Alerta para equipe interna,    const internalAlert: PolicyAlert = {
       id: `alert_${Date.now()}_internal`,
       policyChangeId: change.id,
       type: change.severity === 'critical' ? 'immediate' : 'scheduled',
@@ -403,8 +382,7 @@ export class PolicyMonitoringEngine {
     
     this.alerts.set(internalAlert.id, internalAlert)
 
-    // Alertas para clientes afetados
-    for (const clientId of change.affectedClients) {
+    // Alertas para clientes afetados,    for (const clientId of change.affectedClients) {
       const clientAlert: PolicyAlert = {
         id: `alert_${Date.now()}_client_${clientId}`,
         policyChangeId: change.id,
@@ -465,15 +443,13 @@ Equipe Visa2Any
    */
   private initializeSources(): void {
     const sources: MonitoringSource[] = [
-      // Estados Unidos
-      {
+      // Estados Unidos,      {
         id: 'uscis_official',
         name: 'USCIS Official',
         country: 'USA',
         type: 'government',
-        url: 'https://www.uscis.gov/news/alerts'
-
-        keywords: ['visa', 'immigration', 'policy', 'fee', 'requirement'],
+        url: 'https://www.uscis.gov/news/alerts',
+    keywords: ['visa', 'immigration', 'policy', 'fee', 'requirement'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.95
@@ -483,79 +459,68 @@ Equipe Visa2Any
         name: 'U.S. State Department',
         country: 'USA',
         type: 'government',
-        url: 'https://travel.state.gov/content/travel/en/News.html'
-
-        keywords: ['visa', 'consular', 'processing', 'interview'],
+        url: 'https://travel.state.gov/content/travel/en/News.html',
+    keywords: ['visa', 'consular', 'processing', 'interview'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.95
       },
 
-      // Canadá
-      {
+      // Canadá,      {
         id: 'ircc_official',
         name: 'IRCC Official',
         country: 'Canada',
         type: 'government',
-        url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html'
-
-        keywords: ['immigration', 'express entry', 'pnp', 'crs', 'processing'],
+        url: 'https://www.canada.ca/en/immigration-refugees-citizenship/news.html',
+    keywords: ['immigration', 'express entry', 'pnp', 'crs', 'processing'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.95
       },
 
-      // Portugal
-      {
+      // Portugal,      {
         id: 'sef_portugal',
         name: 'SEF Portugal',
         country: 'Portugal',
         type: 'government',
-        url: 'https://www.sef.pt/pt/pages/noticias.aspx'
-
-        keywords: ['visto', 'residência', 'golden visa', 'd7'],
+        url: 'https://www.sef.pt/pt/pages/noticias.aspx',
+    keywords: ['visto', 'residência', 'golden visa', 'd7'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.90
       },
 
-      // Reino Unido
-      {
+      // Reino Unido,      {
         id: 'ukvi_official',
         name: 'UK Visas and Immigration',
         country: 'UK',
         type: 'government',
-        url: 'https://www.gov.uk/government/organisations/uk-visas-and-immigration/news'
-
-        keywords: ['visa', 'immigration', 'points', 'skilled worker'],
+        url: 'https://www.gov.uk/government/organisations/uk-visas-and-immigration/news',
+    keywords: ['visa', 'immigration', 'points', 'skilled worker'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.95
       },
 
-      // Alemanha
-      {
+      // Alemanha,      {
         id: 'bamf_germany',
         name: 'BAMF Germany',
         country: 'Germany',
         type: 'government',
-        url: 'https://www.bamf.de/DE/Startseite/startseite_node.html'
-
-        keywords: ['visa', 'aufenthaltstitel', 'blue card', 'fachkräfte'],
+        url: 'https://www.bamf.de/DE/Startseite/startseite_node.html',
+    keywords: ['visa', 'aufenthaltstitel', 'blue card', 'fachkräfte'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.90
       },
 
-      // Espanha
-      {
+      // Espanha,      {
         id: 'extranjeria_spain',
         name: 'Extranjería España',
         country: 'Spain',
         type: 'government',
-        url: 'https://extranjeros.inclusion.gob.es/es/noticias/index.html'
-
-        keywords: ['visado', 'extranjería', 'residencia', 'golden visa'],
+        url: 'https://extranjeros.inclusion.gob.es/es/noticias/index.html',
+    keywords: ['visado', 'extranjería', 'residencia', 'golden visa'],
         lastChecked: new Date().toISOString(),
         isActive: true,
         reliability: 0.90

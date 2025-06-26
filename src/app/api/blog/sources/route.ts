@@ -22,13 +22,11 @@ export async function POST(request: NextRequest) {,  try {
 const {,      name,      url,      type,      category,      country,      flag,      keywords,      priority,      checkInterval
     } = body
 
-    // Validação,    if (!name || !url || !type || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: name, url, type
- category' },        { status: 400 }
+    // Validação,    if (!name || !url || !type || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: name, url, type, category' },        { status: 400 }
       )
     }
 
-    // Verificar se URL já existe,    const existingSource = await prisma.newsSource.findUnique({
-      where: { url }
+    // Verificar se URL já existe,    const existingSource = await prisma.newsSource.findUnique({,      where: { url }
     }),
     if (existingSource) {,      return NextResponse.json(,        { error: 'Fonte com esta URL já existe' },        { status: 409 }
       )
@@ -70,12 +68,10 @@ export async function DELETE(request: NextRequest) {,  try {,    const { searchP
       )
     }
 
-    // Primeiro deletar logs relacionados,    await prisma.autoNewsLog.deleteMany({
-      where: { sourceId: id }
+    // Primeiro deletar logs relacionados,    await prisma.autoNewsLog.deleteMany({,      where: { sourceId: id }
     })
 
-    // Depois deletar a fonte,    await prisma.newsSource.delete({
-      where: { id }
+    // Depois deletar a fonte,    await prisma.newsSource.delete({,      where: { id }
     }),
     return NextResponse.json({,      success: true,      message: 'Fonte removida com sucesso'
     })

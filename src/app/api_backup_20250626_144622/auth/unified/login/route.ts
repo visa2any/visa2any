@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
     let result
 
     if (type === 'admin') {
-      // Login para admin/staff
-      if (!password) {
+      // Login para admin/staff,      if (!password) {
         return NextResponse.json(
           { error: 'Dados inválidos' },
           { status: 400 }
@@ -24,8 +23,7 @@ export async function POST(request: NextRequest) {
       }
       result = await loginAdmin(email, password)
     } else {
-      // Login para cliente (pode não ter senha na primeira vez)
-      result = await loginCustomer(email, password)
+      // Login para cliente (pode não ter senha na primeira vez),      result = await loginCustomer(email, password)
     }
 
     if (!result.success) {
@@ -34,19 +32,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar cookie de autenticação
-    const response = NextResponse.json({
+    // Criar cookie de autenticação,    const response = NextResponse.json({
       user: result.user,
       token: result.token
     })
 
-    // Configurar cookie httpOnly
-    response.cookies.set('auth-token', result.token!, {
+    // Configurar cookie httpOnly,    response.cookies.set('auth-token', result.token!, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
+      maxAge: 7 * 24 * 60 * 60, // 7 dias,      path: '/'
     })
 
     return response

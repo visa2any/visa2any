@@ -31,7 +31,7 @@ interface User {
 }
 
 function AdminLayoutContent({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
@@ -41,14 +41,12 @@ function AdminLayoutContent({
   const router = useRouter()
   const pathname = usePathname()
   
-  // Initialize system notifications
-  useSystemNotifications()
+  // Initialize system notifications,  useSystemNotifications()
 
   const isLoginPage = pathname.includes('/login')
 
   const checkAuth = useCallback(async () => {
-    // Não verificar se estivermos na página de login
-    if (pathname.includes('/login')) {
+    // Não verificar se estivermos na página de login,    if (pathname.includes('/login')) {
       setIsLoading(false)
       return
     }
@@ -77,14 +75,12 @@ function AdminLayoutContent({
   }, [router, pathname])
 
   useEffect(() => {
-    // Se estivermos na página de login, não fazer verificação
-    if (isLoginPage) {
+    // Se estivermos na página de login, não fazer verificação,    if (isLoginPage) {
       setIsLoading(false)
       return
     }
     
-    // Só verificar autenticação se não tivermos usuário e não estivermos na página de login
-    if (!user) {
+    // Só verificar autenticação se não tivermos usuário e não estivermos na página de login,    if (!user) {
       checkAuth()
     } else {
       setIsLoading(false)
@@ -193,9 +189,7 @@ function AdminLayoutContent({
     return null
   }
 
-  // Para o dashboard unificado
- usar layout sem sidebar
-  if (pathname.startsWith('/admin/dashboard-unified')) {
+  // Para o dashboard unificado, usar layout sem sidebar,  if (pathname.startsWith('/admin/dashboard-unified')) {
     return (
       <div className="min-h-screen" style={{ 
         background: 'linear-gradient(135deg, rgb(240 249 255) 0%, rgb(224 242 254) 25%, rgb(243 232 255) 50%, rgb(254 243 226) 75%, rgb(248 250 252) 100%)'
@@ -297,7 +291,7 @@ function AdminLayoutContent({
 }
 
 export default function AdminLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {

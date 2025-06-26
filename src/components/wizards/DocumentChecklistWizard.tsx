@@ -70,8 +70,7 @@ export function DocumentChecklistWizard({
 
   const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
-  // Document requirements by country and visa type
-  const documentRequirements: { [key: string]: CountryRequirements } = {
+  // Document requirements by country and visa type,  const documentRequirements: { [key: string]: CountryRequirements } = {
     'USA-B1/B2': {
       country: 'USA',
       visaType: 'B1/B2',
@@ -383,8 +382,7 @@ export function DocumentChecklistWizard({
       [docId]: file
     }))
     
-    // Auto-check when uploaded
-    setCheckedDocuments(prev => new Set([...prev, docId]))
+    // Auto-check when uploaded,    setCheckedDocuments(prev => new Set([...prev, docId]))
     
     notifySuccess('Upload realizado', `${file.name} foi carregado com sucesso`)
   }

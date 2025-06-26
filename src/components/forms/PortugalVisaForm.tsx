@@ -248,16 +248,14 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
   }
 
   const calculateMinimumIncome = () => {
-    const baseAmount = 760 // Valor mínimo para D7 em 2024
-    const spouseAmount = formData.personalInfo.maritalStatus === 'married' ? 380 : 0
+    const baseAmount = 760 // Valor mínimo para D7 em 2024,    const spouseAmount = formData.personalInfo.maritalStatus === 'married' ? 380 : 0
     const childrenAmount = formData.personalInfo.children * 228
     return baseAmount + spouseAmount + childrenAmount
   }
 
   const handleSubmit = async () => {
     try {
-      // Validate required fields
-      const requiredFields = [
+      // Validate required fields,      const requiredFields = [
         formData.personalInfo.fullName,
         formData.personalInfo.birthDate,
         formData.personalInfo.nationality,
@@ -270,8 +268,7 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
         return
       }
 
-      // Validate minimum income for D7
-      if (formData.visaInfo.visaType === 'D7') {
+      // Validate minimum income for D7,      if (formData.visaInfo.visaType === 'D7') {
         const minIncome = calculateMinimumIncome()
         if (formData.financialInfo.monthlyIncome < minIncome) {
           notifyError('Atenção', `Para o visto D7, a renda mínima deve ser €${minIncome}/mês`)

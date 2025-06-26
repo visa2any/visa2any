@@ -11,12 +11,10 @@ export async function GET(
   try {
     const { slug } = params
 
-    // Buscar comentários do post com informações do usuário
-    const comments = await prisma.blogPostComment.findMany({
+    // Buscar comentários do post com informações do usuário,    const comments = await prisma.blogPostComment.findMany({
       where: {
         postId: slug,
-        parentId: null // Apenas comentários principais (não respostas)
-      },
+        parentId: null // Apenas comentários principais (não respostas)      },
       include: {
         user: {
           select: {
@@ -45,8 +43,7 @@ export async function GET(
       }
     })
 
-    // Formattar os comentários para incluir informações do autor
-    const formattedComments = comments.map(comment => ({
+    // Formattar os comentários para incluir informações do autor,    const formattedComments = comments.map(comment => ({
       id: comment.id,
       userId: comment.userId,
       postId: comment.postId,
@@ -56,8 +53,7 @@ export async function GET(
       updatedAt: comment.updatedAt,
       author: {
         name: comment.user.name,
-        avatar: null // Pode ser implementado posteriormente
-      },
+        avatar: null // Pode ser implementado posteriormente      },
       replies: comment.replies.map(reply => ({
         id: reply.id,
         userId: reply.userId,

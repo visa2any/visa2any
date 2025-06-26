@@ -75,7 +75,7 @@ export default function AntecedentesPage() {
     { name: 'Ceará', abbr: 'CE', available: true, time: '3-4 dias' },
     { name: 'Pernambuco', abbr: 'PE', available: true, time: '3-4 dias' },
     { name: 'Amazonas', abbr: 'AM', available: false, time: 'Sob consulta' },
-    { name: 'Pará', abbr: 'PA', available: false, time: 'Sob consulta' },
+    { name: 'Pará', abbr: 'PA', available: false, time: 'Sob consulta' }
   ]
 
   const useCases = [

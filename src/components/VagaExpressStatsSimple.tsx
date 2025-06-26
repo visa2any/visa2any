@@ -12,8 +12,7 @@ export function VagaExpressStatsSimple() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simular carregamento de dados
-    setTimeout(() => {
+    // Simular carregamento de dados,    setTimeout(() => {
       setStats({
         totalOrders: 5,
         totalRevenue: 2485,

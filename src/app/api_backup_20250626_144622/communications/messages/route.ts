@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    // Mock data for communications
-    const mockMessages = [
+    // Mock data for communications,    const mockMessages = [
       {
         id: '1',
         clientId: '1',
@@ -119,8 +118,7 @@ export async function GET(request: NextRequest) {
 
     let filteredMessages = mockMessages
 
-    // Apply filters
-    if (clientId) {
+    // Apply filters,    if (clientId) {
       filteredMessages = filteredMessages.filter(msg => msg.clientId === clientId)
     }
 
@@ -128,8 +126,7 @@ export async function GET(request: NextRequest) {
       filteredMessages = filteredMessages.filter(msg => msg.type === type)
     }
 
-    // Limit results
-    filteredMessages = filteredMessages.slice(0, limit)
+    // Limit results,    filteredMessages = filteredMessages.slice(0, limit)
 
     return NextResponse.json({
       messages: filteredMessages
@@ -150,8 +147,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { type, content, clientId, subject, attachments } = body
 
-    // Here you would integrate with actual communication providers
-    // For now
+    // Here you would integrate with actual communication providers,    // For now
  we'll simulate message sending
 
     const newMessage = {
@@ -173,8 +169,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Simulate sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Simulate sending delay,    await new Promise(resolve => setTimeout(resolve, 1000))
 
     return NextResponse.json({
       message: newMessage

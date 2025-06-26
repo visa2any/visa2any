@@ -16,15 +16,12 @@ function SimulatePaymentPageContent() {
     setIsProcessing(true)
     
     try {
-      // Simular delay de processamento
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Simular delay de processamento,      await new Promise(resolve => setTimeout(resolve, 2000))
       
       if (status === 'approved') {
-        // Redirecionar para success
-        window.location.href = `/success?payment_id=simulated-${orderId}&status=approved&external_reference=${orderId}`
+        // Redirecionar para success,        window.location.href = `/success?payment_id=simulated-${orderId}&status=approved&external_reference=${orderId}`
       } else {
-        // Redirecionar para falha
-        window.location.href = `/cliente?payment=failed&order=${orderId}`
+        // Redirecionar para falha,        window.location.href = `/cliente?payment=failed&order=${orderId}`
       }
     } catch (error) {
       console.error('Erro na simulação:', error)

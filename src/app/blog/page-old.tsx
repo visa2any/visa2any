@@ -34,8 +34,7 @@ interface BlogPost {
 }
 
 const blogPosts: BlogPost[] = [
-  // URGENT BREAKING NEWS
-  {
+  // URGENT BREAKING NEWS,  {
     id: 'mudancas-visto-americano-dezembro-2024',
     title: '🚨 URGENTE: Novas Regras para Visto Americano em Vigor desde Dezembro 2024',
     excerpt: 'Consulados americanos implementam novas diretrizes que afetam diretamente brasileiros. Mudanças no DS-160, entrevistas e documentação obrigatória.',
@@ -81,8 +80,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1549057446-9f5c6ac91a04?w=800&h=400&fit=crop'
   },
   
-  // FEATURED GUIDES
-  {
+  // FEATURED GUIDES,  {
     id: 'guia-completo-visto-americano-2024',
     title: 'Guia Definitivo: Como Conseguir Visto Americano em 2024 (Taxa de Sucesso 94%)',
     excerpt: 'Método comprovado pela Visa2Any: passo a passo detalhado para aprovação do visto americano, incluindo documentos, entrevista e estratégias exclusivas.',
@@ -101,8 +99,7 @@ const blogPosts: BlogPost[] = [
     comments: 287,
     difficulty: 'Intermediário',
     type: 'Guia',
-    imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=400&fit=crop'
-
+    imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=400&fit=crop',
     videoUrl: 'https://youtube.com/watch?v=usa-visa'
   },
   {
@@ -148,8 +145,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&h=400&fit=crop'
   },
 
-  // TRENDING POSTS
-  {
+  // TRENDING POSTS,  {
     id: 'australia-skilled-visa-2024-lista',
     title: 'Austrália Skilled Visa: Lista DEFINITIVA de Profissões em Demanda 2024-2025',
     excerpt: 'Lista oficial atualizada: 250+ profissões em alta demanda na Austrália, salários médios e qual pathway é ideal para seu perfil.',
@@ -192,8 +188,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1515859005217-8a1f08870f59?w=800&h=400&fit=crop'
   },
 
-  // INVESTMENT & GOLDEN VISA
-  {
+  // INVESTMENT & GOLDEN VISA,  {
     id: 'golden-visa-europa-2024-comparativo',
     title: 'Golden Visa Europa 2024: Comparativo COMPLETO dos 8 Melhores Programas',
     excerpt: 'Análise detalhada: Portugal, Espanha, Grécia, Malta e outros. Investimentos, benefícios, tempo de processamento e ROI esperado.',
@@ -235,8 +230,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=400&fit=crop'
   },
 
-  // TECH PROFESSIONALS
-  {
+  // TECH PROFESSIONALS,  {
     id: 'alemanha-blue-card-ti-2024',
     title: 'Alemanha Blue Card para TI: Guia Prático + Template de CV Alemão',
     excerpt: 'Como conseguir a Blue Card alemã sendo desenvolvedor: salários, empresas que patrocinam, processo completo e template de CV.',
@@ -278,8 +272,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=400&fit=crop'
   },
 
-  // HEALTHCARE PROFESSIONALS  
-  {
+  // HEALTHCARE PROFESSIONALS  ,  {
     id: 'medicos-canada-como-validar-diploma',
     title: 'Médicos no Canadá: Processo COMPLETO para Validar Diploma e Atuar',
     excerpt: 'Passo a passo para médicos: MCC exams, residência, licença provincial. Tempo médio: 4-6 anos. Custos e dicas práticas.',
@@ -321,8 +314,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&h=400&fit=crop'
   },
 
-  // STUDENTS
-  {
+  // STUDENTS,  {
     id: 'estudar-alemanha-gratuito-2024',
     title: 'Como Estudar de GRAÇA na Alemanha: Universidades, Bolsas e Custo de Vida',
     excerpt: 'Guia completo: universidades públicas gratuitas, bolsas DAAD, custo de vida real e como trabalhar durante os estudos.',
@@ -363,8 +355,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=400&fit=crop'
   },
 
-  // FAMILY & DEPENDENTS
-  {
+  // FAMILY & DEPENDENTS,  {
     id: 'reuniao-familiar-portugal',
     title: 'Reunião Familiar em Portugal: Guia Prático e Documentos Necessários',
     excerpt: 'Como trazer família para Portugal: cônjuge, filhos, pais. Documentos, renda mínima, prazos e dicas para aprovação rápida.',
@@ -385,8 +376,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&h=400&fit=crop'
   },
 
-  // RETIREES
-  {
+  // RETIREES,  {
     id: 'aposentados-panama-pensionado-visa',
     title: 'Panamá para Aposentados: Pensionado Visa e Vantagens Exclusivas',
     excerpt: 'Paraíso para aposentados: Pensionado Visa, benefícios fiscais, custo de vida baixo, sistema de saúde e comunidade brasileira.',
@@ -407,8 +397,7 @@ const blogPosts: BlogPost[] = [
     imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop'
   },
 
-  // SPECIAL CASES
-  {
+  // SPECIAL CASES,  {
     id: 'antecedentes-criminais-imigracao',
     title: 'Antecedentes Criminais e Imigração: O Que Você Precisa Saber',
     excerpt: 'Análise jurídica: como antecedentes afetam vistos, países mais/menos rigorosos, processos de reabilitação e waiver.',
@@ -502,8 +491,7 @@ export default function BlogPage() {
         setSubmitMessage('✅ ' + data.message)
         setWhatsappForm({ name: '', phone: '', countries: '', terms: false })
         
-        // Fechar modal após 3 segundos
-        setTimeout(() => {
+        // Fechar modal após 3 segundos,        setTimeout(() => {
           setShowWhatsAppForm(false)
           setSubmitMessage('')
         }, 3000)
@@ -517,8 +505,7 @@ export default function BlogPage() {
     }
   }
 
-  // Filter and sort posts
-  const filteredPosts = blogPosts.filter(post => {
+  // Filter and sort posts,  const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))

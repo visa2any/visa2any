@@ -6,8 +6,7 @@ const getSystemState = () => ({
   emailMonitoring: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST)
   automation: !!(process.env.WHATSAPP_TOKEN && process.env.TELEGRAM_BOT_TOKEN)
   paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
-  hybridBooking: true, // Sempre ativo para agendamento híbrido
-  lastActivation: new Date().toISOString()
+  hybridBooking: true, // Sempre ativo para agendamento híbrido,  lastActivation: new Date().toISOString()
 })
 
 export async function POST(request: NextRequest) {
@@ -26,8 +25,7 @@ export async function POST(request: NextRequest) {
           })
         }
         
-        // Enviar notificação Telegram sobre ativação real
-        await sendTelegramNotification('🌐 SISTEMA HÍBRIDO ATIVO!', 
+        // Enviar notificação Telegram sobre ativação real,        await sendTelegramNotification('🌐 SISTEMA HÍBRIDO ATIVO!', 
           `Sistema de agendamento híbrido operacional:
           
 🎯 Funcionamento: Detecção + Agendamento Manual
@@ -79,25 +77,19 @@ export async function GET(request: NextRequest) {
 function calculateMonthlyCost(state: any): number {
   let total = 0
   
-  // Custos reais baseados nos provedores
-  if (state.emailMonitoring) {
+  // Custos reais baseados nos provedores,  if (state.emailMonitoring) {
     if (process.env.RESEND_API_KEY) {
-      total += 5 // Resend: $1/mês para até 3000 emails
-    } else {
-      total += 0 // SMTP próprio = gratuito
-    }
+      total += 5 // Resend: $1/mês para até 3000 emails    } else {
+      total += 0 // SMTP próprio = gratuito    }
   }
   
   if (state.paymentProcessing) {
-    total += 0 // MercadoPago/Stripe = só taxa por transação
-  }
+    total += 0 // MercadoPago/Stripe = só taxa por transação  }
   
   if (state.automation) {
-    total += 5 // WhatsApp Business API básico
-  }
+    total += 5 // WhatsApp Business API básico  }
   
-  // Híbrido = apenas taxas de transação
-  return total
+  // Híbrido = apenas taxas de transação,  return total
 }
 
 async function sendTelegramNotification(title: string, message: string) {

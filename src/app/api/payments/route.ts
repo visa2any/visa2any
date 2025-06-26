@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para criar pagamento,const createPaymentSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  amount: z.number().min(0.01, 'Valor deve ser maior que 0'),  currency: z.string().default('BRL'),  description: z.string().min(1, 'Descrição é obrigatória'),  paymentMethod: z.string().optional()
-  dueDate: z.string().datetime().optional()
+// Schema para criar pagamento,const createPaymentSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  amount: z.number().min(0.01, 'Valor deve ser maior que 0'),  currency: z.string().default('BRL'),  description: z.string().min(1, 'Descrição é obrigatória'),  paymentMethod: z.string().optional(),  dueDate: z.string().datetime().optional()
 })
 
 // GET /api/payments - Listar pagamentos,
@@ -15,23 +14,20 @@ const status = searchParams.get('status')
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
-    
+    // Construir filtros,    const where: any = {},    
     if (clientId) {,      where.clientId = clientId
     },    
     if (status && status !== 'ALL') {,      where.status = status
     }
 
-    // Buscar pagamentos,    const [payments, total] = await Promise.all([,      prisma.payment.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          client: {,            select: { ,              id: true, ,              name: true, ,              email: true
-              phone: true
+    // Buscar pagamentos,    const [payments, total] = await Promise.all([,      prisma.payment.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          client: {,            select: { ,              id: true, ,              name: true, ,              email: true,              phone: true
             }
           }
         }
       }),      prisma.payment.count({ where })
     ])
 
-    // Estatísticas,    const stats = await prisma.payment.aggregate({,      where: clientId ? { clientId } : {},      _sum: { amount: true }
-      _count: { id: true }
+    // Estatísticas,    const stats = await prisma.payment.aggregate({,      where: clientId ? { clientId } : {},      _sum: { amount: true },      _count: { id: true }
     }),
     const statusStats = await prisma.payment.groupBy({,      by: ['status'],      _count: { status: true },      _sum: { amount: true },      where: clientId ? { clientId } : {}
     }),
@@ -54,18 +50,15 @@ export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = createPaymentSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+    // Verificar se cliente existe,    const client = await prisma.client.findUnique({,      where: { id: validatedData.clientId }
     }),
     if (!client) {,      return NextResponse.json(,        { error: 'Cliente não encontrado' },        { status: 404 }
       )
     }
 
-    // Gerar ID de transação único
-    const transactionId = generateTransactionId()
+    // Gerar ID de transação único,    const transactionId = generateTransactionId()
 
-    // Criar pagamento,    const payment = await prisma.payment.create({
-      data: {
+    // Criar pagamento,    const payment = await prisma.payment.create({,      data: {
         ...validatedData,        transactionId,        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,        status: 'PENDING'
       },      include: {,        client: {,          select: { ,            id: true, ,            name: true, ,            email: true,            phone: true
           }
@@ -73,8 +66,7 @@ const validatedData = createPaymentSchema.parse(body)
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_CREATED',        action: 'create_payment',        clientId: validatedData.clientId,        details: {,          timestamp: new Date().toISOString()
-          action: 'automated_action'
+    // Log da criação,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_CREATED',        action: 'create_payment',        clientId: validatedData.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     })
@@ -95,35 +87,28 @@ const validatedData = createPaymentSchema.parse(body)
   }
 }
 
-// Função para gerar ID de transação,function generateTransactionId(): string {
-  const timestamp =  
+// Função para gerar ID de transação,function generateTransactionId(): string {,  const timestamp =  
 const random = Math.random().toString(36).substring(2, 10),  return `TXN_${timestamp}_${random}`.toUpperCase()
 }
 
 // Função para gerar link de pagamento (simulado)
 async function generatePaymentLink(payment: any) {
-  // Em produção, integraria com Stripe, Mercado Pago
- etc.
+  // Em produção, integraria com Stripe, Mercado Pago, etc.
   
-  // Simular diferentes métodos de pagamento baseado na moeda,  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-  
+  // Simular diferentes métodos de pagamento baseado na moeda,  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000',  
   if (payment.currency === 'BRL') {
-    // Mercado Pago para BRL,    return {,      provider: 'Mercado Pago',      url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,      qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,      pixKey: generatePixKey()
-      methods: ['PIX', 'Cartão de Crédito', 'Boleto']
+    // Mercado Pago para BRL,    return {,      provider: 'Mercado Pago',      url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,      qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,      pixKey: generatePixKey(),      methods: ['PIX', 'Cartão de Crédito', 'Boleto']
     }
   } else if (payment.currency === 'USD') {
-    // Stripe para USD,    return {,      provider: 'Stripe',      url: `${baseUrl}/api/payments/${payment.id}/stripe`
-      methods: ['Credit Card', 'Bank Transfer']
+    // Stripe para USD,    return {,      provider: 'Stripe',      url: `${baseUrl}/api/payments/${payment.id}/stripe`,      methods: ['Credit Card', 'Bank Transfer']
     }
   } else {
-    // PayPal para outras moedas,    return {,      provider: 'PayPal',      url: `${baseUrl}/api/payments/${payment.id}/paypal`
-      methods: ['PayPal', 'Credit Card']
+    // PayPal para outras moedas,    return {,      provider: 'PayPal',      url: `${baseUrl}/api/payments/${payment.id}/paypal`,      methods: ['PayPal', 'Credit Card']
     }
   }
 }
 
-// Gerar chave PIX simulada,function generatePixKey(): string {
-  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`
+// Gerar chave PIX simulada,function generatePixKey(): string {,  return `visa2any.${Date.now().toString().slice(-6)}@mp.com.br`
 }
 
 // POST /api/payments/packages - Criar pacotes de pagamento pré-definidos,
@@ -131,8 +116,7 @@ export async function PUT(request: NextRequest) {,  try {
     const body = await request.json()
 const { action } = body,
     if (action === 'get_plans') {
-      // Retornar pacotes disponíveis
-      const packages = [,        {
+      // Retornar pacotes disponíveis,      const packages = [,        {
           id: 'basic_consultation',          name: 'Consulta Básica',          description: 'Análise de elegibilidade com IA + Consultoria humana de 30min',          price: 299,          currency: 'BRL',          features: [,            'Análise IA completa de elegibilidade',            'Consultoria humana de 30 minutos',            'Relatório detalhado por país',            'Lista de documentos necessários',            'Suporte por email 48h'
           ]
           popular: false
@@ -145,8 +129,7 @@ const { action } = body,
           ]
           popular: false,          guarantee: true
         }
-        // Pacotes internacionais,        {
-          id: 'international_basic',          name: 'International Basic',          description: 'AI Analysis + 30min Human Consultation',          price: 99,          currency: 'USD',          features: [,            'Complete AI eligibility analysis',            '30-minute human consultation',            'Detailed country report',            'Required documents list',            '48h email support'
+        // Pacotes internacionais,        {,          id: 'international_basic',          name: 'International Basic',          description: 'AI Analysis + 30min Human Consultation',          price: 99,          currency: 'USD',          features: [,            'Complete AI eligibility analysis',            '30-minute human consultation',            'Detailed country report',            'Required documents list',            '48h email support'
           ]
           popular: false
         },        {

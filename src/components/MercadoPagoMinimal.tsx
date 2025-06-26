@@ -33,8 +33,7 @@ export default function MercadoPagoMinimal({
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Log inicial
-    console.log('🚀 Iniciando MercadoPago Minimal')
+    // Log inicial,    console.log('🚀 Iniciando MercadoPago Minimal')
     console.log('📝 Dados recebidos:', { preferenceId, publicKey, amount, customerData })
     
     loadAndInit()
@@ -44,8 +43,7 @@ export default function MercadoPagoMinimal({
     try {
       console.log('1️⃣ Verificando SDK...')
       
-      // Carregar SDK se necessário
-      if (!window.MercadoPago) {
+      // Carregar SDK se necessário,      if (!window.MercadoPago) {
         console.log('2️⃣ Carregando SDK...')
         await loadScript()
       } else {
@@ -54,26 +52,21 @@ export default function MercadoPagoMinimal({
 
       console.log('3️⃣ Inicializando MercadoPago...')
       
-      // Aguardar container estar pronto
-      if (!containerRef.current) {
+      // Aguardar container estar pronto,      if (!containerRef.current) {
         console.log('❌ Container não encontrado')
         setError('Container não encontrado')
         return
       }
 
-      // Limpar container
-      containerRef.current.innerHTML = ''
+      // Limpar container,      containerRef.current.innerHTML = ''
 
-      // Inicializar MP
-      const mp = new window.MercadoPago(publicKey)
+      // Inicializar MP,      const mp = new window.MercadoPago(publicKey)
       console.log('4️⃣ MercadoPago inicializado')
 
-      // Criar bricks
-      const bricks = mp.bricks()
+      // Criar bricks,      const bricks = mp.bricks()
       console.log('5️⃣ Bricks criado')
 
-      // Configuração ULTRA BÁSICA
-      const settings = {
+      // Configuração ULTRA BÁSICA,      const settings = {
         initialization: {
           amount: amount,
           preferenceId: preferenceId
@@ -97,8 +90,7 @@ export default function MercadoPagoMinimal({
       console.log('6️⃣ Configuração:', settings)
       console.log('7️⃣ Criando payment brick...')
 
-      // Criar o brick
-      await bricks.create('payment', 'minimal-mp-container', settings)
+      // Criar o brick,      await bricks.create('payment', 'minimal-mp-container', settings)
       
       console.log('🎉 Payment brick criado com sucesso!')
 
@@ -111,8 +103,7 @@ export default function MercadoPagoMinimal({
 
   const loadScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Remover scripts existentes
-      const existingScripts = document.querySelectorAll('script[src*="mercadopago"]')
+      // Remover scripts existentes,      const existingScripts = document.querySelectorAll('script[src*="mercadopago"]')
       existingScripts.forEach(script => script.remove())
 
       const script = document.createElement('script')

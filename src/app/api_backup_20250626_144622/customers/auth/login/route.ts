@@ -8,8 +8,7 @@ import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limi
 
 
 export async function POST(request: NextRequest) {
-  // Aplicar rate limiting para login
-  const rateLimitResult = rateLimit(request, RATE_LIMITS.auth)
+  // Aplicar rate limiting para login,  const rateLimitResult = rateLimit(request, RATE_LIMITS.auth)
   
   if (!rateLimitResult.success) {
     return createRateLimitResponse(rateLimitResult.resetTime)
@@ -24,8 +23,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Buscar cliente por email
-    const customer = await prisma.client.findUnique({
+    // Buscar cliente por email,    const customer = await prisma.client.findUnique({
       where: { email }
       include: {
         consultations: {
@@ -41,8 +39,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Verificar senha
-    const passwordMatch = await bcrypt.compare(password, customer.password || '')
+    // Verificar senha,    const passwordMatch = await bcrypt.compare(password, customer.password || '')
     
     if (!passwordMatch) {
       return NextResponse.json({
@@ -50,8 +47,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Gerar token JWT
-    const jwtSecret = process.env.JWT_SECRET
+    // Gerar token JWT,    const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
@@ -69,8 +65,7 @@ export async function POST(request: NextRequest) {
       { expiresIn: '7d' }
     )
 
-    // Configurar cookie
-    const response = NextResponse.json({
+    // Configurar cookie,    const response = NextResponse.json({
       message: 'Login realizado com sucesso',
       customer: {
         id: customer.id,
@@ -82,16 +77,14 @@ export async function POST(request: NextRequest) {
         visaType: customer.visaType,
         eligibilityScore: customer.eligibilityScore
       }
-      token,
+      token
     })
 
-    // Definir cookie httpOnly
-    response.cookies.set('customer-token', token, {
+    // Definir cookie httpOnly,    response.cookies.set('customer-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
+      maxAge: 60 * 60 * 24 * 7, // 7 dias,      path: '/'
     })
 
     return response

@@ -11,8 +11,7 @@ export async function GET(
   try {
     const { slug } = params
 
-    // Buscar post por ID (slug)
-    const post = await prisma.blogPost.findFirst({
+    // Buscar post por ID (slug),    const post = await prisma.blogPost.findFirst({
       where: {
         id: slug,
         published: true
@@ -28,8 +27,7 @@ export async function GET(
       )
     }
 
-    // Incrementar views
-    await prisma.blogPost.update({
+    // Incrementar views,    await prisma.blogPost.update({
       where: { id: slug },
       data: {
         views: {
@@ -38,8 +36,7 @@ export async function GET(
       }
     })
 
-    // Buscar posts relacionados (mesma categoria
- exceto o atual)
+    // Buscar posts relacionados (mesma categoria, exceto o atual)
     const relatedPosts = await prisma.blogPost.findMany({
       where: {
         category: post.category,
@@ -56,8 +53,7 @@ export async function GET(
       post: {
         ...post,
         tags: Array.isArray(post.tags) ? post.tags : [],
-        views: post.views + 1 // Mostrar a view incrementada
-      },
+        views: post.views + 1 // Mostrar a view incrementada      },
       relatedPosts: relatedPosts.map(p => ({
         ...p,
         tags: Array.isArray(p.tags) ? p.tags : []
@@ -84,8 +80,7 @@ export async function PUT(
     const { slug } = params
     const body = await request.json()
 
-    // Verificar se o post existe
-    const existingPost = await prisma.blogPost.findFirst({
+    // Verificar se o post existe,    const existingPost = await prisma.blogPost.findFirst({
       where: { id: slug }
     })
 
@@ -98,8 +93,7 @@ export async function PUT(
       )
     }
 
-    // Atualizar post
-    const updatedPost = await prisma.blogPost.update({
+    // Atualizar post,    const updatedPost = await prisma.blogPost.update({
       where: { id: slug },
       data: {
         ...body,
@@ -132,8 +126,7 @@ export async function DELETE(
   try {
     const { slug } = params
 
-    // Verificar se o post existe
-    const existingPost = await prisma.blogPost.findFirst({
+    // Verificar se o post existe,    const existingPost = await prisma.blogPost.findFirst({
       where: { id: slug }
     })
 
@@ -146,8 +139,7 @@ export async function DELETE(
       )
     }
 
-    // Soft delete - marcar como não publicado
-    await prisma.blogPost.update({
+    // Soft delete - marcar como não publicado,    await prisma.blogPost.update({
       where: { id: slug },
       data: {
         published: false,

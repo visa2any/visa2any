@@ -17,8 +17,7 @@ export default function ContactForm() {
     e.preventDefault()
     
     try {
-      // Mapear serviço para tipo de visto
-      const serviceToVisaType: Record<string, string> = {
+      // Mapear serviço para tipo de visto,      const serviceToVisaType: Record<string, string> = {
         'visto-turismo': 'turismo',
         'visto-trabalho': 'trabalho',
         'visto-estudo': 'estudo',
@@ -28,13 +27,11 @@ export default function ContactForm() {
         'outros': 'turismo'
       }
 
-      // Criar conta do cliente automaticamente (integração unificada)
-      const accountData = {
+      // Criar conta do cliente automaticamente (integração unificada),      const accountData = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        targetCountry: 'A definir', // Será atualizado baseado no serviço
-        nationality: 'Brasileira', // Padrão
+        targetCountry: 'A definir', // Será atualizado baseado no serviço,        nationality: 'Brasileira', // Padrão
         source: 'contact_form',
         product: `Contato via formulário - ${formData.service}`,
         amount: 0
@@ -49,8 +46,7 @@ export default function ContactForm() {
       const accountResult = await accountResponse.json()
 
       if (accountResult.success) {
-        // Criar interação registrando o contato
-        await fetch('/api/interactions', {
+        // Criar interação registrando o contato,        await fetch('/api/interactions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -63,8 +59,7 @@ export default function ContactForm() {
           })
         })
 
-        // Mensagem de sucesso com opção de acessar portal
-        const confirmationMessage = `✅ Mensagem enviada com sucesso!
+        // Mensagem de sucesso com opção de acessar portal,        const confirmationMessage = `✅ Mensagem enviada com sucesso!
 
 🎉 CONTA CRIADA AUTOMATICAMENTE!
 👤 Você pode acompanhar nossa resposta no seu portal pessoal.
@@ -85,8 +80,7 @@ Deseja acessar seu portal agora?`)) {
       alert('Erro ao enviar mensagem. Tente novamente ou entre em contato pelo WhatsApp.')
     }
 
-    // Limpar formulário
-    setFormData({
+    // Limpar formulário,    setFormData({
       name: '',
       email: '',
       phone: '',

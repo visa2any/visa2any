@@ -22,8 +22,7 @@ interface WebhookEndpoint {
   affiliateId?: string
 }
 
-// Simulação de storage de webhooks (em produção
- usar Redis ou banco)
+// Simulação de storage de webhooks (em produção, usar Redis ou banco)
 const webhookEndpoints = new Map<string, WebhookEndpoint[]>()
 
 // GET - Listar webhooks configurados
@@ -43,8 +42,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: endpoints.map(endpoint => ({
         ...endpoint,
-        secret: undefined // Não retornar o secret
-      }))
+        secret: undefined // Não retornar o secret      }))
     })
 
   } catch (error) {
@@ -63,12 +61,11 @@ export async function POST(request: NextRequest) {
 
     if (!affiliateId || !webhookUrl || !Array.isArray(events)) {
       return NextResponse.json({
-        error: 'affiliateId, url e events são obrigatórios',
+        error: 'affiliateId, url e events são obrigatórios'
       }, { status: 400 })
     }
 
-    // Validar URL
-    try {
+    // Validar URL,    try {
       new URL(webhookUrl)
     } catch {
       return NextResponse.json({
@@ -76,8 +73,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validar eventos
-    const validEvents = [
+    // Validar eventos,    const validEvents = [
       'conversion.created',
       'commission.approved',
       'payment.completed',
@@ -89,7 +85,7 @@ export async function POST(request: NextRequest) {
     const invalidEvents = events.filter(event => !validEvents.includes(event))
     if (invalidEvents.length > 0) {
       return NextResponse.json({
-        error: `Eventos inválidos: ${invalidEvents.join(', ')}`,
+        error: `Eventos inválidos: ${invalidEvents.join(', ')}`
       }, { status: 400 })
     }
 
@@ -102,19 +98,16 @@ export async function POST(request: NextRequest) {
       affiliateId
     }
 
-    // Adicionar ao storage
-    const existing = webhookEndpoints.get(affiliateId) || []
+    // Adicionar ao storage,    const existing = webhookEndpoints.get(affiliateId) || []
     existing.push(endpoint)
     webhookEndpoints.set(affiliateId, existing)
 
-    // Testar webhook
-    const testResult = await testWebhook(endpoint)
+    // Testar webhook,    const testResult = await testWebhook(endpoint)
 
     return NextResponse.json({
       data: {
         ...endpoint,
-        secret: undefined, // Não retornar o secret
-        testResult,
+        secret: undefined, // Não retornar o secret,        testResult
       }
     })
 
@@ -147,8 +140,7 @@ export async function PUT(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // Atualizar endpoint
-    endpoints[index] = { ...endpoints[index], ...updateData }
+    // Atualizar endpoint,    endpoints[index] = { ...endpoints[index], ...updateData }
     webhookEndpoints.set(affiliateId, endpoints)
 
     return NextResponse.json({
@@ -236,11 +228,10 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
       headers: {
         'Content-Type': 'application/json',
         'X-Webhook-Signature': `sha256=${signature}`,
-        'User-Agent': 'Visa2Any-Webhooks/1.0',
+        'User-Agent': 'Visa2Any-Webhooks/1.0'
       },
       body: payload,
-      signal: AbortSignal.timeout(10000) // 10 segundos timeout
-    })
+      signal: AbortSignal.timeout(10000) // 10 segundos timeout    })
 
     if (response.ok) {
       return { 
@@ -285,8 +276,7 @@ async function sendWebhookEvent(
       timestamp: new Date().toISOString()
     }
 
-    // Enviar para todos os endpoints relevantes
-    const promises = relevantEndpoints.map(async (endpoint) => {
+    // Enviar para todos os endpoints relevantes,    const promises = relevantEndpoints.map(async (endpoint) => {
       try {
         const payload = JSON.stringify(webhookEvent)
         const signature = generateSignature(payload, endpoint.secret)
@@ -297,7 +287,7 @@ async function sendWebhookEvent(
             'Content-Type': 'application/json',
             'X-Webhook-Signature': `sha256=${signature}`,
             'X-Webhook-Event': eventType,
-            'User-Agent': 'Visa2Any-Webhooks/1.0',
+            'User-Agent': 'Visa2Any-Webhooks/1.0'
           },
           body: payload,
           signal: AbortSignal.timeout(10000)

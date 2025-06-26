@@ -6,10 +6,8 @@ export async function POST(request: NextRequest) {
 
     console.log('🛒 Processando compra de upsell:', { offerId, customerId, priceId })
 
-    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe
- etc.)
-    // Por agora
- vamos simular uma resposta de sucesso
+    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe, etc.)
+    // Por agora, vamos simular uma resposta de sucesso
 
     const upsellProducts = {
       'vip-upgrade': {
@@ -48,14 +46,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Simular criação de ordem de pagamento
-    const paymentUrl = `/checkout?product=${offerId}&customer=${customerId}&price=${product.price}`
+    // Simular criação de ordem de pagamento,    const paymentUrl = `/checkout?product=${offerId}&customer=${customerId}&price=${product.price}`
 
     return NextResponse.json({
       success: true
       message: 'Redirecionando para pagamento',
       paymentUrl,
-      product,
+      product
     })
 
   } catch (error) {

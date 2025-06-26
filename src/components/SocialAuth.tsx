@@ -32,8 +32,7 @@ export default function SocialAuth({ isOpen, onClose, defaultTab = 'login', onSu
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing
-    if (errors[field]) {
+    // Clear error when user starts typing,    if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
   }
@@ -88,8 +87,7 @@ export default function SocialAuth({ isOpen, onClose, defaultTab = 'login', onSu
       if (response.ok) {
         console.log(`✅ ${activeTab === 'login' ? 'Login' : 'Cadastro'} realizado com sucesso`)
         
-        // Trigger header update
-        window.dispatchEvent(new Event('user-login'))
+        // Trigger header update,        window.dispatchEvent(new Event('user-login'))
         
         onSuccess?.(data.user)
         onClose()
@@ -108,8 +106,7 @@ export default function SocialAuth({ isOpen, onClose, defaultTab = 'login', onSu
     setIsLoading(true)
     
     try {
-      // Redirect to social auth endpoint
-      window.location.href = `/api/auth/${provider}`
+      // Redirect to social auth endpoint,      window.location.href = `/api/auth/${provider}`
     } catch (error) {
       console.error(`Erro no login com ${provider}:`, error)
       setErrors({ submit: `Erro no login com ${provider}. Tente novamente.` })

@@ -71,8 +71,7 @@ export default function BlogAdminPage() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
   const [total, setTotal] = useState(0)
 
-  // Estados do formulário
-  const [formData, setFormData] = useState({
+  // Estados do formulário,  const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',

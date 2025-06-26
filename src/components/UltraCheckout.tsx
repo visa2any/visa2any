@@ -125,8 +125,7 @@ export default function UltraCheckout({
 
   const productData = PRODUCT_DATA[productId] || {}
 
-  // Auto-save functionality
-  useEffect(() => {
+  // Auto-save functionality,  useEffect(() => {
     const savedData = localStorage.getItem(`checkout_${productId}`)
     if (savedData) {
       try {
@@ -154,12 +153,10 @@ export default function UltraCheckout({
     }
   }, [customerData, autoSave])
 
-  // Upsells inteligentes e categorizados
-  const getUpsellOffers = (): UpsellOffer[] => {
+  // Upsells inteligentes e categorizados,  const getUpsellOffers = (): UpsellOffer[] => {
     const offers: UpsellOffer[] = []
 
-    // Ofertas de velocidade
-    if (!productId.includes('vip')) {
+    // Ofertas de velocidade,    if (!productId.includes('vip')) {
       offers.push({
         id: 'instant-notifications',
         name: '⚡ Notificações Instantâneas',
@@ -174,8 +171,7 @@ export default function UltraCheckout({
       })
     }
 
-    // Ofertas de suporte
-    if (productId.includes('basic') || productId.includes('premium')) {
+    // Ofertas de suporte,    if (productId.includes('basic') || productId.includes('premium')) {
       offers.push({
         id: 'personal-consultant',
         name: '👨‍💼 Consultor Pessoal',
@@ -191,8 +187,7 @@ export default function UltraCheckout({
       })
     }
 
-    // Ofertas de bônus
-    offers.push({
+    // Ofertas de bônus,    offers.push({
       id: 'interview-mastery',
       name: '🎯 Preparação Completa',
       description: 'Kit completo de preparação para entrevista',
@@ -210,15 +205,13 @@ export default function UltraCheckout({
 
   const upsellOffers = getUpsellOffers()
 
-  // Cálculos de preço
-  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
+  // Cálculos de preço,  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
   const upsellsTotal = selectedUpsellsData.reduce((sum, offer) => sum + offer.discountedPrice, 0)
   const totalSavings = selectedUpsellsData.reduce((sum, offer) => sum + offer.savings, 0)
   const subtotal = price + upsellsTotal
   const total = subtotal
 
-  // Validação em tempo real
-  const validateField = (field: string, value: string): string => {
+  // Validação em tempo real,  const validateField = (field: string, value: string): string => {
     switch (field) {
       case 'name':
         return value.length < 2 ? 'Nome muito curto' : ''
@@ -260,8 +253,7 @@ export default function UltraCheckout({
     setIsProcessing(true)
     
     try {
-      // Usar API real do MercadoPago
-      const response = await fetch('/api/payments/mercadopago', {
+      // Usar API real do MercadoPago,      const response = await fetch('/api/payments/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -303,8 +295,7 @@ export default function UltraCheckout({
       const data = await response.json()
       
       if (data.success && data.init_point) {
-        // Limpar dados salvos após sucesso
-        localStorage.removeItem(`checkout_${productId}`)
+        // Limpar dados salvos após sucesso,        localStorage.removeItem(`checkout_${productId}`)
         window.location.href = data.init_point
       } else {
         throw new Error(data.error || 'Erro ao processar pagamento')

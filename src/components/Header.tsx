@@ -18,11 +18,9 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<UserData | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(3) // Mock notifications count
-  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState(3) // Mock notifications count,  const [showNotifications, setShowNotifications] = useState(false)
   
-  // Páginas que não precisam verificar autenticação
-  const publicPages = ['/checkout-wizard', '/checkout-moderno', '/payment', '/']
+  // Páginas que não precisam verificar autenticação,  const publicPages = ['/checkout-wizard', '/checkout-moderno', '/payment', '/']
   const [notificationsList, setNotificationsList] = useState([
     {
       id: '1',
@@ -50,10 +48,8 @@ export default function Header() {
     }
   ])
 
-  // Check user authentication on component mount
-  useEffect(() => {
-    // Não verificar autenticação em páginas públicas para evitar erros desnecessários
-    const isPublicPage = publicPages.some(page => pathname.startsWith(page))
+  // Check user authentication on component mount,  useEffect(() => {
+    // Não verificar autenticação em páginas públicas para evitar erros desnecessários,    const isPublicPage = publicPages.some(page => pathname.startsWith(page))
     if (isPublicPage) return
     
     const checkAuth = async () => {
@@ -69,33 +65,26 @@ export default function Header() {
             setUser(data.user)
           }
         } else {
-          // Status 401 é normal para usuários não logados
-          setUser(null)
+          // Status 401 é normal para usuários não logados,          setUser(null)
         }
       } catch (error) {
-        // Falha na rede ou erro de servidor - usuário não logado
-        setUser(null)
+        // Falha na rede ou erro de servidor - usuário não logado,        setUser(null)
       }
     }
     
-    // Initial check
-    checkAuth()
+    // Initial check,    checkAuth()
     
-    // Listen for login events
-    const handleUserLogin = () => {
-      setTimeout(checkAuth, 100) // Small delay to ensure cookie is set
-    }
+    // Listen for login events,    const handleUserLogin = () => {
+      setTimeout(checkAuth, 100) // Small delay to ensure cookie is set    }
     
     const handleStorageChange = () => {
       checkAuth()
     }
     
-    // Add event listeners
-    window.addEventListener('storage', handleStorageChange)
+    // Add event listeners,    window.addEventListener('storage', handleStorageChange)
     window.addEventListener('user-login', handleUserLogin)
     
-    // Cleanup
-    return () => {
+    // Cleanup,    return () => {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('user-login', handleUserLogin)
     }
@@ -121,8 +110,7 @@ export default function Header() {
       )
     )
     
-    // Update unread count
-    const unreadCount = notificationsList.filter(n => !n.read && n.id !== notificationId).length
+    // Update unread count,    const unreadCount = notificationsList.filter(n => !n.read && n.id !== notificationId).length
     setNotifications(unreadCount)
   }
 

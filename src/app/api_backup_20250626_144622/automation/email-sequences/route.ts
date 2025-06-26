@@ -8,8 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const EMAIL_TEMPLATES = {
   hot_lead_immediate: [
     {
-      delay: 0, // Imediato
-      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',
+      delay: 0, // Imediato,      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',
       template: `
 Olá {name}
 
@@ -34,11 +33,10 @@ Att,
 Ana Silva
 Consultora Sênior Visa2Any
 📱 +55 11 99999-9999
-      `,
+      `
     },
     {
-      delay: 60, // 1 hora depois se não respondeu
-      subject: '⏰ {name}, restam apenas algumas horas...',
+      delay: 60, // 1 hora depois se não respondeu,      subject: '⏰ {name}, restam apenas algumas horas...',
       template: `
 {name}
 
@@ -84,11 +82,10 @@ Clique aqui para começar: {aiAnalysisLink}
 
 Att,
 Equipe Visa2Any
-      `,
+      `
     },
     {
-      delay: 1440, // 24 horas
-      subject: '📚 {name}, baixe nossos guias exclusivos',
+      delay: 1440, // 24 horas,      subject: '📚 {name}, baixe nossos guias exclusivos',
       template: `
 Oi {name}!
 
@@ -107,11 +104,10 @@ Pegue os seus aqui: {leadMagnetsLink}
 PS: Tudo 100% gratuito, sem pegadinha! 
 
 Equipe Visa2Any
-      `,
+      `
     },
     {
-      delay: 4320, // 3 dias
-      subject: '🎯 {name}, vamos criar sua estratégia?',
+      delay: 4320, // 3 dias,      subject: '🎯 {name}, vamos criar sua estratégia?',
       template: `
 {name}
 
@@ -158,11 +154,10 @@ Nos próximos dias vou te enviar mais dicas valiosas!
 
 Att,
 Equipe Visa2Any
-      `,
+      `
     },
     {
-      delay: 2880, // 2 dias
-      subject: '💡 {name}, dica #1: Por onde começar',
+      delay: 2880, // 2 dias,      subject: '💡 {name}, dica #1: Por onde começar',
       template: `
 Oi {name}!
 
@@ -181,11 +176,10 @@ Nossa IA Sofia pode fazer essa análise em 15 minutos:
 Próxima dica chegará em 2 dias.
 
 Equipe Visa2Any
-      `,
+      `
     },
     {
-      delay: 7200, // 5 dias
-      subject: '🔍 {name}, dica #2: Evite estes erros fatais',
+      delay: 7200, // 5 dias,      subject: '🔍 {name}, dica #2: Evite estes erros fatais',
       template: `
 {name}
 
@@ -228,21 +222,18 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // Calcular score se não fornecido
-    const score = responses ? calculateScoreFromResponses(responses) : 70
+    // Calcular score se não fornecido,    const score = responses ? calculateScoreFromResponses(responses) : 70
 
-    // Criar jobs de email para cada template da sequência
-    for (const template of templates) {
+    // Criar jobs de email para cada template da sequência,    for (const template of templates) {
       const sendAt = new Date()
       sendAt.setMinutes(sendAt.getMinutes() + template.delay)
 
-      // Processar template com variáveis
-      const processedSubject = processTemplate(template.subject, {
+      // Processar template com variáveis,      const processedSubject = processTemplate(template.subject, {
         name,
         destinationCountry,
         score,
         urgency,
-        budget,
+        budget
       })
 
       const processedBody = processTemplate(template.template, {
@@ -251,23 +242,16 @@ export async function POST(request: NextRequest) {
         score,
         urgency,
         budget,
-        schedulingLink: 'https://visa2any.com/agendar'
-
-        whatsappLink: 'https://wa.me/5511999999999'
-
-        aiAnalysisLink: 'https://visa2any.com/consultoria-ia'
-
-        leadMagnetsLink: 'https://visa2any.com/lead-magnets'
-
-        consultationLink: 'https://visa2any.com/precos'
-
-        educationalContentLink: 'https://visa2any.com/lead-magnets'
-
-        ebookLink: 'https://visa2any.com/lead-magnets'
+        schedulingLink: 'https://visa2any.com/agendar',
+    whatsappLink: 'https://wa.me/5511999999999',
+    aiAnalysisLink: 'https://visa2any.com/consultoria-ia',
+    leadMagnetsLink: 'https://visa2any.com/lead-magnets',
+    consultationLink: 'https://visa2any.com/precos',
+    educationalContentLink: 'https://visa2any.com/lead-magnets',
+    ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
-      // Agendar email (implementar com serviço de queue posteriormente)
-      await scheduleEmail({
+      // Agendar email (implementar com serviço de queue posteriormente),      await scheduleEmail({
         to: email,
         subject: processedSubject,
         body: processedBody,
@@ -303,8 +287,7 @@ function processTemplate(template: string, variables: Record<string, any>): stri
 }
 
 function calculateScoreFromResponses(responses: any): number {
-  // Lógica simplificada de cálculo de score
-  let score = 50
+  // Lógica simplificada de cálculo de score,  let score = 50
 
   if (responses.education) {
     const educationScores: Record<string, number> = {
@@ -350,10 +333,8 @@ async function scheduleEmail(emailData: {
   templateIndex: number
 }) {
   try {
-    // Em produção
- usar serviço de queue como Bull/Redis
-    // Por enquanto
- simular agendamento
+    // Em produção, usar serviço de queue como Bull/Redis
+    // Por enquanto, simular agendamento
     
     console.log(`Email agendado:`, {
       to: emailData.to,
@@ -363,14 +344,12 @@ async function scheduleEmail(emailData: {
       templateIndex: emailData.templateIndex
     })
 
-    // Se o delay for 0 (imediato)
- enviar agora
+    // Se o delay for 0 (imediato), enviar agora
     if (emailData.sendAt <= new Date()) {
       await sendEmailNow(emailData)
     }
 
-    // Salvar na base para controle
-    if (emailData.clientId) {
+    // Salvar na base para controle,    if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
           clientId: emailData.clientId,
@@ -394,15 +373,13 @@ async function sendEmailNow(emailData: {
   subject: string,
   body: string,
   sequence: string,
-  clientId?: string,
+  clientId?: string
 }) {
   try {
-    // Usar serviço de email (Resend, SendGrid
- etc.)
+    // Usar serviço de email (Resend, SendGrid, etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)
     
-    // Simular envio por enquanto
-    const response = await fetch('/api/notifications/email', {
+    // Simular envio por enquanto,    const response = await fetch('/api/notifications/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

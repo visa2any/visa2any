@@ -12,8 +12,7 @@ export async function GET() {
       where: {
         status: 'SCHEDULED',
         scheduledAt: {
-          lte: now // Posts agendados para agora ou no passado
-        }
+          lte: now // Posts agendados para agora ou no passado        }
       }
       orderBy: { scheduledAt: 'asc' },
       take: 50

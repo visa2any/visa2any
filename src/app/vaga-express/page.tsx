@@ -69,13 +69,10 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState(0)
   
-  // Estratégia de preços
-  const getAdultPrice = () => plan.price
-  const getChildPrice = () => Math.round(plan.price * 0.7) // 30% desconto para crianças
-  
+  // Estratégia de preços,  const getAdultPrice = () => plan.price
+  const getChildPrice = () => Math.round(plan.price * 0.7) // 30% desconto para crianças,  
   const getQuantityDiscount = (totalPeople: number) => {
-    if (totalPeople >= 5) return 0.15 // 15% desconto para 5+ pessoas
-    if (totalPeople >= 3) return 0.10 // 10% desconto para 3-4 pessoas
+    if (totalPeople >= 5) return 0.15 // 15% desconto para 5+ pessoas,    if (totalPeople >= 3) return 0.10 // 10% desconto para 3-4 pessoas
     return 0
   }
   

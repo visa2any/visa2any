@@ -40,14 +40,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = advisoryQuerySchema.parse(body)
 
-    // Obter expertise específica do país/visto
-    const countryExpertise = await getCountrySpecificExpertise(
+    // Obter expertise específica do país/visto,    const countryExpertise = await getCountrySpecificExpertise(
       validatedData.profile.targetCountry,
       validatedData.profile.visaType
     )
 
-    // Realizar análise baseada no tipo de consulta
-    let analysisResult
+    // Realizar análise baseada no tipo de consulta,    let analysisResult
     switch (validatedData.queryType) {
       case 'eligibility_assessment':
         analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise)
@@ -81,15 +79,13 @@ export async function POST(request: NextRequest) {
         analysisResult = await performEligibilityAssessment(validatedData.profile, countryExpertise)
     }
 
-    // Gerar recomendações estratégicas
-    const strategicRecommendations = await generateStrategicRecommendations(
+    // Gerar recomendações estratégicas,    const strategicRecommendations = await generateStrategicRecommendations(
       validatedData.profile,
       analysisResult,
       countryExpertise
     )
 
-    // Log da consulta
-    await prisma.automationLog.create({
+    // Log da consulta,    await prisma.automationLog.create({
       data: {
         type: 'ADVISORY_CONSULTATION',
         action: `advisory_${validatedData.queryType}`,
@@ -171,8 +167,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
     data: {} as any
   }
 
-  // Base de conhecimento por país
-  const countryKnowledge: Record<string, any> = {
+  // Base de conhecimento por país,  const countryKnowledge: Record<string, any> = {
     'Canada': {
       'SKILLED': {
         system: 'Express Entry',
@@ -324,8 +319,7 @@ async function getCountrySpecificExpertise(country: string, visaType: string) {
     expertise.data = countryData[visaType]
     expertise.confidenceLevel = 0.95
   } else {
-    // Fallback para países não mapeados
-    expertise.data = {
+    // Fallback para países não mapeados,    expertise.data = {
       system: 'Standard processing',
       averageProcessingTime: '6-12 months',
       keyRequirements: ['Standard documentation'],
@@ -352,8 +346,7 @@ async function performEligibilityAssessment(profile: any, expertise: any) {
   const visaType = profile.visaType
   const expertiseData = expertise.data
 
-  // Análise específica por país/visto
-  if (country === 'Canada' && visaType === 'SKILLED') {
+  // Análise específica por país/visto,  if (country === 'Canada' && visaType === 'SKILLED') {
     assessment.breakdown = await assessCanadaExpress(profile, expertiseData)
   } else if (country === 'Australia' && visaType === 'SKILLED') {
     assessment.breakdown = await assessAustraliaSkilled(profile, expertiseData)
@@ -363,12 +356,10 @@ async function performEligibilityAssessment(profile: any, expertise: any) {
     assessment.breakdown = await assessGeneric(profile, expertiseData)
   }
 
-  // Calcular score geral
-  const scores = Object.values(assessment.breakdown).filter(v => typeof v === 'number')
+  // Calcular score geral,  const scores = Object.values(assessment.breakdown).filter(v => typeof v === 'number')
   assessment.overallScore = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length
 
-  // Determinar nível de elegibilidade
-  if (assessment.overallScore >= 80) assessment.eligibilityLevel = 'high'
+  // Determinar nível de elegibilidade,  if (assessment.overallScore >= 80) assessment.eligibilityLevel = 'high'
   else if (assessment.overallScore >= 60) assessment.eligibilityLevel = 'medium'
   else assessment.eligibilityLevel = 'low'
 
@@ -385,15 +376,13 @@ async function assessCanadaExpress(profile: any, expertise: any) {
     estimatedCRS: 0
   }
 
-  // Idade (máximo 110 pontos)
-  if (profile.age <= 29) breakdown.ageScore = 100
+  // Idade (máximo 110 pontos),  if (profile.age <= 29) breakdown.ageScore = 100
   else if (profile.age <= 35) breakdown.ageScore = 90
   else if (profile.age <= 40) breakdown.ageScore = 70
   else if (profile.age <= 45) breakdown.ageScore = 40
   else breakdown.ageScore = 0
 
-  // Educação
-  const educationScores: Record<string, number> = {
+  // Educação,  const educationScores: Record<string, number> = {
     'DOCTORATE': 90,
     'MASTER': 85,
     'BACHELOR': 75,
@@ -402,17 +391,14 @@ async function assessCanadaExpress(profile: any, expertise: any) {
   }
   breakdown.educationScore = educationScores[profile.education] || 40
 
-  // Experiência (simplificado)
-  if (profile.experience >= 6) breakdown.experienceScore = 90
+  // Experiência (simplificado),  if (profile.experience >= 6) breakdown.experienceScore = 90
   else if (profile.experience >= 4) breakdown.experienceScore = 80
   else if (profile.experience >= 2) breakdown.experienceScore = 70
   else breakdown.experienceScore = 50
 
-  // Estimativa de idioma (assumindo CLB 8)
-  breakdown.languageScore = 80
+  // Estimativa de idioma (assumindo CLB 8),  breakdown.languageScore = 80
 
-  // CRS estimado (simplificado)
-  breakdown.estimatedCRS = (breakdown.ageScore + breakdown.educationScore + breakdown.languageScore + breakdown.experienceScore) / 4
+  // CRS estimado (simplificado),  breakdown.estimatedCRS = (breakdown.ageScore + breakdown.educationScore + breakdown.languageScore + breakdown.experienceScore) / 4
 
   return breakdown
 }
@@ -427,8 +413,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
     totalPoints: 0
   }
 
-  // Sistema de pontos australiano
-  if (profile.age >= 25 && profile.age <= 32) breakdown.agePoints = 30
+  // Sistema de pontos australiano,  if (profile.age >= 25 && profile.age <= 32) breakdown.agePoints = 30
   else if (profile.age >= 33 && profile.age <= 39) breakdown.agePoints = 25
   else if (profile.age >= 40 && profile.age <= 44) breakdown.agePoints = 15
   else breakdown.agePoints = 0
@@ -441,8 +426,7 @@ async function assessAustraliaSkilled(profile: any, expertise: any) {
   }
   breakdown.educationPoints = educationPoints[profile.education] || 0
 
-  breakdown.englishPoints = 10 // Assumindo proficient English
-  
+  breakdown.englishPoints = 10 // Assumindo proficient English,  
   if (profile.experience >= 8) breakdown.experiencePoints = 15
   else if (profile.experience >= 5) breakdown.experiencePoints = 10
   else if (profile.experience >= 3) breakdown.experiencePoints = 5
@@ -516,8 +500,7 @@ async function getEmbassySpecificInsights(profile: any, expertise: any) {
 }
 
 async function getRecentLawUpdates(country: string, visaType: string) {
-  // Em produção
- integrar com APIs de imigração ou feeds de notícias
+  // Em produção, integrar com APIs de imigração ou feeds de notícias
   return {
     updates: [
       {

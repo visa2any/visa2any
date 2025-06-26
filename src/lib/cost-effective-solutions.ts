@@ -90,17 +90,13 @@ class CostEffectiveSolutions {
     }
   ]
 
-  // Método principal: Agendamento Manual Assistido (GRATUITO)
-  async manualAssistedBooking(request: ManualBookingRequest): Promise<BookingResult> {
+  // Método principal: Agendamento Manual Assistido (GRATUITO),  async manualAssistedBooking(request: ManualBookingRequest): Promise<BookingResult> {
     try {
       const trackingId = `MANUAL-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`
       
-      // Calcular custo baseado no nível de serviço
-      const serviceCosts = {
-        basic: 25,    // R$ 25 - agendamento básico
-        premium: 45,  // R$ 45 - agendamento + acompanhamento
-        express: 75   // R$ 75 - agendamento urgente (24h)
-      }
+      // Calcular custo baseado no nível de serviço,      const serviceCosts = {
+        basic: 25,    // R$ 25 - agendamento básico,        premium: 45,  // R$ 45 - agendamento + acompanhamento
+        express: 75   // R$ 75 - agendamento urgente (24h)      }
       
       const cost = serviceCosts[request.serviceLevel]
       const estimatedTime = {
@@ -109,8 +105,7 @@ class CostEffectiveSolutions {
         express: '24-48 horas'
       }[request.serviceLevel]
 
-      // Criar task manual para equipe
-      await this.createManualTask({
+      // Criar task manual para equipe,      await this.createManualTask({
         trackingId,
         request,
         priority: request.serviceLevel === 'express' ? 'high' : 'normal',
@@ -118,8 +113,7 @@ class CostEffectiveSolutions {
         dueDate: this.calculateDueDate(request.serviceLevel)
       })
 
-      // Enviar instruções automáticas para o cliente
-      const instructions = this.generateClientInstructions(request, trackingId)
+      // Enviar instruções automáticas para o cliente,      const instructions = this.generateClientInstructions(request, trackingId)
 
       return {
         method: 'manual_assisted',
@@ -141,8 +135,7 @@ class CostEffectiveSolutions {
     }
   }
 
-  // Monitoramento gratuito de vagas com Playwright
-  async setupVacancyMonitoring(countries: string[]): Promise<{
+  // Monitoramento gratuito de vagas com Playwright,  async setupVacancyMonitoring(countries: string[]): Promise<{
     success: boolean
     monitoringId: string
     targets: Array<{
@@ -157,12 +150,10 @@ class CostEffectiveSolutions {
     const targets = countries.map(country => ({
       country,
       url: this.getConsulateURL(country),
-      checkInterval: this.getOptimalInterval(country), // em minutos
-      lastCheck: undefined
+      checkInterval: this.getOptimalInterval(country), // em minutos,      lastCheck: undefined
     }))
 
-    // Iniciar monitoramento em background
-    for (const target of targets) {
+    // Iniciar monitoramento em background,    for (const target of targets) {
       this.startCountryMonitoring(target, monitoringId)
     }
 
@@ -172,8 +163,7 @@ class CostEffectiveSolutions {
     }
   }
 
-  // Automação com Playwright (mais estável que Puppeteer)
-  async playwrightAutomation(country: string, visaType: string): Promise<{
+  // Automação com Playwright (mais estável que Puppeteer),  async playwrightAutomation(country: string, visaType: string): Promise<{
     success: boolean
     slots: Array<{
       date: string
@@ -184,8 +174,7 @@ class CostEffectiveSolutions {
     method: string
     cost: number
   }> {
-    // Always return mock data for now to avoid playwright compilation issues
-    console.log('Using mock automation for development')
+    // Always return mock data for now to avoid playwright compilation issues,    console.log('Using mock automation for development')
     return {
       slots: await this.getMockSlots(country),
       method: 'playwright_automation_mock',
@@ -193,8 +182,7 @@ class CostEffectiveSolutions {
     }
   }
 
-  // Sistema de alertas Telegram GRATUITO
-  async setupTelegramAlerts(): Promise<{
+  // Sistema de alertas Telegram GRATUITO,  async setupTelegramAlerts(): Promise<{
     success: boolean
     botInfo: {
       token: string
@@ -203,8 +191,7 @@ class CostEffectiveSolutions {
     }
     instructions: string
   }> {
-    // Configurar bot Telegram gratuito
-    const botToken = process.env.TELEGRAM_BOT_TOKEN || 'configure_your_bot'
+    // Configurar bot Telegram gratuito,    const botToken = process.env.TELEGRAM_BOT_TOKEN || 'configure_your_bot'
     
     const channels = [
       '@vagaexpress',
@@ -245,8 +232,7 @@ Confiabilidade: 70%
     }
   }
 
-  // Email monitoring (muito barato)
-  async setupEmailMonitoring(): Promise<{
+  // Email monitoring (muito barato),  async setupEmailMonitoring(): Promise<{
     success: boolean
     emailConfig: {
       providers: string[]
@@ -273,8 +259,7 @@ Confiabilidade: 70%
       emailConfig: {
         providers,
         keywords,
-        cost: 20 // R$ 20/mês
-      },
+        cost: 20 // R$ 20/mês      },
       instructions: `
 📧 Sistema de Email Monitoring
 
@@ -289,8 +274,7 @@ ROI: Altíssimo (quase gratuito)
     }
   }
 
-  // Workflow manual otimizado
-  async optimizedManualWorkflow(request: ManualBookingRequest): Promise<{
+  // Workflow manual otimizado,  async optimizedManualWorkflow(request: ManualBookingRequest): Promise<{
     success: boolean
     workflow: Array<{
       step: number
@@ -350,17 +334,12 @@ ROI: Altíssimo (quase gratuito)
     }
   }
 
-  // Métodos auxiliares
-  private async createManualTask(task: any): Promise<void> {
-    // Salvar task no banco ou sistema de gestão
-    console.log('Task manual criada:', task)
+  // Métodos auxiliares,  private async createManualTask(task: any): Promise<void> {
+    // Salvar task no banco ou sistema de gestão,    console.log('Task manual criada:', task)
     
-    // Aqui poderia integrar com:
-    // - Trello API (gratuito)
-    // - Notion API (gratuito)
-    // - Google Sheets (gratuito)
-    // - Sistema próprio de tasks
-  }
+    // Aqui poderia integrar com:,    // - Trello API (gratuito)
+    // - Notion API (gratuito),    // - Google Sheets (gratuito)
+    // - Sistema próprio de tasks  }
 
   private generateClientInstructions(request: ManualBookingRequest, trackingId: string): string {
     return `
@@ -409,29 +388,22 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
   }
 
   private getOptimalInterval(country: string): number {
-    // Intervalos otimizados para não sobrecarregar
-    const intervals: Record<string, number> = {
-      'usa': 30,      // 30 minutos
-      'canada': 20,   // 20 minutos  
-      'uk': 25,       // 25 minutos
-      'germany': 45,  // 45 minutos
-      'france': 35    // 35 minutos
-    }
+    // Intervalos otimizados para não sobrecarregar,    const intervals: Record<string, number> = {
+      'usa': 30,      // 30 minutos,      'canada': 20,   // 20 minutos  
+      'uk': 25,       // 25 minutos,      'germany': 45,  // 45 minutos
+      'france': 35    // 35 minutos    }
     return intervals[country] || 30
   }
 
   private async startCountryMonitoring(target: any, monitoringId: string): Promise<void> {
-    // Implementar monitoramento específico por país
-    console.log(`Monitoramento iniciado para ${target.country}`)
+    // Implementar monitoramento específico por país,    console.log(`Monitoramento iniciado para ${target.country}`)
     
     setInterval(async () => {
       try {
-        // Verificar vagas disponíveis
-        const result = await this.playwrightAutomation(target.country, 'tourist')
+        // Verificar vagas disponíveis,        const result = await this.playwrightAutomation(target.country, 'tourist')
         
         if (result.success && result.slots.length > 0) {
-          // Notificar clientes interessados
-          await this.notifyInterestedClients(target.country, result.slots)
+          // Notificar clientes interessados,          await this.notifyInterestedClients(target.country, result.slots)
         }
         
         target.lastCheck = new Date().toISOString()
@@ -442,41 +414,35 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
   }
 
   private async notifyInterestedClients(country: string, slots: any[]): Promise<void> {
-    // Notificar via WhatsApp, email
- etc.
+    // Notificar via WhatsApp, email, etc.
     console.log(`Vagas encontradas para ${country}:`, slots.length)
   }
 
   private async scrapeUSASlots(page: any): Promise<any[]> {
-    // Implementação específica para EUA
-    return [
+    // Implementação específica para EUA,    return [
       { date: '2024-07-15', time: '09:00', location: 'São Paulo', available: true },
       { date: '2024-07-18', time: '14:00', location: 'Rio de Janeiro', available: true }
     ]
   }
 
   private async scrapeCanadaSlots(page: any): Promise<any[]> {
-    // Implementação específica para Canadá
-    return [
+    // Implementação específica para Canadá,    return [
       { date: '2024-07-20', time: '10:00', location: 'São Paulo', available: true }
     ]
   }
 
   private async scrapeUKSlots(page: any): Promise<any[]> {
-    // Implementação específica para Reino Unido
-    return [
+    // Implementação específica para Reino Unido,    return [
       { date: '2024-07-22', time: '11:00', location: 'São Paulo', available: true }
     ]
   }
 
   private async genericSlotScraping(page: any): Promise<any[]> {
-    // Scraping genérico
-    return []
+    // Scraping genérico,    return []
   }
 
   private async getMockSlots(country: string): Promise<any[]> {
-    // Return mock data when playwright is not available
-    const mockSlots: Record<string, any[]> = {
+    // Return mock data when playwright is not available,    const mockSlots: Record<string, any[]> = {
       'usa': [
         { date: '2024-07-15', time: '09:00', location: 'São Paulo', available: true },
         { date: '2024-07-18', time: '14:00', location: 'Rio de Janeiro', available: true }
@@ -491,13 +457,11 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
     return mockSlots[country] || []
   }
 
-  // Listar métodos disponíveis com custos
-  getCostEffectiveMethods(): CostEffectiveMethod[] {
+  // Listar métodos disponíveis com custos,  getCostEffectiveMethods(): CostEffectiveMethod[] {
     return this.methods
   }
 
-  // Calcular ROI de cada método
-  calculateROI(method: string, monthlyVolume: number, revenuePerBooking: number): {
+  // Calcular ROI de cada método,  calculateROI(method: string, monthlyVolume: number, revenuePerBooking: number): {
     method: string
     monthlyCost: number
     monthlyRevenue: number

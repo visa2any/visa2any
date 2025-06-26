@@ -3,8 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { rateLimit, RATE_LIMITS, createRateLimitResponse } from '@/lib/rate-limiter'
 
 export async function POST(request: NextRequest) {
-  // Aplicar rate limiting para checkout/pagamento
-  const rateLimitResult = rateLimit(request, RATE_LIMITS.checkout)
+  // Aplicar rate limiting para checkout/pagamento,  const rateLimitResult = rateLimit(request, RATE_LIMITS.checkout)
   
   if (!rateLimitResult.success) {
     return createRateLimitResponse(rateLimitResult.resetTime)
@@ -20,8 +19,7 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Atualizar status do pagamento no banco
-    if (external_reference) {
+    // Atualizar status do pagamento no banco,    if (external_reference) {
       const payment = await prisma.payment.findFirst({
         where: { 
           OR: [
@@ -35,8 +33,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (payment) {
-        // Atualizar pagamento
-        await prisma.payment.update({
+        // Atualizar pagamento,        await prisma.payment.update({
           where: { id: payment.id }
           data: {
             status: status === 'approved' ? 'COMPLETED' : 'FAILED',
@@ -45,18 +42,15 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Se pagamento aprovado
- atualizar status do cliente
+        // Se pagamento aprovado, atualizar status do cliente
         if (status === 'approved') {
           await prisma.client.update({
             where: { id: payment.clientId }
             data: {
-              status: 'IN_PROCESS' // Cliente que pagou entra em processo
-            }
+              status: 'IN_PROCESS' // Cliente que pagou entra em processo            }
           })
 
-          // Criar interaction de pagamento confirmado
-          await prisma.interaction.create({
+          // Criar interaction de pagamento confirmado,          await prisma.interaction.create({
             data: {
               clientId: payment.clientId,
               type: 'AUTOMATED_EMAIL',
@@ -87,12 +81,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Se não encontrou o pagamento
- criar log
+    // Se não encontrou o pagamento, criar log
     console.warn('⚠️ Pagamento não encontrado:', {
       payment_id,
       external_reference,
-      status,
+      status
     })
 
     return NextResponse.json({

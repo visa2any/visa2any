@@ -6,14 +6,11 @@ import { notificationService } from '@/lib/notification-service'
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
     
-    // Log do webhook para debugging,    console.log('Webhook recebido:'
- body)
+    // Log do webhook para debugging,    console.log('Webhook recebido:', body)
     
-    // Processar webhook,    const result = await paymentService.processWebhook(body)
-    
+    // Processar webhook,    const result = await paymentService.processWebhook(body),    
     if (result.success && result.action === 'payment_approved') {
-      // Pagamento aprovado - notificar cliente,      if (result.trackingId) {,        await notificationService.sendPaymentConfirmation(result.trackingId)
-        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved')
+      // Pagamento aprovado - notificar cliente,      if (result.trackingId) {,        await notificationService.sendPaymentConfirmation(result.trackingId),        await notificationService.sendBookingUpdate(result.trackingId, 'payment_approved')
       }
     },    
     return NextResponse.json({,      success: result.success,      message: 'Webhook processado com sucesso'

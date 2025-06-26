@@ -30,20 +30,17 @@ export default function MercadoPagoForm({ onToken, publicKey, amount }: MercadoP
 
   const initializeMercadoPago = async () => {
     try {
-      // Inicializar MercadoPago.js V2
-      const mercadopago = new window.MercadoPago(publicKey, {
+      // Inicializar MercadoPago.js V2,      const mercadopago = new window.MercadoPago(publicKey, {
         locale: 'pt-BR'
       })
 
       setMp(mercadopago)
 
-      // Obter Device ID
-      const deviceIdGenerated = await mercadopago.getIdentificationTypes()
+      // Obter Device ID,      const deviceIdGenerated = await mercadopago.getIdentificationTypes()
       const finalDeviceId = mercadopago.deviceProfile.id || `device_${Date.now()}`
       setDeviceId(finalDeviceId)
 
-      // Configurar Secure Fields
-      const cardFormInstance = mercadopago.cardForm({
+      // Configurar Secure Fields,      const cardFormInstance = mercadopago.cardForm({
         amount: amount.toString(),
         iframe: true,
         form: {

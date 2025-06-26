@@ -7,8 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('📋 Dados recebidos:', body)
     
-    // Simular sucesso
-    return NextResponse.json({
+    // Simular sucesso,    return NextResponse.json({
       preference_id: 'test-preference-' + Date.now()
       public_key: process.env.MERCADOPAGO_PUBLIC_KEY || 'TEST-PUBLIC-KEY'
       message: 'Preferência de teste criada com sucesso'

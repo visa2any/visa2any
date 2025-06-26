@@ -27,8 +27,7 @@ export async function analyzeComment(comment: Comment): Promise<{
   urgency: 'high' | 'medium' | 'low'
   category: string
 }> {
-  // Análise básica baseada em palavras-chave
-  const content = comment.content.toLowerCase()
+  // Análise básica baseada em palavras-chave,  const content = comment.content.toLowerCase()
   
   let sentiment: 'positive' | 'negative' | 'neutral' | 'question' = 'neutral'
   let category = 'outro'
@@ -59,8 +58,7 @@ export async function generateSofiaResponse(
   analysisResult: any
 ): Promise<SofiaResponse> {
   
-  // Respostas pré-definidas baseadas no tipo de comentário
-  const responses = {
+  // Respostas pré-definidas baseadas no tipo de comentário,  const responses = {
     question: "Olá! 👋 Obrigada pelo seu interesse! Para uma resposta mais detalhada sobre seu caso específico, recomendo agendar nossa consultoria gratuita. Nossa equipe pode te orientar melhor! 🌟 Link: visa2any.com",
     positive: "Muito obrigada pelo carinho! 💙 Ficamos felizes em poder ajudar em sua jornada de imigração. Conte sempre conosco! ✈️",
     negative: "Olá! Lamentamos qualquer dificuldade. Nossa equipe está aqui para te ajudar a resolver qualquer questão. Entre em contato conosco diretamente! 💪",
@@ -126,8 +124,7 @@ export async function generateBlogPost(topic: string): Promise<{
   cta: string
 }> {
   
-  // Templates pré-definidos
-  const templates = {
+  // Templates pré-definidos,  const templates = {
     'visto-americano': {
       title: '🇺🇸 Guia Completo: Como Conseguir Visto Americano em 2024',
       content: 'Conseguir um visto americano pode parecer complexo, mas com a preparação correta, suas chances aumentam significativamente...',

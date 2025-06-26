@@ -35,11 +35,11 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
     formatDetection: {
       email: false,
       address: false,
-      telephone: false,
+      telephone: false
     },
     metadataBase: new URL(baseUrl),
     alternates: {
-      canonical: config.canonical || '/',
+      canonical: config.canonical || '/'
     },
     openGraph: {
       title: config.openGraph?.title || config.title,
@@ -51,17 +51,17 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
           url: config.openGraph?.image || '/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: config.openGraph?.title || config.title,
-        },
+          alt: config.openGraph?.title || config.title
+        }
       ],
       locale: 'pt_BR',
-      type: (config.openGraph?.type as any) || 'website',
+      type: (config.openGraph?.type as any) || 'website'
     },
     twitter: {
       card: 'summary_large_image',
       title: config.twitter?.title || config.title,
       description: config.twitter?.description || config.description,
-      images: [config.twitter?.image || '/twitter-image.jpg'],
+      images: [config.twitter?.image || '/twitter-image.jpg']
     },
     robots: {
       index: true,
@@ -71,12 +71,12 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+        'max-snippet': -1
+      }
     },
     verification: {
-      google: process.env.GOOGLE_SITE_VERIFICATION,
-    },
+      google: process.env.GOOGLE_SITE_VERIFICATION
+    }
   }
 }
 
@@ -85,16 +85,14 @@ export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Visa2Any',
-  url: 'https://visa2any.com'
-
-  logo: 'https://visa2any.com/logo.png'
-
-  description: 'Plataforma líder em assessoria de vistos, imigração e relocação internacional',
+  url: 'https://visa2any.com',
+    logo: 'https://visa2any.com/logo.png',
+    description: 'Plataforma líder em assessoria de vistos, imigração e relocação internacional',
   contactPoint: {
     '@type': 'ContactPoint',
     telephone: '+55-11-99999-9999',
     contactType: 'customer service',
-    availableLanguage: ['Portuguese', 'English'],
+    availableLanguage: ['Portuguese', 'English']
   },
   sameAs: [
     'https://facebook.com/visa2any',

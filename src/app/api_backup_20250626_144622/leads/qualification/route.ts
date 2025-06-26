@@ -15,14 +15,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Verificar se já existe cliente com este email
-    let client = await prisma.client.findUnique({
+    // Verificar se já existe cliente com este email,    let client = await prisma.client.findUnique({
       where: { email }
     })
 
     if (client) {
-      // Atualizar cliente existente com dados da qualificação
-      client = await prisma.client.update({
+      // Atualizar cliente existente com dados da qualificação,      client = await prisma.client.update({
         where: { id: client.id },
         data: {
           name: name,
@@ -37,8 +35,7 @@ export async function POST(request: NextRequest) {
         }
       })
     } else {
-      // Criar novo cliente
-      client = await prisma.client.create({
+      // Criar novo cliente,      client = await prisma.client.create({
         data: {
           name,
           email,
@@ -58,8 +55,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Registrar interação da qualificação
-    await prisma.interaction.create({
+    // Registrar interação da qualificação,    await prisma.interaction.create({
       data: {
         clientId: client.id,
         type: 'EMAIL',
@@ -71,23 +67,18 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Criar tarefas automáticas baseadas na categoria do lead
-    if (category === 'hot') {
-      // Lead quente - contato imediato
-      await createFollowUpTask(client.id, 'IMMEDIATE_CALL', 'Ligar imediatamente - Lead quente', 1)
+    // Criar tarefas automáticas baseadas na categoria do lead,    if (category === 'hot') {
+      // Lead quente - contato imediato,      await createFollowUpTask(client.id, 'IMMEDIATE_CALL', 'Ligar imediatamente - Lead quente', 1)
       await createFollowUpTask(client.id, 'SCHEDULE_CONSULTATION', 'Agendar consultoria premium', 2)
     } else if (category === 'warm') {
-      // Lead morno - email personalizado + análise IA
-      await createFollowUpTask(client.id, 'PERSONALIZED_EMAIL', 'Enviar email personalizado', 1)
+      // Lead morno - email personalizado + análise IA,      await createFollowUpTask(client.id, 'PERSONALIZED_EMAIL', 'Enviar email personalizado', 1)
       await createFollowUpTask(client.id, 'OFFER_AI_ANALYSIS', 'Oferecer análise IA gratuita', 2)
     } else {
-      // Lead frio - nurturing com conteúdo
-      await createFollowUpTask(client.id, 'SEND_LEAD_MAGNETS', 'Enviar materiais educativos', 1)
+      // Lead frio - nurturing com conteúdo,      await createFollowUpTask(client.id, 'SEND_LEAD_MAGNETS', 'Enviar materiais educativos', 1)
       await createFollowUpTask(client.id, 'ADD_TO_NURTURING', 'Adicionar à sequência de nurturing', 2)
     }
 
-    // Trigger automações de email
-    await triggerEmailAutomation(client, category, responses)
+    // Trigger automações de email,    await triggerEmailAutomation(client, category, responses)
 
     return NextResponse.json({
       message: 'Qualificação processada com sucesso',
@@ -114,26 +105,19 @@ async function createFollowUpTask(clientId: string, type: string, description: s
   try {
     const dueDate = new Date()
     
-    // Definir prazo baseado no tipo da tarefa
-    switch (type) {
+    // Definir prazo baseado no tipo da tarefa,    switch (type) {
       case 'IMMEDIATE_CALL':
-        dueDate.setMinutes(dueDate.getMinutes() + 30) // 30 minutos
-        break
+        dueDate.setMinutes(dueDate.getMinutes() + 30) // 30 minutos,        break
       case 'SCHEDULE_CONSULTATION':
-        dueDate.setHours(dueDate.getHours() + 2) // 2 horas
-        break
+        dueDate.setHours(dueDate.getHours() + 2) // 2 horas,        break
       case 'PERSONALIZED_EMAIL':
-        dueDate.setHours(dueDate.getHours() + 1) // 1 hora
-        break
+        dueDate.setHours(dueDate.getHours() + 1) // 1 hora,        break
       case 'OFFER_AI_ANALYSIS':
-        dueDate.setHours(dueDate.getHours() + 4) // 4 horas
-        break
+        dueDate.setHours(dueDate.getHours() + 4) // 4 horas,        break
       default:
-        dueDate.setDate(dueDate.getDate() + 1) // 1 dia
-    }
+        dueDate.setDate(dueDate.getDate() + 1) // 1 dia    }
 
-    // Criar tarefa no sistema (implementar posteriormente)
-    console.log(`Tarefa criada: ${type} para cliente ${clientId} com prazo ${dueDate}`)
+    // Criar tarefa no sistema (implementar posteriormente),    console.log(`Tarefa criada: ${type} para cliente ${clientId} com prazo ${dueDate}`)
     
   } catch (error) {
     console.error('Erro ao criar tarefa de follow-up:', error)
@@ -153,8 +137,7 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
       budget: responses.budget
     }
 
-    // Trigger automação baseada na categoria
-    if (category === 'hot') {
+    // Trigger automação baseada na categoria,    if (category === 'hot') {
       await fetch('/api/automation/email-sequences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

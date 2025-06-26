@@ -18,8 +18,7 @@ export interface PredictionResult {
 }
 
 export interface TimelinePrediction {
-  optimistic: number // dias
-  realistic: number
+  optimistic: number // dias,  realistic: number
   pessimistic: number
   milestones: Milestone[]
   criticalPath: string[]
@@ -30,8 +29,7 @@ export interface RiskFactor {
   category: 'document' | 'financial' | 'personal' | 'temporal' | 'strategic'
   severity: 'low' | 'medium' | 'high' | 'critical'
   description: string
-  impact: number // 0-100
-  probability: number // 0-100
+  impact: number // 0-100,  probability: number // 0-100
   mitigation: string
   cost: number
   timeToResolve: number
@@ -124,35 +122,28 @@ export class PredictiveAnalysisEngine {
    */
   private async calculateSuccessProbability(context: PromptContext): Promise<{probability: number, confidence: number}> {
     const factors = {
-      // Fatores do perfil (peso: 40%)
-      profile: this.analyzeProfileStrength(context.client, context.country),
+      // Fatores do perfil (peso: 40%),      profile: this.analyzeProfileStrength(context.client, context.country),
       
-      // Fatores documentais (peso: 25%)
-      documents: this.analyzeDocumentReadiness(context),
+      // Fatores documentais (peso: 25%),      documents: this.analyzeDocumentReadiness(context),
       
-      // Fatores temporais (peso: 15%)
-      timing: this.analyzeTimingFactors(context),
+      // Fatores temporais (peso: 15%),      timing: this.analyzeTimingFactors(context),
       
-      // Fatores históricos (peso: 20%)
-      historical: this.analyzeHistoricalTrends(context)
+      // Fatores históricos (peso: 20%),      historical: this.analyzeHistoricalTrends(context)
     }
 
-    // Cálculo ponderado
-    const probability = (
+    // Cálculo ponderado,    const probability = (
       factors.profile.score * 0.40 +
       factors.documents.score * 0.25 +
       factors.timing.score * 0.15 +
       factors.historical.score * 0.20
     )
 
-    // Confiança baseada na qualidade dos dados
-    const confidence = Math.min(
+    // Confiança baseada na qualidade dos dados,    const confidence = Math.min(
       factors.profile.confidence * 0.4 +
       factors.documents.confidence * 0.3 +
       factors.timing.confidence * 0.15 +
       factors.historical.confidence * 0.15,
-      95 // Máximo 95% de confiança
-    )
+      95 // Máximo 95% de confiança    )
 
     return {
       probability: Math.round(probability),
@@ -164,26 +155,19 @@ export class PredictiveAnalysisEngine {
    * Analisa força do perfil do cliente
    */
   private analyzeProfileStrength(client: ClientProfile, country: CountryProfile): {score: number, confidence: number} {
-    let score = 50 // Base neutra
-    let confidence = 80
+    let score = 50 // Base neutra,    let confidence = 80
 
-    // Análise por país
-    switch (country.code) {
-      case 'CA': // Canadá
-        score = this.calculateCanadaScore(client)
+    // Análise por país,    switch (country.code) {
+      case 'CA': // Canadá,        score = this.calculateCanadaScore(client)
         break
-      case 'US': // Estados Unidos  
-        score = this.calculateUSAScore(client)
+      case 'US': // Estados Unidos  ,        score = this.calculateUSAScore(client)
         break
-      case 'PT': // Portugal
-        score = this.calculatePortugalScore(client)
+      case 'PT': // Portugal,        score = this.calculatePortugalScore(client)
         break
-      case 'AU': // Austrália
-        score = this.calculateAustraliaScore(client)
+      case 'AU': // Austrália,        score = this.calculateAustraliaScore(client)
         break
       default:
-        confidence = 60 // Menor confiança para países não modelados
-    }
+        confidence = 60 // Menor confiança para países não modelados    }
 
     return { score: Math.max(0, Math.min(100, score)), confidence }
   }
@@ -194,15 +178,13 @@ export class PredictiveAnalysisEngine {
   private calculateCanadaScore(client: ClientProfile): number {
     let score = 0
 
-    // Idade (máximo 30 pontos no CRS)
-    if (client.age >= 20 && client.age <= 29) score += 30
+    // Idade (máximo 30 pontos no CRS),    if (client.age >= 20 && client.age <= 29) score += 30
     else if (client.age >= 30 && client.age <= 35) score += 25
     else if (client.age >= 36 && client.age <= 40) score += 20
     else if (client.age >= 41 && client.age <= 45) score += 10
     else score += 5
 
-    // Educação
-    const educationPoints = {
+    // Educação,    const educationPoints = {
       phd: 25,
       master: 23,
       bachelor: 21,
@@ -210,14 +192,12 @@ export class PredictiveAnalysisEngine {
     }
     score += educationPoints[client.education] || 5
 
-    // Experiência
-    if (client.workExperience >= 6) score += 15
+    // Experiência,    if (client.workExperience >= 6) score += 15
     else if (client.workExperience >= 4) score += 13
     else if (client.workExperience >= 2) score += 11
     else score += 9
 
-    // Idiomas (simplificado)
-    const englishLevel = client.languageSkills.english || 'basic'
+    // Idiomas (simplificado),    const englishLevel = client.languageSkills.english || 'basic'
     const frenchLevel = client.languageSkills.french || 'basic'
     
     if (englishLevel === 'advanced') score += 20
@@ -227,8 +207,7 @@ export class PredictiveAnalysisEngine {
     if (frenchLevel === 'advanced') score += 10
     else if (frenchLevel === 'intermediate') score += 5
 
-    // Conversão para porcentagem (CRS competitivo ~470+)
-    const crsEstimate = score
+    // Conversão para porcentagem (CRS competitivo ~470+),    const crsEstimate = score
     if (crsEstimate >= 470) return 85
     else if (crsEstimate >= 450) return 70
     else if (crsEstimate >= 400) return 55
@@ -242,15 +221,13 @@ export class PredictiveAnalysisEngine {
   private calculateUSAScore(client: ClientProfile): number {
     let score = 50
 
-    // Fatores positivos
-    if (client.income > 100000) score += 15
+    // Fatores positivos,    if (client.income > 100000) score += 15
     if (client.education === 'phd' || client.education === 'master') score += 10
     if (client.workExperience > 5) score += 10
     if (client.languageSkills.english === 'advanced') score += 10
     if (client.nationality === 'brasileira') score += 5 // Relações diplomáticas
 
-    // Fatores de risco para B1/B2
-    if (client.age < 25 || client.age > 65) score -= 10
+    // Fatores de risco para B1/B2,    if (client.age < 25 || client.age > 65) score -= 10
     if (client.maritalStatus === 'single' && !client.hasChildren) score -= 5
     if (client.income < 30000) score -= 15
 
@@ -263,20 +240,16 @@ export class PredictiveAnalysisEngine {
   private calculatePortugalScore(client: ClientProfile): number {
     let score = 75 // Portugal é mais acessível
 
-    // D7 - renda passiva
-    const minIncome = client.hasChildren ? 1200 : 670
+    // D7 - renda passiva,    const minIncome = client.hasChildren ? 1200 : 670
     if (client.income >= minIncome * 2) score += 15
     else if (client.income >= minIncome) score += 10
     else score -= 20
 
-    // Idade favorável
-    if (client.age >= 35 && client.age <= 55) score += 5
+    // Idade favorável,    if (client.age >= 35 && client.age <= 55) score += 5
 
-    // Educação
-    if (client.education === 'bachelor' || client.education === 'master') score += 5
+    // Educação,    if (client.education === 'bachelor' || client.education === 'master') score += 5
 
-    // Idioma português
-    if (client.languageSkills.portuguese === 'advanced') score += 10
+    // Idioma português,    if (client.languageSkills.portuguese === 'advanced') score += 10
     else if (client.languageSkills.portuguese === 'intermediate') score += 5
 
     return Math.max(30, Math.min(95, score))
@@ -288,29 +261,24 @@ export class PredictiveAnalysisEngine {
   private calculateAustraliaScore(client: ClientProfile): number {
     let score = 0
 
-    // Sistema de pontos similar ao Canadá
-    // Idade
+    // Sistema de pontos similar ao Canadá,    // Idade
     if (client.age >= 25 && client.age <= 32) score += 30
     else if (client.age >= 33 && client.age <= 39) score += 25
     else if (client.age >= 40 && client.age <= 44) score += 15
     else score += 0
 
-    // Inglês
-    if (client.languageSkills.english === 'advanced') score += 20
+    // Inglês,    if (client.languageSkills.english === 'advanced') score += 20
     else if (client.languageSkills.english === 'intermediate') score += 10
 
-    // Educação
-    if (client.education === 'phd') score += 20
+    // Educação,    if (client.education === 'phd') score += 20
     else if (client.education === 'master') score += 15
     else if (client.education === 'bachelor') score += 15
 
-    // Experiência
-    if (client.workExperience >= 8) score += 15
+    // Experiência,    if (client.workExperience >= 8) score += 15
     else if (client.workExperience >= 5) score += 10
     else if (client.workExperience >= 3) score += 5
 
-    // Conversão para porcentagem
-    if (score >= 70) return 80
+    // Conversão para porcentagem,    if (score >= 70) return 80
     else if (score >= 60) return 65
     else if (score >= 50) return 50
     else return 30
@@ -322,12 +290,10 @@ export class PredictiveAnalysisEngine {
   private analyzeDocumentReadiness(context: PromptContext): {score: number, confidence: number} {
     const documents = context.documents || []
     
-    // Lista de documentos essenciais por país/visto
-    const requiredDocs = this.getRequiredDocuments(context.country.code, context.client.visaType)
+    // Lista de documentos essenciais por país/visto,    const requiredDocs = this.getRequiredDocuments(context.country.code, context.client.visaType)
     
     const completeness = documents.length / requiredDocs.length
-    const score = Math.min(100, completeness * 120) // Bonificação por documentos extras
-    
+    const score = Math.min(100, completeness * 120) // Bonificação por documentos extras,    
     return {
       score: Math.round(score),
       confidence: 85
@@ -343,12 +309,10 @@ export class PredictiveAnalysisEngine {
     
     let score = 50
     
-    // Sazonalidade por país
-    const seasonalFactors = this.getSeasonalFactors(context.country.code, month)
+    // Sazonalidade por país,    const seasonalFactors = this.getSeasonalFactors(context.country.code, month)
     score += seasonalFactors * 30
     
-    // Urgência vs complexidade
-    if (context.client.age >= 44) score += 10 // Urgência de idade
+    // Urgência vs complexidade,    if (context.client.age >= 44) score += 10 // Urgência de idade
     
     return {
       score: Math.max(20, Math.min(90, score)),
@@ -368,8 +332,7 @@ export class PredictiveAnalysisEngine {
     
     const recentApprovals = historical
       .filter(case => case.outcome === 'approved')
-      .slice(-100) // Últimos 100 casos
-    
+      .slice(-100) // Últimos 100 casos,    
     const approvalRate = recentApprovals.length / Math.min(100, historical.length)
     
     return {
@@ -384,8 +347,7 @@ export class PredictiveAnalysisEngine {
   private async predictTimeline(context: PromptContext): Promise<TimelinePrediction> {
     const baseTimes = this.getBaseProcessingTimes(context.country.code, context.client.visaType)
     
-    // Fatores de ajuste
-    const complexity = this.assessComplexity(context)
+    // Fatores de ajuste,    const complexity = this.assessComplexity(context)
     const seasonal = this.getSeasonalDelay(context.country.code, new Date().getMonth() + 1)
     
     const optimistic = Math.round(baseTimes.min * (1 + complexity * 0.1))
@@ -410,20 +372,15 @@ export class PredictiveAnalysisEngine {
   private async analyzeRiskFactors(context: PromptContext): Promise<RiskFactor[]> {
     const risks: RiskFactor[] = []
     
-    // Riscos documentais
-    risks.push(...this.identifyDocumentRisks(context))
+    // Riscos documentais,    risks.push(...this.identifyDocumentRisks(context))
     
-    // Riscos financeiros
-    risks.push(...this.identifyFinancialRisks(context))
+    // Riscos financeiros,    risks.push(...this.identifyFinancialRisks(context))
     
-    // Riscos pessoais
-    risks.push(...this.identifyPersonalRisks(context))
+    // Riscos pessoais,    risks.push(...this.identifyPersonalRisks(context))
     
-    // Riscos temporais
-    risks.push(...this.identifyTemporalRisks(context))
+    // Riscos temporais,    risks.push(...this.identifyTemporalRisks(context))
     
-    // Riscos estratégicos
-    risks.push(...this.identifyStrategicRisks(context))
+    // Riscos estratégicos,    risks.push(...this.identifyStrategicRisks(context))
     
     return risks.sort((a, b) => (b.severity === 'critical' ? 2 : b.severity === 'high' ? 1 : 0) - 
                                (a.severity === 'critical' ? 2 : a.severity === 'high' ? 1 : 0))
@@ -435,8 +392,7 @@ export class PredictiveAnalysisEngine {
   private async generateRecommendations(context: PromptContext): Promise<Recommendation[]> {
     const recommendations: Recommendation[] = []
     
-    // Baseado na análise de força do perfil
-    const profileAnalysis = this.analyzeProfileStrength(context.client, context.country)
+    // Baseado na análise de força do perfil,    const profileAnalysis = this.analyzeProfileStrength(context.client, context.country)
     
     if (profileAnalysis.score < 60) {
       recommendations.push({
@@ -452,11 +408,9 @@ export class PredictiveAnalysisEngine {
       })
     }
     
-    // Recomendações específicas por país
-    recommendations.push(...this.getCountrySpecificRecommendations(context))
+    // Recomendações específicas por país,    recommendations.push(...this.getCountrySpecificRecommendations(context))
     
-    return recommendations.slice(0, 5) // Top 5 recomendações
-  }
+    return recommendations.slice(0, 5) // Top 5 recomendações  }
 
   /**
    * Busca casos comparáveis
@@ -480,8 +434,7 @@ export class PredictiveAnalysisEngine {
   private async generateNextSteps(context: PromptContext): Promise<NextStep[]> {
     const steps: NextStep[] = []
     
-    // Passos baseados no estágio atual
-    steps.push({
+    // Passos baseados no estágio atual,    steps.push({
       step: '1',
       description: 'Reunir documentação completa',
       deadline: this.addDays(new Date(), 14).toISOString().split('T')[0],
@@ -499,23 +452,19 @@ export class PredictiveAnalysisEngine {
       estimatedTime: '1 semana'
     })
     
-    // Passos específicos por país
-    steps.push(...this.getCountrySpecificSteps(context))
+    // Passos específicos por país,    steps.push(...this.getCountrySpecificSteps(context))
     
     return steps
   }
 
-  // Métodos auxiliares
-  private initializeData(): void {
-    // Inicializa dados históricos simulados
-    this.historicalData.set('CA-expressEntry', this.generateMockHistoricalData('canada', 1000))
+  // Métodos auxiliares,  private initializeData(): void {
+    // Inicializa dados históricos simulados,    this.historicalData.set('CA-expressEntry', this.generateMockHistoricalData('canada', 1000))
     this.historicalData.set('US-b1b2', this.generateMockHistoricalData('usa', 800))
     this.historicalData.set('PT-d7', this.generateMockHistoricalData('portugal', 600))
   }
 
   private generateMockHistoricalData(country: string, count: number): any[] {
-    // Simula dados históricos para treinamento do modelo
-    return Array.from({ length: count }, (_, i) => ({
+    // Simula dados históricos para treinamento do modelo,    return Array.from({ length: count }, (_, i) => ({
       id: `case_${country}_${i}`,
       profile: this.generateMockProfile(),
       outcome: Math.random() > 0.3 ? 'approved' : 'rejected',
@@ -544,8 +493,7 @@ export class PredictiveAnalysisEngine {
   }
 
   private getSeasonalFactors(countryCode: string, month: number): number {
-    // Retorna fator sazonal (-0.5 a +0.5)
-    const trends = {
+    // Retorna fator sazonal (-0.5 a +0.5),    const trends = {
       CA: [0.1, 0.2, 0.3, 0.1, -0.1, -0.2, -0.3, -0.2, 0.0, 0.1, 0.2, 0.1],
       US: [0.0, 0.1, 0.2, 0.1, -0.1, -0.2, -0.1, 0.0, 0.1, 0.2, 0.1, 0.0],
       PT: [0.2, 0.3, 0.1, 0.0, -0.1, -0.2, -0.3, -0.2, 0.0, 0.1, 0.2, 0.2]
@@ -563,8 +511,7 @@ export class PredictiveAnalysisEngine {
   }
 
   private assessComplexity(context: PromptContext): number {
-    // Retorna fator de complexidade (0-1)
-    let complexity = 0
+    // Retorna fator de complexidade (0-1),    let complexity = 0
     
     if (context.client.age > 45) complexity += 0.2
     if (context.client.hasChildren) complexity += 0.1
@@ -574,8 +521,7 @@ export class PredictiveAnalysisEngine {
   }
 
   private getSeasonalDelay(countryCode: string, month: number): number {
-    // Similar ao seasonal factors mas para delays
-    return Math.abs(this.getSeasonalFactors(countryCode, month)) * 0.2
+    // Similar ao seasonal factors mas para delays,    return Math.abs(this.getSeasonalFactors(countryCode, month)) * 0.2
   }
 
   private generateMilestones(context: PromptContext, totalDays: number): Milestone[] {
@@ -640,38 +586,31 @@ export class PredictiveAnalysisEngine {
   }
 
   private identifyFinancialRisks(context: PromptContext): RiskFactor[] {
-    // Implementação similar para riscos financeiros
-    return []
+    // Implementação similar para riscos financeiros,    return []
   }
 
   private identifyPersonalRisks(context: PromptContext): RiskFactor[] {
-    // Implementação similar para riscos pessoais
-    return []
+    // Implementação similar para riscos pessoais,    return []
   }
 
   private identifyTemporalRisks(context: PromptContext): RiskFactor[] {
-    // Implementação similar para riscos temporais
-    return []
+    // Implementação similar para riscos temporais,    return []
   }
 
   private identifyStrategicRisks(context: PromptContext): RiskFactor[] {
-    // Implementação similar para riscos estratégicos
-    return []
+    // Implementação similar para riscos estratégicos,    return []
   }
 
   private getCountrySpecificRecommendations(context: PromptContext): Recommendation[] {
-    // Implementação específica por país
-    return []
+    // Implementação específica por país,    return []
   }
 
   private getCountrySpecificSteps(context: PromptContext): NextStep[] {
-    // Implementação específica por país
-    return []
+    // Implementação específica por país,    return []
   }
 
   private calculateSimilarity(profile1: ClientProfile, profile2: Partial<ClientProfile>): number {
-    // Algoritmo de similaridade entre perfis
-    let similarity = 0
+    // Algoritmo de similaridade entre perfis,    let similarity = 0
     let factors = 0
     
     if (profile2.age) {

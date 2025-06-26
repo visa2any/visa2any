@@ -85,8 +85,7 @@ interface GermanyFormData {
     otherIncome: number
     properties: number
     investments: number
-    blockedAccount: number // Sperrkonto para estudantes
-    healthInsurance: boolean
+    blockedAccount: number // Sperrkonto para estudantes,    healthInsurance: boolean
     insuranceProvider?: string
     pensionContributions?: number
   }
@@ -245,10 +244,8 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
     }
   }
 
-  // Calculadora de elegibilidade para EU Blue Card
-  const calculateBlueCardEligibility = () => {
-    const minSalary = 58400 // 2024 minimum salary for EU Blue Card
-    const shortageOccupationSalary = 45552 // For shortage occupations
+  // Calculadora de elegibilidade para EU Blue Card,  const calculateBlueCardEligibility = () => {
+    const minSalary = 58400 // 2024 minimum salary for EU Blue Card,    const shortageOccupationSalary = 45552 // For shortage occupations
     
     const hasHigherEducation = ['bachelor', 'master', 'phd'].includes(formData.educationInfo.highestEducation)
     const meetsSalaryRequirement = formData.workInfo.monthlyIncome * 12 >= minSalary
@@ -429,8 +426,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 3: // Detalhes do Visto
-        return (
+      case 3: // Detalhes do Visto,        return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
@@ -599,8 +595,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 4: // Educação - placeholder simples
-        return (
+      case 4: // Educação - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">
@@ -610,8 +605,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 5: // Trabalho - placeholder simples
-        return (
+      case 5: // Trabalho - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">
@@ -621,8 +615,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 6: // Finanças - placeholder simples
-        return (
+      case 6: // Finanças - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">
@@ -632,8 +625,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 7: // Saúde - placeholder simples
-        return (
+      case 7: // Saúde - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">
@@ -643,8 +635,7 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
           </div>
         )
 
-      case 8: // Informações Adicionais - placeholder simples
-        return (
+      case 8: // Informações Adicionais - placeholder simples,        return (
           <div className="space-y-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">

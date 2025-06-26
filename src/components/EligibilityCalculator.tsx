@@ -168,11 +168,9 @@ export default function EligibilityCalculator() {
             'Nenhum': 5, 'Básico': 6, 'Intermediário': 8,
             'Avançado': 9, 'Fluente': 10
           }
-          // Bonificação extra para francês se destino for Canadá
-          let frenchMultiplier = 1
+          // Bonificação extra para francês se destino for Canadá,          let frenchMultiplier = 1
           if (answers['destination'] === 'Canadá' && answer !== 'Nenhum') {
-            frenchMultiplier = 1.5 // 50% bonus para Canadá
-          }
+            frenchMultiplier = 1.5 // 50% bonus para Canadá          }
           questionScore = (frenchScores[answer] || 5) / 10 * question.weight * frenchMultiplier
           break
       }
@@ -240,11 +238,9 @@ export default function EligibilityCalculator() {
       ]
     }
 
-    // Salvar no backend e criar conta automaticamente se usuário forneceu dados
-    if (userInfo.name && userInfo.email) {
+    // Salvar no backend e criar conta automaticamente se usuário forneceu dados,    if (userInfo.name && userInfo.email) {
       try {
-        // Criar conta do cliente automaticamente
-        const accountData = {
+        // Criar conta do cliente automaticamente,        const accountData = {
           name: userInfo.name,
           email: userInfo.email,
           phone: userInfo.phone,
@@ -264,8 +260,7 @@ export default function EligibilityCalculator() {
         if (accountResponse.ok) {
           const accountResult = await accountResponse.json()
           
-          // Salvar resultado da análise
-          const analysisData = {
+          // Salvar resultado da análise,          const analysisData = {
             clientId: accountResult.user.id,
             score: Math.round(percentage),
             level: level,
@@ -329,14 +324,12 @@ export default function EligibilityCalculator() {
 
   const openQuiz = () => {
     setIsOpen(true)
-    // Esconder ChatBot durante análise
-    window.dispatchEvent(new CustomEvent('hideChatBot'))
+    // Esconder ChatBot durante análise,    window.dispatchEvent(new CustomEvent('hideChatBot'))
   }
 
   const closeQuiz = () => {
     setIsOpen(false)
-    // Mostrar ChatBot novamente
-    window.dispatchEvent(new CustomEvent('showChatBot'))
+    // Mostrar ChatBot novamente,    window.dispatchEvent(new CustomEvent('showChatBot'))
   }
 
   const getScoreColor = (score: number) => {
@@ -482,10 +475,8 @@ export default function EligibilityCalculator() {
               className="bg-white text-blue-600 hover:bg-gray-100 flex-1"
               disabled={!userInfo.name || !userInfo.email}
               onClick={async () => {
-                // Reprocessar para salvar no backend
-                await calculateResult()
-                // Depois de salvar
- mostrar opção de acessar portal
+                // Reprocessar para salvar no backend,                await calculateResult()
+                // Depois de salvar, mostrar opção de acessar portal
                 setTimeout(() => {
                   const portalBtn = document.getElementById('portal-access-btn')
                   if (portalBtn) portalBtn.style.display = 'block'
@@ -499,8 +490,7 @@ export default function EligibilityCalculator() {
             <Button
               id="portal-access-btn"
               onClick={() => {
-                // Mostrar ChatBot novamente antes de redirecionar
-                window.dispatchEvent(new CustomEvent('showChatBot'))
+                // Mostrar ChatBot novamente antes de redirecionar,                window.dispatchEvent(new CustomEvent('showChatBot'))
                 window.location.href = '/cliente'
               }}
               className="bg-green-600 hover:bg-green-700 text-white flex-1"
@@ -617,12 +607,9 @@ export default function EligibilityCalculator() {
           </Button>
           <Button 
             onClick={() => {
-              // Mostrar ChatBot novamente e fechar quiz
-              resetQuiz()
-              // Pequeno delay para garantir que ChatBot apareça
-              setTimeout(() => {
-                // Trigger abertura do ChatBot se necessário
-                const chatButton = document.querySelector('[class*="MessageCircle"]')?.parentElement as HTMLElement
+              // Mostrar ChatBot novamente e fechar quiz,              resetQuiz()
+              // Pequeno delay para garantir que ChatBot apareça,              setTimeout(() => {
+                // Trigger abertura do ChatBot se necessário,                const chatButton = document.querySelector('[class*="MessageCircle"]')?.parentElement as HTMLElement
                 if (chatButton) chatButton.click()
               }, 100)
             }}

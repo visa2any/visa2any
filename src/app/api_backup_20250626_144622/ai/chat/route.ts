@@ -20,8 +20,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = chatMessageSchema.parse(body)
 
-    // Obter contexto do cliente se disponível
-    let clientContext = null
+    // Obter contexto do cliente se disponível,    let clientContext = null
     if (validatedData.clientId) {
       clientContext = await prisma.client.findUnique({
         where: { id: validatedData.clientId },
@@ -37,15 +36,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Processar mensagem com Sofia IA
-    const sofiaResponse = await processSofiaMessage(
+    // Processar mensagem com Sofia IA,    const sofiaResponse = await processSofiaMessage(
       validatedData.message,
       clientContext,
       validatedData.context
     )
 
-    // Salvar interação se tem cliente
-    if (validatedData.clientId) {
+    // Salvar interação se tem cliente,    if (validatedData.clientId) {
       await prisma.interaction.create({
         data: {
           type: 'AUTOMATED_EMAIL',
@@ -59,8 +56,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Log da conversa
-    await prisma.automationLog.create({
+    // Log da conversa,    await prisma.automationLog.create({
       data: {
         type: 'AI_CHAT_INTERACTION',
         action: 'chat_with_sofia',
@@ -124,11 +120,9 @@ export async function GET(request: NextRequest) {
 
 // Função principal da Sofia IA
 async function processSofiaMessage(message: string, clientContext: any, context: any) {
-  // Detectar intenção
-  const intent = detectIntent(message)
+  // Detectar intenção,  const intent = detectIntent(message)
   
-  // Gerar resposta baseada na intenção e contexto
-  const response = await generateSofiaResponse(intent, message, clientContext, context)
+  // Gerar resposta baseada na intenção e contexto,  const response = await generateSofiaResponse(intent, message, clientContext, context)
   
   return {
     message: response.message,
@@ -151,24 +145,21 @@ function detectIntent(message: string) {
     let score = 0
     const matchedKeywords: string[] = []
     
-    // Verificar keywords
-    for (const keyword of intentData.keywords) {
+    // Verificar keywords,    for (const keyword of intentData.keywords) {
       if (lowercaseMessage.includes(keyword.toLowerCase())) {
         score += 1
         matchedKeywords.push(keyword)
       }
     }
     
-    // Verificar patterns
-    for (const pattern of intentData.patterns) {
+    // Verificar patterns,    for (const pattern of intentData.patterns) {
       const regex = new RegExp(pattern, 'i')
       if (regex.test(lowercaseMessage)) {
         score += 2
       }
     }
     
-    // Calcular confiança
-    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
+    // Calcular confiança,    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
     
     if (confidence > bestMatch.confidence) {
       bestMatch = {
@@ -228,7 +219,7 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
               type: 'start_analysis',
               label: 'Iniciar Análise Completa',
               clientId: clientContext.id
-            }],
+            }]
           }
         }
       }
@@ -431,8 +422,7 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
 async function getDocumentsResponse(country: string, clientName: string) {
   const countryLower = country.toLowerCase()
   
-  // Buscar requisitos na base de conhecimento
-  const requirements = await prisma.visaRequirement.findFirst({
+  // Buscar requisitos na base de conhecimento,  const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: country },
       isActive: true
@@ -467,12 +457,11 @@ Quer uma análise completa do seu perfil?`,
       actions: [{
         type: 'start_analysis',
         label: 'Iniciar Análise Completa'
-      }],
+      }]
     }
   }
   
-  // Resposta genérica se não tem dados específicos
-  const genericDocs = getGenericDocuments(countryLower)
+  // Resposta genérica se não tem dados específicos,  const genericDocs = getGenericDocuments(countryLower)
   return {
     message: `${clientName}, aqui estão os documentos típicos para ${country}:
 
@@ -491,7 +480,7 @@ ${genericDocs}
     actions: [{
       type: 'start_analysis',
       label: 'Análise Gratuita Agora'
-    }],
+    }]
   }
 }
 
@@ -582,32 +571,32 @@ function getSofiaIntents() {
     
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
-      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances'],
+      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']
     },
     
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
-      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário'],
+      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']
     },
     
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
-      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo'],
+      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']
     },
     
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
-      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo'],
+      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']
     },
     
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
-      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano'],
+      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']
     },
     
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
-      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora'],
+      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']
     }
   }
 }

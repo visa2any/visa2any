@@ -23,7 +23,7 @@ export async function PATCH(,
     return NextResponse.json({
       success: true
       message: 'Status atualizado com sucesso',
-      socialPost,
+      socialPost
     })
 
   } catch (error) {

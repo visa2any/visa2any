@@ -16,8 +16,7 @@ export default function ClientsOverview() {
       priority: 'high' as const,
       lastContactAt: '2024-01-15T10:30:00Z'
     },
-    // Add more mock clients as needed
-  ])
+    // Add more mock clients as needed  ])
 
   return (
     <div className="space-y-6">

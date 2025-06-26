@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {,  try {,    const { offerId, customerId, priceId } = await request.json(),
     console.log('🛒 Processando compra de upsell:', { offerId, customerId, priceId })
 
-    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe
- etc.)
+    // Aqui integraria com o sistema de pagamentos (MercadoPago, Stripe, etc.)
     // Por agora, vamos simular uma resposta de sucesso
 
     const upsellProducts = {,      'vip-upgrade': {,        name: 'Upgrade VIP',        price: 3497,        description: 'Serviço premium com garantia de aprovação'
