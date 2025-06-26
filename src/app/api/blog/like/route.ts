@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
-        { error: 'Token de acesso requerido' },
+        { error: 'Token de acesso requerido' }
         { status: 401 }
       )
     }
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-        { error: 'Erro interno do servidor' },
+        { error: 'Erro interno do servidor' }
         { status: 500 }
       )
     }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       userId = decoded.userId
     } catch {
       return NextResponse.json(
-        { error: 'Token inválido' },
+        { error: 'Token inválido' }
         { status: 401 }
       )
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (!postId || !action) {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
       const existingLike = await prisma.blogPostLike.findUnique({
         where: {
           userId_postId: {
-            userId,
-            postId,
+            userId
+            postId
           }
         }
       })
@@ -58,16 +58,16 @@ export async function POST(request: NextRequest) {
       if (!existingLike) {
         await prisma.blogPostLike.create({
           data: {
-            userId,
-            postId,
+            userId
+            postId
           }
         })
       }
     } else if (action === 'unlike') {
       await prisma.blogPostLike.deleteMany({
         where: {
-          userId,
-          postId,
+          userId
+          postId
         }
       })
     }
@@ -78,15 +78,15 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      success: true,
-      likeCount,
-      action,
+      success: true
+      likeCount
+      action
     })
 
   } catch (error) {
     console.error('Error handling blog like:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

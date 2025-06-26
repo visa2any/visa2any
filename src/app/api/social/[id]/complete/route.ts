@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function PATCH(,
-  request: NextRequest,
+export async function PATCH(
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -14,16 +14,16 @@ export async function PATCH(,
       where: { id }
       data: {
         status: status === 'published' ? 'PUBLISHED' : status.toUpperCase()
-        publishedAt: status === 'published' ? new Date() : undefined,
-        engagement: engagement || undefined,
+        publishedAt: status === 'published' ? new Date() : undefined
+        engagement: engagement || undefined
         updatedAt: new Date()
       }
     })
 
     return NextResponse.json({
       success: true
-      message: 'Status atualizado com sucesso',
-      socialPost,
+      message: 'Status atualizado com sucesso'
+      socialPost
     })
 
   } catch (error) {

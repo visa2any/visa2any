@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
           
           chatIds.add(chatId)
           messages.push({
-            chatId,
-            firstName,
-            username,
-            text,
+            chatId
+            firstName
+            username
+            text
             date: new Date(update.message.date * 1000).toLocaleString()
           })
         }
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      token: `${token.substring(0, 10)}...`,
-      totalUpdates: data.result?.length || 0,
+      token: `${token.substring(0, 10)}...`
+      totalUpdates: data.result?.length || 0
       uniqueChatIds: Array.from(chatIds)
       messages: messages.slice(-5), // Últimas 5 mensagens
       rawData: data
@@ -64,12 +64,12 @@ export async function POST(request: NextRequest) {
 
     // Enviar mensagem de teste
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
+      method: 'POST'
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: chatId
         text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅'
       })
     })
@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: data.ok
-      data,
-      sentTo: chatId,
+      data
+      sentTo: chatId
       message: message || 'Mensagem de teste'
     })
 

@@ -27,14 +27,14 @@ export async function GET(request: NextRequest) {
         })
 
       case 'all':
-        const [allChannels, allAlerts, allStats] = await Promise.all([,
+        const [allChannels, allAlerts, allStats] = await Promise.all([
           monitoringDataService.getChannels()
           monitoringDataService.getAlerts()
           monitoringDataService.getStats()
         ])
         return NextResponse.json({
           channels: allChannels
-          alerts: allAlerts,
+          alerts: allAlerts
           stats: allStats
         })
 

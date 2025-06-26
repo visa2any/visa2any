@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 export async function GET(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { slug: string } }
 ) {
   try {
@@ -14,7 +14,7 @@ export async function GET(
     // Buscar post por ID (slug)
     const post = await prisma.blogPost.findFirst({
       where: {
-        id: slug,
+        id: slug
         published: true
       }
     })
@@ -23,14 +23,14 @@ export async function GET(
       return NextResponse.json(
         {
           error: 'Post não encontrado'
-        },
+        }
         { status: 404 }
       )
     }
 
     // Incrementar views
     await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
         views: {
           increment: 1
@@ -41,11 +41,11 @@ export async function GET(
     // Buscar posts relacionados (mesma categoria, exceto o atual)
     const relatedPosts = await prisma.blogPost.findMany({
       where: {
-        category: post.category,
-        id: { not: post.id },
+        category: post.category
+        id: { not: post.id }
         published: true
-      },
-      take: 4,
+      }
+      take: 4
       orderBy: {
         publishDate: 'desc'
       }
@@ -53,12 +53,12 @@ export async function GET(
 
     return NextResponse.json({
       post: {
-        ...post,
-        tags: Array.isArray(post.tags) ? post.tags : [],
+        ...post
+        tags: Array.isArray(post.tags) ? post.tags : []
         views: post.views + 1 // Mostrar a view incrementada
-      },
+      }
       relatedPosts: relatedPosts.map(p => ({
-        ...p,
+        ...p
         tags: Array.isArray(p.tags) ? p.tags : []
       }))
     })
@@ -69,14 +69,14 @@ export async function GET(
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }
 }
 
 export async function PUT(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { slug: string } }
 ) {
   try {
@@ -92,23 +92,23 @@ export async function PUT(
       return NextResponse.json(
         {
           error: 'Post não encontrado'
-        },
+        }
         { status: 404 }
       )
     }
 
     // Atualizar post
     const updatedPost = await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
-        ...body,
+        ...body
         updatedAt: new Date()
       }
     })
 
     return NextResponse.json({
       post: {
-        ...updatedPost,
+        ...updatedPost
         tags: Array.isArray(updatedPost.tags) ? updatedPost.tags : []
       }
     })
@@ -118,14 +118,14 @@ export async function PUT(
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { slug: string } }
 ) {
   try {
@@ -140,16 +140,16 @@ export async function DELETE(
       return NextResponse.json(
         {
           error: 'Post não encontrado'
-        },
+        }
         { status: 404 }
       )
     }
 
     // Soft delete - marcar como não publicado
     await prisma.blogPost.update({
-      where: { id: slug },
+      where: { id: slug }
       data: {
-        published: false,
+        published: false
         updatedAt: new Date()
       }
     })
@@ -163,7 +163,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }

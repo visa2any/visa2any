@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Não autorizado' },
+        { error: 'Não autorizado' }
         { status: 401 }
       )
     }
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao verificar usuário:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

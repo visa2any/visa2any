@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true
-      message: 'Posts agendados processados com sucesso',
+      message: 'Posts agendados processados com sucesso'
       timestamp: new Date().toISOString()
     })
 
@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     service: 'Social Posts Cron Job'
-    status: 'active',
-    description: 'Processa posts agendados para redes sociais',
-    schedule: 'A cada 5 minutos',
+    status: 'active'
+    description: 'Processa posts agendados para redes sociais'
+    schedule: 'A cada 5 minutos'
     lastRun: new Date().toISOString()
   })
 }

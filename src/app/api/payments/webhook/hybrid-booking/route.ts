@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Buscar detalhes do pagamento no MercadoPago
     const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
       headers: {
-        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
       }
     })
 
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
       include: {
         client: {
           select: {
-            id: true,
-            name: true,
-            email: true,
+            id: true
+            name: true
+            email: true
             phone: true
           }
         }
@@ -88,10 +88,10 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
     await prisma.hybridPayment.update({
       where: { id: hybridPayment.id }
       data: {
-        status: 'APPROVED',
-        paymentMethod: paymentData.payment_method_id,
+        status: 'APPROVED'
+        paymentMethod: paymentData.payment_method_id
         paymentId: paymentData.id.toString()
-        paidAmount: paymentData.transaction_amount,
+        paidAmount: paymentData.transaction_amount
         paidAt: new Date(paymentData.date_approved)
         updatedAt: new Date()
       }
@@ -100,14 +100,14 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
     // Criar registro de agendamento para consultor
     const booking = await prisma.hybridBooking.create({
       data: {
-        paymentId: hybridPayment.id,
-        clientId: hybridPayment.clientId,
-        country: hybridPayment.country,
-        consulate: hybridPayment.consulate,
-        availableDates: hybridPayment.availableDates,
-        plan: hybridPayment.plan,
-        urgency: hybridPayment.urgency,
-        status: 'CONSULTANT_ASSIGNED',
+        paymentId: hybridPayment.id
+        clientId: hybridPayment.clientId
+        country: hybridPayment.country
+        consulate: hybridPayment.consulate
+        availableDates: hybridPayment.availableDates
+        plan: hybridPayment.plan
+        urgency: hybridPayment.urgency
+        status: 'CONSULTANT_ASSIGNED'
         assignedAt: new Date()
         deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))
         createdAt: new Date()
@@ -116,26 +116,26 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
 
     // Notificar consultor para agendar
     await notifyConsultantToBook({
-      bookingId: booking.id,
-      paymentId: hybridPayment.id,
-      client: hybridPayment.client,
-      country: hybridPayment.country,
-      consulate: hybridPayment.consulate,
-      plan: hybridPayment.plan,
-      urgency: hybridPayment.urgency,
-      availableDates: hybridPayment.availableDates,
-      paidAmount: paymentData.transaction_amount,
-      paymentMethod: paymentData.payment_method_id,
+      bookingId: booking.id
+      paymentId: hybridPayment.id
+      client: hybridPayment.client
+      country: hybridPayment.country
+      consulate: hybridPayment.consulate
+      plan: hybridPayment.plan
+      urgency: hybridPayment.urgency
+      availableDates: hybridPayment.availableDates
+      paidAmount: paymentData.transaction_amount
+      paymentMethod: paymentData.payment_method_id
       deadline: booking.deadline
     })
 
     // Notificar cliente sobre confirmação
     await notifyClientPaymentConfirmed({
-      client: hybridPayment.client,
-      country: hybridPayment.country,
-      consulate: hybridPayment.consulate,
-      plan: hybridPayment.plan,
-      paidAmount: paymentData.transaction_amount,
+      client: hybridPayment.client
+      country: hybridPayment.country
+      consulate: hybridPayment.consulate
+      plan: hybridPayment.plan
+      paidAmount: paymentData.transaction_amount
       paymentMethod: getPaymentMethodName(paymentData.payment_method_id)
       bookingId: booking.id
     })
@@ -153,7 +153,7 @@ async function processPendingPayment(hybridPayment: any, paymentData: any) {
     await prisma.hybridPayment.update({
       where: { id: hybridPayment.id }
       data: {
-        status: 'PENDING_PAYMENT',
+        status: 'PENDING_PAYMENT'
         paymentId: paymentData.id.toString()
         updatedAt: new Date()
       }
@@ -180,10 +180,10 @@ ${paymentData.payment_method_id === 'pix' ?
 📞 Dúvidas? Responda esta mensagem.`
 
     await fetch('/api/notifications/whatsapp', {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        to: hybridPayment.client.phone,
+        to: hybridPayment.client.phone
         message: message
       })
     })
@@ -199,9 +199,9 @@ async function processRejectedPayment(hybridPayment: any, paymentData: any) {
     await prisma.hybridPayment.update({
       where: { id: hybridPayment.id }
       data: {
-        status: 'REJECTED',
+        status: 'REJECTED'
         paymentId: paymentData.id.toString()
-        rejectionReason: paymentData.status_detail,
+        rejectionReason: paymentData.status_detail
         updatedAt: new Date()
       }
     })
@@ -230,10 +230,10 @@ Infelizmente seu pagamento não foi aprovado:
 📞 Precisa de ajuda? Responda esta mensagem.`
 
     await fetch('/api/notifications/whatsapp', {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        to: hybridPayment.client.phone,
+        to: hybridPayment.client.phone
         message: message
       })
     })
@@ -246,14 +246,14 @@ Infelizmente seu pagamento não foi aprovado:
 // Notificar consultor para fazer agendamento
 async function notifyConsultantToBook(data: any) {
   const urgencyEmoji = {
-    'NORMAL': '⏰',
-    'URGENT': '🚨',
+    'NORMAL': '⏰'
+    'URGENT': '🚨'
     'EMERGENCY': '🔥'
   }
 
   const planEmoji = {
-    'BASIC': '🥉',
-    'PREMIUM': '🥈',
+    'BASIC': '🥉'
+    'PREMIUM': '🥈'
     'VIP': '🥇'
   }
 
@@ -293,11 +293,11 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
 
   try {
     await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text: message,
+        chat_id: process.env.TELEGRAM_CHAT_ID
+        text: message
         parse_mode: 'HTML'
       })
     })
@@ -341,10 +341,10 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
 
   try {
     await fetch('/api/notifications/whatsapp', {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        to: data.client.phone,
+        to: data.client.phone
         message: message
       })
     })
@@ -366,11 +366,11 @@ function getBookingDeadline(urgency: string): number {
 function getPaymentMethodName(methodId: string): string {
   const methods: { [key: string]: string } = {
     'pix': 'PIX'
-    'master': 'Mastercard',
-    'visa': 'Visa',
-    'elo': 'Elo',
-    'hipercard': 'Hipercard',
-    'bolbradesco': 'Boleto Bradesco',
+    'master': 'Mastercard'
+    'visa': 'Visa'
+    'elo': 'Elo'
+    'hipercard': 'Hipercard'
+    'bolbradesco': 'Boleto Bradesco'
     'account_money': 'Saldo Mercado Pago'
   }
   return methods[methodId] || 'Cartão'
@@ -379,12 +379,12 @@ function getPaymentMethodName(methodId: string): string {
 function getRejectionReason(detail: string): string {
   const reasons: { [key: string]: string } = {
     'cc_rejected_insufficient_amount': 'Saldo/limite insuficiente'
-    'cc_rejected_bad_filled_card_number': 'Número do cartão inválido',
-    'cc_rejected_bad_filled_date': 'Data de vencimento inválida',
-    'cc_rejected_bad_filled_security_code': 'Código de segurança inválido',
-    'cc_rejected_bad_filled_other': 'Dados do cartão incorretos',
-    'cc_rejected_blacklist': 'Cartão bloqueado',
-    'cc_rejected_high_risk': 'Transação de alto risco',
+    'cc_rejected_bad_filled_card_number': 'Número do cartão inválido'
+    'cc_rejected_bad_filled_date': 'Data de vencimento inválida'
+    'cc_rejected_bad_filled_security_code': 'Código de segurança inválido'
+    'cc_rejected_bad_filled_other': 'Dados do cartão incorretos'
+    'cc_rejected_blacklist': 'Cartão bloqueado'
+    'cc_rejected_high_risk': 'Transação de alto risco'
     'cc_rejected_max_attempts': 'Muitas tentativas'
   }
   return reasons[detail] || 'Verifique os dados e tente novamente'

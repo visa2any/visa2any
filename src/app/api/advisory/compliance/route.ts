@@ -4,24 +4,24 @@ import { z } from 'zod'
 
 // Schema para verificação de compliance
 const complianceCheckSchema = z.object({
-  clientId: z.string(),
-  country: z.string(),
-  visaType: z.string(),
+  clientId: z.string()
+  country: z.string()
+  visaType: z.string()
   documents: z.array(z.object({
-    id: z.string(),
-    type: z.string(),
-    fileName: z.string(),
-    status: z.string(),
-    uploadDate: z.string(),
-    expiryDate: z.string().optional(),
-    issuingCountry: z.string().optional(),
+    id: z.string()
+    type: z.string()
+    fileName: z.string()
+    status: z.string()
+    uploadDate: z.string()
+    expiryDate: z.string().optional()
+    issuingCountry: z.string().optional()
     metadata: z.record(z.any()).optional()
-  })),
+  }))
   checkType: z.enum([
-    'pre_submission',
-    'embassy_compliance',
-    'document_validity',
-    'completeness_check',
+    'pre_submission'
+    'embassy_compliance'
+    'document_validity'
+    'completeness_check'
     'authenticity_verification'
   ])
 })
@@ -34,37 +34,37 @@ export async function POST(request: NextRequest) {
 
     // Obter requisitos específicos do país/visto
     const requirements = await getComplianceRequirements(
-      validatedData.country,
+      validatedData.country
       validatedData.visaType
     )
 
     // Realizar verificação de compliance
     const complianceResult = await performComplianceCheck(
-      validatedData.documents,
-      requirements,
+      validatedData.documents
+      requirements
       validatedData.checkType
     )
 
     // Gerar relatório detalhado
     const detailedReport = await generateComplianceReport(
-      complianceResult,
-      requirements,
-      validatedData.country,
+      complianceResult
+      requirements
+      validatedData.country
       validatedData.visaType
     )
 
     // Salvar resultado da verificação
     await prisma.automationLog.create({
       data: {
-        type: 'COMPLIANCE_CHECK',
-        action: `compliance_${validatedData.checkType}`,
-        clientId: validatedData.clientId,
-        success: true,
+        type: 'COMPLIANCE_CHECK'
+        action: `compliance_${validatedData.checkType}`
+        clientId: validatedData.clientId
+        success: true
         details: {
-          checkType: validatedData.checkType,
-          complianceScore: complianceResult.overallScore,
-          complianceLevel: complianceResult.complianceLevel,
-          issuesCount: complianceResult.issues.length,
+          checkType: validatedData.checkType
+          complianceScore: complianceResult.overallScore
+          complianceLevel: complianceResult.complianceLevel
+          issuesCount: complianceResult.issues.length
           passedCount: complianceResult.passed.length
         }
       }
@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        compliance: complianceResult,
-        report: detailedReport,
-        recommendations: generateComplianceRecommendations(complianceResult),
+        compliance: complianceResult
+        report: detailedReport
+        recommendations: generateComplianceRecommendations(complianceResult)
         nextSteps: generateComplianceNextSteps(complianceResult, validatedData.checkType)
       }
     })
@@ -83,16 +83,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro na verificação de compliance:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     if (!country || !visaType) {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -117,9 +117,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: country,
-        visaType: visaType,
-        requirements: requirements,
+        country: country
+        visaType: visaType
+        requirements: requirements
         lastUpdated: new Date().toISOString()
       }
     })
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao obter requisitos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -141,190 +141,190 @@ async function getComplianceRequirements(country: string, visaType: string, deta
       'SKILLED': {
         mandatory: [
           {
-            type: 'passport',
-            name: 'Passaporte válido',
-            validity: '6 months beyond intended stay',
-            pages: 'At least 2 blank pages',
+            type: 'passport'
+            name: 'Passaporte válido'
+            validity: '6 months beyond intended stay'
+            pages: 'At least 2 blank pages'
             specifications: {
-              format: 'PDF scan',
-              resolution: '300 DPI minimum',
-              color: 'Color scan required',
+              format: 'PDF scan'
+              resolution: '300 DPI minimum'
+              color: 'Color scan required'
               pages: 'All pages including blank ones'
             }
-          },
+          }
           {
-            type: 'language_test',
-            name: 'Teste de idioma',
-            validity: '2 years',
-            acceptedTests: ['IELTS', 'CELPIP', 'TEF', 'TCF'],
+            type: 'language_test'
+            name: 'Teste de idioma'
+            validity: '2 years'
+            acceptedTests: ['IELTS', 'CELPIP', 'TEF', 'TCF']
             minimumScores: {
-              'IELTS': 'CLB 7 (6.0 each band)',
-              'CELPIP': 'CLB 7 (7 each skill)',
-              'TEF': 'CLB 7 equivalent',
+              'IELTS': 'CLB 7 (6.0 each band)'
+              'CELPIP': 'CLB 7 (7 each skill)'
+              'TEF': 'CLB 7 equivalent'
               'TCF': 'CLB 7 equivalent'
             }
-          },
+          }
           {
-            type: 'education_assessment',
-            name: 'Avaliação educacional',
-            validity: '5 years',
-            organizations: ['WES', 'ICAS', 'IQAS', 'CES', 'MCC'],
+            type: 'education_assessment'
+            name: 'Avaliação educacional'
+            validity: '5 years'
+            organizations: ['WES', 'ICAS', 'IQAS', 'CES', 'MCC']
             requirements: {
-              transcripts: 'Official sealed transcripts',
-              diplomas: 'Original or certified copies',
+              transcripts: 'Official sealed transcripts'
+              diplomas: 'Original or certified copies'
               translation: 'If not in English/French'
             }
-          },
+          }
           {
-            type: 'work_experience',
-            name: 'Comprovante de experiência',
-            format: 'Reference letters on company letterhead',
+            type: 'work_experience'
+            name: 'Comprovante de experiência'
+            format: 'Reference letters on company letterhead'
             content: [
-              'Job title and duties',
-              'Employment period',
-              'Hours per week',
-              'Annual salary',
+              'Job title and duties'
+              'Employment period'
+              'Hours per week'
+              'Annual salary'
               'Contact information'
             ]
-          },
+          }
           {
-            type: 'proof_of_funds',
-            name: 'Comprovante financeiro',
-            amount: 'CAD $13,213 for single applicant',
-            format: 'Bank statements (6 months)',
+            type: 'proof_of_funds'
+            name: 'Comprovante financeiro'
+            amount: 'CAD $13,213 for single applicant'
+            format: 'Bank statements (6 months)'
             requirements: [
-              'Average balance maintained',
-              'No large deposits without explanation',
+              'Average balance maintained'
+              'No large deposits without explanation'
               'Liquid funds only'
             ]
           }
-        ],
+        ]
         optional: [
           {
-            type: 'job_offer',
-            name: 'Oferta de emprego',
-            points: '50-200 CRS points',
+            type: 'job_offer'
+            name: 'Oferta de emprego'
+            points: '50-200 CRS points'
             requirements: ['LMIA or LMIA-exempt', 'NOC A, B, or 0']
-          },
+          }
           {
-            type: 'french_test',
-            name: 'Teste de francês',
-            points: 'Up to 50 additional points',
+            type: 'french_test'
+            name: 'Teste de francês'
+            points: 'Up to 50 additional points'
             acceptedTests: ['TEF', 'TCF']
           }
-        ],
+        ]
         embassySpecific: {
-          processingTimes: '6-8 months',
-          interviewRequired: 'Rarely',
-          medicalExam: 'Country-specific',
+          processingTimes: '6-8 months'
+          interviewRequired: 'Rarely'
+          medicalExam: 'Country-specific'
           biometrics: 'Required'
         }
-      },
+      }
       'WORK': {
         mandatory: [
           {
-            type: 'lmia',
-            name: 'LMIA ou LMIA-exempt job offer',
+            type: 'lmia'
+            name: 'LMIA ou LMIA-exempt job offer'
             validity: 'Valid at time of application'
-          },
+          }
           {
-            type: 'employment_contract',
-            name: 'Contrato de trabalho',
+            type: 'employment_contract'
+            name: 'Contrato de trabalho'
             requirements: [
-              'Signed by both parties',
-              'Detailed job description',
-              'Salary and benefits',
+              'Signed by both parties'
+              'Detailed job description'
+              'Salary and benefits'
               'Work location'
             ]
           }
         ]
       }
-    },
+    }
     
     'Australia': {
       'SKILLED': {
         mandatory: [
           {
-            type: 'skills_assessment',
-            name: 'Skills Assessment',
-            validity: '3 years (varies by occupation)',
-            organizations: 'Occupation-specific assessing authority',
+            type: 'skills_assessment'
+            name: 'Skills Assessment'
+            validity: '3 years (varies by occupation)'
+            organizations: 'Occupation-specific assessing authority'
             requirements: {
-              qualifications: 'Relevant to nominated occupation',
-              experience: 'Closely related work experience',
+              qualifications: 'Relevant to nominated occupation'
+              experience: 'Closely related work experience'
               documentation: 'Comprehensive evidence package'
             }
-          },
+          }
           {
-            type: 'english_test',
-            name: 'English Language Test',
-            validity: '3 years',
-            acceptedTests: ['IELTS', 'PTE', 'TOEFL', 'OET', 'CAE'],
+            type: 'english_test'
+            name: 'English Language Test'
+            validity: '3 years'
+            acceptedTests: ['IELTS', 'PTE', 'TOEFL', 'OET', 'CAE']
             minimumScores: {
-              'IELTS': 'Competent English (6.0 each band)',
-              'PTE': '50 each component',
+              'IELTS': 'Competent English (6.0 each band)'
+              'PTE': '50 each component'
               'TOEFL': '12 L, 13 R, 21 W, 18 S'
             }
-          },
+          }
           {
-            type: 'age_evidence',
-            name: 'Comprovante de idade',
+            type: 'age_evidence'
+            name: 'Comprovante de idade'
             requirement: 'Under 45 years at time of invitation'
           }
         ]
       }
-    },
+    }
     
     'Portugal': {
       'INVESTMENT': {
         mandatory: [
           {
-            type: 'investment_proof',
-            name: 'Comprovante de investimento',
-            minimumAmount: '€350,000',
+            type: 'investment_proof'
+            name: 'Comprovante de investimento'
+            minimumAmount: '€350,000'
             acceptedInvestments: [
-              'Real estate acquisition',
-              'Capital transfer',
-              'Job creation',
-              'Research activities',
+              'Real estate acquisition'
+              'Capital transfer'
+              'Job creation'
+              'Research activities'
               'Investment funds'
             ]
-          },
+          }
           {
-            type: 'criminal_record',
-            name: 'Certidão de antecedentes',
-            validity: '3 months',
+            type: 'criminal_record'
+            name: 'Certidão de antecedentes'
+            validity: '3 months'
             requirements: [
-              'Country of residence',
-              'Country of nationality',
+              'Country of residence'
+              'Country of nationality'
               'Any country lived 1+ years (last 5 years)'
             ]
-          },
+          }
           {
-            type: 'health_insurance',
-            name: 'Seguro saúde',
-            coverage: 'Valid in Portugal',
+            type: 'health_insurance'
+            name: 'Seguro saúde'
+            coverage: 'Valid in Portugal'
             minimum: '€30,000 coverage'
           }
         ]
-      },
+      }
       'WORK': {
         mandatory: [
           {
-            type: 'employment_contract',
-            name: 'Contrato de trabalho',
+            type: 'employment_contract'
+            name: 'Contrato de trabalho'
             requirements: [
-              'Approved by ACT',
-              'Minimum wage compliance',
+              'Approved by ACT'
+              'Minimum wage compliance'
               'Valid for at least 1 year'
             ]
-          },
+          }
           {
-            type: 'accommodation_proof',
-            name: 'Comprovante de alojamento',
+            type: 'accommodation_proof'
+            name: 'Comprovante de alojamento'
             options: [
-              'Rental contract',
-              'Property ownership',
+              'Rental contract'
+              'Property ownership'
               'Accommodation declaration'
             ]
           }
@@ -336,16 +336,16 @@ async function getComplianceRequirements(country: string, visaType: string, deta
   const countryReqs = requirementsDatabase[country]
   if (!countryReqs || !countryReqs[visaType]) {
     return {
-      mandatory: [],
-      optional: [],
-      note: 'Requirements not available - contact specialist',
+      mandatory: []
+      optional: []
+      note: 'Requirements not available - contact specialist'
       lastUpdated: new Date().toISOString()
     }
   }
 
   return {
-    ...countryReqs[visaType],
-    lastUpdated: new Date().toISOString(),
+    ...countryReqs[visaType]
+    lastUpdated: new Date().toISOString()
     source: 'Official embassy requirements'
   }
 }
@@ -353,16 +353,16 @@ async function getComplianceRequirements(country: string, visaType: string, deta
 // Realizar verificação de compliance
 async function performComplianceCheck(documents: any[], requirements: any, checkType: string) {
   const result = {
-    overallScore: 0,
-    complianceLevel: 'non_compliant' as 'compliant' | 'partial' | 'non_compliant',
-    issues: [] as any[],
-    passed: [] as any[],
-    missing: [] as any[],
-    expiring: [] as any[],
-    recommendations: [] as any[],
+    overallScore: 0
+    complianceLevel: 'non_compliant' as 'compliant' | 'partial' | 'non_compliant'
+    issues: [] as any[]
+    passed: [] as any[]
+    missing: [] as any[]
+    expiring: [] as any[]
+    recommendations: [] as any[]
     breakdown: {
-      mandatory: { completed: 0, total: 0, score: 0 },
-      optional: { completed: 0, total: 0, score: 0 },
+      mandatory: { completed: 0, total: 0, score: 0 }
+      optional: { completed: 0, total: 0, score: 0 }
       technical: { score: 0, issues: 0 }
     }
   }
@@ -380,15 +380,15 @@ async function performComplianceCheck(documents: any[], requirements: any, check
       
       if (matchingDocs.length === 0) {
         result.missing.push({
-          type: req.type,
-          name: req.name,
-          severity: 'critical',
+          type: req.type
+          name: req.name
+          severity: 'critical'
           description: `Required document missing: ${req.name}`
         })
         result.issues.push({
-          type: 'missing_document',
-          severity: 'critical',
-          document: req.name,
+          type: 'missing_document'
+          severity: 'critical'
+          document: req.name
           message: `Missing required document: ${req.name}`
         })
       } else {
@@ -398,8 +398,8 @@ async function performComplianceCheck(documents: any[], requirements: any, check
           
           if (docCheck.compliant) {
             result.passed.push({
-              type: doc.type,
-              name: req.name,
+              type: doc.type
+              name: req.name
               status: 'compliant'
             })
             result.breakdown.mandatory.completed++
@@ -415,16 +415,16 @@ async function performComplianceCheck(documents: any[], requirements: any, check
             
             if (expiryDate < now) {
               result.issues.push({
-                type: 'expired_document',
-                severity: 'critical',
-                document: doc.fileName,
+                type: 'expired_document'
+                severity: 'critical'
+                document: doc.fileName
                 message: `Document expired on ${expiryDate.toLocaleDateString()}`
               })
             } else if (expiryDate < sixMonthsFromNow) {
               result.expiring.push({
-                type: doc.type,
-                name: doc.fileName,
-                expiryDate: doc.expiryDate,
+                type: doc.type
+                name: doc.fileName
+                expiryDate: doc.expiryDate
                 daysUntilExpiry: Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
               })
             }
@@ -446,9 +446,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
       if (matchingDocs.length > 0) {
         result.breakdown.optional.completed++
         result.passed.push({
-          type: req.type,
-          name: req.name,
-          status: 'bonus',
+          type: req.type
+          name: req.name
+          status: 'bonus'
           benefit: req.points || req.benefit
         })
       }
@@ -483,8 +483,8 @@ async function performComplianceCheck(documents: any[], requirements: any, check
 // Verificar compliance de documento individual
 async function checkDocumentCompliance(document: any, requirement: any) {
   const check = {
-    compliant: true,
-    issues: [] as any[],
+    compliant: true
+    issues: [] as any[]
     warnings: [] as any[]
   }
 
@@ -495,9 +495,9 @@ async function checkDocumentCompliance(document: any, requirement: any) {
     // Verificar formato
     if (specs.format && !document.fileName.toLowerCase().endsWith('.pdf')) {
       check.issues.push({
-        type: 'format_issue',
-        severity: 'medium',
-        document: document.fileName,
+        type: 'format_issue'
+        severity: 'medium'
+        document: document.fileName
         message: `Document should be in ${specs.format} format`
       })
       check.compliant = false
@@ -510,9 +510,9 @@ async function checkDocumentCompliance(document: any, requirement: any) {
       
       if (docDPI < requiredDPI) {
         check.issues.push({
-          type: 'quality_issue',
-          severity: 'medium',
-          document: document.fileName,
+          type: 'quality_issue'
+          severity: 'medium'
+          document: document.fileName
           message: `Resolution ${docDPI} DPI is below required ${requiredDPI} DPI`
         })
         check.compliant = false
@@ -527,39 +527,39 @@ async function checkDocumentCompliance(document: any, requirement: any) {
 async function generateComplianceReport(result: any, requirements: any, country: string, visaType: string) {
   const report = {
     summary: {
-      country: country,
-      visaType: visaType,
-      overallScore: result.overallScore,
-      complianceLevel: result.complianceLevel,
-      totalIssues: result.issues.length,
-      criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,
+      country: country
+      visaType: visaType
+      overallScore: result.overallScore
+      complianceLevel: result.complianceLevel
+      totalIssues: result.issues.length
+      criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length
       readinessLevel: getReadinessLevel(result)
-    },
+    }
     sections: {
       mandatory: {
-        title: 'Documentos Obrigatórios',
-        completed: result.breakdown.mandatory.completed,
-        total: result.breakdown.mandatory.total,
-        score: result.breakdown.mandatory.score,
+        title: 'Documentos Obrigatórios'
+        completed: result.breakdown.mandatory.completed
+        total: result.breakdown.mandatory.total
+        score: result.breakdown.mandatory.score
         status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete'
-      },
+      }
       optional: {
-        title: 'Documentos Opcionais',
-        completed: result.breakdown.optional.completed,
-        total: result.breakdown.optional.total,
-        score: result.breakdown.optional.score,
+        title: 'Documentos Opcionais'
+        completed: result.breakdown.optional.completed
+        total: result.breakdown.optional.total
+        score: result.breakdown.optional.score
         benefit: 'Additional points/advantages'
-      },
+      }
       issues: {
-        critical: result.issues.filter((i: any) => i.severity === 'critical'),
-        medium: result.issues.filter((i: any) => i.severity === 'medium'),
+        critical: result.issues.filter((i: any) => i.severity === 'critical')
+        medium: result.issues.filter((i: any) => i.severity === 'medium')
         low: result.issues.filter((i: any) => i.severity === 'low')
-      },
+      }
       timeline: {
-        documentsExpiring: result.expiring,
+        documentsExpiring: result.expiring
         actionRequired: result.issues.filter((i: any) => i.severity === 'critical').length > 0
       }
-    },
+    }
     recommendations: generateDetailedRecommendations(result, requirements)
   }
 
@@ -580,10 +580,10 @@ function generateComplianceRecommendations(result: any) {
   // Recomendações para documentos faltando
   if (result.missing.length > 0) {
     recommendations.push({
-      priority: 'critical',
-      category: 'missing_documents',
-      action: `Provide ${result.missing.length} missing required documents`,
-      timeline: 'Before submission',
+      priority: 'critical'
+      category: 'missing_documents'
+      action: `Provide ${result.missing.length} missing required documents`
+      timeline: 'Before submission'
       documents: result.missing.map((m: any) => m.name)
     })
   }
@@ -591,10 +591,10 @@ function generateComplianceRecommendations(result: any) {
   // Recomendações para documentos expirando
   if (result.expiring.length > 0) {
     recommendations.push({
-      priority: 'high',
+      priority: 'high'
       category: 'expiring_documents', 
-      action: `Renew ${result.expiring.length} documents expiring soon`,
-      timeline: 'Within 30 days',
+      action: `Renew ${result.expiring.length} documents expiring soon`
+      timeline: 'Within 30 days'
       documents: result.expiring.map((e: any) => `${e.name} (expires ${e.expiryDate})`)
     })
   }
@@ -603,10 +603,10 @@ function generateComplianceRecommendations(result: any) {
   const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue')
   if (qualityIssues.length > 0) {
     recommendations.push({
-      priority: 'medium',
-      category: 'document_quality',
-      action: 'Improve document quality (resolution, format)',
-      timeline: 'Before submission',
+      priority: 'medium'
+      category: 'document_quality'
+      action: 'Improve document quality (resolution, format)'
+      timeline: 'Before submission'
       details: 'Ensure all scans meet embassy requirements'
     })
   }
@@ -617,9 +617,9 @@ function generateComplianceRecommendations(result: any) {
 // Gerar recomendações detalhadas
 function generateDetailedRecommendations(result: any, requirements: any) {
   const recommendations = {
-    immediate: [] as any[],
-    shortTerm: [] as any[],
-    longTerm: [] as any[],
+    immediate: [] as any[]
+    shortTerm: [] as any[]
+    longTerm: [] as any[]
     optional: [] as any[]
   }
   
@@ -627,8 +627,8 @@ function generateDetailedRecommendations(result: any, requirements: any) {
   const criticalIssues = result.issues.filter((i: any) => i.severity === 'critical')
   criticalIssues.forEach((issue: any) => {
     recommendations.immediate.push({
-      action: `Resolve: ${issue.message}`,
-      document: issue.document,
+      action: `Resolve: ${issue.message}`
+      document: issue.document
       timeline: '1-3 days'
     })
   })
@@ -636,8 +636,8 @@ function generateDetailedRecommendations(result: any, requirements: any) {
   // Ações de curto prazo
   if (result.expiring.length > 0) {
     recommendations.shortTerm.push({
-      action: 'Renew expiring documents',
-      documents: result.expiring.map((e: any) => e.name),
+      action: 'Renew expiring documents'
+      documents: result.expiring.map((e: any) => e.name)
       timeline: '2-4 weeks'
     })
   }
@@ -645,8 +645,8 @@ function generateDetailedRecommendations(result: any, requirements: any) {
   // Melhorias opcionais
   if (requirements.optional && result.breakdown.optional.completed < result.breakdown.optional.total) {
     recommendations.optional.push({
-      action: 'Consider providing optional documents for additional points',
-      benefit: 'Improved application strength',
+      action: 'Consider providing optional documents for additional points'
+      benefit: 'Improved application strength'
       timeline: 'Before submission'
     })
   }

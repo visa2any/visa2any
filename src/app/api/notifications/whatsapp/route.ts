@@ -7,9 +7,9 @@ import { z } from 'zod'
 const sendWhatsAppSchema = z.object({
   to: z.string().min(10, 'Número de telefone é obrigatório')
   message: z.string().min(1, 'Mensagem é obrigatória')
-  clientId: z.string().optional(),
+  clientId: z.string().optional()
   template: z.string().optional()
-  variables: z.record(z.any()).optional(),
+  variables: z.record(z.any()).optional()
   mediaUrl: z.string().url().optional()
 })
 
@@ -24,21 +24,21 @@ export async function POST(request: NextRequest) {
 
     // Enviar WhatsApp usando o serviço integrado
     const whatsAppResult = await whatsappService.sendMessage({
-      to: validatedData.to,
-      message: validatedData.message,
-      clientId: validatedData.clientId,
-      template: validatedData.template,
+      to: validatedData.to
+      message: validatedData.message
+      clientId: validatedData.clientId
+      template: validatedData.template
       variables: validatedData.variables
     })
 
     // Log do envio
     await prisma.automationLog.create({
       data: {
-        type: 'WHATSAPP',
-        action: 'send_whatsapp',
-        success: whatsAppResult.success,
-        clientId: validatedData.clientId || null,
-        error: whatsAppResult.error || null,
+        type: 'WHATSAPP'
+        action: 'send_whatsapp'
+        success: whatsAppResult.success
+        clientId: validatedData.clientId || null
+        error: whatsAppResult.error || null
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         messageId: whatsAppResult.messageId
-        sent: whatsAppResult.success,
-        queued: whatsAppResult.queued || false,
+        sent: whatsAppResult.success
+        queued: whatsAppResult.queued || false
         to: validatedData.to
       }
       message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso'

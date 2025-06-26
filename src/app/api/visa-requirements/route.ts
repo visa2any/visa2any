@@ -6,29 +6,29 @@ import { z } from 'zod'
 const visaRequirementSchema = z.object({
   country: z.string().min(1, 'País é obrigatório')
   visaType: z.string().min(1, 'Tipo de visto é obrigatório')
-  visaSubtype: z.string().optional(),
+  visaSubtype: z.string().optional()
   requiredDocuments: z.array(z.object({
-    type: z.string(),
-    name: z.string(),
-    required: z.boolean(),
+    type: z.string()
+    name: z.string()
+    required: z.boolean()
     description: z.string().optional()
     validityMonths: z.number().optional()
   }))
-  processingTime: z.string(),
+  processingTime: z.string()
   fees: z.object({
-    government: z.number(),
+    government: z.number()
     service: z.number().optional()
     currency: z.string().default('USD')
   })
   eligibilityCriteria: z.array(z.object({
-    criterion: z.string(),
-    description: z.string(),
+    criterion: z.string()
+    description: z.string()
     required: z.boolean()
   }))
-  commonPitfalls: z.array(z.string()),
+  commonPitfalls: z.array(z.string())
   successTips: z.array(z.string())
   governmentLinks: z.array(z.object({
-    name: z.string(),
+    name: z.string()
     url: z.string()
   }))
 })
@@ -65,28 +65,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar requisitos
-    const [requirements, total] = await Promise.all([,
+    const [requirements, total] = await Promise.all([
       prisma.visaRequirement.findMany({
-        where,
-        skip,
-        take: limit,
+        where
+        skip
+        take: limit
         orderBy: [
           { country: 'asc' }
           { visaType: 'asc' }
-        ],
+        ]
       })
       prisma.visaRequirement.count({ where })
     ])
 
     // Estatísticas
     const countries = await prisma.visaRequirement.groupBy({
-      by: ['country'],
+      by: ['country']
       _count: { country: true }
       where: { isActive: true }
     })
 
     const visaTypes = await prisma.visaRequirement.groupBy({
-      by: ['visaType'],
+      by: ['visaType']
       _count: { visaType: true }
       where: { isActive: true }
     })
@@ -97,23 +97,23 @@ export async function GET(request: NextRequest) {
       data: {
         requirements
         stats: {
-          totalCountries: countries.length,
-          totalVisaTypes: visaTypes.length,
-          totalRequirements: total,
+          totalCountries: countries.length
+          totalVisaTypes: visaTypes.length
+          totalRequirements: total
           countries: countries.map(c => ({
-            country: c.country,
+            country: c.country
             count: c._count.country
           }))
           visaTypes: visaTypes.map(v => ({
-            type: v.visaType,
+            type: v.visaType
             count: v._count.visaType
           }))
         }
         pagination: {
-          page,
-          limit,
-          total,
-          totalPages,
+          page
+          limit
+          total
+          totalPages
           hasMore: page < totalPages
         }
       }
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       where: {
         country_visaType_visaSubtype: {
           country: validatedData.country
-          visaType: validatedData.visaType,
+          visaType: validatedData.visaType
           visaSubtype: validatedData.visaSubtype || ''
         }
       }
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
     const requirement = await prisma.visaRequirement.create({
       data: {
         ...validatedData
-        visaSubtype: validatedData.visaSubtype || null,
+        visaSubtype: validatedData.visaSubtype || null
         lastUpdated: new Date()
       }
     })
@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
     // Log da criação
     await prisma.automationLog.create({
       data: {
-        type: 'VISA_REQUIREMENT_CREATED',
-        action: 'create_visa_requirement',
-        success: true,
+        type: 'VISA_REQUIREMENT_CREATED'
+        action: 'create_visa_requirement'
+        success: true
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -224,9 +224,9 @@ export async function PUT(request: NextRequest) {
     // Log da atualização
     await prisma.automationLog.create({
       data: {
-        type: 'VISA_REQUIREMENT_UPDATED',
-        action: 'update_visa_requirement',
-        success: true,
+        type: 'VISA_REQUIREMENT_UPDATED'
+        action: 'update_visa_requirement'
+        success: true
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'

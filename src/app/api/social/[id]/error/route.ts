@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function PATCH(,
-  request: NextRequest,
+export async function PATCH(
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -13,16 +13,16 @@ export async function PATCH(,
     const socialPost = await prisma.socialPost.update({
       where: { id }
       data: {
-        status: 'ERROR',
-        error: error || 'Erro desconhecido',
+        status: 'ERROR'
+        error: error || 'Erro desconhecido'
         updatedAt: new Date()
       }
     })
 
     return NextResponse.json({
       success: true
-      message: 'Erro registrado com sucesso',
-      socialPost,
+      message: 'Erro registrado com sucesso'
+      socialPost
     })
 
   } catch (dbError) {

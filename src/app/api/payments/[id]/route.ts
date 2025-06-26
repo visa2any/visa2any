@@ -5,13 +5,13 @@ import { z } from 'zod'
 // Schema para atualizar pagamento
 const updatePaymentSchema = z.object({
   status: z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']).optional()
-  paymentMethod: z.string().optional(),
+  paymentMethod: z.string().optional()
   transactionId: z.string().optional()
 })
 
 // GET /api/payments/[id] - Buscar pagamento específico
-export async function GET(,
-  request: NextRequest,
+export async function GET(
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -22,9 +22,9 @@ export async function GET(,
           select: { 
             id: true, 
             name: true, 
-            email: true,
-            phone: true,
-            targetCountry: true,
+            email: true
+            phone: true
+            targetCountry: true
             visaType: true
           }
         }
@@ -47,7 +47,7 @@ export async function GET(,
     return NextResponse.json({
       data: {
         ...payment
-        paymentInfo,
+        paymentInfo
       }
     })
 
@@ -62,7 +62,7 @@ export async function GET(,
 
 // PUT /api/payments/[id] - Atualizar pagamento
 export async function PUT(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -107,9 +107,9 @@ export async function PUT(
     // Log da atualização
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_UPDATED',
-        action: 'update_payment',
-        clientId: existingPayment.clientId,
+        type: 'PAYMENT_UPDATED'
+        action: 'update_payment'
+        clientId: existingPayment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -144,7 +144,7 @@ export async function PUT(
 
 // POST /api/payments/[id]/webhook - Webhook para notificações de pagamento
 export async function POST(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -192,8 +192,8 @@ export async function POST(
       where: { id: params.id }
       data: {
         status: newStatus as any
-        paymentMethod: provider,
-        transactionId: transaction_id || external_id || payment.transactionId,
+        paymentMethod: provider
+        transactionId: transaction_id || external_id || payment.transactionId
         paidAt: newStatus === 'COMPLETED' ? new Date() : null
       }
     })
@@ -206,9 +206,9 @@ export async function POST(
     // Log do webhook
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_WEBHOOK',
-        action: 'webhook_received',
-        clientId: payment.clientId,
+        type: 'PAYMENT_WEBHOOK'
+        action: 'webhook_received'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -239,46 +239,46 @@ async function generatePaymentInfo(payment: any) {
       provider: 'Mercado Pago'
       methods: [
         {
-          type: 'PIX',
-          name: 'PIX (Instantâneo)',
-          fee: 0,
-          processingTime: 'Imediato',
-          qrCode: `${baseUrl}/api/payments/${payment.id}/pix-qr`,
+          type: 'PIX'
+          name: 'PIX (Instantâneo)'
+          fee: 0
+          processingTime: 'Imediato'
+          qrCode: `${baseUrl}/api/payments/${payment.id}/pix-qr`
           pixKey: 'visa2any@mercadopago.com.br'
         }
         {
-          type: 'CREDIT_CARD',
-          name: 'Cartão de Crédito',
+          type: 'CREDIT_CARD'
+          name: 'Cartão de Crédito'
           fee: payment.amount * 0.039, // 3.9%
-          processingTime: '1-2 dias úteis',
+          processingTime: '1-2 dias úteis'
           installments: calculateInstallments(payment.amount)
         }
         {
-          type: 'BOLETO',
-          name: 'Boleto Bancário',
-          fee: 2.99,
-          processingTime: '1-3 dias úteis',
+          type: 'BOLETO'
+          name: 'Boleto Bancário'
+          fee: 2.99
+          processingTime: '1-3 dias úteis'
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias
         }
-      ],
+      ]
     }
   } else if (payment.currency === 'USD') {
     return {
       provider: 'Stripe'
       methods: [
         {
-          type: 'CREDIT_CARD',
-          name: 'Credit Card',
+          type: 'CREDIT_CARD'
+          name: 'Credit Card'
           fee: payment.amount * 0.029 + 0.30, // 2.9% + $0.30
           processingTime: '1-2 business days'
         }
         {
-          type: 'BANK_TRANSFER',
-          name: 'Bank Transfer (ACH)',
-          fee: 0.80,
+          type: 'BANK_TRANSFER'
+          name: 'Bank Transfer (ACH)'
+          fee: 0.80
           processingTime: '3-5 business days'
         }
-      ],
+      ]
     }
   }
 
@@ -286,12 +286,12 @@ async function generatePaymentInfo(payment: any) {
     provider: 'PayPal'
     methods: [
       {
-        type: 'PAYPAL',
-        name: 'PayPal',
+        type: 'PAYPAL'
+        name: 'PayPal'
         fee: payment.amount * 0.034 + 0.30, // 3.4% + fee
         processingTime: 'Instant'
       }
-    ],
+    ]
   }
 }
 
@@ -311,13 +311,13 @@ function calculateInstallments(amount: number) {
       : amount * Math.pow(1 + interestRate, i) / i
 
     installments.push({
-      number: i,
-      amount: Math.round(installmentAmount * 100) / 100,
-      total: Math.round(installmentAmount * i * 100) / 100,
-      interestRate: interestRate * 100,
+      number: i
+      amount: Math.round(installmentAmount * 100) / 100
+      total: Math.round(installmentAmount * i * 100) / 100
+      interestRate: interestRate * 100
       text: i === 1 
         ? `1x R$ ${amount.toFixed(2)} sem juros`
-        : `${i}x R$ ${installmentAmount.toFixed(2)} ${interestRate > 0 ? 'com juros' : 'sem juros'}`,
+        : `${i}x R$ ${installmentAmount.toFixed(2)} ${interestRate > 0 ? 'com juros' : 'sem juros'}`
     })
   }
 
@@ -338,12 +338,12 @@ async function processPaymentSuccess(payment: any) {
     // 2. Criar interação de confirmação
     await prisma.interaction.create({
       data: {
-        type: 'AUTOMATED_EMAIL',
-        channel: 'email',
-        direction: 'outbound',
-        subject: 'Pagamento confirmado - Próximos passos',
-        content: `Olá! Seu pagamento de ${payment.currency} ${payment.amount} foi confirmado. Em breve nossa equipe entrará em contato para dar início ao seu processo.`,
-        clientId: payment.clientId,
+        type: 'AUTOMATED_EMAIL'
+        channel: 'email'
+        direction: 'outbound'
+        subject: 'Pagamento confirmado - Próximos passos'
+        content: `Olá! Seu pagamento de ${payment.currency} ${payment.amount} foi confirmado. Em breve nossa equipe entrará em contato para dar início ao seu processo.`
+        clientId: payment.clientId
         completedAt: new Date()
       }
     })
@@ -351,7 +351,7 @@ async function processPaymentSuccess(payment: any) {
     // 3. Agendar consultoria se aplicável
     const existingConsultation = await prisma.consultation.findFirst({
       where: { 
-        clientId: payment.clientId,
+        clientId: payment.clientId
         status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
       }
     })
@@ -365,11 +365,11 @@ async function processPaymentSuccess(payment: any) {
 
       await prisma.consultation.create({
         data: {
-          type: consultationType as any,
-          status: 'SCHEDULED',
-          clientId: payment.clientId,
+          type: consultationType as any
+          status: 'SCHEDULED'
+          clientId: payment.clientId
           scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Agendar para amanhã
-          notes: `Consultoria criada automaticamente após confirmação do pagamento de ${payment.currency} ${payment.amount}`,
+          notes: `Consultoria criada automaticamente após confirmação do pagamento de ${payment.currency} ${payment.amount}`
         }
       })
     }
@@ -377,9 +377,9 @@ async function processPaymentSuccess(payment: any) {
     // 4. Log do processamento
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_SUCCESS_PROCESSED',
-        action: 'process_payment_success',
-        clientId: payment.clientId,
+        type: 'PAYMENT_SUCCESS_PROCESSED'
+        action: 'process_payment_success'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -394,9 +394,9 @@ async function processPaymentSuccess(payment: any) {
     // Log do erro
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_SUCCESS_ERROR',
-        action: 'process_payment_success',
-        clientId: payment.clientId,
+        type: 'PAYMENT_SUCCESS_ERROR'
+        action: 'process_payment_success'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'

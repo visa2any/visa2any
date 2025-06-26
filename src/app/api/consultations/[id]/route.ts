@@ -7,21 +7,21 @@ import { z } from 'zod'
 const updateConsultationSchema = z.object({
   type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']).optional()
   status: z.enum(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'RESCHEDULED']).optional()
-  scheduledAt: z.string().optional(),
+  scheduledAt: z.string().optional()
   completedAt: z.string().datetime().optional()
-  duration: z.number().optional(),
+  duration: z.number().optional()
   result: z.any().optional()
-  score: z.number().min(0).max(100).optional(),
+  score: z.number().min(0).max(100).optional()
   recommendation: z.string().optional()
-  timeline: z.string().optional(),
+  timeline: z.string().optional()
   nextSteps: z.string().optional()
-  notes: z.string().optional(),
+  notes: z.string().optional()
   consultantId: z.string().optional()
 })
 
 // GET /api/consultations/[id] - Buscar consultoria específica
-export async function GET(,
-  request: NextRequest,
+export async function GET(
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -72,7 +72,7 @@ export async function GET(,
 
 // PATCH /api/consultations/[id] - Atualizar campo específico (inline edit)
 export async function PATCH(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -118,7 +118,7 @@ export async function PATCH(
     // Atualizar consultoria
     const updatedConsultation = await prisma.consultation.update({
       where: { id }
-      data: updateData,
+      data: updateData
       include: {
         client: {
           select: { id: true, name: true, email: true }
@@ -132,9 +132,9 @@ export async function PATCH(
     // Log da atualização
     await prisma.automationLog.create({
       data: {
-        type: 'CONSULTATION_UPDATED',
-        action: 'inline_edit',
-        clientId: existingConsultation.clientId,
+        type: 'CONSULTATION_UPDATED'
+        action: 'inline_edit'
+        clientId: existingConsultation.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -168,7 +168,7 @@ export async function PATCH(
 
 // PUT /api/consultations/[id] - Atualizar consultoria
 export async function PUT(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -214,7 +214,7 @@ export async function PUT(
     // Atualizar consultoria
     const updatedConsultation = await prisma.consultation.update({
       where: { id }
-      data: updateData,
+      data: updateData
       include: {
         client: {
           select: { 
@@ -236,7 +236,7 @@ export async function PUT(
 
       // Lógica para determinar próximo status do cliente
       if (validatedData.score && validatedData.score >= 70) {
-        newClientStatus = 'IN_PROCESS',
+        newClientStatus = 'IN_PROCESS'
       } else if (validatedData.score && validatedData.score < 40) {
         newClientStatus = 'QUALIFIED' // Precisa de mais trabalho
       } else {
@@ -246,7 +246,7 @@ export async function PUT(
       await prisma.client.update({
         where: { id: existingConsultation.clientId }
         data: { 
-          status: newClientStatus,
+          status: newClientStatus
           score: validatedData.score || existingConsultation.client.score
         }
       })
@@ -255,9 +255,9 @@ export async function PUT(
     // Log da atualização
     await prisma.automationLog.create({
       data: {
-        type: 'CONSULTATION_UPDATED',
-        action: 'update_consultation',
-        clientId: existingConsultation.clientId,
+        type: 'CONSULTATION_UPDATED'
+        action: 'update_consultation'
+        clientId: existingConsultation.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -291,7 +291,7 @@ export async function PUT(
 
 // DELETE /api/consultations/[id] - Deletar consultoria
 export async function DELETE(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -322,8 +322,8 @@ export async function DELETE(
     await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_DELETED'
-        action: 'delete_consultation',
-        clientId: existingConsultation.clientId,
+        action: 'delete_consultation'
+        clientId: existingConsultation.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'

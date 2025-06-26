@@ -4,10 +4,10 @@ import { z } from 'zod'
 
 // Schema para envio de email
 const sendEmailSchema = z.object({
-  to: z.string().email('Email é obrigatório'),
+  to: z.string().email('Email é obrigatório')
   subject: z.string().min(1, 'Assunto é obrigatório').optional()
   message: z.string().min(1, 'Mensagem é obrigatória').optional()
-  template: z.string().optional(),
+  template: z.string().optional()
   clientId: z.string().optional()
   variables: z.record(z.any()).optional()
 })
@@ -15,7 +15,7 @@ const sendEmailSchema = z.object({
 // Templates de email prontos
 const EMAIL_TEMPLATES = {
   payment_confirmation: {
-    subject: '✅ Pagamento Confirmado - Visa2Any',
+    subject: '✅ Pagamento Confirmado - Visa2Any'
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
@@ -47,7 +47,7 @@ const EMAIL_TEMPLATES = {
           </p>
         </div>
       </div>
-    `,
+    `
   }
   booking_confirmation: {
     subject: '📅 Agendamento Confirmado - Visa2Any', 
@@ -75,7 +75,7 @@ const EMAIL_TEMPLATES = {
           </p>
         </div>
       </div>
-    `,
+    `
   }
 }
 
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     const validatedData = sendEmailSchema.parse(body)
 
     let emailContent = {
-      subject: validatedData.subject || 'Mensagem da Visa2Any',
+      subject: validatedData.subject || 'Mensagem da Visa2Any'
       html: validatedData.message || ''
     }
 
@@ -113,19 +113,19 @@ export async function POST(request: NextRequest) {
 
     // Enviar email usando o provedor configurado
     const emailResult = await sendEmailWithProvider({
-      to: validatedData.to,
-      subject: emailContent.subject,
+      to: validatedData.to
+      subject: emailContent.subject
       html: emailContent.html
     })
 
     // Log do envio
     await prisma.automationLog.create({
       data: {
-        type: 'EMAIL',
-        action: 'send_email',
-        success: emailResult.success,
-        clientId: validatedData.clientId || null,
-        error: emailResult.error || null,
+        type: 'EMAIL'
+        action: 'send_email'
+        success: emailResult.success
+        clientId: validatedData.clientId || null
+        error: emailResult.error || null
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         messageId: emailResult.messageId
-        sent: emailResult.success,
-        provider: emailResult.provider,
+        sent: emailResult.success
+        provider: emailResult.provider
         to: validatedData.to
       }
       message: 'Email enviado com sucesso'
@@ -170,19 +170,19 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
       const nodemailer = require('nodemailer')
       
       const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
+        host: process.env.SMTP_HOST
         port: parseInt(process.env.SMTP_PORT || '587')
-        secure: process.env.SMTP_SECURE === 'true',
+        secure: process.env.SMTP_SECURE === 'true'
         auth: {
-          user: process.env.SMTP_USER,
+          user: process.env.SMTP_USER
           pass: process.env.SMTP_PASS
         }
       })
 
       const result = await transporter.sendMail({
-        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`,
-        to: to,
-        subject: subject,
+        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`
+        to: to
+        subject: subject
         html: html
       })
 
@@ -201,24 +201,24 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   if (process.env.SENDGRID_API_KEY) {
     try {
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-        method: 'POST',
+        method: 'POST'
         headers: {
-          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`
+          'Content-Type': 'application/json'
         }
         body: JSON.stringify({
           personalizations: [{
-            to: [{ email: to }],
+            to: [{ email: to }]
             subject: subject
-          }],
+          }]
           from: {
-            email: process.env.FROM_EMAIL || 'info@visa2any.com',
+            email: process.env.FROM_EMAIL || 'info@visa2any.com'
             name: process.env.FROM_NAME || 'Visa2Any'
           }
           content: [{
-            type: 'text/html',
+            type: 'text/html'
             value: html
-          }],
+          }]
         })
       })
 

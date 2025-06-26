@@ -4,10 +4,10 @@ import { z } from 'zod'
 
 // Schema para monitoramento de mudanças legais
 const lawMonitorSchema = z.object({
-  country: z.string(),
-  visaType: z.string().optional(),
-  alertType: z.enum(['immediate', 'daily', 'weekly']),
-  clientId: z.string().optional(),
+  country: z.string()
+  visaType: z.string().optional()
+  alertType: z.enum(['immediate', 'daily', 'weekly'])
+  clientId: z.string().optional()
   keywords: z.array(z.string()).optional()
 })
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar mudanças recentes
     const recentChanges = await checkRecentLawChanges(
-      validatedData.country,
+      validatedData.country
       validatedData.visaType
     )
 
@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: validatedData.country,
-        visaType: validatedData.visaType,
-        recentChanges: recentChanges,
+        country: validatedData.country
+        visaType: validatedData.visaType
+        recentChanges: recentChanges
         monitoring: {
-          active: true,
-          alertType: validatedData.alertType,
+          active: true
+          alertType: validatedData.alertType
           lastChecked: new Date().toISOString()
         }
       }
@@ -45,16 +45,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro no monitoramento legal:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     if (!country) {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -80,11 +80,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        country: country,
-        visaType: visaType,
-        period: `${days} dias`,
-        changes: changes,
-        analysis: analysis,
+        country: country
+        visaType: visaType
+        period: `${days} dias`
+        changes: changes
+        analysis: analysis
         recommendations: generateLawChangeRecommendations(changes, analysis)
       }
     })
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar mudanças legais:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -121,25 +121,25 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
   const lawChangesDatabase: Record<string, any[]> = {
     'Canada': [
       {
-        id: 'ca-2024-001',
-        date: '2024-01-15',
-        title: 'Aumento do salário mínimo para LMIA',
-        description: 'Novo salário mínimo para aplicações LMIA aumentou para CAD $27/hora em algumas províncias',
-        visaTypes: ['WORK', 'SKILLED'],
-        impact: 'high',
-        source: 'IRCC',
-        category: 'requirements',
-        affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program'],
-      },
+        id: 'ca-2024-001'
+        date: '2024-01-15'
+        title: 'Aumento do salário mínimo para LMIA'
+        description: 'Novo salário mínimo para aplicações LMIA aumentou para CAD $27/hora em algumas províncias'
+        visaTypes: ['WORK', 'SKILLED']
+        impact: 'high'
+        source: 'IRCC'
+        category: 'requirements'
+        affectedPrograms: ['LMIA', 'Temporary Foreign Worker Program']
+      }
       {
         id: 'ca-2024-002', 
-        date: '2024-01-10',
-        title: 'Novos critérios para Express Entry',
-        description: 'IRCC introduziu sorteios baseados em categoria para certas ocupações',
-        visaTypes: ['SKILLED'],
-        impact: 'medium',
-        source: 'IRCC',
-        category: 'selection_criteria',
+        date: '2024-01-10'
+        title: 'Novos critérios para Express Entry'
+        description: 'IRCC introduziu sorteios baseados em categoria para certas ocupações'
+        visaTypes: ['SKILLED']
+        impact: 'medium'
+        source: 'IRCC'
+        category: 'selection_criteria'
         affectedPrograms: ['Federal Skilled Worker', 'Canadian Experience Class']
       }
     ]
@@ -164,16 +164,16 @@ async function getLawChanges(country: string, days: number, visaType?: string) {
 // Analisar mudanças nas leis
 async function analyzeLawChanges(changes: any[], country: string, visaType?: string) {
   const analysis = {
-    totalChanges: changes.length,
-    categories: {} as Record<string, number>,
-    impact: 'medium',
-    impactLevel: 'medium' as 'high' | 'medium' | 'low',
-    affectedPrograms: new Set<string>(),
+    totalChanges: changes.length
+    categories: {} as Record<string, number>
+    impact: 'medium'
+    impactLevel: 'medium' as 'high' | 'medium' | 'low'
+    affectedPrograms: new Set<string>()
     timeline: {
-      immediate: 0,
-      upcoming: 0,
+      immediate: 0
+      upcoming: 0
       future: 0
-    },
+    }
     recommendations: [] as string[]
   }
 
@@ -237,13 +237,13 @@ async function setupLawChangeAlerts(data: any) {
   
   await prisma.automationLog.create({
     data: {
-      type: 'LAW_CHANGE_ALERT_SETUP',
-      action: 'setup_monitoring',
-      clientId: data.clientId,
-      success: true,
+      type: 'LAW_CHANGE_ALERT_SETUP'
+      action: 'setup_monitoring'
+      clientId: data.clientId
+      success: true
       details: {
-        alertType: 'law_change_monitoring',
-        country: data.country || 'all',
+        alertType: 'law_change_monitoring'
+        country: data.country || 'all'
         visaType: data.visaType || 'all'
       }
     }
@@ -260,10 +260,10 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
   const requirementChanges = changes.filter(c => c.category === 'requirements')
   if (requirementChanges.length > 0) {
     recommendations.push({
-      priority: 'high',
-      category: 'compliance',
-      action: 'Review new requirements and ensure compliance',
-      timeline: 'Immediate',
+      priority: 'high'
+      category: 'compliance'
+      action: 'Review new requirements and ensure compliance'
+      timeline: 'Immediate'
       details: 'Requirements have changed - verify your application meets new criteria'
     })
   }
@@ -271,10 +271,10 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
   const investmentChanges = changes.filter(c => c.category === 'investment_amounts')
   if (investmentChanges.length > 0) {
     recommendations.push({
-      priority: 'high',
-      category: 'financial',
-      action: 'Review investment strategy',
-      timeline: 'Before application',
+      priority: 'high'
+      category: 'financial'
+      action: 'Review investment strategy'
+      timeline: 'Before application'
       details: 'Investment amounts have changed - adjust financial planning accordingly'
     })
   }
@@ -282,10 +282,10 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
   const languageChanges = changes.filter(c => c.category === 'language_requirements')
   if (languageChanges.length > 0) {
     recommendations.push({
-      priority: 'medium',
-      category: 'preparation',
-      action: 'Update language testing strategy',
-      timeline: '2-3 months',
+      priority: 'medium'
+      category: 'preparation'
+      action: 'Update language testing strategy'
+      timeline: '2-3 months'
       details: 'Language requirements have been updated - may need to retake tests'
     })
   }
@@ -293,10 +293,10 @@ function generateLawChangeRecommendations(changes: any[], analysis: any) {
   // Recomendações gerais baseadas no nível de impacto
   if (analysis.impactLevel === 'high') {
     recommendations.push({
-      priority: 'urgent',
-      category: 'strategy',
-      action: 'Schedule emergency consultation',
-      timeline: 'Within 48 hours',
+      priority: 'urgent'
+      category: 'strategy'
+      action: 'Schedule emergency consultation'
+      timeline: 'Within 48 hours'
       details: 'Significant changes detected - expert review recommended'
     })
   }

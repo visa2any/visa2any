@@ -3,7 +3,7 @@ import { appointmentBookingService } from '@/lib/appointment-booking'
 
 // DELETE - Cancelar agendamento
 export async function DELETE(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { id: string } }
 ) {
   try {
@@ -13,7 +13,7 @@ export async function DELETE(
 
     if (!consulate) {
       return NextResponse.json(
-        { error: 'Parâmetro consulate é obrigatório' },
+        { error: 'Parâmetro consulate é obrigatório' }
         { status: 400 }
       )
     }
@@ -24,12 +24,12 @@ export async function DELETE(
       // TODO: Atualizar status no banco de dados
       
       return NextResponse.json({
-        message: result.message,
+        message: result.message
         cancelledAt: new Date().toISOString()
       })
     } else {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -37,7 +37,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Erro ao cancelar agendamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

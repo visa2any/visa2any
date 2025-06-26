@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
     if (!clientId || !score) {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -15,21 +15,21 @@ export async function POST(request: NextRequest) {
     // Criar consultoria IA com o resultado
     const consultation = await prisma.consultation.create({
       data: {
-        clientId,
-        type: 'AI_ANALYSIS',
-        status: 'COMPLETED',
-        completedAt: new Date(),
+        clientId
+        type: 'AI_ANALYSIS'
+        status: 'COMPLETED'
+        completedAt: new Date()
         duration: 15, // 15 minutos estimados para análise IA
-        score,
-        recommendation: recommendations.join('\n'),
-        nextSteps: nextSteps.join('\n'),
-        notes: `Análise de elegibilidade automática - Nível: ${level}`,
+        score
+        recommendation: recommendations.join('\n')
+        nextSteps: nextSteps.join('\n')
+        notes: `Análise de elegibilidade automática - Nível: ${level}`
         result: {
-          score,
-          level,
-          answers,
-          recommendations,
-          nextSteps,
+          score
+          level
+          answers
+          recommendations
+          nextSteps
           calculatedAt: new Date().toISOString()
         }
       }
@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
 
     // Atualizar score do cliente
     await prisma.client.update({
-      where: { id: clientId },
+      where: { id: clientId }
       data: {
-        score,
+        score
         status: score >= 80 ? 'QUALIFIED' : 'LEAD'
       }
     })
@@ -47,12 +47,12 @@ export async function POST(request: NextRequest) {
     // Criar interação de análise realizada
     await prisma.interaction.create({
       data: {
-        clientId,
-        type: 'AUTOMATED_EMAIL',
-        channel: 'system',
-        direction: 'inbound',
-        subject: 'Análise de Elegibilidade Realizada',
-        content: `Score calculado: ${score}% - Nível: ${level}`,
+        clientId
+        type: 'AUTOMATED_EMAIL'
+        channel: 'system'
+        direction: 'inbound'
+        subject: 'Análise de Elegibilidade Realizada'
+        content: `Score calculado: ${score}% - Nível: ${level}`
         completedAt: new Date()
       }
     })
@@ -70,14 +70,14 @@ export async function POST(request: NextRequest) {
     // Criar log de automação
     await prisma.automationLog.create({
       data: {
-        clientId,
-        type: 'ANALYSIS_COMPLETED',
-        action: `analysis_saved`,
-        success: true,
+        clientId
+        type: 'ANALYSIS_COMPLETED'
+        action: `analysis_saved`
+        success: true
         details: {
-          score: score,
-          automationAction: automationAction,
-          analysisType: 'eligibility_analysis',
+          score: score
+          automationAction: automationAction
+          analysisType: 'eligibility_analysis'
           triggeredAt: new Date().toISOString()
         }
       }
@@ -85,17 +85,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        consultationId: consultation.id,
-        score,
-        level,
-        automationAction,
+        consultationId: consultation.id
+        score
+        level
+        automationAction
       }
     })
 
   } catch (error) {
     console.error('Erro ao salvar resultado da análise:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

@@ -31,14 +31,14 @@ async function getCustomerFromToken(request: NextRequest) {
       where: { id: payload.customerId }
       include: {
         consultations: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 5
         }
         documents: {
           orderBy: { uploadedAt: 'desc' }
         }
         interactions: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 10
         }
         payments: {
@@ -64,13 +64,13 @@ export async function GET(request: NextRequest) {
 
     // Calcular progresso baseado no status
     const progressMap: Record<string, number> = {
-      'LEAD': 10,
-      'QUALIFIED': 20,
-      'CONSULTATION_SCHEDULED': 30,
-      'IN_PROCESS': 50,
-      'DOCUMENTS_PENDING': 60,
-      'SUBMITTED': 80,
-      'APPROVED': 95,
+      'LEAD': 10
+      'QUALIFIED': 20
+      'CONSULTATION_SCHEDULED': 30
+      'IN_PROCESS': 50
+      'DOCUMENTS_PENDING': 60
+      'SUBMITTED': 80
+      'APPROVED': 95
       'COMPLETED': 100
     }
 
@@ -78,9 +78,9 @@ export async function GET(request: NextRequest) {
 
     // Simular dados do consultor (posteriormente buscar da base)
     const consultant = {
-      name: 'Ana Silva',
-      email: 'ana.silva@visa2any.com',
-      phone: '+55 11 99999-9999',
+      name: 'Ana Silva'
+      email: 'ana.silva@visa2any.com'
+      phone: '+55 11 99999-9999'
       avatar: null
     }
 
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
              customer.status === 'IN_PROCESS' ? 'Coleta de Documentos' :
              customer.status === 'DOCUMENTS_PENDING' ? 'Revisão de Documentos' :
              customer.status === 'SUBMITTED' ? 'Acompanhamento da Aplicação' :
-             customer.status === 'APPROVED' ? 'Preparação para Viagem' : 'Processo Concluído',
+             customer.status === 'APPROVED' ? 'Preparação para Viagem' : 'Processo Concluído'
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
       description: 'Próxima etapa do seu processo de imigração'
     }
@@ -100,47 +100,47 @@ export async function GET(request: NextRequest) {
     // Simular timeline
     const timeline = [
       {
-        id: '1',
-        title: 'Cadastro Inicial',
-        description: 'Conta criada e perfil inicial preenchido',
+        id: '1'
+        title: 'Cadastro Inicial'
+        description: 'Conta criada e perfil inicial preenchido'
         date: customer.createdAt.toLocaleDateString('pt-BR')
         status: 'completed'
       }
       {
-        id: '2',
-        title: 'Análise de Elegibilidade',
-        description: 'Avaliação inicial do seu perfil',
+        id: '2'
+        title: 'Análise de Elegibilidade'
+        description: 'Avaliação inicial do seu perfil'
         date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: customer.status === 'LEAD' ? 'current' : 'completed'
       }
       {
-        id: '3',
-        title: 'Consultoria Especializada',
-        description: 'Reunião com consultor para estratégia personalizada',
+        id: '3'
+        title: 'Consultoria Especializada'
+        description: 'Reunião com consultor para estratégia personalizada'
         date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming',
+                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming'
       }
       {
-        id: '4',
-        title: 'Coleta de Documentos',
-        description: 'Preparação de toda documentação necessária',
+        id: '4'
+        title: 'Coleta de Documentos'
+        description: 'Preparação de toda documentação necessária'
         date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming',
+                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming'
       }
       {
-        id: '5',
-        title: 'Submissão da Aplicação',
-        description: 'Envio oficial da aplicação para as autoridades',
+        id: '5'
+        title: 'Submissão da Aplicação'
+        description: 'Envio oficial da aplicação para as autoridades'
         date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming',
+                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming'
       }
       {
-        id: '6',
-        title: 'Aprovação',
-        description: 'Recebimento da aprovação oficial',
+        id: '6'
+        title: 'Aprovação'
+        description: 'Recebimento da aprovação oficial'
         date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         status: ['APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
                 customer.status === 'SUBMITTED' ? 'current' : 'upcoming'
@@ -149,9 +149,9 @@ export async function GET(request: NextRequest) {
 
     // Simular documentos
     const documents = customer.documents.map(doc => ({
-      id: doc.id,
-      name: doc.fileName || 'Documento',
-      status: doc.status?.toLowerCase() || 'pending',
+      id: doc.id
+      name: doc.fileName || 'Documento'
+      status: doc.status?.toLowerCase() || 'pending'
       uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR')
       comments: doc.notes
     }))
@@ -160,17 +160,17 @@ export async function GET(request: NextRequest) {
     if (documents.length === 0) {
       documents.push(
         {
-          id: 'doc1',
-          name: 'Passaporte',
-          status: 'pending',
-          uploadDate: 'Aguardando envio',
+          id: 'doc1'
+          name: 'Passaporte'
+          status: 'pending'
+          uploadDate: 'Aguardando envio'
           comments: null
         }
         {
-          id: 'doc2',
-          name: 'Diploma Universitário',
-          status: 'pending',
-          uploadDate: 'Aguardando envio',
+          id: 'doc2'
+          name: 'Diploma Universitário'
+          status: 'pending'
+          uploadDate: 'Aguardando envio'
           comments: null
         }
       )
@@ -178,21 +178,21 @@ export async function GET(request: NextRequest) {
 
     // Simular pagamentos
     const payments = customer.payments.map(payment => ({
-      id: payment.id,
-      description: payment.description || 'Pagamento de serviço',
-      amount: payment.amount,
+      id: payment.id
+      description: payment.description || 'Pagamento de serviço'
+      amount: payment.amount
       status: payment.status.toLowerCase()
-      dueDate: payment.dueDate ? payment.dueDate.toLocaleDateString('pt-BR') : 'A definir',
+      dueDate: payment.dueDate ? payment.dueDate.toLocaleDateString('pt-BR') : 'A definir'
       paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined
     }))
 
     // Adicionar pagamentos simulados se não houver nenhum
     if (payments.length === 0) {
       payments.push({
-        id: 'pay1',
-        description: 'Taxa de Consultoria',
-        amount: 297,
-        status: 'pending',
+        id: 'pay1'
+        description: 'Taxa de Consultoria'
+        amount: 297
+        status: 'pending'
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')
         paidDate: undefined
       })
@@ -201,39 +201,39 @@ export async function GET(request: NextRequest) {
     // Simular notificações
     const notifications = [
       {
-        id: 'notif1',
-        title: 'Bem-vindo ao Portal!',
-        message: 'Sua conta foi criada com sucesso. Comece explorando seu painel.',
-        type: 'success',
+        id: 'notif1'
+        title: 'Bem-vindo ao Portal!'
+        message: 'Sua conta foi criada com sucesso. Comece explorando seu painel.'
+        type: 'success'
         date: customer.createdAt.toLocaleDateString('pt-BR')
         read: false
       }
       {
-        id: 'notif2',
-        title: 'Próximos Passos',
-        message: 'Complete seu perfil para uma análise mais precisa.',
-        type: 'info',
+        id: 'notif2'
+        title: 'Próximos Passos'
+        message: 'Complete seu perfil para uma análise mais precisa.'
+        type: 'info'
         date: new Date().toLocaleDateString('pt-BR')
         read: false
       }
     ]
 
     const customerData = {
-      id: customer.id,
-      name: customer.name,
-      email: customer.email,
-      phone: customer.phone,
-      destinationCountry: customer.destinationCountry || 'A definir',
-      visaType: customer.visaType || 'A definir',
-      status: customer.status,
-      eligibilityScore: customer.eligibilityScore || 0,
-      currentStage: customer.status,
-      progress,
-      consultant,
-      nextMilestone,
-      documents,
-      timeline,
-      payments,
+      id: customer.id
+      name: customer.name
+      email: customer.email
+      phone: customer.phone
+      destinationCountry: customer.destinationCountry || 'A definir'
+      visaType: customer.visaType || 'A definir'
+      status: customer.status
+      eligibilityScore: customer.eligibilityScore || 0
+      currentStage: customer.status
+      progress
+      consultant
+      nextMilestone
+      documents
+      timeline
+      payments
       notifications
     }
 

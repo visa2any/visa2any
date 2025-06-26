@@ -11,28 +11,28 @@ export async function POST(request: NextRequest) {
 
     const upsellProducts = {
       'vip-upgrade': {
-        name: 'Upgrade VIP',
-        price: 3497,
+        name: 'Upgrade VIP'
+        price: 3497
         description: 'Serviço premium com garantia de aprovação'
       }
       'priority-processing': {
-        name: 'Processamento Prioritário',
-        price: 697,
+        name: 'Processamento Prioritário'
+        price: 697
         description: 'Acelere seu processo em 50%'
       }
       'consultation-boost': {
-        name: 'Consultoria Estratégica',
-        price: 397,
+        name: 'Consultoria Estratégica'
+        price: 397
         description: 'Aumente seu score de elegibilidade'
       }
       'followup-service': {
-        name: 'Seguro de Aprovação',
-        price: 997,
+        name: 'Seguro de Aprovação'
+        price: 997
         description: 'Acompanhamento até aprovação final'
       }
       'interview-prep': {
-        name: 'Preparação para Entrevista',
-        price: 497,
+        name: 'Preparação para Entrevista'
+        price: 497
         description: 'Treinamento para entrevista consular'
       }
     }
@@ -51,9 +51,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      message: 'Redirecionando para pagamento',
-      paymentUrl,
-      product,
+      message: 'Redirecionando para pagamento'
+      paymentUrl
+      product
     })
 
   } catch (error) {

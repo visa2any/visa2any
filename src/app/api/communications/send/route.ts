@@ -26,9 +26,9 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       // If client not found in database, use mock data
       client = {
-        id: clientId,
-        name: 'Cliente',
-        email: 'cliente@email.com',
+        id: clientId
+        name: 'Cliente'
+        email: 'cliente@email.com'
         phone: '+5511999999999'
       }
     }
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         break
       case 'sms':
         deliveryResult = await sendSMS(client.phone, processedContent)
-        break,
+        break
       default:
         return NextResponse.json(
       { error: 'Dados inválidos' }
@@ -78,20 +78,20 @@ export async function POST(request: NextRequest) {
     // Create communication record
     const communicationRecord = {
       id: deliveryResult.messageId
-      clientId,
-      client,
-      type,
-      direction: 'outbound' as const,
-      content: processedContent,
-      subject,
-      status: deliveryResult.status,
+      clientId
+      client
+      type
+      direction: 'outbound' as const
+      content: processedContent
+      subject
+      status: deliveryResult.status
       timestamp: new Date().toISOString()
-      assignedTo: 'Current User',
-      tags: template ? [template] : [],
-      priority,
-      attachments: [],
+      assignedTo: 'Current User'
+      tags: template ? [template] : []
+      priority
+      attachments: []
       metadata: {
-        templateUsed: template,
+        templateUsed: template
         sentAt: new Date().toISOString()
         channel: type
       }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       messageId: deliveryResult.messageId
-      status: deliveryResult.status,
+      status: deliveryResult.status
       communication: communicationRecord
     })
 

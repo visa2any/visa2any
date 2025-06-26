@@ -9,17 +9,17 @@ export async function GET() {
     // Buscar comentários que precisam de resposta
     const pendingComments = await prisma.socialComment.findMany({
       where: {
-        needsResponse: true,
-        responded: false,
+        needsResponse: true
+        responded: false
         escalated: false
       }
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'asc' }
       take: 50
     })
 
     return NextResponse.json({
       success: true
-      count: pendingComments.length,
+      count: pendingComments.length
       comments: pendingComments
     })
 

@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { bookingRequest, options }: { 
-      bookingRequest: BookingRequest,
+      bookingRequest: BookingRequest
       options: HybridBookingOptions 
     } = body
 
@@ -21,18 +21,18 @@ export async function POST(request: NextRequest) {
 
     // Configurações padrão se não fornecidas
     const defaultOptions: HybridBookingOptions = {
-      preferredMethod: 'auto',
-      fallbackEnabled: true,
-      urgency: 'normal',
-      maxRetries: 3,
+      preferredMethod: 'auto'
+      fallbackEnabled: true
+      urgency: 'normal'
+      maxRetries: 3
       ...options
     }
 
     // Log da tentativa de agendamento
     console.log(`Agendamento híbrido iniciado:`, {
-      consulate: bookingRequest.consulate,
-      visaType: bookingRequest.visaType,
-      method: defaultOptions.preferredMethod,
+      consulate: bookingRequest.consulate
+      visaType: bookingRequest.visaType
+      method: defaultOptions.preferredMethod
       urgency: defaultOptions.urgency
     })
 
@@ -43,21 +43,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         booking: {
           method: result.method
-          provider: result.provider,
-          appointmentDetails: result.appointmentDetails,
-          cost: result.cost,
-          processingTime: result.processingTime,
+          provider: result.provider
+          appointmentDetails: result.appointmentDetails
+          cost: result.cost
+          processingTime: result.processingTime
           instructions: result.instructions
         }
-        attempts: result.attempts,
-        warnings: result.warnings,
-        message: `Agendamento realizado via ${result.method} (${result.provider})`,
+        attempts: result.attempts
+        warnings: result.warnings
+        message: `Agendamento realizado via ${result.method} (${result.provider})`
       })
     } else {
       return NextResponse.json({
         error: result.error
-        attempts: result.attempts,
-        warnings: result.warnings,
+        attempts: result.attempts
+        warnings: result.warnings
         recommendations: this.generateRecommendations(result.attempts)
       }, { status: 400 })
     }
@@ -90,33 +90,33 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       country
-      visaType,
+      visaType
       availability: {
         official: {
-          source: 'APIs Oficiais (CASV/VFS)',
-          slots: results.official,
-          reliability: 'Alta',
+          source: 'APIs Oficiais (CASV/VFS)'
+          slots: results.official
+          reliability: 'Alta'
           cost: 'Gratuito'
         }
         partners: {
-          source: 'Parceiros (VisaHQ/iVisa)',
-          slots: results.partners,
-          reliability: 'Alta',
+          source: 'Parceiros (VisaHQ/iVisa)'
+          slots: results.partners
+          reliability: 'Alta'
           cost: 'Pago'
         }
         scraping: {
-          source: 'Web Scraping',
-          slots: results.scraping,
-          reliability: 'Baixa',
-          cost: 'Gratuito',
+          source: 'Web Scraping'
+          slots: results.scraping
+          reliability: 'Baixa'
+          cost: 'Gratuito'
           warning: 'Dados podem estar desatualizados'
         }
       }
-      consolidated: results.consolidated,
+      consolidated: results.consolidated
       summary: {
-        totalSlots: results.consolidated.length,
+        totalSlots: results.consolidated.length
         sourcesAvailable: [
-          results.official.length > 0 && 'official',
+          results.official.length > 0 && 'official'
           results.partners.length > 0 && 'partners', 
           results.scraping.length > 0 && 'scraping'
         ].filter(Boolean)

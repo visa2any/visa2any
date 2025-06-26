@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         clinics
-        total: clinics.length,
+        total: clinics.length
         message: clinics.length > 0 
           ? `${clinics.length} clínicas encontradas para ${country}` 
-          : `Nenhuma clínica encontrada para ${country}`,
+          : `Nenhuma clínica encontrada para ${country}`
       })
     }
 
@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         exams
-        total: exams.length,
+        total: exams.length
         message: exams.length > 0 
           ? `${exams.length} tipos de exame requeridos para ${country}` 
-          : `Nenhum exame específico encontrado para ${country}`,
+          : `Nenhum exame específico encontrado para ${country}`
       })
     }
 
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
       examTypes, 
       appointmentDate, 
       appointmentTime, 
-      totalCost,
-      notes ,
+      totalCost
+      notes 
     } = body
 
     // Validação dos campos obrigatórios
@@ -94,19 +94,19 @@ export async function POST(request: NextRequest) {
     // Fazer agendamento
     const result = await medicalExamService.bookMedicalExam({
       applicantId
-      clinicId,
-      examTypes,
-      appointmentDate,
-      appointmentTime,
-      totalCost,
-      notes,
+      clinicId
+      examTypes
+      appointmentDate
+      appointmentTime
+      totalCost
+      notes
     })
 
     if (result.success) {
       return NextResponse.json({
         booking: {
           bookingId: result.bookingId
-          confirmationCode: result.confirmationCode,
+          confirmationCode: result.confirmationCode
           instructions: result.instructions
         }
         message: 'Exame médico agendado com sucesso!'

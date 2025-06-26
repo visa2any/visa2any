@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { phone: { contains: search } },
-        { profession: { contains: search } },
-        { nationality: { contains: search } },
+        { name: { contains: search } }
+        { email: { contains: search } }
+        { phone: { contains: search } }
+        { profession: { contains: search } }
+        { nationality: { contains: search } }
         { targetCountry: { contains: search } }
       ]
     }
@@ -43,26 +43,26 @@ export async function GET(request: NextRequest) {
     try {
       [clients, total] = await Promise.all([
         prisma.client.findMany({
-          where,
-          orderBy: { createdAt: 'desc' },
-          take: limit,
-          skip: offset,
+          where
+          orderBy: { createdAt: 'desc' }
+          take: limit
+          skip: offset
           select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            profession: true,
-            nationality: true,
-            targetCountry: true,
-            visaType: true,
-            status: true,
-            score: true,
-            createdAt: true,
-            updatedAt: true,
+            id: true
+            name: true
+            email: true
+            phone: true
+            profession: true
+            nationality: true
+            targetCountry: true
+            visaType: true
+            status: true
+            score: true
+            createdAt: true
+            updatedAt: true
             notes: true
           }
-        }),
+        })
         prisma.client.count({ where })
       ])
     } catch (dbError) {
@@ -74,12 +74,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        clients,
+        clients
         pagination: {
-          current: page,
-          total: Math.ceil(total / limit),
-          hasNext: offset + clients.length < total,
-          hasPrev: page > 1,
+          current: page
+          total: Math.ceil(total / limit)
+          hasNext: offset + clients.length < total
+          hasPrev: page > 1
           totalItems: total
         }
       }
@@ -91,12 +91,12 @@ export async function GET(request: NextRequest) {
     // Retornar resposta de fallback
     return NextResponse.json({
       data: {
-        clients: [],
+        clients: []
         pagination: {
-          current: 1,
-          total: 0,
-          hasNext: false,
-          hasPrev: false,
+          current: 1
+          total: 0
+          hasNext: false
+          hasPrev: false
           totalItems: 0
         }
       }
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Nome e email são obrigatórios'
-        },
+        }
         { status: 400 }
       )
     }
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Cliente já cadastrado com este email'
-        },
+        }
         { status: 409 }
       )
     }
@@ -137,15 +137,15 @@ export async function POST(request: NextRequest) {
     // Criar cliente
     const client = await prisma.client.create({
       data: {
-        name,
-        email,
-        phone: phone || null,
-        profession: profession || null,
-        nationality: nationality || null,
-        targetCountry: targetCountry || null,
-        visaType: visaType || null,
-        status: 'LEAD',
-        score: 0,
+        name
+        email
+        phone: phone || null
+        profession: profession || null
+        nationality: nationality || null
+        targetCountry: targetCountry || null
+        visaType: visaType || null
+        status: 'LEAD'
+        score: 0
         notes: body.notes || null
       }
     })
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }

@@ -5,13 +5,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 interface NotificationData {
-  id: string,
-  type: 'conversion' | 'payment' | 'tier_promotion' | 'bonus' | 'commission' | 'system',
-  title: string,
+  id: string
+  type: 'conversion' | 'payment' | 'tier_promotion' | 'bonus' | 'commission' | 'system'
+  title: string
   message: string
-  data?: any,
-  read: boolean,
-  createdAt: string,
+  data?: any
+  read: boolean
+  createdAt: string
   priority: 'low' | 'medium' | 'high' | 'urgent'
 }
 
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        notifications,
-        unreadCount,
+        notifications
+        unreadCount
         total: notifications.length
       }
     })
@@ -74,28 +74,28 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const {
-      affiliateId,
-      type,
-      title,
-      message,
-      data = {},
-      priority = 'medium',
+      affiliateId
+      type
+      title
+      message
+      data = {}
+      priority = 'medium'
     } = body
 
     if (!affiliateId || !type || !title || !message) {
       return NextResponse.json({
-        error: 'Campos obrigatórios: affiliateId, type, title, message',
+        error: 'Campos obrigatórios: affiliateId, type, title, message'
       }, { status: 400 })
     }
 
     const notification: NotificationData = {
-      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type,
-      title,
-      message,
-      data,
-      read: false,
-      createdAt: new Date().toISOString(),
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      type
+      title
+      message
+      data
+      read: false
+      createdAt: new Date().toISOString()
       priority
     }
 
@@ -162,8 +162,8 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        message: 'Notificações atualizadas',
-        unreadCount,
+        message: 'Notificações atualizadas'
+        unreadCount
       }
     })
 
@@ -183,88 +183,88 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
 
   return [
     {
-      id: 'notif_1',
-      type: 'conversion',
-      title: '🎉 Nova Conversão!',
-      message: 'Parabéns! Você acabou de gerar uma nova conversão no valor de R$ 89,55 através do seu link de Consultoria EUA.',
+      id: 'notif_1'
+      type: 'conversion'
+      title: '🎉 Nova Conversão!'
+      message: 'Parabéns! Você acabou de gerar uma nova conversão no valor de R$ 89,55 através do seu link de Consultoria EUA.'
       data: {
-        conversionValue: 89.55,
-        commissionValue: 13.43,
-        conversionType: 'CONSULTATION',
+        conversionValue: 89.55
+        commissionValue: 13.43
+        conversionType: 'CONSULTATION'
         clientName: 'Maria Silva'
-      },
-      read: false,
-      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      }
+      read: false
+      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString()
       priority: 'high'
-    },
+    }
     {
-      id: 'notif_2',
-      type: 'payment',
-      title: '💰 Pagamento Processado',
-      message: 'Seu pagamento de R$ 1.450,75 foi processado com sucesso via PIX. O dinheiro deve aparecer em sua conta em até 1 hora.',
+      id: 'notif_2'
+      type: 'payment'
+      title: '💰 Pagamento Processado'
+      message: 'Seu pagamento de R$ 1.450,75 foi processado com sucesso via PIX. O dinheiro deve aparecer em sua conta em até 1 hora.'
       data: {
-        amount: 1450.75,
-        paymentMethod: 'PIX',
+        amount: 1450.75
+        paymentMethod: 'PIX'
         transactionId: 'TXN123456789'
-      },
-      read: false,
-      createdAt: yesterday.toISOString(),
+      }
+      read: false
+      createdAt: yesterday.toISOString()
       priority: 'high'
-    },
+    }
     {
-      id: 'notif_3',
-      type: 'tier_promotion',
-      title: '⭐ Promoção de Nível!',
-      message: 'Parabéns! Você foi promovido para o nível GOLD devido ao seu excelente desempenho. Suas comissões agora são de até 25%!',
+      id: 'notif_3'
+      type: 'tier_promotion'
+      title: '⭐ Promoção de Nível!'
+      message: 'Parabéns! Você foi promovido para o nível GOLD devido ao seu excelente desempenho. Suas comissões agora são de até 25%!'
       data: {
-        oldTier: 'SILVER',
-        newTier: 'GOLD',
+        oldTier: 'SILVER'
+        newTier: 'GOLD'
         newCommissionRate: 0.25
-      },
-      read: true,
-      createdAt: twoDaysAgo.toISOString(),
+      }
+      read: true
+      createdAt: twoDaysAgo.toISOString()
       priority: 'urgent'
-    },
+    }
     {
-      id: 'notif_4',
-      type: 'bonus',
-      title: '🎁 Bônus Mensal',
-      message: 'Você recebeu um bônus de R$ 250,00 por superar suas metas mensais! Continue assim!',
+      id: 'notif_4'
+      type: 'bonus'
+      title: '🎁 Bônus Mensal'
+      message: 'Você recebeu um bônus de R$ 250,00 por superar suas metas mensais! Continue assim!'
       data: {
-        bonusAmount: 250.00,
-        reason: 'Meta mensal superada',
+        bonusAmount: 250.00
+        reason: 'Meta mensal superada'
         month: 'Junho'
-      },
-      read: true,
-      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      }
+      read: true
+      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
       priority: 'medium'
-    },
+    }
     {
-      id: 'notif_5',
-      type: 'system',
-      title: '📊 Novos Materiais Disponíveis',
-      message: 'Adicionamos 5 novos banners e 3 templates de email ao seu kit de materiais promocionais. Confira agora!',
+      id: 'notif_5'
+      type: 'system'
+      title: '📊 Novos Materiais Disponíveis'
+      message: 'Adicionamos 5 novos banners e 3 templates de email ao seu kit de materiais promocionais. Confira agora!'
       data: {
-        newMaterials: 8,
-        categories: ['banners', 'email_templates'],
-      },
-      read: false,
-      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+        newMaterials: 8
+        categories: ['banners', 'email_templates']
+      }
+      read: false
+      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString()
       priority: 'low'
-    },
+    }
     {
-      id: 'notif_6',
-      type: 'commission',
-      title: '💵 Nova Comissão Aprovada',
-      message: 'Sua comissão de R$ 375,00 referente ao processo de visto do cliente João Santos foi aprovada e será paga no próximo ciclo.',
+      id: 'notif_6'
+      type: 'commission'
+      title: '💵 Nova Comissão Aprovada'
+      message: 'Sua comissão de R$ 375,00 referente ao processo de visto do cliente João Santos foi aprovada e será paga no próximo ciclo.'
       data: {
-        amount: 375.00,
-        clientName: 'João Santos',
-        conversionType: 'VISA_PROCESS',
+        amount: 375.00
+        clientName: 'João Santos'
+        conversionType: 'VISA_PROCESS'
         dueDate: '2024-07-15'
-      },
-      read: true,
-      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
+      }
+      read: true
+      createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()
       priority: 'medium'
     }
   ]
@@ -273,52 +273,52 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
 // Funções utilitárias para envio de notificações específicas
 async function sendConversionNotification(affiliateId: string, conversionData: any) {
   const notification = {
-    affiliateId,
-    type: 'conversion',
-    title: '🎉 Nova Conversão!',
-    message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`,
-    data: conversionData,
+    affiliateId
+    type: 'conversion'
+    title: '🎉 Nova Conversão!'
+    message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`
+    data: conversionData
     priority: 'high'
   }
 
   // Simular envio da notificação
   return await fetch('/api/affiliates/notifications', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST'
+    headers: { 'Content-Type': 'application/json' }
     body: JSON.stringify(notification)
   })
 }
 
 async function sendPaymentNotification(affiliateId: string, paymentData: any) {
   const notification = {
-    affiliateId,
-    type: 'payment',
-    title: '💰 Pagamento Processado',
-    message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`,
-    data: paymentData,
+    affiliateId
+    type: 'payment'
+    title: '💰 Pagamento Processado'
+    message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`
+    data: paymentData
     priority: 'high'
   }
 
   return await fetch('/api/affiliates/notifications', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST'
+    headers: { 'Content-Type': 'application/json' }
     body: JSON.stringify(notification)
   })
 }
 
 async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
   const notification = {
-    affiliateId,
-    type: 'tier_promotion',
-    title: '⭐ Promoção de Nível!',
-    message: `Parabéns! Você foi promovido para o nível ${tierData.newTier}!`,
-    data: tierData,
+    affiliateId
+    type: 'tier_promotion'
+    title: '⭐ Promoção de Nível!'
+    message: `Parabéns! Você foi promovido para o nível ${tierData.newTier}!`
+    data: tierData
     priority: 'urgent'
   }
 
   return await fetch('/api/affiliates/notifications', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST'
+    headers: { 'Content-Type': 'application/json' }
     body: JSON.stringify(notification)
   })
 }

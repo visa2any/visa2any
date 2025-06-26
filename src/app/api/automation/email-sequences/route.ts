@@ -9,7 +9,7 @@ const EMAIL_TEMPLATES = {
   hot_lead_immediate: [
     {
       delay: 0, // Imediato
-      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',
+      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?'
       template: `
 Olá {name}
 
@@ -30,15 +30,15 @@ Clique aqui para agendar: {schedulingLink}
 
 Ou me chame no WhatsApp: {whatsappLink}
 
-Att,
+Att
 Ana Silva
 Consultora Sênior Visa2Any
 📱 +55 11 99999-9999
-      `,
-    },
+      `
+    }
     {
       delay: 60, // 1 hora depois se não respondeu
-      subject: '⏰ {name}, restam apenas algumas horas...',
+      subject: '⏰ {name}, restam apenas algumas horas...'
       template: `
 {name}
 
@@ -56,12 +56,12 @@ Ana Silva
 Visa2Any
       `
     }
-  ],
+  ]
 
   warm_lead_nurturing: [
     {
-      delay: 0,
-      subject: '✨ {name}, sua análise está pronta!',
+      delay: 0
+      subject: '✨ {name}, sua análise está pronta!'
       template: `
 Olá {name}
 
@@ -82,13 +82,13 @@ Clique aqui para começar: {aiAnalysisLink}
 
 É 100% gratuito e você recebe o resultado na hora!
 
-Att,
+Att
 Equipe Visa2Any
-      `,
-    },
+      `
+    }
     {
       delay: 1440, // 24 horas
-      subject: '📚 {name}, baixe nossos guias exclusivos',
+      subject: '📚 {name}, baixe nossos guias exclusivos'
       template: `
 Oi {name}!
 
@@ -107,11 +107,11 @@ Pegue os seus aqui: {leadMagnetsLink}
 PS: Tudo 100% gratuito, sem pegadinha! 
 
 Equipe Visa2Any
-      `,
-    },
+      `
+    }
     {
       delay: 4320, // 3 dias
-      subject: '🎯 {name}, vamos criar sua estratégia?',
+      subject: '🎯 {name}, vamos criar sua estratégia?'
       template: `
 {name}
 
@@ -133,12 +133,12 @@ Ana Silva
 Consultora Sênior
       `
     }
-  ],
+  ]
 
   cold_lead_education: [
     {
-      delay: 0,
-      subject: '📚 {name}, comece sua jornada com conhecimento',
+      delay: 0
+      subject: '📚 {name}, comece sua jornada com conhecimento'
       template: `
 Olá {name}!
 
@@ -156,13 +156,13 @@ Baixe tudo aqui: {educationalContentLink}
 
 Nos próximos dias vou te enviar mais dicas valiosas!
 
-Att,
+Att
 Equipe Visa2Any
-      `,
-    },
+      `
+    }
     {
       delay: 2880, // 2 dias
-      subject: '💡 {name}, dica #1: Por onde começar',
+      subject: '💡 {name}, dica #1: Por onde começar'
       template: `
 Oi {name}!
 
@@ -181,11 +181,11 @@ Nossa IA Sofia pode fazer essa análise em 15 minutos:
 Próxima dica chegará em 2 dias.
 
 Equipe Visa2Any
-      `,
-    },
+      `
+    }
     {
       delay: 7200, // 5 dias
-      subject: '🔍 {name}, dica #2: Evite estes erros fatais',
+      subject: '🔍 {name}, dica #2: Evite estes erros fatais'
       template: `
 {name}
 
@@ -238,42 +238,42 @@ export async function POST(request: NextRequest) {
 
       // Processar template com variáveis
       const processedSubject = processTemplate(template.subject, {
-        name,
-        destinationCountry,
-        score,
-        urgency,
-        budget,
+        name
+        destinationCountry
+        score
+        urgency
+        budget
       })
 
       const processedBody = processTemplate(template.template, {
-        name,
-        destinationCountry,
-        score,
-        urgency,
-        budget,
-        schedulingLink: 'https://visa2any.com/agendar',
-        whatsappLink: 'https://wa.me/5511999999999',
-        aiAnalysisLink: 'https://visa2any.com/consultoria-ia',
-        leadMagnetsLink: 'https://visa2any.com/lead-magnets',
-        consultationLink: 'https://visa2any.com/precos',
-        educationalContentLink: 'https://visa2any.com/lead-magnets',
+        name
+        destinationCountry
+        score
+        urgency
+        budget
+        schedulingLink: 'https://visa2any.com/agendar'
+        whatsappLink: 'https://wa.me/5511999999999'
+        aiAnalysisLink: 'https://visa2any.com/consultoria-ia'
+        leadMagnetsLink: 'https://visa2any.com/lead-magnets'
+        consultationLink: 'https://visa2any.com/precos'
+        educationalContentLink: 'https://visa2any.com/lead-magnets'
         ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
       // Agendar email (implementar com serviço de queue posteriormente)
       await scheduleEmail({
-        to: email,
-        subject: processedSubject,
-        body: processedBody,
-        sendAt,
-        sequence,
-        clientId,
+        to: email
+        subject: processedSubject
+        body: processedBody
+        sendAt
+        sequence
+        clientId
         templateIndex: templates.indexOf(template)
       })
     }
 
     return NextResponse.json({
-      message: `Sequência ${sequence} ativada para ${email}`,
+      message: `Sequência ${sequence} ativada para ${email}`
       emailsScheduled: templates.length
     })
 
@@ -302,11 +302,11 @@ function calculateScoreFromResponses(responses: any): number {
 
   if (responses.education) {
     const educationScores: Record<string, number> = {
-      'Doutorado': 20,
-      'Mestrado': 18,
-      'Pós-graduação': 15,
-      'Superior completo': 12,
-      'Superior incompleto': 8,
+      'Doutorado': 20
+      'Mestrado': 18
+      'Pós-graduação': 15
+      'Superior completo': 12
+      'Superior incompleto': 8
       'Ensino médio': 5
     }
     score += educationScores[responses.education] || 5
@@ -314,9 +314,9 @@ function calculateScoreFromResponses(responses: any): number {
 
   if (responses.budget) {
     const budgetScores: Record<string, number> = {
-      'Acima de R$ 500.000': 15,
-      'R$ 300.000 - R$ 500.000': 12,
-      'R$ 100.000 - R$ 300.000': 8,
+      'Acima de R$ 500.000': 15
+      'R$ 300.000 - R$ 500.000': 12
+      'R$ 100.000 - R$ 300.000': 8
       'R$ 50.000 - R$ 100.000': 5
     }
     score += budgetScores[responses.budget] || 2
@@ -324,8 +324,8 @@ function calculateScoreFromResponses(responses: any): number {
 
   if (responses.urgency) {
     const urgencyScores: Record<string, number> = {
-      'Extremamente urgente (preciso sair já)': 10,
-      'Muito urgente (próximos 3 meses)': 8,
+      'Extremamente urgente (preciso sair já)': 10
+      'Muito urgente (próximos 3 meses)': 8
       'Urgente (próximos 6 meses)': 6
     }
     score += urgencyScores[responses.urgency] || 3
@@ -335,12 +335,12 @@ function calculateScoreFromResponses(responses: any): number {
 }
 
 async function scheduleEmail(emailData: {
-  to: string,
-  subject: string,
-  body: string,
-  sendAt: Date,
-  sequence: string,
-  clientId?: string,
+  to: string
+  subject: string
+  body: string
+  sendAt: Date
+  sequence: string
+  clientId?: string
   templateIndex: number
 }) {
   try {
@@ -348,10 +348,10 @@ async function scheduleEmail(emailData: {
     // Por enquanto, simular agendamento
     
     console.log(`Email agendado:`, {
-      to: emailData.to,
-      subject: emailData.subject,
-      sendAt: emailData.sendAt,
-      sequence: emailData.sequence,
+      to: emailData.to
+      subject: emailData.subject
+      sendAt: emailData.sendAt
+      sequence: emailData.sequence
       templateIndex: emailData.templateIndex
     })
 
@@ -364,12 +364,12 @@ async function scheduleEmail(emailData: {
     if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
-          clientId: emailData.clientId,
-          type: 'AUTOMATED_EMAIL',
-          channel: 'email',
-          direction: 'outbound',
-          subject: emailData.subject,
-          content: `Email agendado: ${emailData.subject}`,
+          clientId: emailData.clientId
+          type: 'AUTOMATED_EMAIL'
+          channel: 'email'
+          direction: 'outbound'
+          subject: emailData.subject
+          content: `Email agendado: ${emailData.subject}`
           completedAt: new Date()
         }
       })
@@ -381,11 +381,11 @@ async function scheduleEmail(emailData: {
 }
 
 async function sendEmailNow(emailData: {
-  to: string,
-  subject: string,
-  body: string,
-  sequence: string,
-  clientId?: string,
+  to: string
+  subject: string
+  body: string
+  sequence: string
+  clientId?: string
 }) {
   try {
     // Usar serviço de email (Resend, SendGrid, etc.)
@@ -393,13 +393,13 @@ async function sendEmailNow(emailData: {
     
     // Simular envio por enquanto
     const response = await fetch('/api/notifications/email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST'
+      headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        to: emailData.to,
-        subject: emailData.subject,
-        html: emailData.body.replace(/\n/g, '<br>'),
-        template: 'automation',
+        to: emailData.to
+        subject: emailData.subject
+        html: emailData.body.replace(/\n/g, '<br>')
+        template: 'automation'
         variables: {
           content: emailData.body
         }
@@ -409,12 +409,12 @@ async function sendEmailNow(emailData: {
     if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
-          clientId: emailData.clientId,
-          type: 'EMAIL',
-          channel: 'email',
-          direction: 'outbound',
-          subject: emailData.subject,
-          content: `Email enviado: ${emailData.subject}`,
+          clientId: emailData.clientId
+          type: 'EMAIL'
+          channel: 'email'
+          direction: 'outbound'
+          subject: emailData.subject
+          content: `Email enviado: ${emailData.subject}`
           completedAt: new Date()
         }
       })

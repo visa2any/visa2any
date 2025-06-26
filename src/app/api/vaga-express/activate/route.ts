@@ -16,21 +16,21 @@ export async function POST(request: NextRequest) {
 
     // Dados do pagamento confirmado
     const {
-      purchaseId,
-      clientId,
-      clientName,
-      clientEmail,
-      clientPhone,
-      plan,
-      amount,
-      paymentStatus,
-      country,
-      consulate,
-      visaType,
-      currentAppointmentDate,
-      preferredDateStart,
-      preferredDateEnd,
-      urgencyLevel,
+      purchaseId
+      clientId
+      clientName
+      clientEmail
+      clientPhone
+      plan
+      amount
+      paymentStatus
+      country
+      consulate
+      visaType
+      currentAppointmentDate
+      preferredDateStart
+      preferredDateEnd
+      urgencyLevel
     } = body
 
     // Validar que pagamento foi aprovado
@@ -42,23 +42,23 @@ export async function POST(request: NextRequest) {
 
     // Preparar dados para webhook N8N
     const n8nWebhookData = {
-      purchaseId,
-      clientId,
-      clientName,
-      clientEmail,
-      clientPhone,
+      purchaseId
+      clientId
+      clientName
+      clientEmail
+      clientPhone
       plan: plan.toUpperCase(), // BASIC, PREMIUM, VIP
-      amount,
-      currency: 'BRL',
-      paymentStatus: 'COMPLETED',
-      country: country || 'EUA',
-      consulate: consulate || 'US Consulate São Paulo',
-      visaType: visaType || 'B1/B2',
-      currentAppointmentDate,
+      amount
+      currency: 'BRL'
+      paymentStatus: 'COMPLETED'
+      country: country || 'EUA'
+      consulate: consulate || 'US Consulate São Paulo'
+      visaType: visaType || 'B1/B2'
+      currentAppointmentDate
       preferredDateStart: preferredDateStart || new Date().toISOString()
       preferredDateEnd: preferredDateEnd || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
-      urgencyLevel: urgencyLevel || 'HIGH',
-      purchaseSource: 'WEBSITE',
+      urgencyLevel: urgencyLevel || 'HIGH'
+      purchaseSource: 'WEBSITE'
       createdAt: new Date().toISOString()
     }
 
@@ -67,10 +67,10 @@ export async function POST(request: NextRequest) {
     
     try {
       const n8nResponse = await fetch(n8nWebhookUrl, {
-        method: 'POST',
+        method: 'POST'
         headers: {
-          'Content-Type': 'application/json',
-          'X-Webhook-Secret': 'visa2any_webhook_secret_2024',
+          'Content-Type': 'application/json'
+          'X-Webhook-Secret': 'visa2any_webhook_secret_2024'
         }
         body: JSON.stringify(n8nWebhookData)
       })
@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
 
     // Salvar no banco de dados local (simulado)
     console.log('💾 Salvando Vaga Express no banco:', {
-      purchaseId,
-      plan,
-      clientName,
-      amount,
+      purchaseId
+      plan
+      clientName
+      amount
       status: 'ACTIVE'
     })
 
@@ -102,10 +102,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: 'Vaga Express activated successfully'
       data: {
-        purchaseId,
-        plan,
-        status: 'ACTIVE',
-        monitoringStarted: true,
+        purchaseId
+        plan
+        status: 'ACTIVE'
+        monitoringStarted: true
         estimatedActivationTime: '30 minutes'
       }
     })

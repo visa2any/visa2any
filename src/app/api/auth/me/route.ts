@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     
     // Retornar dados do usuário
     return NextResponse.json({
-      user: user,
+      user: user
       data: user
     })
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       console.error('❌ /api/auth/me: Erro:', error)
     }
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

@@ -19,18 +19,18 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - period)
 
     // Buscar dados do período
-    const [clients, consultations, payments] = await Promise.all([,
+    const [clients, consultations, payments] = await Promise.all([
       prisma.client.findMany({
         where: {
           createdAt: { gte: startDate }
         }
         select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          status: true,
-          createdAt: true,
+          id: true
+          name: true
+          email: true
+          phone: true
+          status: true
+          createdAt: true
           assignedUserId: true
         }
       })
@@ -49,9 +49,9 @@ export async function GET(request: NextRequest) {
           createdAt: { gte: startDate }
         }
         select: {
-          amount: true,
-          currency: true,
-          status: true,
+          amount: true
+          currency: true
+          status: true
           createdAt: true
         }
       })
@@ -64,34 +64,34 @@ export async function GET(request: NextRequest) {
       
       // Clientes
       ...clients.map(client => [
-        'Cliente',
-        client.createdAt.toISOString().split('T')[0],
-        `"${client.name}"`,
-        client.email,
-        client.status,
-        '',
+        'Cliente'
+        client.createdAt.toISOString().split('T')[0]
+        `"${client.name}"`
+        client.email
+        client.status
+        ''
         'Novo cliente cadastrado'
       ].join(','))
       
       // Consultorias
       ...consultations.map(consultation => [
-        'Consultoria',
-        consultation.createdAt.toISOString().split('T')[0],
-        `"${consultation.client?.name || 'N/A'}"`,
-        consultation.client?.email || '',
-        consultation.status,
-        '',
+        'Consultoria'
+        consultation.createdAt.toISOString().split('T')[0]
+        `"${consultation.client?.name || 'N/A'}"`
+        consultation.client?.email || ''
+        consultation.status
+        ''
         `Consultoria ${consultation.type}`
       ].join(','))
       
       // Pagamentos
       ...payments.map(payment => [
-        'Pagamento',
-        payment.createdAt.toISOString().split('T')[0],
-        '',
-        '',
-        payment.status,
-        `${payment.amount} ${payment.currency}`,
+        'Pagamento'
+        payment.createdAt.toISOString().split('T')[0]
+        ''
+        ''
+        payment.status
+        `${payment.amount} ${payment.currency}`
         'Pagamento recebido'
       ].join(','))
     ]
@@ -101,8 +101,8 @@ export async function GET(request: NextRequest) {
     // Retornar CSV como download
     return new NextResponse(csvContent, {
       headers: {
-        'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`,
+        'Content-Type': 'text/csv; charset=utf-8'
+        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`
       }
     })
 

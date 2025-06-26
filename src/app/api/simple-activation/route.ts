@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Estado real dos sistemas baseado em variáveis de ambiente
 const getSystemState = () => ({
-  webScraping: process.env.ENABLE_REAL_MONITORING === 'true',
-  emailMonitoring: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST),
+  webScraping: process.env.ENABLE_REAL_MONITORING === 'true'
+  emailMonitoring: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST)
   automation: !!(process.env.WHATSAPP_TOKEN && process.env.TELEGRAM_BOT_TOKEN)
-  paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY),
+  paymentProcessing: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
   hybridBooking: true, // Sempre ativo para agendamento híbrido
   lastActivation: new Date().toISOString()
 })
@@ -39,7 +39,7 @@ Sistema pronto para produção!`)
         
         return NextResponse.json({
           message: 'Sistema híbrido ativo!'
-          system: 'hybrid-booking',
+          system: 'hybrid-booking'
           active: true
         })
         
@@ -62,13 +62,13 @@ export async function GET(request: NextRequest) {
   const currentStatus = getSystemState()
   return NextResponse.json({
     systems: currentStatus
-    activeCount: Object.values(currentStatus).filter(v => v === true).length,
+    activeCount: Object.values(currentStatus).filter(v => v === true).length
     monthlyCost: calculateMonthlyCost(currentStatus)
     lastCheck: new Date().toISOString()
-    environment: process.env.NODE_ENV,
+    environment: process.env.NODE_ENV
     configured: {
-      telegram: !!process.env.TELEGRAM_BOT_TOKEN,
-      whatsapp: !!process.env.WHATSAPP_TOKEN,
+      telegram: !!process.env.TELEGRAM_BOT_TOKEN
+      whatsapp: !!process.env.WHATSAPP_TOKEN
       email: !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST)
       payment: !!(process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.STRIPE_SECRET_KEY)
       database: !!process.env.DATABASE_URL
@@ -111,11 +111,11 @@ async function sendTelegramNotification(title: string, message: string) {
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        chat_id: chatId,
-        text: `${title}\n\n${message}`,
+        chat_id: chatId
+        text: `${title}\n\n${message}`
         parse_mode: 'HTML'
       })
     })

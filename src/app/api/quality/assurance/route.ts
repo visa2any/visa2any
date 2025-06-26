@@ -4,14 +4,14 @@ import { z } from 'zod'
 
 // Schema para avaliação de qualidade
 const qualityAssessmentSchema = z.object({
-  clientId: z.string(),
+  clientId: z.string()
   assessmentType: z.enum([
-    'document_review',
-    'application_completeness',
-    'compliance_check',
-    'submission_readiness',
+    'document_review'
+    'application_completeness'
+    'compliance_check'
+    'submission_readiness'
     'full_audit'
-  ]),
+  ])
   scope: z.object({
     includeDocuments: z.boolean().default(true)
     includeProfile: z.boolean().default(true)
@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
           where: { status: { in: ['UPLOADED', 'PROCESSED', 'VERIFIED'] } }
         }
         consultations: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 5
         }
         interactions: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' }
           take: 20
         }
       }
@@ -58,21 +58,21 @@ export async function POST(request: NextRequest) {
     // Realizar avaliação de qualidade
     const qualityAssessment = await performQualityAssessment(
       client
-      validatedData.assessmentType,
-      validatedData.scope,
+      validatedData.assessmentType
+      validatedData.scope
       validatedData.criteria
     )
 
     // Gerar relatório detalhado
     const detailedReport = await generateQualityReport(
-      qualityAssessment,
-      client,
+      qualityAssessment
+      client
       validatedData.assessmentType
     )
 
     // Criar checklist de ações
     const actionChecklist = generateActionChecklist(
-      qualityAssessment,
+      qualityAssessment
       validatedData.assessmentType
     )
 
@@ -82,9 +82,9 @@ export async function POST(request: NextRequest) {
     // Salvar avaliação
     await prisma.automationLog.create({
       data: {
-        type: 'QUALITY_ASSESSMENT',
-        action: `quality_${validatedData.assessmentType}`,
-        clientId: validatedData.clientId,
+        type: 'QUALITY_ASSESSMENT'
+        action: `quality_${validatedData.assessmentType}`
+        clientId: validatedData.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -96,9 +96,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         assessment: qualityAssessment
-        report: detailedReport,
-        checklist: actionChecklist,
-        readinessScore: readinessScore,
+        report: detailedReport
+        checklist: actionChecklist
+        readinessScore: readinessScore
         recommendations: prioritizeRecommendations(qualityAssessment.recommendations)
         timeline: generateQualityTimeline(qualityAssessment)
       }
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
 
     const whereClause: any = {
       clientId: clientId
-      type: 'QUALITY_ASSESSMENT',
+      type: 'QUALITY_ASSESSMENT'
       createdAt: { gte: startDate }
     }
 
@@ -152,8 +152,8 @@ export async function GET(request: NextRequest) {
     }
 
     const assessments = await prisma.automationLog.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      where: whereClause
+      orderBy: { createdAt: 'desc' }
       take: 20
     })
 
@@ -165,15 +165,15 @@ export async function GET(request: NextRequest) {
         assessments: assessments.map(a => ({
           id: a.id
           type: a.action?.replace('quality_', '')
-          overallScore: a.details?.overallScore || 0,
-          readinessLevel: a.details?.readinessLevel,
-          criticalIssues: a.details?.criticalIssues || 0,
+          overallScore: a.details?.overallScore || 0
+          readinessLevel: a.details?.readinessLevel
+          criticalIssues: a.details?.criticalIssues || 0
           createdAt: a.createdAt
         }))
-        trends: trends,
+        trends: trends
         summary: {
-          totalAssessments: assessments.length,
-          averageScore: assessments.reduce((sum, a) => sum + (a.details?.overallScore || 0), 0) / assessments.length || 0,
+          totalAssessments: assessments.length
+          averageScore: assessments.reduce((sum, a) => sum + (a.details?.overallScore || 0), 0) / assessments.length || 0
           latestReadinessLevel: assessments[0]?.details?.readinessLevel || 'unknown'
         }
       }
@@ -191,17 +191,17 @@ export async function GET(request: NextRequest) {
 // Realizar avaliação de qualidade
 async function performQualityAssessment(client: any, assessmentType: string, scope: any, criteria: any) {
   const assessment = {
-    overallScore: 0,
-    readinessLevel: 'not_ready' as 'ready' | 'almost_ready' | 'needs_work' | 'not_ready',
+    overallScore: 0
+    readinessLevel: 'not_ready' as 'ready' | 'almost_ready' | 'needs_work' | 'not_ready'
     breakdown: {
       documents: { score: 0, weight: 0.4 }
       profile: { score: 0, weight: 0.2 }
       compliance: { score: 0, weight: 0.3 }
       strategy: { score: 0, weight: 0.1 }
     }
-    issues: [] as any[],
-    strengths: [] as any[],
-    recommendations: [] as any[],
+    issues: [] as any[]
+    strengths: [] as any[]
+    recommendations: [] as any[]
     metrics: {} as any
   }
 
@@ -252,7 +252,7 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
 
   // Determinar nível de prontidão
   assessment.readinessLevel = determineReadinessLevel(
-    assessment.overallScore,
+    assessment.overallScore
     assessment.issues
   )
 
@@ -262,17 +262,17 @@ async function performQualityAssessment(client: any, assessmentType: string, sco
 // Avaliar qualidade dos documentos
 async function assessDocumentQuality(documents: any[], criteria: any) {
   const assessment = {
-    score: 0,
-    issues: [] as any[],
-    strengths: [] as any[],
-    recommendations: [] as any[],
+    score: 0
+    issues: [] as any[]
+    strengths: [] as any[]
+    recommendations: [] as any[]
     metrics: {
-      totalDocuments: documents.length,
-      processedDocuments: 0,
-      averageConfidence: 0,
-      averageQuality: 0,
-      missingDocuments: [] as string[],
-      expiredDocuments: [] as any[],
+      totalDocuments: documents.length
+      processedDocuments: 0
+      averageConfidence: 0
+      averageQuality: 0
+      missingDocuments: [] as string[]
+      expiredDocuments: [] as any[]
       lowQualityDocuments: [] as any[]
     }
   }
@@ -345,45 +345,45 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
   // Gerar issues e recomendações
   if (missingDocs.length > 0) {
     assessment.issues.push({
-      type: 'missing_documents',
-      severity: 'critical',
-      message: `${missingDocs.length} required documents missing`,
+      type: 'missing_documents'
+      severity: 'critical'
+      message: `${missingDocs.length} required documents missing`
       details: missingDocs
     })
     assessment.recommendations.push({
-      priority: 'high',
-      category: 'documents',
-      action: 'Provide missing required documents',
-      details: `Missing: ${missingDocs.join(', ')}`,
+      priority: 'high'
+      category: 'documents'
+      action: 'Provide missing required documents'
+      details: `Missing: ${missingDocs.join(', ')}`
     })
   }
 
   if (assessment.metrics.lowQualityDocuments.length > 0) {
     assessment.issues.push({
-      type: 'low_quality_documents',
-      severity: 'medium',
-      message: `${assessment.metrics.lowQualityDocuments.length} documents below quality threshold`,
+      type: 'low_quality_documents'
+      severity: 'medium'
+      message: `${assessment.metrics.lowQualityDocuments.length} documents below quality threshold`
       details: assessment.metrics.lowQualityDocuments.map(d => d.fileName)
     })
     assessment.recommendations.push({
-      priority: 'medium',
-      category: 'quality',
-      action: 'Improve document quality',
+      priority: 'medium'
+      category: 'quality'
+      action: 'Improve document quality'
       details: 'Rescan documents with higher resolution'
     })
   }
 
   if (assessment.metrics.expiredDocuments.length > 0) {
     assessment.issues.push({
-      type: 'expiring_documents',
-      severity: 'high',
-      message: `${assessment.metrics.expiredDocuments.length} documents expired or expiring soon`,
+      type: 'expiring_documents'
+      severity: 'high'
+      message: `${assessment.metrics.expiredDocuments.length} documents expired or expiring soon`
       details: assessment.metrics.expiredDocuments.map(d => ({ name: d.fileName, expiry: d.expiryDate }))
     })
     assessment.recommendations.push({
-      priority: 'high',
-      category: 'validity',
-      action: 'Renew expiring documents',
+      priority: 'high'
+      category: 'validity'
+      action: 'Renew expiring documents'
       details: 'Update documents before submission'
     })
   }
@@ -391,14 +391,14 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
   // Identificar pontos fortes
   if (assessment.metrics.averageConfidence > 85) {
     assessment.strengths.push({
-      type: 'high_ocr_confidence',
+      type: 'high_ocr_confidence'
       message: 'Documents have high OCR extraction confidence'
     })
   }
 
   if (assessment.metrics.averageQuality > 85) {
     assessment.strengths.push({
-      type: 'high_document_quality',
+      type: 'high_document_quality'
       message: 'Documents meet high quality standards'
     })
   }
@@ -410,21 +410,21 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
 function assessClientProfile(client: any) {
   const assessment = {
     score: 0
-    issues: [] as any[],
-    strengths: [] as any[],
-    recommendations: [] as any[],
+    issues: [] as any[]
+    strengths: [] as any[]
+    recommendations: [] as any[]
     metrics: {
-      completenessScore: 0,
-      accuracyScore: 0,
-      consistencyScore: 0,
-      missingFields: [] as string[],
+      completenessScore: 0
+      accuracyScore: 0
+      consistencyScore: 0
+      missingFields: [] as string[]
       inconsistentFields: [] as string[]
     }
   }
 
   // Campos obrigatórios
   const requiredFields = [
-    'name', 'email', 'phone', 'targetCountry', 'visaType',
+    'name', 'email', 'phone', 'targetCountry', 'visaType'
     'education', 'experience', 'maritalStatus'
   ]
 
@@ -457,38 +457,38 @@ function assessClientProfile(client: any) {
   // Gerar issues e recomendações
   if (missingFields.length > 0) {
     assessment.issues.push({
-      type: 'incomplete_profile',
-      severity: 'medium',
-      message: `${missingFields.length} required profile fields missing`,
+      type: 'incomplete_profile'
+      severity: 'medium'
+      message: `${missingFields.length} required profile fields missing`
       details: missingFields
     })
     assessment.recommendations.push({
-      priority: 'medium',
-      category: 'profile',
-      action: 'Complete profile information',
-      details: `Missing: ${missingFields.join(', ')}`,
+      priority: 'medium'
+      category: 'profile'
+      action: 'Complete profile information'
+      details: `Missing: ${missingFields.join(', ')}`
     })
   }
 
   if (inconsistentFields.length > 0) {
     assessment.issues.push({
-      type: 'profile_inconsistencies',
-      severity: 'low',
-      message: `${inconsistentFields.length} profile fields need correction`,
+      type: 'profile_inconsistencies'
+      severity: 'low'
+      message: `${inconsistentFields.length} profile fields need correction`
       details: inconsistentFields
     })
     assessment.recommendations.push({
-      priority: 'low',
-      category: 'profile',
-      action: 'Correct profile inconsistencies',
-      details: `Review: ${inconsistentFields.join(', ')}`,
+      priority: 'low'
+      category: 'profile'
+      action: 'Correct profile inconsistencies'
+      details: `Review: ${inconsistentFields.join(', ')}`
     })
   }
 
   // Pontos fortes
   if (assessment.metrics.completenessScore > 90) {
     assessment.strengths.push({
-      type: 'complete_profile',
+      type: 'complete_profile'
       message: 'Profile is comprehensive and complete'
     })
   }
@@ -499,14 +499,14 @@ function assessClientProfile(client: any) {
 // Avaliar compliance
 async function assessCompliance(client: any, criteria: any) {
   const assessment = {
-    score: 0,
-    issues: [] as any[],
-    strengths: [] as any[],
-    recommendations: [] as any[],
+    score: 0
+    issues: [] as any[]
+    strengths: [] as any[]
+    recommendations: [] as any[]
     metrics: {
-      documentCompliance: 0,
-      timelineCompliance: 0,
-      requirementCompliance: 0,
+      documentCompliance: 0
+      timelineCompliance: 0
+      requirementCompliance: 0
       riskLevel: 'low' as 'low' | 'medium' | 'high'
     }
   }
@@ -523,7 +523,7 @@ async function assessCompliance(client: any, criteria: any) {
       return totalResults > 0 ? (validResults / totalResults) * 100 : 100
     })
     
-    assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length,
+    assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length
   } else {
     assessment.metrics.documentCompliance = 50 // Penalizar falta de validação
   }
@@ -553,12 +553,12 @@ async function assessCompliance(client: any, criteria: any) {
 function assessApplicationStrategy(client: any) {
   const assessment = {
     score: 0
-    issues: [] as any[],
-    strengths: [] as any[],
-    recommendations: [] as any[],
+    issues: [] as any[]
+    strengths: [] as any[]
+    recommendations: [] as any[]
     metrics: {
-      strategyAlignment: 0,
-      timelineRealism: 0,
+      strategyAlignment: 0
+      timelineRealism: 0
       preparationLevel: 0
     }
   }
@@ -588,15 +588,15 @@ async function generateQualityReport(assessment: any, client: any, assessmentTyp
   return {
     summary: {
       overallScore: assessment.overallScore
-      readinessLevel: assessment.readinessLevel,
-      totalIssues: assessment.issues.length,
-      criticalIssues: assessment.issues.filter((i: any) => i.severity === 'critical').length,
+      readinessLevel: assessment.readinessLevel
+      totalIssues: assessment.issues.length
+      criticalIssues: assessment.issues.filter((i: any) => i.severity === 'critical').length
       recommendations: assessment.recommendations.length
     }
-    breakdown: assessment.breakdown,
+    breakdown: assessment.breakdown
     issues: groupIssuesBySeverity(assessment.issues)
-    strengths: assessment.strengths,
-    metrics: assessment.metrics,
+    strengths: assessment.strengths
+    metrics: assessment.metrics
     timeline: generateQualityTimeline(assessment)
     nextSteps: generateQualityNextSteps(assessment, assessmentType)
   }
@@ -620,10 +620,10 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
   const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical')
   criticalIssues.forEach((issue: any) => {
     checklist.push({
-      priority: 'critical',
-      action: `Resolve: ${issue.message}`,
-      category: issue.type,
-      completed: false,
+      priority: 'critical'
+      action: `Resolve: ${issue.message}`
+      category: issue.type
+      completed: false
       dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias
     })
   })
@@ -632,10 +632,10 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
   const highPriorityRecs = assessment.recommendations.filter((r: any) => r.priority === 'high')
   highPriorityRecs.forEach((rec: any) => {
     checklist.push({
-      priority: 'high',
-      action: rec.action,
-      category: rec.category,
-      completed: false,
+      priority: 'high'
+      action: rec.action
+      category: rec.category
+      completed: false
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 dias
     })
   })
@@ -646,8 +646,8 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
 function calculateReadinessScore(assessment: any) {
   const readinessLevels = {
     'ready': 95
-    'almost_ready': 80,
-    'needs_work': 60,
+    'almost_ready': 80
+    'needs_work': 60
     'not_ready': 30
   }
   
@@ -671,23 +671,23 @@ function generateQualityTimeline(assessment: any) {
   
   if (criticalIssues > 0) {
     timeline.push({
-      phase: 'Critical Issues Resolution',
-      duration: '3-5 days',
+      phase: 'Critical Issues Resolution'
+      duration: '3-5 days'
       description: 'Address all critical blocking issues'
     })
   }
   
   if (highIssues > 0) {
     timeline.push({
-      phase: 'High Priority Improvements',
-      duration: '1-2 weeks',
+      phase: 'High Priority Improvements'
+      duration: '1-2 weeks'
       description: 'Implement high priority recommendations'
     })
   }
   
   timeline.push({
-    phase: 'Final Review & Submission',
-    duration: '2-3 days',
+    phase: 'Final Review & Submission'
+    duration: '2-3 days'
     description: 'Final quality check and submission preparation'
   })
   
@@ -722,7 +722,7 @@ function analyzeQualityTrends(assessments: any[]) {
   if (assessments.length < 2) {
     return {
       trend: 'insufficient_data'
-      scoreChange: 0,
+      scoreChange: 0
       improvement: false
     }
   }
@@ -734,8 +734,8 @@ function analyzeQualityTrends(assessments: any[]) {
   
   return {
     trend: scoreChange > 5 ? 'improving' : scoreChange < -5 ? 'declining' : 'stable'
-    scoreChange: scoreChange,
-    improvement: scoreChange > 0,
-    averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length,
+    scoreChange: scoreChange
+    improvement: scoreChange > 0
+    averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length
   }
 }

@@ -27,53 +27,53 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar comissões
-    const [commissions, total] = await Promise.all([,
+    const [commissions, total] = await Promise.all([
       prisma.affiliateCommission.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
+        where
+        skip
+        take: limit
+        orderBy: { createdAt: 'desc' }
         include: {
           affiliate: {
             select: {
-              id: true,
-              name: true,
-              email: true,
+              id: true
+              name: true
+              email: true
               referralCode: true
             }
-          },
+          }
           referral: {
             include: {
               client: {
                 select: {
-                  id: true,
-                  name: true,
+                  id: true
+                  name: true
                   email: true
                 }
               }
             }
-          },
+          }
           payment: true
         }
-      }),
+      })
       prisma.affiliateCommission.count({ where })
     ])
 
     // Buscar estatísticas de pagamentos
     const stats = await prisma.affiliateCommission.groupBy({
-      by: ['status'],
+      by: ['status']
       _sum: {
         amount: true
-      },
+      }
       _count: {
         id: true
-      },
+      }
       where: affiliateId ? { affiliateId } : {}
     })
 
     const paymentStats = stats.reduce((acc, stat) => {
       acc[stat.status] = {
-        count: stat._count.id,
+        count: stat._count.id
         amount: stat._sum.amount || 0
       }
       return acc
@@ -81,13 +81,13 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        commissions,
+        commissions
         pagination: {
-          page,
-          limit,
-          total,
+          page
+          limit
+          total
           pages: Math.ceil(total / limit)
-        },
+        }
         stats: paymentStats
       }
     })
@@ -117,9 +117,9 @@ export async function POST(request: NextRequest) {
     // Buscar comissões pendentes
     const commissions = await prisma.affiliateCommission.findMany({
       where: {
-        id: { in: commissionIds },
+        id: { in: commissionIds }
         status: 'PENDING'
-      },
+      }
       include: {
         affiliate: true
       }
@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
       const affiliateId = commission.affiliateId
       if (!acc[affiliateId]) {
         acc[affiliateId] = {
-          affiliate: commission.affiliate,
-          commissions: [],
+          affiliate: commission.affiliate
+          commissions: []
           totalAmount: 0
         }
       }
@@ -158,16 +158,16 @@ export async function POST(request: NextRequest) {
       // Criar pagamento
       const payment = await prisma.affiliatePayment.create({
         data: {
-          affiliateId,
-          amount: group.totalAmount,
-          method: paymentMethod,
-          referenceCode,
-          status: 'PENDING',
-          notes,
+          affiliateId
+          amount: group.totalAmount
+          method: paymentMethod
+          referenceCode
+          status: 'PENDING'
+          notes
           details: {
-            paymentMethod: paymentMethod,
-            commissionCount: group.commissions.length,
-            paymentPeriod: 'manual',
+            paymentMethod: paymentMethod
+            commissionCount: group.commissions.length
+            paymentPeriod: 'manual'
             processedAt: new Date().toISOString()
           }
         }
@@ -177,16 +177,16 @@ export async function POST(request: NextRequest) {
       await prisma.affiliateCommission.updateMany({
         where: {
           id: { in: group.commissions.map((c: any) => c.id) }
-        },
+        }
         data: {
-          status: 'APPROVED',
+          status: 'APPROVED'
           paymentId: payment.id
         }
       })
 
       // Atualizar saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: affiliateId },
+        where: { id: affiliateId }
         data: {
           pendingEarnings: { decrement: group.totalAmount }
         }
@@ -200,8 +200,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        payments,
-        message: `${payments.length} pagamento(s) criado(s) com sucesso`,
+        payments
+        message: `${payments.length} pagamento(s) criado(s) com sucesso`
       }
     })
 
@@ -236,7 +236,7 @@ export async function PUT(request: NextRequest) {
 
     // Atualizar pagamento
     const updateData: any = {
-      status,
+      status
       notes
     }
 
@@ -253,10 +253,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const payment = await prisma.affiliatePayment.update({
-      where: { id: paymentId },
-      data: updateData,
+      where: { id: paymentId }
+      data: updateData
       include: {
-        affiliate: true,
+        affiliate: true
         commissions: true
       }
     })
@@ -265,16 +265,16 @@ export async function PUT(request: NextRequest) {
     if (status === 'COMPLETED') {
       // Marcar comissões como pagas
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId },
+        where: { paymentId }
         data: {
-          status: 'PAID',
+          status: 'PAID'
           paidAt: new Date()
         }
       })
 
       // Atualizar saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId },
+        where: { id: payment.affiliateId }
         data: {
           paidEarnings: { increment: payment.amount }
         }
@@ -284,16 +284,16 @@ export async function PUT(request: NextRequest) {
     // Se pagamento falhou, reverter comissões
     if (status === 'FAILED' || status === 'CANCELLED') {
       await prisma.affiliateCommission.updateMany({
-        where: { paymentId },
+        where: { paymentId }
         data: {
-          status: 'PENDING',
+          status: 'PENDING'
           paymentId: null
         }
       })
 
       // Reverter saldos do afiliado
       await prisma.affiliate.update({
-        where: { id: payment.affiliateId },
+        where: { id: payment.affiliateId }
         data: {
           pendingEarnings: { increment: payment.amount }
         }

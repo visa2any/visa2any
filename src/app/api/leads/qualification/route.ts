@@ -23,16 +23,16 @@ export async function POST(request: NextRequest) {
     if (client) {
       // Atualizar cliente existente com dados da qualificação
       client = await prisma.client.update({
-        where: { id: client.id },
+        where: { id: client.id }
         data: {
-          name: name,
-          phone: phone || client.phone,
-          eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses),
-          leadScore: score,
-          leadCategory: category.toUpperCase(),
-          leadPriority: priority.toUpperCase(),
-          status: score >= 75 ? 'QUALIFIED' : 'LEAD',
+          name: name
+          phone: phone || client.phone
+          eligibilityScore: score
+          leadQualificationData: JSON.stringify(responses)
+          leadScore: score
+          leadCategory: category.toUpperCase()
+          leadPriority: priority.toUpperCase()
+          status: score >= 75 ? 'QUALIFIED' : 'LEAD'
           updatedAt: new Date()
         }
       })
@@ -40,19 +40,19 @@ export async function POST(request: NextRequest) {
       // Criar novo cliente
       client = await prisma.client.create({
         data: {
-          name,
-          email,
-          phone: phone || null,
-          eligibilityScore: score,
-          leadQualificationData: JSON.stringify(responses),
-          leadScore: score,
-          leadCategory: category.toUpperCase(),
-          leadPriority: priority.toUpperCase(),
-          status: score >= 75 ? 'QUALIFIED' : 'LEAD',
-          isActive: true,
-          destinationCountry: responses.country || null,
-          visaType: responses['visa-type'] || null,
-          createdAt: new Date(),
+          name
+          email
+          phone: phone || null
+          eligibilityScore: score
+          leadQualificationData: JSON.stringify(responses)
+          leadScore: score
+          leadCategory: category.toUpperCase()
+          leadPriority: priority.toUpperCase()
+          status: score >= 75 ? 'QUALIFIED' : 'LEAD'
+          isActive: true
+          destinationCountry: responses.country || null
+          visaType: responses['visa-type'] || null
+          createdAt: new Date()
           updatedAt: new Date()
         }
       })
@@ -61,12 +61,12 @@ export async function POST(request: NextRequest) {
     // Registrar interação da qualificação
     await prisma.interaction.create({
       data: {
-        clientId: client.id,
-        type: 'EMAIL',
-        channel: 'form',
-        direction: 'inbound',
-        subject: 'Lead Qualification',
-        content: `Lead qualification completed with score ${score}/100`,
+        clientId: client.id
+        type: 'EMAIL'
+        channel: 'form'
+        direction: 'inbound'
+        subject: 'Lead Qualification'
+        content: `Lead qualification completed with score ${score}/100`
         completedAt: new Date()
       }
     })
@@ -90,14 +90,14 @@ export async function POST(request: NextRequest) {
     await triggerEmailAutomation(client, category, responses)
 
     return NextResponse.json({
-      message: 'Qualificação processada com sucesso',
+      message: 'Qualificação processada com sucesso'
       client: {
-        id: client.id,
-        name: client.name,
-        email: client.email,
-        score,
-        category,
-        priority,
+        id: client.id
+        name: client.name
+        email: client.email
+        score
+        category
+        priority
         nextAction
       }
     })
@@ -143,41 +143,41 @@ async function createFollowUpTask(clientId: string, type: string, description: s
 async function triggerEmailAutomation(client: any, category: string, responses: any) {
   try {
     const automationData = {
-      clientId: client.id,
-      email: client.email,
-      name: client.name,
-      category,
-      responses,
-      destinationCountry: responses.country,
-      urgency: responses.urgency,
+      clientId: client.id
+      email: client.email
+      name: client.name
+      category
+      responses
+      destinationCountry: responses.country
+      urgency: responses.urgency
       budget: responses.budget
     }
 
     // Trigger automação baseada na categoria
     if (category === 'hot') {
       await fetch('/api/automation/email-sequences', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST'
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
-          sequence: 'hot_lead_immediate',
+          sequence: 'hot_lead_immediate'
           ...automationData
         })
       })
     } else if (category === 'warm') {
       await fetch('/api/automation/email-sequences', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST'
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
-          sequence: 'warm_lead_nurturing',
+          sequence: 'warm_lead_nurturing'
           ...automationData
         })
       })
     } else {
       await fetch('/api/automation/email-sequences', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST'
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
-          sequence: 'cold_lead_education',
+          sequence: 'cold_lead_education'
           ...automationData
         })
       })

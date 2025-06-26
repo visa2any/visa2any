@@ -8,7 +8,7 @@ import { applyRateLimit } from '@/lib/rate-limit'
 
 // Schema para login
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
+  email: z.string().email('Email inválido')
   password: z.string().min(1, 'Senha é obrigatória')
 })
 
@@ -20,19 +20,19 @@ export async function POST(request: NextRequest) {
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { 
-          error: rateLimitResult.error,
+          error: rateLimitResult.error
           rateLimitInfo: {
-            limit: rateLimitResult.limit,
-            remaining: rateLimitResult.remaining,
+            limit: rateLimitResult.limit
+            remaining: rateLimitResult.remaining
             reset: rateLimitResult.reset
           }
-        },
+        }
         { 
-          status: 429,
+          status: 429
           headers: {
-            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
+            'X-RateLimit-Limit': rateLimitResult.limit.toString()
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString()
+            'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString()
             'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()
           }
         }
@@ -46,13 +46,13 @@ export async function POST(request: NextRequest) {
 
     // Buscar usuário
     const user = await prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email }
       select: {
-        id: true,
-        name: true,
-        email: true,
-        password: true,
-        role: true,
+        id: true
+        name: true
+        email: true
+        password: true
+        role: true
         isActive: true
       }
     })
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('❌ NEXTAUTH_SECRET não está configurado!')
       return NextResponse.json(
-        { error: 'Erro interno do servidor' },
+        { error: 'Erro interno do servidor' }
         { status: 500 }
       )
     }
@@ -92,26 +92,26 @@ export async function POST(request: NextRequest) {
     // Gerar JWT token com configurações de segurança melhoradas
     const token = jwt.sign(
       { 
-        userId: user.id,
+        userId: user.id
         email: user.email, 
-        role: user.role,
+        role: user.role
         iat: Math.floor(Date.now() / 1000), // ✅ Issued at
         jti: crypto.randomUUID() // ✅ JWT ID único
-      },
-      jwtSecret,
+      }
+      jwtSecret
       { 
         expiresIn: '24h', // ✅ Reduzido de 7d para 24h (mais seguro)
-        issuer: 'visa2any-api',
+        issuer: 'visa2any-api'
         audience: 'visa2any-client'
       }
     )
 
     // Dados do usuário para retorno (sem senha)
     const userData = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
+      id: user.id
+      name: user.name
+      email: user.email
+      role: user.role
       isActive: user.isActive
     }
 
@@ -119,14 +119,14 @@ export async function POST(request: NextRequest) {
     try {
       await prisma.automationLog.create({
         data: {
-          type: 'USER_LOGIN',
-          action: 'login',
-          success: true,
-          clientId: null,
+          type: 'USER_LOGIN'
+          action: 'login'
+          success: true
+          clientId: null
           details: {
-            userId: user.id,
-            email: user.email,
-            role: user.role,
+            userId: user.id
+            email: user.email
+            role: user.role
             loginTimestamp: new Date().toISOString()
           }
         }
@@ -138,19 +138,19 @@ export async function POST(request: NextRequest) {
     // Configurar cookie httpOnly
     const response = NextResponse.json({
       data: {
-        user: userData,
-        token,
-      },
+        user: userData
+        token
+      }
       message: 'Login realizado com sucesso'
     })
 
     // ✅ Definir cookie seguro com configurações melhoradas
     response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
       sameSite: 'strict', // ✅ Mais seguro que 'lax'
       maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
-      path: '/',
+      path: '/'
       domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
     })
     
@@ -167,9 +167,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors
-        },
+        }
         { status: 400 }
       )
     }
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     const errorStack = error instanceof Error ? error.stack : undefined
     console.error('Error details:', errorMessage, errorStack)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

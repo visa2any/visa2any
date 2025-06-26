@@ -32,13 +32,13 @@ export async function GET(request: NextRequest) {
       if (searchWords.length > 0) {
         where.OR = [
           // Busca no título (maior relevância)
-          { title: { contains: searchTerm, mode: 'insensitive' } },
+          { title: { contains: searchTerm, mode: 'insensitive' } }
           // Busca no resumo
-          { excerpt: { contains: searchTerm, mode: 'insensitive' } },
+          { excerpt: { contains: searchTerm, mode: 'insensitive' } }
           // Busca no conteúdo (menor relevância)
-          { content: { contains: searchTerm, mode: 'insensitive' } },
+          { content: { contains: searchTerm, mode: 'insensitive' } }
           // Busca no país
-          { country: { contains: searchTerm, mode: 'insensitive' } },
+          { country: { contains: searchTerm, mode: 'insensitive' } }
           // Busca no autor
           { author: { contains: searchTerm, mode: 'insensitive' } }
         ]
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
         // Adicionar busca individual por palavra para melhor matching
         for (const word of searchWords) {
           where.OR.push(
-            { title: { contains: word, mode: 'insensitive' } },
-            { excerpt: { contains: word, mode: 'insensitive' } },
+            { title: { contains: word, mode: 'insensitive' } }
+            { excerpt: { contains: word, mode: 'insensitive' } }
             { country: { contains: word, mode: 'insensitive' } }
           )
         }
@@ -99,9 +99,9 @@ export async function GET(request: NextRequest) {
 
     // Buscar posts
     const posts = await prisma.blogPost.findMany({
-      where,
-      orderBy,
-      take: limit,
+      where
+      orderBy
+      take: limit
       skip: offset
     })
 
@@ -110,18 +110,18 @@ export async function GET(request: NextRequest) {
 
     // Converter tags JSON para array
     const postsWithTags = posts.map(post => ({
-      ...post,
+      ...post
       tags: Array.isArray(post.tags) ? post.tags : []
     }))
 
     return NextResponse.json({
-      posts: postsWithTags,
-      total,
-      hasMore: offset + posts.length < total,
+      posts: postsWithTags
+      total
+      hasMore: offset + posts.length < total
       pagination: {
-        current: Math.floor(offset / limit) + 1,
-        total: Math.ceil(total / limit),
-        limit,
+        current: Math.floor(offset / limit) + 1
+        total: Math.ceil(total / limit)
+        limit
         offset
       }
     })
@@ -131,13 +131,13 @@ export async function GET(request: NextRequest) {
     
     // Retornar dados de fallback em caso de erro de banco
     return NextResponse.json({
-      posts: [],
-      total: 0,
-      hasMore: false,
+      posts: []
+      total: 0
+      hasMore: false
       pagination: {
-        current: 1,
-        total: 0,
-        limit: 50,
+        current: 1
+        total: 0
+        limit: 50
         offset: 0
       }
     })
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Campos obrigatórios: title, excerpt, content, category, author'
-        },
+        }
         { status: 400 }
       )
     }
@@ -163,32 +163,32 @@ export async function POST(request: NextRequest) {
     // Criar post
     const post = await prisma.blogPost.create({
       data: {
-        title,
-        excerpt,
-        content,
-        category,
-        author,
-        authorImage: body.authorImage,
-        readTime: readTime || '5 min',
-        featured: body.featured || false,
-        trending: body.trending || false,
-        urgent: body.urgent || false,
-        tags: tags || [],
-        country: body.country,
-        flag: body.flag,
-        difficulty: difficulty || 'Intermediário',
-        type: type || 'Notícia',
-        imageUrl: body.imageUrl,
-        videoUrl: body.videoUrl,
-        sourceUrl: body.sourceUrl,
-        sponsored: body.sponsored || false,
+        title
+        excerpt
+        content
+        category
+        author
+        authorImage: body.authorImage
+        readTime: readTime || '5 min'
+        featured: body.featured || false
+        trending: body.trending || false
+        urgent: body.urgent || false
+        tags: tags || []
+        country: body.country
+        flag: body.flag
+        difficulty: difficulty || 'Intermediário'
+        type: type || 'Notícia'
+        imageUrl: body.imageUrl
+        videoUrl: body.videoUrl
+        sourceUrl: body.sourceUrl
+        sponsored: body.sponsored || false
         published: body.published !== false // default true
       }
     })
 
     return NextResponse.json({
       post: {
-        ...post,
+        ...post
         tags: Array.isArray(post.tags) ? post.tags : []
       }
     })
@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }

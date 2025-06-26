@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Nome e telefone são obrigatórios'
-        },
+        }
         { status: 400 }
       )
     }
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Telefone inválido'
-        },
+        }
         { status: 400 }
       )
     }
@@ -43,20 +43,20 @@ export async function POST(request: NextRequest) {
       const updatedSubscriber = await prisma.whatsAppSubscriber.update({
         where: {
           id: existingSubscriber.id
-        },
+        }
         data: {
-          name,
-          countries: countries.length > 0 ? countries : ['Global'],
-          isActive: true,
+          name
+          countries: countries.length > 0 ? countries : ['Global']
+          isActive: true
           source: 'blog_newsletter'
         }
       })
 
       return NextResponse.json({
-        message: 'Dados atualizados com sucesso!',
+        message: 'Dados atualizados com sucesso!'
         subscriber: {
-          id: updatedSubscriber.id,
-          name: updatedSubscriber.name,
+          id: updatedSubscriber.id
+          name: updatedSubscriber.name
           isActive: updatedSubscriber.isActive
         }
       })
@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
     // Criar novo assinante
     const newSubscriber = await prisma.whatsAppSubscriber.create({
       data: {
-        name,
-        phone: cleanPhone,
-        countries: countries.length > 0 ? countries : ['Global'],
-        isActive: true,
+        name
+        phone: cleanPhone
+        countries: countries.length > 0 ? countries : ['Global']
+        isActive: true
         source: 'blog_newsletter'
       }
     })
@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
     // await sendWelcomeMessage(cleanPhone, name)
 
     return NextResponse.json({
-      message: 'Cadastro realizado com sucesso! Você receberá atualizações no WhatsApp.',
+      message: 'Cadastro realizado com sucesso! Você receberá atualizações no WhatsApp.'
       subscriber: {
-        id: newSubscriber.id,
-        name: newSubscriber.name,
+        id: newSubscriber.id
+        name: newSubscriber.name
         isActive: newSubscriber.isActive
       }
     })
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }
@@ -103,13 +103,13 @@ export async function GET(request: NextRequest) {
     
     // Estatísticas da newsletter
     const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([
-      prisma.whatsAppSubscriber.count(),
+      prisma.whatsAppSubscriber.count()
       prisma.whatsAppSubscriber.count({
         where: { isActive: true }
-      }),
+      })
       prisma.whatsAppSubscriber.count({
         where: {
-          isActive: true,
+          isActive: true
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
           }
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
 
     // Distribuição por países de interesse
     const countryDistribution = await prisma.whatsAppSubscriber.findMany({
-      where: { isActive: active },
+      where: { isActive: active }
       select: { countries: true }
     })
 
@@ -135,8 +135,8 @@ export async function GET(request: NextRequest) {
 
     // Assinantes por fonte
     const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({
-      by: ['source'],
-      where: { isActive: active },
+      by: ['source']
+      where: { isActive: active }
       _count: {
         source: true
       }
@@ -144,16 +144,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       stats: {
-        total: totalSubscribers,
-        active: activeSubscribers,
-        inactive: totalSubscribers - activeSubscribers,
-        recent: recentSubscribers,
+        total: totalSubscribers
+        active: activeSubscribers
+        inactive: totalSubscribers - activeSubscribers
+        recent: recentSubscribers
         distribution: {
           countries: Object.entries(countryCount)
             .map(([country, count]) => ({ country, count }))
-            .sort((a, b) => b.count - a.count),
+            .sort((a, b) => b.count - a.count)
           sources: sourceDistribution.map(item => ({
-            source: item.source,
+            source: item.source
             count: item._count.source
           }))
         }
@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }

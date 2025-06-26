@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
     // Buscar todos os clientes
     const clients = await prisma.client.findMany({
       select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        country: true,
-        nationality: true,
-        age: true,
-        profession: true,
-        education: true,
-        targetCountry: true,
-        visaType: true,
-        status: true,
-        createdAt: true,
+        id: true
+        name: true
+        email: true
+        phone: true
+        country: true
+        nationality: true
+        age: true
+        profession: true
+        education: true
+        targetCountry: true
+        visaType: true
+        status: true
+        createdAt: true
         assignedUser: {
           select: {
             name: true
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         }
         _count: {
           select: {
-            consultations: true,
+            consultations: true
             payments: true
           }
         }
@@ -49,41 +49,41 @@ export async function GET(request: NextRequest) {
     const csvRows = [
       // Header
       [
-        'ID',
-        'Nome',
+        'ID'
+        'Nome'
         'Email', 
-        'Telefone',
-        'País',
-        'Nacionalidade',
-        'Idade',
-        'Profissão',
-        'Educação',
-        'País Destino',
-        'Tipo de Visto',
-        'Status',
-        'Consultor',
-        'Consultorias',
-        'Pagamentos',
+        'Telefone'
+        'País'
+        'Nacionalidade'
+        'Idade'
+        'Profissão'
+        'Educação'
+        'País Destino'
+        'Tipo de Visto'
+        'Status'
+        'Consultor'
+        'Consultorias'
+        'Pagamentos'
         'Data Cadastro'
       ].join(',')
       
       // Dados dos clientes
       ...clients.map(client => [
-        client.id,
-        `"${client.name}"`,
-        client.email,
-        client.phone || '',
-        client.country || '',
-        client.nationality || '',
-        client.age || '',
-        `"${client.profession || ''}"`,
-        client.education || '',
-        client.targetCountry || '',
-        client.visaType || '',
-        client.status,
-        `"${client.assignedUser?.name || 'Não atribuído'}"`,
-        client._count.consultations,
-        client._count.payments,
+        client.id
+        `"${client.name}"`
+        client.email
+        client.phone || ''
+        client.country || ''
+        client.nationality || ''
+        client.age || ''
+        `"${client.profession || ''}"`
+        client.education || ''
+        client.targetCountry || ''
+        client.visaType || ''
+        client.status
+        `"${client.assignedUser?.name || 'Não atribuído'}"`
+        client._count.consultations
+        client._count.payments
         client.createdAt.toISOString().split('T')[0]
       ].join(','))
     ]
@@ -96,8 +96,8 @@ export async function GET(request: NextRequest) {
     
     return new NextResponse(finalCsv, {
       headers: {
-        'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Type': 'text/csv; charset=utf-8'
+        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`
       }
     })
 

@@ -38,39 +38,39 @@ export async function GET(request: NextRequest) {
     
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } }
+        { email: { contains: search, mode: 'insensitive' } }
         { referralCode: { contains: search, mode: 'insensitive' } }
       ]
     }
 
     // Buscar afiliados
-    const [affiliates, total] = await Promise.all([,
+    const [affiliates, total] = await Promise.all([
       prisma.affiliate.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
+        where
+        skip
+        take: limit
+        orderBy: { createdAt: 'desc' }
         include: {
           _count: {
             select: {
-              referrals: true,
-              clicks: true,
+              referrals: true
+              clicks: true
               commissions: true
             }
           }
         }
-      }),
+      })
       prisma.affiliate.count({ where })
     ])
 
     // Buscar estatísticas gerais
     const stats = await prisma.affiliate.aggregate({
-      _count: { id: true },
+      _count: { id: true }
       _sum: {
-        totalEarnings: true,
-        pendingEarnings: true,
-        totalClicks: true,
+        totalEarnings: true
+        pendingEarnings: true
+        totalClicks: true
         totalConversions: true
       }
     })
@@ -85,20 +85,20 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        affiliates,
+        affiliates
         pagination: {
-          page,
-          limit,
-          total,
+          page
+          limit
+          total
           pages: Math.ceil(total / limit)
-        },
+        }
         stats: {
-          totalAffiliates: stats._count.id || 0,
-          activeAffiliates: activeCount,
-          pendingAffiliates: pendingCount,
-          totalCommissions: stats._sum.totalEarnings || 0,
-          pendingCommissions: stats._sum.pendingEarnings || 0,
-          totalClicks: stats._sum.totalClicks || 0,
+          totalAffiliates: stats._count.id || 0
+          activeAffiliates: activeCount
+          pendingAffiliates: pendingCount
+          totalCommissions: stats._sum.totalEarnings || 0
+          pendingCommissions: stats._sum.pendingEarnings || 0
+          totalClicks: stats._sum.totalClicks || 0
           totalConversions: stats._sum.totalConversions || 0
         }
       }
@@ -119,14 +119,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const {
-      name,
-      email,
-      phone,
-      company,
-      website,
-      bio,
-      socialMedia = {},
-      commissionRate = 0.10,
+      name
+      email
+      phone
+      company
+      website
+      bio
+      socialMedia = {}
+      commissionRate = 0.10
     } = body
 
     // Validações básicas
@@ -165,15 +165,15 @@ export async function POST(request: NextRequest) {
     // Criar afiliado
     const affiliate = await prisma.affiliate.create({
       data: {
-        name,
-        email,
-        phone,
-        company,
-        website,
-        bio,
-        socialMedia,
-        referralCode,
-        commissionRate,
+        name
+        email
+        phone
+        company
+        website
+        bio
+        socialMedia
+        referralCode
+        commissionRate
         paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto
         status: 'PENDING', // Aguardando aprovação
         tier: 'BRONZE'
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
     // await sendAffiliateWelcomeEmail(affiliate)
 
     return NextResponse.json({
-      data: affiliate,
+      data: affiliate
       message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.'
     })
 
@@ -211,9 +211,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const affiliate = await prisma.affiliate.update({
-      where: { id },
+      where: { id }
       data: {
-        ...updateData,
+        ...updateData
         updatedAt: new Date()
       }
     })

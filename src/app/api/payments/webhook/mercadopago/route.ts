@@ -72,15 +72,15 @@ export async function POST(request: NextRequest) {
       data: {
         status: newStatus as any
         transactionId: mpPayment.id.toString()
-        paidAt: newStatus === 'COMPLETED' ? new Date() : null,
+        paidAt: newStatus === 'COMPLETED' ? new Date() : null
         paymentDetails: {
-          mp_payment_id: mpPayment.id,
-          mp_status: mpPayment.status,
-          mp_status_detail: mpPayment.status_detail,
-          payment_method_id: mpPayment.payment_method_id,
-          payment_type_id: mpPayment.payment_type_id,
-          transaction_amount: mpPayment.transaction_amount,
-          date_approved: mpPayment.date_approved,
+          mp_payment_id: mpPayment.id
+          mp_status: mpPayment.status
+          mp_status_detail: mpPayment.status_detail
+          payment_method_id: mpPayment.payment_method_id
+          payment_type_id: mpPayment.payment_type_id
+          transaction_amount: mpPayment.transaction_amount
+          date_approved: mpPayment.date_approved
           date_created: mpPayment.date_created
         }
       }
@@ -89,9 +89,9 @@ export async function POST(request: NextRequest) {
     // Log do webhook processado
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_WEBHOOK_PROCESSED',
-        action: 'process_mercadopago_webhook',
-        clientId: payment.clientId,
+        type: 'PAYMENT_WEBHOOK_PROCESSED'
+        action: 'process_mercadopago_webhook'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -113,9 +113,9 @@ export async function POST(request: NextRequest) {
     // Log do erro
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_WEBHOOK_ERROR',
-        action: 'process_mercadopago_webhook',
-        clientId: null,
+        type: 'PAYMENT_WEBHOOK_ERROR'
+        action: 'process_mercadopago_webhook'
+        clientId: null
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -145,14 +145,14 @@ async function processPaymentSuccess(payment: any) {
     // 2. Enviar email de confirmação
     try {
       await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
-        method: 'POST',
+        method: 'POST'
         headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
-          to: payment.client.email,
-          template: 'payment_confirmation',
-          clientId: payment.clientId,
+          to: payment.client.email
+          template: 'payment_confirmation'
+          clientId: payment.clientId
           variables: {
-            payment_amount: `R$ ${payment.amount.toFixed(2)}`,
+            payment_amount: `R$ ${payment.amount.toFixed(2)}`
             payment_plan: getPaymentPackageName(payment.productId)
             payment_date: new Date().toLocaleDateString('pt-BR')
             transaction_id: payment.transactionId
@@ -167,14 +167,14 @@ async function processPaymentSuccess(payment: any) {
     try {
       if (payment.client.phone) {
         await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
-          method: 'POST',
+          method: 'POST'
           headers: { 'Content-Type': 'application/json' }
           body: JSON.stringify({
-            to: payment.client.phone,
-            template: 'payment_confirmation',
-            clientId: payment.clientId,
+            to: payment.client.phone
+            template: 'payment_confirmation'
+            clientId: payment.clientId
             variables: {
-              payment_amount: `R$ ${payment.amount.toFixed(2)}`,
+              payment_amount: `R$ ${payment.amount.toFixed(2)}`
               payment_plan: getPaymentPackageName(payment.productId)
             }
           })
@@ -190,7 +190,7 @@ async function processPaymentSuccess(payment: any) {
     if (consultationTypes.some(type => payment.productId.includes(type))) {
       const existingConsultation = await prisma.consultation.findFirst({
         where: { 
-          clientId: payment.clientId,
+          clientId: payment.clientId
           status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
         }
       })
@@ -198,11 +198,11 @@ async function processPaymentSuccess(payment: any) {
       if (!existingConsultation) {
         await prisma.consultation.create({
           data: {
-            type: payment.productId.includes('vip') ? 'VIP_SERVICE' : 'HUMAN_CONSULTATION',
-            status: 'SCHEDULED',
-            clientId: payment.clientId,
+            type: payment.productId.includes('vip') ? 'VIP_SERVICE' : 'HUMAN_CONSULTATION'
+            status: 'SCHEDULED'
+            clientId: payment.clientId
             scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
-            notes: `Consultoria criada automaticamente após pagamento confirmado (${payment.transactionId})`,
+            notes: `Consultoria criada automaticamente após pagamento confirmado (${payment.transactionId})`
           }
         })
       }
@@ -211,9 +211,9 @@ async function processPaymentSuccess(payment: any) {
     // 5. Log das automações
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_SUCCESS_AUTOMATIONS',
-        action: 'process_payment_success_automations',
-        clientId: payment.clientId,
+        type: 'PAYMENT_SUCCESS_AUTOMATIONS'
+        action: 'process_payment_success_automations'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -227,9 +227,9 @@ async function processPaymentSuccess(payment: any) {
     
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_SUCCESS_AUTOMATIONS_ERROR',
-        action: 'process_payment_success_automations',
-        clientId: payment.clientId,
+        type: 'PAYMENT_SUCCESS_AUTOMATIONS_ERROR'
+        action: 'process_payment_success_automations'
+        clientId: payment.clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -242,9 +242,9 @@ async function processPaymentSuccess(payment: any) {
 
 function getPaymentPackageName(productId: string): string {
   const packageNames: Record<string, string> = {
-    'pre-analise': 'Pré-análise Gratuita',
-    'relatorio-premium': 'Relatório Premium',
-    'consultoria-express': 'Consultoria Express',
+    'pre-analise': 'Pré-análise Gratuita'
+    'relatorio-premium': 'Relatório Premium'
+    'consultoria-express': 'Consultoria Express'
     'servico-vip': 'Serviço VIP'
   }
 

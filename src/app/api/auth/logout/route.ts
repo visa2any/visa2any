@@ -22,14 +22,14 @@ export async function POST(request: NextRequest) {
           // Log do logout
           await prisma.automationLog.create({
             data: {
-              type: 'USER_LOGOUT',
-              action: 'logout',
-              success: true,
-              clientId: null,
+              type: 'USER_LOGOUT'
+              action: 'logout'
+              success: true
+              clientId: null
               details: {
-                userId: decoded.userId,
-                email: decoded.email,
-                role: decoded.role,
+                userId: decoded.userId
+                email: decoded.email
+                role: decoded.role
                 logoutTimestamp: new Date().toISOString()
               }
             }
@@ -42,15 +42,15 @@ export async function POST(request: NextRequest) {
 
     // Criar resposta de sucesso
     const response = NextResponse.json({
-      success: true,
+      success: true
       message: 'Logout realizado com sucesso'
     })
 
     // Remover cookie
     response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'strict'
       maxAge: 0 // Expira imediatamente
     })
 
@@ -61,14 +61,14 @@ export async function POST(request: NextRequest) {
     
     // Mesmo com erro, remover cookie
     const response = NextResponse.json({
-      success: true,
+      success: true
       message: 'Logout realizado'
     })
 
     response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'strict'
       maxAge: 0
     })
 

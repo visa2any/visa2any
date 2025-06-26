@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     
     if (!query.trim()) {
       return NextResponse.json({
-        results: [],
+        results: []
         suggestions: []
       })
     }
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
-      results,
+      results
       total: results.length
     })
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'
-      },
+      }
       { status: 500 }
     )
   }
@@ -53,50 +53,50 @@ async function generateSuggestions(query: string) {
     // Buscar títulos que contenham o termo
     const titleMatches = await prisma.blogPost.findMany({
       where: {
-        published: true,
+        published: true
         title: {
-          contains: searchTerm,
+          contains: searchTerm
           mode: 'insensitive'
         }
-      },
+      }
       select: {
-        title: true,
-        category: true,
+        title: true
+        category: true
         country: true
-      },
+      }
       take: 5
     })
 
     // Buscar países únicos que contenham o termo
     const countryMatches = await prisma.blogPost.findMany({
       where: {
-        published: true,
+        published: true
         country: {
-          contains: searchTerm,
+          contains: searchTerm
           mode: 'insensitive'
         }
-      },
+      }
       select: {
-        country: true,
+        country: true
         flag: true
-      },
-      distinct: ['country'],
+      }
+      distinct: ['country']
       take: 3
     })
 
     // Buscar categorias que contenham o termo
     const categoryMatches = await prisma.blogPost.findMany({
       where: {
-        published: true,
+        published: true
         category: {
-          contains: searchTerm,
+          contains: searchTerm
           mode: 'insensitive'
         }
-      },
+      }
       select: {
         category: true
-      },
-      distinct: ['category'],
+      }
+      distinct: ['category']
       take: 3
     })
 
@@ -105,9 +105,9 @@ async function generateSuggestions(query: string) {
     // Adicionar sugestões de títulos
     titleMatches.forEach(post => {
       suggestions.push({
-        type: 'post',
-        text: post.title,
-        category: post.category,
+        type: 'post'
+        text: post.title
+        category: post.category
         icon: '📄'
       })
     })
@@ -116,9 +116,9 @@ async function generateSuggestions(query: string) {
     countryMatches.forEach(country => {
       if (country.country) {
         suggestions.push({
-          type: 'country',
-          text: `${country.flag || '🌍'} ${country.country}`,
-          category: 'País',
+          type: 'country'
+          text: `${country.flag || '🌍'} ${country.country}`
+          category: 'País'
           icon: country.flag || '🌍'
         })
       }
@@ -127,9 +127,9 @@ async function generateSuggestions(query: string) {
     // Adicionar sugestões de categorias
     categoryMatches.forEach(cat => {
       suggestions.push({
-        type: 'category',
-        text: cat.category,
-        category: 'Categoria',
+        type: 'category'
+        text: cat.category
+        category: 'Categoria'
         icon: '📂'
       })
     })
@@ -149,45 +149,45 @@ async function performAdvancedSearch(query: string) {
     // Buscar posts com diferentes critérios de relevância
     const posts = await prisma.blogPost.findMany({
       where: {
-        published: true,
+        published: true
         OR: [
           // Busca exata no título (maior relevância)
-          { title: { contains: query, mode: 'insensitive' } },
+          { title: { contains: query, mode: 'insensitive' } }
           // Busca exata no resumo
-          { excerpt: { contains: query, mode: 'insensitive' } },
+          { excerpt: { contains: query, mode: 'insensitive' } }
           // Busca no conteúdo
-          { content: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query, mode: 'insensitive' } }
           // Busca no país
-          { country: { contains: query, mode: 'insensitive' } },
+          { country: { contains: query, mode: 'insensitive' } }
           // Busca no autor
-          { author: { contains: query, mode: 'insensitive' } },
+          { author: { contains: query, mode: 'insensitive' } }
           // Busca individual por palavras
           ...searchWords.flatMap(word => [
-            { title: { contains: word, mode: 'insensitive' } },
-            { excerpt: { contains: word, mode: 'insensitive' } },
+            { title: { contains: word, mode: 'insensitive' } }
+            { excerpt: { contains: word, mode: 'insensitive' } }
             { country: { contains: word, mode: 'insensitive' } }
           ])
-        ],
-      },
+        ]
+      }
       select: {
-        id: true,
-        title: true,
-        excerpt: true,
-        category: true,
-        author: true,
-        publishDate: true,
-        readTime: true,
-        views: true,
-        likes: true,
-        comments: true,
-        difficulty: true,
-        type: true,
-        imageUrl: true,
-        featured: true,
-        trending: true,
-        urgent: true,
-        tags: true,
-        country: true,
+        id: true
+        title: true
+        excerpt: true
+        category: true
+        author: true
+        publishDate: true
+        readTime: true
+        views: true
+        likes: true
+        comments: true
+        difficulty: true
+        type: true
+        imageUrl: true
+        featured: true
+        trending: true
+        urgent: true
+        tags: true
+        country: true
         flag: true
       }
     })
@@ -219,7 +219,7 @@ async function performAdvancedSearch(query: string) {
       searchWords.forEach(word => {
         if (titleLower.includes(word)) score += 20
         if (excerptLower.includes(word)) score += 10
-        if (post.country && post.country.toLowerCase().includes(word)) score += 15,
+        if (post.country && post.country.toLowerCase().includes(word)) score += 15
       })
 
       // Boost para posts especiais
@@ -233,8 +233,8 @@ async function performAdvancedSearch(query: string) {
 
       return {
         ...post
-        score,
-        tags: Array.isArray(post.tags) ? post.tags : [],
+        score
+        tags: Array.isArray(post.tags) ? post.tags : []
         relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low'
       }
     })

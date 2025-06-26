@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
       message: 'WhatsApp API está funcionando!'
       timestamp: new Date().toISOString()
       info: {
-        integrated: true,
-        backend: 'Next.js',
+        integrated: true
+        backend: 'Next.js'
         status: 'Pronto para integração com Baileys'
       }
     })
@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         messageId
-        phone,
-        sent: true,
-        backend: 'Next.js integrado',
+        phone
+        sent: true
+        backend: 'Next.js integrado'
         timestamp: new Date().toISOString()
       }
       message: 'Mensagem enviada com sucesso (simulação)'

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         languages
-        total: Object.keys(languages).length,
+        total: Object.keys(languages).length
         message: 'Idiomas suportados recuperados com sucesso'
       })
     }
@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         translators
-        total: translators.length,
+        total: translators.length
         message: translators.length > 0 
           ? `${translators.length} tradutores encontrados` 
-          : 'Nenhum tradutor disponível para os idiomas especificados',
+          : 'Nenhum tradutor disponível para os idiomas especificados'
       })
     }
 
@@ -73,18 +73,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           translation: {
             originalText: translationRequest.text
-            translatedText: result.translatedText,
-            sourceLanguage: translationRequest.sourceLanguage,
-            targetLanguage: translationRequest.targetLanguage,
-            confidence: result.confidence,
-            provider: result.provider,
-            cost: result.cost,
-            isOfficial: result.isOfficialTranslation,
+            translatedText: result.translatedText
+            sourceLanguage: translationRequest.sourceLanguage
+            targetLanguage: translationRequest.targetLanguage
+            confidence: result.confidence
+            provider: result.provider
+            cost: result.cost
+            isOfficial: result.isOfficialTranslation
             certificationNumber: result.certificationNumber
           }
           message: result.isOfficialTranslation 
             ? 'Solicitação de tradução oficial enviada com sucesso'
-            : 'Texto traduzido com sucesso',
+            : 'Texto traduzido com sucesso'
         })
       } else {
         return NextResponse.json(
@@ -115,13 +115,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           documentTranslation: {
             translationId: result.translationId
-            estimatedCost: result.estimatedCost,
-            estimatedDelivery: result.estimatedDelivery,
-            translator: result.translator,
+            estimatedCost: result.estimatedCost
+            estimatedDelivery: result.estimatedDelivery
+            translator: result.translator
             documentInfo: {
-              fileName: documentRequest.fileName,
-              pageCount: documentRequest.pageCount,
-              isOfficial: documentRequest.isOfficial,
+              fileName: documentRequest.fileName
+              pageCount: documentRequest.pageCount
+              isOfficial: documentRequest.isOfficial
               priority: documentRequest.priority
             }
           }

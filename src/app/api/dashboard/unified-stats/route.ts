@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const completedConsultations = await prisma.consultation.count({
       where: { 
-        status: 'COMPLETED',
+        status: 'COMPLETED'
         createdAt: { gte: periodDate }
       }
     })
@@ -73,13 +73,13 @@ export async function GET(request: NextRequest) {
 
     // Clients by status
     const clientsByStatus = await prisma.client.groupBy({
-      by: ['status'],
+      by: ['status']
       _count: { status: true }
     })
 
     const statusCounts = clientsByStatus.map(item => ({
-      status: item.status,
-      count: item._count.status,
+      status: item.status
+      count: item._count.status
       growth: Math.floor(Math.random() * 20) - 10 // Mock growth data
     }))
 
@@ -94,25 +94,25 @@ export async function GET(request: NextRequest) {
     // Recent activity
     const recentActivity = [
       {
-        id: '1',
-        type: 'client_created',
-        action: 'Novo cliente cadastrado',
+        id: '1'
+        type: 'client_created'
+        action: 'Novo cliente cadastrado'
         client: { id: '1', name: 'João Silva', email: 'joao@email.com' }
         executedAt: new Date().toISOString()
         priority: 'medium' as const
       }
       {
-        id: '2',
-        type: 'consultation_completed',
-        action: 'Consulta finalizada',
+        id: '2'
+        type: 'consultation_completed'
+        action: 'Consulta finalizada'
         client: { id: '2', name: 'Maria Santos', email: 'maria@email.com' }
         executedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
         priority: 'high' as const
       }
       {
-        id: '3',
-        type: 'document_uploaded',
-        action: 'Documento enviado',
+        id: '3'
+        type: 'document_uploaded'
+        action: 'Documento enviado'
         client: { id: '3', name: 'Pedro Costa', email: 'pedro@email.com' }
         executedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
         priority: 'low' as const
@@ -129,55 +129,55 @@ export async function GET(request: NextRequest) {
     // Urgent tasks (mock data)
     const urgentTasksList = [
       {
-        id: '1',
-        title: 'Revisão de documentos - João Silva',
+        id: '1'
+        title: 'Revisão de documentos - João Silva'
         client: { id: '1', name: 'João Silva' }
         dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
-        priority: 'high' as const,
+        priority: 'high' as const
         type: 'document_review'
       }
       {
-        id: '2',
-        title: 'Consulta de acompanhamento - Maria Santos',
+        id: '2'
+        title: 'Consulta de acompanhamento - Maria Santos'
         client: { id: '2', name: 'Maria Santos' }
         dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString()
-        priority: 'high' as const,
+        priority: 'high' as const
         type: 'consultation'
       }
     ]
 
     // Communication stats (mock data)
     const communicationStats = {
-      whatsappToday: 45,
-      emailsToday: 23,
-      callsToday: 12,
-      responseTime: 2.3,
-      pendingMessages: 8,
+      whatsappToday: 45
+      emailsToday: 23
+      callsToday: 12
+      responseTime: 2.3
+      pendingMessages: 8
       unreadMessages: 15
     }
 
     const dashboardStats = {
       overview: {
-        totalClients,
-        newClientsThisPeriod,
-        clientsGrowth,
-        activeConsultations,
-        completedConsultations,
-        conversionRate,
-        totalRevenue,
-        revenueThisPeriod,
-        revenueGrowth,
-        averageTicket,
-        clientsThisWeek,
-        clientsThisMonth,
-        pendingTasks,
-        urgentTasks,
+        totalClients
+        newClientsThisPeriod
+        clientsGrowth
+        activeConsultations
+        completedConsultations
+        conversionRate
+        totalRevenue
+        revenueThisPeriod
+        revenueGrowth
+        averageTicket
+        clientsThisWeek
+        clientsThisMonth
+        pendingTasks
+        urgentTasks
       }
-      clientsByStatus: statusCounts,
-      consultationsByType,
-      recentActivity,
-      topPerformers,
-      urgentTasks: urgentTasksList,
+      clientsByStatus: statusCounts
+      consultationsByType
+      recentActivity
+      topPerformers
+      urgentTasks: urgentTasksList
       communicationStats
     }
 

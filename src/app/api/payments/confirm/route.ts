@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
         await prisma.payment.update({
           where: { id: payment.id }
           data: {
-            status: status === 'approved' ? 'COMPLETED' : 'FAILED',
-            transactionId: payment_id,
+            status: status === 'approved' ? 'COMPLETED' : 'FAILED'
+            transactionId: payment_id
             paidAt: status === 'approved' ? new Date() : null
           }
         })
@@ -57,20 +57,20 @@ export async function POST(request: NextRequest) {
           // Criar interaction de pagamento confirmado
           await prisma.interaction.create({
             data: {
-              clientId: payment.clientId,
-              type: 'AUTOMATED_EMAIL',
-              channel: 'email',
-              direction: 'outbound',
-              subject: 'Pagamento Confirmado - Acesso Liberado',
-              content: `Pagamento de R$ ${payment.amount} confirmado. ID: ${payment_id}`,
+              clientId: payment.clientId
+              type: 'AUTOMATED_EMAIL'
+              channel: 'email'
+              direction: 'outbound'
+              subject: 'Pagamento Confirmado - Acesso Liberado'
+              content: `Pagamento de R$ ${payment.amount} confirmado. ID: ${payment_id}`
               completedAt: new Date()
             }
           })
 
           console.log('✅ Pagamento confirmado:', {
-            paymentId: payment.id,
-            clientId: payment.clientId,
-            amount: payment.amount,
+            paymentId: payment.id
+            clientId: payment.clientId
+            amount: payment.amount
             transactionId: payment_id
           })
         }
@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           message: 'Pagamento processado com sucesso'
           data: {
-            paymentId: payment.id,
-            clientId: payment.clientId,
+            paymentId: payment.id
+            clientId: payment.clientId
             status: status === 'approved' ? 'COMPLETED' : 'FAILED'
           }
         })
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
 
     // Se não encontrou o pagamento, criar log
     console.warn('⚠️ Pagamento não encontrado:', {
-      payment_id,
-      external_reference,
-      status,
+      payment_id
+      external_reference
+      status
     })
 
     return NextResponse.json({

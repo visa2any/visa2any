@@ -10,18 +10,18 @@ export async function GET() {
     
     const pendingPosts = await prisma.socialPost.findMany({
       where: {
-        status: 'SCHEDULED',
+        status: 'SCHEDULED'
         scheduledAt: {
           lte: now // Posts agendados para agora ou no passado
         }
       }
-      orderBy: { scheduledAt: 'asc' },
+      orderBy: { scheduledAt: 'asc' }
       take: 50
     })
 
     return NextResponse.json({
       success: true
-      count: pendingPosts.length,
+      count: pendingPosts.length
       posts: pendingPosts
     })
 

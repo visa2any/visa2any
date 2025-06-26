@@ -5,17 +5,17 @@ import { z } from 'zod'
 // Schema para captura de leads
 const leadCaptureSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório')
-  email: z.string().email('Email inválido'),
+  email: z.string().email('Email inválido')
   phone: z.string().optional()
-  source: z.string().default('website'),
+  source: z.string().default('website')
   leadMagnet: z.string().optional()
-  utmSource: z.string().optional(),
+  utmSource: z.string().optional()
   utmMedium: z.string().optional()
-  utmCampaign: z.string().optional(),
+  utmCampaign: z.string().optional()
   utmContent: z.string().optional()
-  referrer: z.string().optional(),
+  referrer: z.string().optional()
   userAgent: z.string().optional()
-  ip: z.string().optional(),
+  ip: z.string().optional()
   interests: z.array(z.string()).optional()
   notes: z.string().optional()
 })
@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
       client = await prisma.client.update({
         where: { id: existingClient.id }
         data: {
-          name: validatedData.name,
-          phone: validatedData.phone || existingClient.phone,
+          name: validatedData.name
+          phone: validatedData.phone || existingClient.phone
           lastActivityAt: new Date()
         }
       })
@@ -52,15 +52,15 @@ export async function POST(request: NextRequest) {
       // Criar novo lead
       client = await prisma.client.create({
         data: {
-          name: validatedData.name,
-          email: validatedData.email,
-          phone: validatedData.phone,
-          status: 'LEAD',
-          source: validatedData.source,
-          utmSource: validatedData.utmSource,
-          utmMedium: validatedData.utmMedium,
-          utmCampaign: validatedData.utmCampaign,
-          utmContent: validatedData.utmContent,
+          name: validatedData.name
+          email: validatedData.email
+          phone: validatedData.phone
+          status: 'LEAD'
+          source: validatedData.source
+          utmSource: validatedData.utmSource
+          utmMedium: validatedData.utmMedium
+          utmCampaign: validatedData.utmCampaign
+          utmContent: validatedData.utmContent
           lastActivityAt: new Date()
         }
       })
@@ -69,27 +69,27 @@ export async function POST(request: NextRequest) {
 
     // Calcular lead score baseado em dados disponíveis
     const leadScore = calculateLeadScore({
-      source: validatedData.source,
-      leadMagnet: validatedData.leadMagnet,
-      hasPhone: !!validatedData.phone,
-      utmSource: validatedData.utmSource,
+      source: validatedData.source
+      leadMagnet: validatedData.leadMagnet
+      hasPhone: !!validatedData.phone
+      utmSource: validatedData.utmSource
       utmMedium: validatedData.utmMedium
     })
 
     // Salvar interação de captura
     await prisma.interaction.create({
       data: {
-        type: 'LEAD_CAPTURE',
+        type: 'LEAD_CAPTURE'
         channel: getChannelFromSource(validatedData.source)
-        direction: 'inbound',
-        content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
+        direction: 'inbound'
+        content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`
         response: {
           userAgent: request.headers.get('user-agent')
-          ip: ip,
-          referrer: validatedData.referrer,
+          ip: ip
+          referrer: validatedData.referrer
           leadScore: leadScore
         }
-        clientId: client.id,
+        clientId: client.id
         completedAt: new Date()
       }
     })
@@ -97,14 +97,14 @@ export async function POST(request: NextRequest) {
     // Log da captura
     await prisma.automationLog.create({
       data: {
-        type: 'LEAD_CAPTURED',
-        action: 'capture_lead',
-        clientId: client.id,
-        success: true,
+        type: 'LEAD_CAPTURED'
+        action: 'capture_lead'
+        clientId: client.id
+        success: true
         details: {
-          source: validatedData.source,
-          leadMagnet: validatedData.leadMagnet,
-          leadScore: leadScore,
+          source: validatedData.source
+          leadMagnet: validatedData.leadMagnet
+          leadScore: leadScore
           country: validatedData.country
         }
       }
@@ -125,10 +125,10 @@ export async function POST(request: NextRequest) {
 
     if (leadScore >= 80) {
       responseMessage = 'Lead de alta qualidade capturado'
-      recommendations = ['priority_contact', 'premium_offer'],
+      recommendations = ['priority_contact', 'premium_offer']
     } else if (leadScore >= 60) {
       responseMessage = 'Lead qualificado capturado'
-      recommendations = ['nurture_sequence', 'assessment_offer'],
+      recommendations = ['nurture_sequence', 'assessment_offer']
     } else {
       recommendations = ['basic_nurture', 'educational_content']
     }
@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       data: {
         leadId: client.id
-        leadScore: leadScore,
-        isNewLead: isNewLead,
+        leadScore: leadScore
+        isNewLead: isNewLead
         recommendations: recommendations
       }
       message: responseMessage
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar estatísticas
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
-      // Total de leads,
+      // Total de leads
       prisma.client.count({
         where: { status: 'LEAD' }
       })
@@ -182,16 +182,16 @@ export async function GET(request: NextRequest) {
       // Novos leads no período
       prisma.client.count({
         where: {
-          status: 'LEAD',
+          status: 'LEAD'
           createdAt: { gte: startDate }
         }
       })
       
       // Leads por fonte
       prisma.client.groupBy({
-        by: ['source'],
+        by: ['source']
         where: {
-          status: 'LEAD',
+          status: 'LEAD'
           createdAt: { gte: startDate }
         }
         _count: { id: true }
@@ -199,9 +199,9 @@ export async function GET(request: NextRequest) {
       
       // Leads por lead magnet
       prisma.interaction.groupBy({
-        by: ['details'],
+        by: ['details']
         where: {
-          type: 'LEAD_CAPTURE',
+          type: 'LEAD_CAPTURE'
           createdAt: { gte: startDate }
         }
         _count: { id: true }
@@ -212,15 +212,15 @@ export async function GET(request: NextRequest) {
       data: {
         overview: {
           totalLeads
-          newLeads,
+          newLeads
           growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
         }
         leadsBySource: leadsBySource.map(item => ({
-          source: item.source,
+          source: item.source
           count: item._count.id
         }))
         leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
-        period: `${days} dias`,
+        period: `${days} dias`
       }
     })
 
@@ -239,31 +239,31 @@ function calculateLeadScore(factors: {
   leadMagnet?: string
   hasPhone: boolean
   utmSource?: string
-  utmMedium?: string,
+  utmMedium?: string
 }) {
   let score = 0
 
   // Score por fonte
   const sourceScores: Record<string, number> = {
-    'lead_magnet': 30,
-    'assessment': 40,
-    'pricing_page': 50,
-    'consultation_page': 60,
-    'referral': 70,
-    'organic': 20,
-    'paid': 35,
-    'social': 25,
+    'lead_magnet': 30
+    'assessment': 40
+    'pricing_page': 50
+    'consultation_page': 60
+    'referral': 70
+    'organic': 20
+    'paid': 35
+    'social': 25
     'email': 45
   }
   score += sourceScores[factors.source || ''] || 10
 
   // Score por lead magnet (interesse específico)
   const magnetScores: Record<string, number> = {
-    'ebook-50-erros': 25,
-    'checklist-documentos': 20,
-    'calculadora-tempo': 35,
-    'guia-entrevista': 30,
-    'planilha-financeira': 40,
+    'ebook-50-erros': 25
+    'checklist-documentos': 20
+    'calculadora-tempo': 35
+    'guia-entrevista': 30
+    'planilha-financeira': 40
     'kit-emergencia': 50
   }
   score += magnetScores[factors.leadMagnet || ''] || 0
@@ -283,14 +283,14 @@ function calculateLeadScore(factors: {
 // Determinar canal baseado na fonte
 function getChannelFromSource(source: string): string {
   const channelMap: Record<string, string> = {
-    'lead_magnet': 'website',
-    'assessment': 'website',
-    'pricing_page': 'website',
-    'consultation_page': 'website',
-    'referral': 'referral',
-    'organic': 'organic',
-    'paid': 'paid_ads',
-    'social': 'social_media',
+    'lead_magnet': 'website'
+    'assessment': 'website'
+    'pricing_page': 'website'
+    'consultation_page': 'website'
+    'referral': 'referral'
+    'organic': 'organic'
+    'paid': 'paid_ads'
+    'social': 'social_media'
     'email': 'email'
   }
   return channelMap[source] || 'website'
@@ -301,11 +301,11 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
   try {
     // Enviar email de boas-vindas imediato
     await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
-      method: 'POST',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' }
       body: JSON.stringify({
-        template: 'welcome_lead',
-        clientId: clientId,
+        template: 'welcome_lead'
+        clientId: clientId
         variables: {
           lead_magnet: leadMagnet || 'website'
         }
@@ -327,9 +327,9 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
     // Notificar equipe de vendas
     await prisma.automationLog.create({
       data: {
-        type: 'HIGH_PRIORITY_LEAD',
-        action: 'notify_sales_team',
-        clientId: clientId,
+        type: 'HIGH_PRIORITY_LEAD'
+        action: 'notify_sales_team'
+        clientId: clientId
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'

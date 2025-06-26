@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
     const subscriber = await prisma.whatsAppSubscriber.create({
       data: {
         name
-        phone,
-        countries: countries || ['Global'],
-        isActive: true,
+        phone
+        countries: countries || ['Global']
+        isActive: true
         source: 'blog_newsletter'
       }
     })
@@ -59,11 +59,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      message: 'Cadastro realizado com sucesso! Você receberá uma mensagem de confirmação em breve.',
+      message: 'Cadastro realizado com sucesso! Você receberá uma mensagem de confirmação em breve.'
       subscriber: {
-        id: subscriber.id,
-        name: subscriber.name,
-        phone: subscriber.phone,
+        id: subscriber.id
+        name: subscriber.name
+        phone: subscriber.phone
         countries: subscriber.countries
       }
     })
@@ -102,11 +102,11 @@ _Para cancelar, responda SAIR_`
   // Por exemplo, usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
   
   const whatsappResponse = await fetch('http://localhost:3000/api/whatsapp/send', {
-    method: 'POST',
+    method: 'POST'
     headers: { 'Content-Type': 'application/json' }
     body: JSON.stringify({
-      to: phone,
-      message: message,
+      to: phone
+      message: message
       type: 'newsletter_welcome'
     })
   })
@@ -123,15 +123,15 @@ export async function GET() {
   try {
     const subscribers = await prisma.whatsAppSubscriber.findMany({
       where: { isActive: true }
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
       take: 100
     })
 
     const stats = {
-      total: subscribers.length,
+      total: subscribers.length
       byCountry: subscribers.reduce((acc, sub) => {
         sub.countries.forEach(country => {
-          acc[country] = (acc[country] || 0) + 1,
+          acc[country] = (acc[country] || 0) + 1
         })
         return acc
       }, {} as Record<string, number>)
@@ -140,12 +140,12 @@ export async function GET() {
 
     return NextResponse.json({
       success: true
-      stats,
+      stats
       subscribers: subscribers.map(sub => ({
-        id: sub.id,
-        name: sub.name,
+        id: sub.id
+        name: sub.name
         phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4')
-        countries: sub.countries,
+        countries: sub.countries
         createdAt: sub.createdAt
       }))
     })

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         partners: partnersStatus
-        total: partnersStatus.length,
+        total: partnersStatus.length
         message: 'Status dos parceiros recuperado com sucesso'
       })
     }
@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         partners: availablePartners
-        total: availablePartners.length,
-        country,
+        total: availablePartners.length
+        country
         message: availablePartners.length > 0 
           ? `${availablePartners.length} parceiros encontrados para ${country}`
-          : `Nenhum parceiro disponível para ${country}`,
+          : `Nenhum parceiro disponível para ${country}`
       })
     }
 
@@ -50,11 +50,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         recommendedPartner: {
           id: bestPartner.id
-          name: bestPartner.name,
-          features: bestPartner.features,
-          reliability: bestPartner.reliability,
-          estimatedCost: bestPartner.pricing.perTransaction,
-          processingSpeed: `${bestPartner.speed}ms avg response`,
+          name: bestPartner.name
+          features: bestPartner.features
+          reliability: bestPartner.reliability
+          estimatedCost: bestPartner.pricing.perTransaction
+          processingSpeed: `${bestPartner.speed}ms avg response`
         }
         message: 'Melhor parceiro encontrado'
       })
@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
     // Se partnerId não foi especificado, encontrar o melhor
     if (!body.partnerId) {
       const bestPartner = await partnerIntegrationService.findBestPartner(
-        body.visaInfo.country,
-        body.visaInfo.visaType,
+        body.visaInfo.country
+        body.visaInfo.visaType
         body.visaInfo.urgency
       )
 
@@ -139,11 +139,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         booking: {
           partnerId: result.partnerId
-          partnerReference: result.partnerReference,
-          appointmentDetails: result.appointmentDetails,
-          cost: result.cost,
-          totalCost,
-          processingTime: result.processingTime,
+          partnerReference: result.partnerReference
+          appointmentDetails: result.appointmentDetails
+          cost: result.cost
+          totalCost
+          processingTime: result.processingTime
           instructions: result.instructions
         }
         message: 'Agendamento realizado via parceiro com sucesso!'

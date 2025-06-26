@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { medicalExamService } from '@/lib/medical-exams'
 
 // GET - Verificar status do exame
-export async function GET(,
-  request: NextRequest,
+export async function GET(
+  request: NextRequest
   { params }: { params: { bookingId: string } }
 ) {
   try {
@@ -33,7 +33,7 @@ export async function GET(,
 
 // PUT - Reagendar exame
 export async function PUT(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { bookingId: string } }
 ) {
   try {
@@ -73,7 +73,7 @@ export async function PUT(
 
 // DELETE - Cancelar exame
 export async function DELETE(
-  request: NextRequest,
+  request: NextRequest
   { params }: { params: { bookingId: string } }
 ) {
   try {

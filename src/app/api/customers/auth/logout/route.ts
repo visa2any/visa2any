@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
 
     // Remover cookie de autenticação
     response.cookies.set('customer-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 0,
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'lax'
+      maxAge: 0
       path: '/'
     })
 

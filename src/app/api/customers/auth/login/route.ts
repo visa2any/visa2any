@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       where: { email }
       include: {
         consultations: {
-          take: 1,
+          take: 1
           orderBy: { createdAt: 'desc' }
         }
       }
@@ -62,34 +62,34 @@ export async function POST(request: NextRequest) {
     const token = jwt.sign(
       { 
         customerId: customer.id, 
-        email: customer.email,
+        email: customer.email
         type: 'customer'
       }
-      jwtSecret,
+      jwtSecret
       { expiresIn: '7d' }
     )
 
     // Configurar cookie
     const response = NextResponse.json({
-      message: 'Login realizado com sucesso',
+      message: 'Login realizado com sucesso'
       customer: {
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        status: customer.status,
-        destinationCountry: customer.destinationCountry,
-        visaType: customer.visaType,
+        id: customer.id
+        name: customer.name
+        email: customer.email
+        phone: customer.phone
+        status: customer.status
+        destinationCountry: customer.destinationCountry
+        visaType: customer.visaType
         eligibilityScore: customer.eligibilityScore
       }
-      token,
+      token
     })
 
     // Definir cookie httpOnly
     response.cookies.set('customer-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'lax'
       maxAge: 60 * 60 * 24 * 7, // 7 dias
       path: '/'
     })

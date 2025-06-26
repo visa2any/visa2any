@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email || !password) {
       return NextResponse.json({
-        error: 'Nome, email e senha são obrigatórios',
+        error: 'Nome, email e senha são obrigatórios'
       }, { status: 400 })
     }
 
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
     // Criar novo cliente
     const customer = await prisma.client.create({
       data: {
-        name,
-        email,
-        password: hashedPassword,
-        phone: phone || null,
-        status: 'LEAD',
-        isActive: true,
-        eligibilityScore: 0,
+        name
+        email
+        password: hashedPassword
+        phone: phone || null
+        status: 'LEAD'
+        isActive: true
+        eligibilityScore: 0
         createdAt: new Date()
         updatedAt: new Date()
       }
@@ -58,10 +58,10 @@ export async function POST(request: NextRequest) {
     const token = jwt.sign(
       { 
         customerId: customer.id, 
-        email: customer.email,
+        email: customer.email
         type: 'customer'
       }
-      jwtSecret,
+      jwtSecret
       { expiresIn: '7d' }
     )
 
@@ -70,23 +70,23 @@ export async function POST(request: NextRequest) {
 
     // Configurar resposta com cookie
     const response = NextResponse.json({
-      message: 'Conta criada com sucesso',
+      message: 'Conta criada com sucesso'
       customer: {
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        status: customer.status,
+        id: customer.id
+        name: customer.name
+        email: customer.email
+        phone: customer.phone
+        status: customer.status
         eligibilityScore: customer.eligibilityScore
       }
-      token,
+      token
     })
 
     // Definir cookie httpOnly
     response.cookies.set('customer-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'lax'
       maxAge: 60 * 60 * 24 * 7, // 7 dias
       path: '/'
     })

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar dados básicos
     const [totalClients, totalUsers, allClients] = await Promise.all([
-      // Total de clientes,
+      // Total de clientes
       prisma.client.count().catch(() => 0)
       
       // Total de usuários 
@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
       // Todos os clientes para análise
       prisma.client.findMany({
         select: {
-          id: true,
-          status: true,
+          id: true
+          status: true
           createdAt: true
         }
       }).catch(() => [])
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     const clientsByStatus = allClients.reduce((acc, client) => {
       const existing = acc.find(item => item.status === client.status)
       if (existing) {
-        existing.count++,
+        existing.count++
       } else {
         acc.push({ status: client.status, count: 1 })
       }
@@ -66,8 +66,8 @@ export async function GET(request: NextRequest) {
     // Dados simulados para demonstração
     const simulatedData = {
       overview: {
-        totalClients,
-        newClientsThisPeriod,
+        totalClients
+        newClientsThisPeriod
         clientsGrowth: Math.floor(Math.random() * 20) - 5, // -5% a +15%
         activeConsultations: Math.floor(totalClients * 0.3)
         completedConsultations: Math.floor(totalClients * 0.15)
@@ -82,13 +82,13 @@ export async function GET(request: NextRequest) {
         { status: 'QUALIFIED', count: Math.floor(totalClients * 0.25) }
         { status: 'IN_PROCESS', count: Math.floor(totalClients * 0.15) }
         { status: 'COMPLETED', count: Math.floor(totalClients * 0.2) }
-      ],
+      ]
       consultationsByType: [
         { type: 'AI_ANALYSIS', count: Math.floor(totalClients * 0.5) }
         { type: 'HUMAN_CONSULTATION', count: Math.floor(totalClients * 0.3) }
         { type: 'FOLLOW_UP', count: Math.floor(totalClients * 0.15) }
         { type: 'VIP_SERVICE', count: Math.floor(totalClients * 0.05) }
-      ],
+      ]
       recentActivity: await generateRecentActivity(startDate)
     }
 
@@ -104,14 +104,14 @@ export async function GET(request: NextRequest) {
       data: {
         overview: {
           totalClients: 156
-          newClientsThisPeriod: 23,
-          clientsGrowth: 12,
-          activeConsultations: 47,
-          completedConsultations: 34,
-          conversionRate: 28,
-          totalRevenue: 425000,
-          revenueThisPeriod: 52300,
-          revenueGrowth: 15,
+          newClientsThisPeriod: 23
+          clientsGrowth: 12
+          activeConsultations: 47
+          completedConsultations: 34
+          conversionRate: 28
+          totalRevenue: 425000
+          revenueThisPeriod: 52300
+          revenueGrowth: 15
           averageTicket: 2850
         }
         clientsByStatus: [
@@ -119,36 +119,36 @@ export async function GET(request: NextRequest) {
           { status: 'QUALIFIED', count: 38 }
           { status: 'IN_PROCESS', count: 24 }
           { status: 'COMPLETED', count: 32 }
-        ],
+        ]
         consultationsByType: [
           { type: 'AI_ANALYSIS', count: 78 }
           { type: 'HUMAN_CONSULTATION', count: 45 }
           { type: 'FOLLOW_UP', count: 23 }
           { type: 'VIP_SERVICE', count: 10 }
-        ],
+        ]
         recentActivity: [
           {
-            id: '1',
-            type: 'CLIENT_REGISTRATION',
-            action: 'Novo cliente cadastrado',
+            id: '1'
+            type: 'CLIENT_REGISTRATION'
+            action: 'Novo cliente cadastrado'
             client: { name: 'Maria Silva', email: 'maria@email.com' }
             executedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 min atrás
           }
           {
-            id: '2',
-            type: 'EMAIL',
-            action: 'Consultoria concluída',
+            id: '2'
+            type: 'EMAIL'
+            action: 'Consultoria concluída'
             client: { name: 'João Santos', email: 'joao@email.com' }
             executedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2h atrás
           }
           {
-            id: '3',
-            type: 'DOCUMENT_ANALYSIS',
-            action: 'Análise de documento iniciada',
+            id: '3'
+            type: 'DOCUMENT_ANALYSIS'
+            action: 'Análise de documento iniciada'
             client: { name: 'Ana Costa', email: 'ana@email.com' }
             executedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() // 4h atrás
           }
-        ],
+        ]
       }
     })
   }
@@ -166,12 +166,12 @@ async function generateRecentActivity(startDate: Date) {
     //   orderBy: {
     //     executedAt: 'desc'
     //   }
-    //   take: 10,
+    //   take: 10
     //   include: {
     //     client: {
     //       select: {
-    //         id: true,
-    //         name: true,
+    //         id: true
+    //         name: true
     //         email: true
     //       }
     //     }
@@ -180,10 +180,10 @@ async function generateRecentActivity(startDate: Date) {
 
     // return logs.map(log => ({
     //   id: log.id
-    //   type: log.type,
-    //   action: log.action,
-    //   client: log.client,
-    //   success: log.success,
+    //   type: log.type
+    //   action: log.action
+    //   client: log.client
+    //   success: log.success
     //   executedAt: log.executedAt.toISOString()
     // }))
     
@@ -191,16 +191,16 @@ async function generateRecentActivity(startDate: Date) {
     return [
       {
         id: '1'
-        type: 'USER_LOGIN',
-        action: 'Login realizado',
-        client: null,
+        type: 'USER_LOGIN'
+        action: 'Login realizado'
+        client: null
         executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
       }
       {
-        id: '2',
-        type: 'SYSTEM_STATUS',
-        action: 'Sistema operacional',
-        client: null,
+        id: '2'
+        type: 'SYSTEM_STATUS'
+        action: 'Sistema operacional'
+        client: null
         executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
     ]
@@ -209,18 +209,18 @@ async function generateRecentActivity(startDate: Date) {
     return [
       {
         id: '1'
-        type: 'USER_LOGIN',
-        action: 'Login realizado',
-        client: null,
+        type: 'USER_LOGIN'
+        action: 'Login realizado'
+        client: null
         executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
       }
       {
-        id: '2',
-        type: 'SYSTEM_STATUS',
-        action: 'Sistema operacional',
-        client: null,
+        id: '2'
+        type: 'SYSTEM_STATUS'
+        action: 'Sistema operacional'
+        client: null
         executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
       }
-    ],
+    ]
   }
 }

@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
-        { error: 'Não autorizado' },
+        { error: 'Não autorizado' }
         { status: 401 }
       )
     }
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
-        { error: 'Erro interno do servidor' },
+        { error: 'Erro interno do servidor' }
         { status: 500 }
       )
     }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       userId = decoded.userId
     } catch {
       return NextResponse.json(
-        { error: 'Token inválido' },
+        { error: 'Token inválido' }
         { status: 401 }
       )
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (!postId || !action) {
       return NextResponse.json(
-        { error: 'Dados inválidos' },
+        { error: 'Dados inválidos' }
         { status: 400 }
       )
     }
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
       const existingBookmark = await prisma.blogPostBookmark.findUnique({
         where: {
           userId_postId: {
-            userId,
-            postId,
+            userId
+            postId
           }
         }
       })
@@ -58,29 +58,29 @@ export async function POST(request: NextRequest) {
       if (!existingBookmark) {
         await prisma.blogPostBookmark.create({
           data: {
-            userId,
-            postId,
+            userId
+            postId
           }
         })
       }
     } else if (action === 'remove') {
       await prisma.blogPostBookmark.deleteMany({
         where: {
-          userId,
-          postId,
+          userId
+          postId
         }
       })
     }
 
     return NextResponse.json({
-      success: true,
+      success: true
       action
     })
 
   } catch (error) {
     console.error('Error handling blog bookmark:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

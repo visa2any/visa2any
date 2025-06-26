@@ -30,7 +30,7 @@ async function getLocationFromIP(ip: string) {
     const response = await fetch(`https://ipapi.co/${ip}/json/`)
     const data = await response.json()
     return {
-      country: data.country_name || 'Unknown',
+      country: data.country_name || 'Unknown'
       city: data.city || 'Unknown'
     }
   } catch (error) {
@@ -78,25 +78,25 @@ export async function GET(request: NextRequest) {
     // Registrar o clique
     await prisma.affiliateClick.create({
       data: {
-        affiliateId: affiliate.id,
-        referralCode,
-        url: targetUrl,
-        ipAddress: ip,
-        userAgent,
-        country,
-        city,
-        device,
-        browser,
-        source,
-        campaign,
+        affiliateId: affiliate.id
+        referralCode
+        url: targetUrl
+        ipAddress: ip
+        userAgent
+        country
+        city
+        device
+        browser
+        source
+        campaign
       }
     })
 
     // Atualizar contador de cliques do afiliado
     await prisma.affiliate.update({
-      where: { id: affiliate.id },
+      where: { id: affiliate.id }
       data: {
-        totalClicks: { increment: 1 },
+        totalClicks: { increment: 1 }
         lastActivity: new Date()
       }
     })
@@ -105,8 +105,8 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(new URL(targetUrl, request.url))
     response.cookies.set('affiliate_ref', referralCode, {
       maxAge: 30 * 24 * 60 * 60, // 30 dias
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
       sameSite: 'lax'
     })
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     if (!referralCode || !clientId) {
       return NextResponse.json(
-        { error: 'Código de referência e ID do cliente são obrigatórios' },
+        { error: 'Código de referência e ID do cliente são obrigatórios' }
         { status: 400 }
       )
     }
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     if (!affiliate) {
       return NextResponse.json(
-        { error: 'Afiliado não encontrado' },
+        { error: 'Afiliado não encontrado' }
         { status: 404 }
       )
     }
@@ -153,8 +153,8 @@ export async function POST(request: NextRequest) {
     // Verificar se já existe uma conversão para este cliente
     const existingReferral = await prisma.affiliateReferral.findFirst({
       where: {
-        affiliateId: affiliate.id,
-        clientId,
+        affiliateId: affiliate.id
+        clientId
       }
     })
 
@@ -171,14 +171,14 @@ export async function POST(request: NextRequest) {
     // Criar referral e comissão
     const referral = await prisma.affiliateReferral.create({
       data: {
-        affiliateId: affiliate.id,
-        clientId,
-        referralCode,
-        status: 'CONVERTED',
-        conversionType,
-        conversionValue,
-        commissionRate,
-        commissionValue,
+        affiliateId: affiliate.id
+        clientId
+        referralCode
+        status: 'CONVERTED'
+        conversionType
+        conversionValue
+        commissionRate
+        commissionValue
         convertedAt: new Date()
       }
     })
@@ -189,13 +189,13 @@ export async function POST(request: NextRequest) {
 
     await prisma.affiliateCommission.create({
       data: {
-        affiliateId: affiliate.id,
-        referralId: referral.id,
-        amount: commissionValue,
-        status: 'PENDING',
-        type: conversionType,
-        description: `Comissão por ${conversionType}`,
-        dueDate,
+        affiliateId: affiliate.id
+        referralId: referral.id
+        amount: commissionValue
+        status: 'PENDING'
+        type: conversionType
+        description: `Comissão por ${conversionType}`
+        dueDate
       }
     })
 
@@ -205,12 +205,12 @@ export async function POST(request: NextRequest) {
       : 0
 
     await prisma.affiliate.update({
-      where: { id: affiliate.id },
+      where: { id: affiliate.id }
       data: {
-        totalConversions: { increment: 1 },
-        totalEarnings: { increment: commissionValue },
-        pendingEarnings: { increment: commissionValue },
-        conversionRate,
+        totalConversions: { increment: 1 }
+        totalEarnings: { increment: commissionValue }
+        pendingEarnings: { increment: commissionValue }
+        conversionRate
         lastActivity: new Date()
       }
     })
@@ -218,18 +218,18 @@ export async function POST(request: NextRequest) {
     // Marcar clique como convertido se existir
     await prisma.affiliateClick.updateMany({
       where: {
-        affiliateId: affiliate.id,
-        referralCode,
+        affiliateId: affiliate.id
+        referralCode
         converted: false
-      },
+      }
       data: {
-        converted: true,
-        conversionValue,
+        converted: true
+        conversionValue
       }
     })
 
     return NextResponse.json({ 
-      referralId: referral.id,
+      referralId: referral.id
       commissionValue
     })
 

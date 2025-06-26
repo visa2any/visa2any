@@ -6,18 +6,18 @@ import crypto from 'crypto'
 
 
 interface WebhookEvent {
-  id: string,
-  event: string,
-  data: any,
+  id: string
+  event: string
+  data: any
   timestamp: string
   signature?: string
 }
 
 interface WebhookEndpoint {
-  id: string,
-  url: string,
-  events: string[],
-  secret: string,
+  id: string
+  url: string
+  events: string[]
+  secret: string
   active: boolean
   affiliateId?: string
 }
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: endpoints.map(endpoint => ({
-        ...endpoint,
+        ...endpoint
         secret: undefined // Não retornar o secret
       }))
     })
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (!affiliateId || !webhookUrl || !Array.isArray(events)) {
       return NextResponse.json({
-        error: 'affiliateId, url e events são obrigatórios',
+        error: 'affiliateId, url e events são obrigatórios'
       }, { status: 400 })
     }
 
@@ -77,27 +77,27 @@ export async function POST(request: NextRequest) {
 
     // Validar eventos
     const validEvents = [
-      'conversion.created',
-      'commission.approved',
-      'payment.completed',
-      'tier.promoted',
-      'bonus.awarded',
+      'conversion.created'
+      'commission.approved'
+      'payment.completed'
+      'tier.promoted'
+      'bonus.awarded'
       'click.registered'
     ]
 
     const invalidEvents = events.filter(event => !validEvents.includes(event))
     if (invalidEvents.length > 0) {
       return NextResponse.json({
-        error: `Eventos inválidos: ${invalidEvents.join(', ')}`,
+        error: `Eventos inválidos: ${invalidEvents.join(', ')}`
       }, { status: 400 })
     }
 
     const endpoint: WebhookEndpoint = {
-      id: `webhook_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      url: webhookUrl,
-      events,
-      secret: secret || generateWebhookSecret(),
-      active: true,
+      id: `webhook_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      url: webhookUrl
+      events
+      secret: secret || generateWebhookSecret()
+      active: true
       affiliateId
     }
 
@@ -111,9 +111,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoint,
+        ...endpoint
         secret: undefined, // Não retornar o secret
-        testResult,
+        testResult
       }
     })
 
@@ -152,7 +152,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...endpoints[index],
+        ...endpoints[index]
         secret: undefined
       }
     })
@@ -218,12 +218,12 @@ function generateSignature(payload: string, secret: string): string {
 async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolean; message: string }> {
   try {
     const testEvent: WebhookEvent = {
-      id: 'test_event',
-      event: 'webhook.test',
+      id: 'test_event'
+      event: 'webhook.test'
       data: {
-        message: 'Este é um evento de teste para verificar se seu webhook está funcionando corretamente.',
+        message: 'Este é um evento de teste para verificar se seu webhook está funcionando corretamente.'
         timestamp: new Date().toISOString()
-      },
+      }
       timestamp: new Date().toISOString()
     }
 
@@ -231,31 +231,31 @@ async function testWebhook(endpoint: WebhookEndpoint): Promise<{ success: boolea
     const signature = generateSignature(payload, endpoint.secret)
 
     const response = await fetch(endpoint.url, {
-      method: 'POST',
+      method: 'POST'
       headers: {
-        'Content-Type': 'application/json',
-        'X-Webhook-Signature': `sha256=${signature}`,
-        'User-Agent': 'Visa2Any-Webhooks/1.0',
-      },
-      body: payload,
+        'Content-Type': 'application/json'
+        'X-Webhook-Signature': `sha256=${signature}`
+        'User-Agent': 'Visa2Any-Webhooks/1.0'
+      }
+      body: payload
       signal: AbortSignal.timeout(10000) // 10 segundos timeout
     })
 
     if (response.ok) {
       return { 
-        success: true,
+        success: true
         message: 'Webhook testado com sucesso'
       }
     } else {
       return { 
-        success: false,
+        success: false
         message: `Erro HTTP ${response.status}: ${response.statusText}`
       }
     }
 
   } catch (error) {
     return { 
-      success: false,
+      success: false
       message: `Erro ao testar webhook: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
     }
   }
@@ -278,9 +278,9 @@ async function sendWebhookEvent(
     }
 
     const webhookEvent: WebhookEvent = {
-      id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      event: eventType,
-      data: eventData,
+      id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      event: eventType
+      data: eventData
       timestamp: new Date().toISOString()
     }
 
@@ -291,14 +291,14 @@ async function sendWebhookEvent(
         const signature = generateSignature(payload, endpoint.secret)
 
         const response = await fetch(endpoint.url, {
-          method: 'POST',
+          method: 'POST'
           headers: {
-            'Content-Type': 'application/json',
-            'X-Webhook-Signature': `sha256=${signature}`,
-            'X-Webhook-Event': eventType,
-            'User-Agent': 'Visa2Any-Webhooks/1.0',
-          },
-          body: payload,
+            'Content-Type': 'application/json'
+            'X-Webhook-Signature': `sha256=${signature}`
+            'X-Webhook-Event': eventType
+            'User-Agent': 'Visa2Any-Webhooks/1.0'
+          }
+          body: payload
           signal: AbortSignal.timeout(10000)
         })
 
@@ -321,62 +321,62 @@ async function sendWebhookEvent(
 // Funções específicas para diferentes tipos de eventos
 async function sendConversionWebhook(affiliateId: string, conversionData: any) {
   await sendWebhookEvent(affiliateId, 'conversion.created', {
-    conversionId: conversionData.id,
-    affiliateId,
-    clientId: conversionData.clientId,
-    conversionType: conversionData.conversionType,
-    conversionValue: conversionData.conversionValue,
-    commissionValue: conversionData.commissionValue,
-    referralCode: conversionData.referralCode,
+    conversionId: conversionData.id
+    affiliateId
+    clientId: conversionData.clientId
+    conversionType: conversionData.conversionType
+    conversionValue: conversionData.conversionValue
+    commissionValue: conversionData.commissionValue
+    referralCode: conversionData.referralCode
     timestamp: new Date().toISOString()
   })
 }
 
 async function sendCommissionWebhook(affiliateId: string, commissionData: any) {
   await sendWebhookEvent(affiliateId, 'commission.approved', {
-    commissionId: commissionData.id,
-    affiliateId,
-    amount: commissionData.amount,
-    type: commissionData.type,
-    description: commissionData.description,
-    dueDate: commissionData.dueDate,
+    commissionId: commissionData.id
+    affiliateId
+    amount: commissionData.amount
+    type: commissionData.type
+    description: commissionData.description
+    dueDate: commissionData.dueDate
     timestamp: new Date().toISOString()
   })
 }
 
 async function sendPaymentWebhook(affiliateId: string, paymentData: any) {
   await sendWebhookEvent(affiliateId, 'payment.completed', {
-    paymentId: paymentData.id,
-    affiliateId,
-    amount: paymentData.amount,
-    method: paymentData.method,
-    transactionId: paymentData.transactionId,
-    processedAt: paymentData.processedAt,
+    paymentId: paymentData.id
+    affiliateId
+    amount: paymentData.amount
+    method: paymentData.method
+    transactionId: paymentData.transactionId
+    processedAt: paymentData.processedAt
     timestamp: new Date().toISOString()
   })
 }
 
 async function sendTierPromotionWebhook(affiliateId: string, tierData: any) {
   await sendWebhookEvent(affiliateId, 'tier.promoted', {
-    affiliateId,
-    oldTier: tierData.oldTier,
-    newTier: tierData.newTier,
-    newCommissionRate: tierData.newCommissionRate,
-    reason: tierData.reason,
+    affiliateId
+    oldTier: tierData.oldTier
+    newTier: tierData.newTier
+    newCommissionRate: tierData.newCommissionRate
+    reason: tierData.reason
     timestamp: new Date().toISOString()
   })
 }
 
 async function sendClickWebhook(affiliateId: string, clickData: any) {
   await sendWebhookEvent(affiliateId, 'click.registered', {
-    clickId: clickData.id,
-    affiliateId,
-    referralCode: clickData.referralCode,
-    url: clickData.url,
-    country: clickData.country,
-    device: clickData.device,
-    source: clickData.source,
-    campaign: clickData.campaign,
+    clickId: clickData.id
+    affiliateId
+    referralCode: clickData.referralCode
+    url: clickData.url
+    country: clickData.country
+    device: clickData.device
+    source: clickData.source
+    campaign: clickData.campaign
     timestamp: new Date().toISOString()
   })
 }

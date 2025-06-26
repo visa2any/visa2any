@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
 
     // Remover cookie de autenticação
     response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 0,
+      httpOnly: true
+      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'lax'
+      maxAge: 0
       path: '/'
     })
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no logout:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

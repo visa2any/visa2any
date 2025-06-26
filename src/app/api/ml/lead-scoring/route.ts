@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 // Schema para análise de lead scoring
 const leadScoringSchema = z.object({
-  clientId: z.string().optional(),
+  clientId: z.string().optional()
   profile: z.object({
     // Dados demográficos
     age: z.number().optional()
@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
         where: { id: validatedData.clientId }
         include: {
           interactions: {
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: 'desc' }
             take: 20
           }
-          documents: true,
-          consultations: true,
+          documents: true
+          consultations: true
           payments: true
         }
       })
@@ -80,9 +80,9 @@ export async function POST(request: NextRequest) {
     // Log da análise
     await prisma.automationLog.create({
       data: {
-        type: 'ML_LEAD_SCORING',
-        action: 'calculate_lead_score',
-        clientId: validatedData.clientId || null,
+        type: 'ML_LEAD_SCORING'
+        action: 'calculate_lead_score'
+        clientId: validatedData.clientId || null
         details: {
           timestamp: new Date().toISOString()
           action: 'automated_action'
@@ -95,10 +95,10 @@ export async function POST(request: NextRequest) {
       data: {
         leadScore: scoringResult.totalScore
         grade: getScoreGrade(scoringResult.totalScore)
-        breakdown: scoringResult.breakdown,
-        conversionProbability: conversionProbability,
-        estimatedLTV: estimatedLTV,
-        recommendedActions: recommendedActions,
+        breakdown: scoringResult.breakdown
+        conversionProbability: conversionProbability
+        estimatedLTV: estimatedLTV
+        recommendedActions: recommendedActions
         insights: generateInsights(scoringResult, clientData)
       }
     })
@@ -140,9 +140,9 @@ export async function GET(request: NextRequest) {
       include: {
         client: {
           select: {
-            id: true,
-            name: true,
-            status: true,
+            id: true
+            name: true
+            status: true
             targetCountry: true
           }
         }
@@ -162,12 +162,12 @@ export async function GET(request: NextRequest) {
       data: {
         overview: {
           totalScored: scoringData.length
-          averageScore: scoreDistribution.average,
-          highQualityLeads: scoreDistribution.highQuality,
+          averageScore: scoreDistribution.average
+          highQualityLeads: scoreDistribution.highQuality
           modelAccuracy: modelAccuracy
         }
-        scoreDistribution: scoreDistribution,
-        conversionFactors: conversionFactors,
+        scoreDistribution: scoreDistribution
+        conversionFactors: conversionFactors
         trends: generateTrends(scoringData)
       }
     })
@@ -184,10 +184,10 @@ export async function GET(request: NextRequest) {
 // Algoritmo avançado de lead scoring
 async function calculateAdvancedLeadScore(profile: any, clientData: any) {
   const breakdown = {
-    demographic: 0,
-    behavioral: 0,
-    engagement: 0,
-    intent: 0,
+    demographic: 0
+    behavioral: 0
+    engagement: 0
+    intent: 0
     fit: 0
   }
 
@@ -210,7 +210,7 @@ async function calculateAdvancedLeadScore(profile: any, clientData: any) {
 
   return {
     totalScore: Math.min(totalScore, 100)
-    breakdown,
+    breakdown
     factors: identifyKeyFactors(breakdown, profile)
   }
 }
@@ -228,20 +228,20 @@ function calculateDemographicScore(profile: any): number {
 
   // Educação
   const educationScores: Record<string, number> = {
-    'DOCTORATE': 5,
-    'MASTER': 4,
-    'BACHELOR': 3,
-    'TECHNICAL': 2,
+    'DOCTORATE': 5
+    'MASTER': 4
+    'BACHELOR': 3
+    'TECHNICAL': 2
     'HIGH_SCHOOL': 1
   }
   score += educationScores[profile.education] || 0
 
   // Renda
   const incomeScores: Record<string, number> = {
-    '20000+': 5,
-    '10000-20000': 4,
-    '6000-10000': 3,
-    '3000-6000': 2,
+    '20000+': 5
+    '10000-20000': 4
+    '6000-10000': 3
+    '3000-6000': 2
     '0-3000': 1
   }
   score += incomeScores[profile.income] || 0
@@ -259,11 +259,11 @@ function calculateBehavioralScore(profile: any, clientData: any): number {
 
   // Fonte de tráfego (qualidade)
   const sourceScores: Record<string, number> = {
-    'organic': 8,
-    'referral': 10,
-    'direct': 7,
-    'social': 5,
-    'paid': 6,
+    'organic': 8
+    'referral': 10
+    'direct': 7
+    'social': 5
+    'paid': 6
     'email': 9
   }
   score += sourceScores[profile.source] || 3
@@ -335,9 +335,9 @@ function calculateIntentScore(profile: any, clientData: any): number {
 
   // Timeframe urgente
   const timeframeScores: Record<string, number> = {
-    '6 meses': 5,
-    '1 ano': 4,
-    '2 anos': 2,
+    '6 meses': 5
+    '1 ano': 4
+    '2 anos': 2
     '3+ anos': 1
   }
   score += timeframeScores[profile.timeframe] || 0
@@ -351,20 +351,20 @@ function calculateFitScore(profile: any): number {
 
   // Países com alta taxa de aprovação
   const countryScores: Record<string, number> = {
-    'Portugal': 5,
-    'Canada': 4,
-    'Australia': 4,
-    'Germany': 3,
+    'Portugal': 5
+    'Canada': 4
+    'Australia': 4
+    'Germany': 3
     'United States': 2
   }
   score += countryScores[profile.targetCountry] || 1
 
   // Tipos de visto mais viáveis
   const visaScores: Record<string, number> = {
-    'SKILLED': 4,
-    'INVESTMENT': 5,
-    'WORK': 3,
-    'STUDENT': 2,
+    'SKILLED': 4
+    'INVESTMENT': 5
+    'WORK': 3
+    'STUDENT': 2
     'FAMILY': 3
   }
   score += visaScores[profile.visaType] || 1
@@ -397,47 +397,47 @@ function getRecommendedActions(scoringResult: any): any[] {
   if (score >= 80) {
     actions.push({
       priority: 'URGENT'
-      action: 'immediate_call',
-      description: 'Ligar imediatamente - lead quente',
+      action: 'immediate_call'
+      description: 'Ligar imediatamente - lead quente'
       sla: '15 minutos'
     })
     actions.push({
-      priority: 'HIGH',
-      action: 'premium_offer',
-      description: 'Oferecer desconto premium',
+      priority: 'HIGH'
+      action: 'premium_offer'
+      description: 'Oferecer desconto premium'
       sla: '1 hora'
     })
   } else if (score >= 60) {
     actions.push({
-      priority: 'HIGH',
-      action: 'schedule_call',
-      description: 'Agendar ligação nas próximas 2h',
+      priority: 'HIGH'
+      action: 'schedule_call'
+      description: 'Agendar ligação nas próximas 2h'
       sla: '2 horas'
     })
     actions.push({
-      priority: 'MEDIUM',
-      action: 'nurture_sequence',
-      description: 'Iniciar sequência de nurturing premium',
+      priority: 'MEDIUM'
+      action: 'nurture_sequence'
+      description: 'Iniciar sequência de nurturing premium'
       sla: '4 horas'
     })
   } else if (score >= 40) {
     actions.push({
-      priority: 'MEDIUM',
-      action: 'email_follow_up',
-      description: 'Email personalizado de follow-up',
+      priority: 'MEDIUM'
+      action: 'email_follow_up'
+      description: 'Email personalizado de follow-up'
       sla: '24 horas'
     })
     actions.push({
-      priority: 'LOW',
-      action: 'retargeting',
-      description: 'Adicionar em campanhas de retargeting',
+      priority: 'LOW'
+      action: 'retargeting'
+      description: 'Adicionar em campanhas de retargeting'
       sla: '48 horas'
     })
   } else {
     actions.push({
-      priority: 'LOW',
-      action: 'educational_content',
-      description: 'Enviar conteúdo educacional',
+      priority: 'LOW'
+      action: 'educational_content'
+      description: 'Enviar conteúdo educacional'
       sla: '7 dias'
     })
   }
@@ -471,10 +471,10 @@ function calculateEstimatedLTV(profile: any, scoringResult: any): number {
 
   // LTV base por país
   const countryLTV: Record<string, number> = {
-    'United States': 3500,
-    'Australia': 2800,
-    'Canada': 2500,
-    'Portugal': 1200,
+    'United States': 3500
+    'Australia': 2800
+    'Canada': 2500
+    'Portugal': 1200
     'Germany': 2000
   }
   baseLTV = countryLTV[profile.targetCountry] || 1500
@@ -501,7 +501,7 @@ async function updateClientScore(clientId: string, scoringResult: any) {
     await prisma.client.update({
       where: { id: clientId }
       data: {
-        leadScore: scoringResult.totalScore,
+        leadScore: scoringResult.totalScore
         lastScoredAt: new Date()
       }
     })
@@ -541,9 +541,9 @@ function analyzeScoreDistribution(data: any[]) {
   const scores = data.map(d => d.details?.leadScore || 0)
   
   return {
-    average: scores.reduce((sum, score) => sum + score, 0) / scores.length,
-    highQuality: scores.filter(score => score >= 70).length,
-    medium: scores.filter(score => score >= 40 && score < 70).length,
+    average: scores.reduce((sum, score) => sum + score, 0) / scores.length
+    highQuality: scores.filter(score => score >= 70).length
+    medium: scores.filter(score => score >= 40 && score < 70).length
     low: scores.filter(score => score < 40).length
   }
 }
@@ -568,7 +568,7 @@ function generateTrends(data: any[]) {
   // Gerar trends de score ao longo do tempo
   return {
     averageScoreImprovement: '+12%'
-    conversionRateImprovement: '+23%',
+    conversionRateImprovement: '+23%'
     topPerformingSource: 'organic'
   }
 }

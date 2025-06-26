@@ -11,17 +11,17 @@ export async function GET(request: NextRequest) {
     //   include: {
     //     client: {
     //       select: {
-    //         id: true,
-    //         name: true,
-    //         email: true,
+    //         id: true
+    //         name: true
+    //         email: true
     //         phone: true
     //       }
     //     }
     //     payment: {
     //       select: {
-    //         status: true,
-    //         paidAmount: true,
-    //         paymentMethod: true,
+    //         status: true
+    //         paidAmount: true
+    //         paymentMethod: true
     //         paidAt: true
     //       }
     //     }
@@ -38,19 +38,19 @@ export async function GET(request: NextRequest) {
 
     // Calcular estatísticas
     const stats = {
-      total: bookings.length,
-      pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length,
-      inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length,
-      completed: bookings.filter(b => b.status === 'COMPLETED').length,
-      expired: bookings.filter(b => b.status === 'EXPIRED').length,
-      emergency: bookings.filter(b => b.urgency === 'EMERGENCY').length,
+      total: bookings.length
+      pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length
+      inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length
+      completed: bookings.filter(b => b.status === 'COMPLETED').length
+      expired: bookings.filter(b => b.status === 'EXPIRED').length
+      emergency: bookings.filter(b => b.urgency === 'EMERGENCY').length
       totalRevenue: bookings
         .filter(b => b.status === 'COMPLETED')
         .reduce((sum, b) => sum + (b.payment?.paidAmount || 0), 0)
     }
 
     return NextResponse.json({
-      bookings,
+      bookings
       stats
     })
 
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 async function updateBookingStatus(bookingId: string, status: string, appointmentDetails?: any) {
   try {
     const updateData: any = {
-      status,
+      status
       updatedAt: new Date()
     }
 
@@ -118,12 +118,12 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     // Como hybridBooking não existe no schema, vamos simular resposta
     const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
-    //   data: updateData,
+    //   data: updateData
     //   include: {
     //     client: {
     //       select: {
-    //         name: true,
-    //         email: true,
+    //         name: true
+    //         email: true
     //         phone: true
     //       }
     //     }
@@ -134,7 +134,7 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
     // await notifyClientStatusUpdate(booking, status, appointmentDetails)
 
     return NextResponse.json({
-      booking,
+      booking
       message: `Status atualizado para ${status}`
     })
 
@@ -153,14 +153,14 @@ async function assignConsultant(bookingId: string, consultantId: string) {
     const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
-    //     assignedConsultant: consultantId,
+    //     assignedConsultant: consultantId
     //     assignedAt: new Date()
     //     updatedAt: new Date()
     //   }
     // })
 
     return NextResponse.json({
-      booking,
+      booking
       message: 'Consultor atribuído com sucesso'
     })
 
@@ -188,9 +188,9 @@ async function addBookingNote(bookingId: string, note: string) {
 
     const currentNotes = booking.notes || []
     const newNote = {
-      id: Date.now().toString(),
-      content: note,
-      createdAt: new Date().toISOString(),
+      id: Date.now().toString()
+      content: note
+      createdAt: new Date().toISOString()
       author: 'Sistema' // TODO: pegar do usuário logado
     }
 
@@ -198,13 +198,13 @@ async function addBookingNote(bookingId: string, note: string) {
     const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
-    //     notes: [...currentNotes, newNote],
+    //     notes: [...currentNotes, newNote]
     //     updatedAt: new Date()
     //   }
     // })
 
     return NextResponse.json({
-      booking: updatedBooking,
+      booking: updatedBooking
       message: 'Nota adicionada com sucesso'
     })
 
@@ -237,13 +237,13 @@ async function extendDeadline(bookingId: string, hours: number) {
     const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId }
     //   data: {
-    //     deadline: newDeadline,
+    //     deadline: newDeadline
     //     updatedAt: new Date()
     //   }
     // })
 
     return NextResponse.json({
-      booking: updatedBooking,
+      booking: updatedBooking
       message: `Prazo estendido em ${hours} horas`
     })
 
@@ -332,10 +332,10 @@ Infelizmente não conseguimos realizar seu agendamento:
 
     if (message) {
       await fetch('/api/notifications/whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST'
+        headers: { 'Content-Type': 'application/json' }
         body: JSON.stringify({
-          to: booking.client.phone,
+          to: booking.client.phone
           message: message
         })
       })

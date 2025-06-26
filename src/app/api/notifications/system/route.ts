@@ -25,35 +25,35 @@ export async function GET(request: NextRequest) {
           in: [
             'EMAIL_SENT'
             'WHATSAPP_SENT', 
-            'ANALYSIS_COMPLETED',
-            'DOCUMENT_VALIDATED',
-            'PAYMENT_CONFIRMED',
+            'ANALYSIS_COMPLETED'
+            'DOCUMENT_VALIDATED'
+            'PAYMENT_CONFIRMED'
             'CLIENT_STATUS_CHANGED'
-          ],
+          ]
         }
       }
       include: {
         client: {
           select: {
-            id: true,
-            name: true,
+            id: true
+            name: true
             email: true
           }
         }
       }
       orderBy: {
         executedAt: 'desc'
-      },
+      }
       take: 10
     })
 
     // Convert automation logs to notifications
     const notifications = recentLogs.map(log => {
       const baseNotification = {
-        type: 'info' as const,
-        title: '',
-        message: '',
-        actionUrl: '',
+        type: 'info' as const
+        title: ''
+        message: ''
+        actionUrl: ''
         actionLabel: ''
       }
 
@@ -61,30 +61,30 @@ export async function GET(request: NextRequest) {
         case 'EMAIL_SENT':
           return {
             ...baseNotification
-            type: 'success' as const,
-            title: 'Email enviado',
-            message: `Email enviado para ${log.client?.name || 'cliente'}`,
-            actionUrl: `/admin/clients`,
+            type: 'success' as const
+            title: 'Email enviado'
+            message: `Email enviado para ${log.client?.name || 'cliente'}`
+            actionUrl: `/admin/clients`
             actionLabel: 'Ver cliente'
           }
 
         case 'WHATSAPP_SENT':
           return {
             ...baseNotification
-            type: 'success' as const,
-            title: 'WhatsApp enviado',
-            message: `Mensagem WhatsApp enviada para ${log.client?.name || 'cliente'}`,
-            actionUrl: `/admin/clients`,
+            type: 'success' as const
+            title: 'WhatsApp enviado'
+            message: `Mensagem WhatsApp enviada para ${log.client?.name || 'cliente'}`
+            actionUrl: `/admin/clients`
             actionLabel: 'Ver cliente'
           }
 
         case 'ANALYSIS_COMPLETED':
           return {
             ...baseNotification
-            type: 'success' as const,
-            title: 'Análise concluída',
-            message: `Análise de elegibilidade concluída para ${log.client?.name || 'cliente'}`,
-            actionUrl: `/admin/consultations`,
+            type: 'success' as const
+            title: 'Análise concluída'
+            message: `Análise de elegibilidade concluída para ${log.client?.name || 'cliente'}`
+            actionUrl: `/admin/consultations`
             actionLabel: 'Ver análise'
           }
 
@@ -92,20 +92,20 @@ export async function GET(request: NextRequest) {
           const details = log.details as { documentName?: string }
           return {
             ...baseNotification
-            type: 'success' as const,
-            title: 'Documento validado',
-            message: `Documento ${details?.documentName || 'novo'} foi validado`,
-            actionUrl: `/admin/documents`,
+            type: 'success' as const
+            title: 'Documento validado'
+            message: `Documento ${details?.documentName || 'novo'} foi validado`
+            actionUrl: `/admin/documents`
             actionLabel: 'Ver documentos'
           }
 
         case 'PAYMENT_CONFIRMED':
           return {
             ...baseNotification
-            type: 'success' as const,
-            title: 'Pagamento confirmado',
-            message: `Pagamento recebido de ${log.client?.name || 'cliente'}`,
-            actionUrl: `/admin/payments`,
+            type: 'success' as const
+            title: 'Pagamento confirmado'
+            message: `Pagamento recebido de ${log.client?.name || 'cliente'}`
+            actionUrl: `/admin/payments`
             actionLabel: 'Ver pagamentos'
           }
 
@@ -113,19 +113,19 @@ export async function GET(request: NextRequest) {
           const statusDetails = log.details as { newStatus?: string }
           return {
             ...baseNotification
-            type: 'info' as const,
-            title: 'Status atualizado',
-            message: `Status do cliente ${log.client?.name || 'cliente'} foi atualizado para ${statusDetails?.newStatus || 'novo status'}`,
-            actionUrl: `/admin/clients`,
+            type: 'info' as const
+            title: 'Status atualizado'
+            message: `Status do cliente ${log.client?.name || 'cliente'} foi atualizado para ${statusDetails?.newStatus || 'novo status'}`
+            actionUrl: `/admin/clients`
             actionLabel: 'Ver cliente'
           }
 
         default:
           return {
             ...baseNotification
-            title: 'Nova atividade',
-            message: `Nova atividade registrada no sistema`,
-            actionUrl: `/admin`,
+            title: 'Nova atividade'
+            message: `Nova atividade registrada no sistema`
+            actionUrl: `/admin`
             actionLabel: 'Ver dashboard'
           }
       }
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
     // Also check for pending tasks that need attention
     const pendingConsultations = await prisma.consultation.count({
       where: {
-        status: 'SCHEDULED',
+        status: 'SCHEDULED'
         scheduledAt: {
           lte: new Date(Date.now() + 60 * 60 * 1000) // Next hour
         }
@@ -150,20 +150,20 @@ export async function GET(request: NextRequest) {
     // Add system notifications for pending items
     if (pendingConsultations > 0) {
       notifications.push({
-        type: 'warning' as const,
-        title: 'Consultorias pendentes',
-        message: `${pendingConsultations} consultoria${pendingConsultations > 1 ? 's' : ''} agendada${pendingConsultations > 1 ? 's' : ''} para a próxima hora`,
-        actionUrl: '/admin/consultations',
+        type: 'warning' as const
+        title: 'Consultorias pendentes'
+        message: `${pendingConsultations} consultoria${pendingConsultations > 1 ? 's' : ''} agendada${pendingConsultations > 1 ? 's' : ''} para a próxima hora`
+        actionUrl: '/admin/consultations'
         actionLabel: 'Ver consultorias'
       })
     }
 
     if (pendingDocuments > 0) {
       notifications.push({
-        type: 'info' as const,
-        title: 'Documentos pendentes',
-        message: `${pendingDocuments} documento${pendingDocuments > 1 ? 's' : ''} aguardando validação`,
-        actionUrl: '/admin/documents',
+        type: 'info' as const
+        title: 'Documentos pendentes'
+        message: `${pendingDocuments} documento${pendingDocuments > 1 ? 's' : ''} aguardando validação`
+        actionUrl: '/admin/documents'
         actionLabel: 'Ver documentos'
       })
     }

@@ -4,11 +4,11 @@ import { z } from 'zod'
 
 // Schema para criar pagamento
 const createPaymentSchema = z.object({
-  clientId: z.string().min(1, 'Cliente é obrigatório'),
-  amount: z.number().min(0.01, 'Valor deve ser maior que 0'),
-  currency: z.string().default('BRL'),
-  description: z.string().min(1, 'Descrição é obrigatória'),
-  paymentMethod: z.string().optional(),
+  clientId: z.string().min(1, 'Cliente é obrigatório')
+  amount: z.number().min(0.01, 'Valor deve ser maior que 0')
+  currency: z.string().default('BRL')
+  description: z.string().min(1, 'Descrição é obrigatória')
+  paymentMethod: z.string().optional()
   dueDate: z.string().datetime().optional()
 })
 
@@ -37,35 +37,35 @@ export async function GET(request: NextRequest) {
     // Buscar pagamentos
     const [payments, total] = await Promise.all([
       prisma.payment.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
+        where
+        skip
+        take: limit
+        orderBy: { createdAt: 'desc' }
         include: {
           client: {
             select: { 
               id: true, 
               name: true, 
-              email: true,
+              email: true
               phone: true
             }
           }
         }
-      }),
+      })
       prisma.payment.count({ where })
     ])
 
     // Estatísticas
     const stats = await prisma.payment.aggregate({
-      where: clientId ? { clientId } : {},
-      _sum: { amount: true },
+      where: clientId ? { clientId } : {}
+      _sum: { amount: true }
       _count: { id: true }
     })
 
     const statusStats = await prisma.payment.groupBy({
-      by: ['status'],
-      _count: { status: true },
-      _sum: { amount: true },
+      by: ['status']
+      _count: { status: true }
+      _sum: { amount: true }
       where: clientId ? { clientId } : {}
     })
 
@@ -73,23 +73,23 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        payments,
+        payments
         stats: {
-          totalAmount: stats._sum.amount || 0,
-          totalPayments: stats._count || 0,
+          totalAmount: stats._sum.amount || 0
+          totalPayments: stats._count || 0
           byStatus: statusStats.reduce((acc, stat) => {
             acc[stat.status] = {
-              count: stat._count.status,
+              count: stat._count.status
               amount: stat._sum.amount || 0
             }
             return acc
           }, {} as Record<string, any>)
-        },
+        }
         pagination: {
-          page,
-          limit,
-          total,
-          totalPages,
+          page
+          limit
+          total
+          totalPages
           hasMore: page < totalPages
         }
       }
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar pagamentos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     if (!client) {
       return NextResponse.json(
-        { error: 'Cliente não encontrado' },
+        { error: 'Cliente não encontrado' }
         { status: 404 }
       )
     }
@@ -128,17 +128,17 @@ export async function POST(request: NextRequest) {
     // Criar pagamento
     const payment = await prisma.payment.create({
       data: {
-        ...validatedData,
-        transactionId,
-        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+        ...validatedData
+        transactionId
+        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null
         status: 'PENDING'
-      },
+      }
       include: {
         client: {
           select: { 
             id: true, 
             name: true, 
-            email: true,
+            email: true
             phone: true
           }
         }
@@ -148,13 +148,13 @@ export async function POST(request: NextRequest) {
     // Log da criação
     await prisma.automationLog.create({
       data: {
-        type: 'PAYMENT_CREATED',
-        action: 'create_payment',
-        clientId: validatedData.clientId,
+        type: 'PAYMENT_CREATED'
+        action: 'create_payment'
+        clientId: validatedData.clientId
         details: {
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
           action: 'automated_action'
-        },
+        }
         success: true
       }
     })
@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        ...payment,
-        paymentLink,
-      },
+        ...payment
+        paymentLink
+      }
       message: 'Pagamento criado com sucesso'
     }, { status: 201 })
 
@@ -174,16 +174,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos',
+          error: 'Dados inválidos'
           details: error.errors
-        },
+        }
         { status: 400 }
       )
     }
 
     console.error('Erro ao criar pagamento:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }
@@ -206,25 +206,25 @@ async function generatePaymentLink(payment: any) {
   if (payment.currency === 'BRL') {
     // Mercado Pago para BRL
     return {
-      provider: 'Mercado Pago',
-      url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,
-      qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,
-      pixKey: generatePixKey(),
-      methods: ['PIX', 'Cartão de Crédito', 'Boleto'],
+      provider: 'Mercado Pago'
+      url: `${baseUrl}/api/payments/${payment.id}/mercadopago`
+      qrCode: `${baseUrl}/api/payments/${payment.id}/qr`
+      pixKey: generatePixKey()
+      methods: ['PIX', 'Cartão de Crédito', 'Boleto']
     }
   } else if (payment.currency === 'USD') {
     // Stripe para USD
     return {
-      provider: 'Stripe',
-      url: `${baseUrl}/api/payments/${payment.id}/stripe`,
-      methods: ['Credit Card', 'Bank Transfer'],
+      provider: 'Stripe'
+      url: `${baseUrl}/api/payments/${payment.id}/stripe`
+      methods: ['Credit Card', 'Bank Transfer']
     }
   } else {
     // PayPal para outras moedas
     return {
-      provider: 'PayPal',
-      url: `${baseUrl}/api/payments/${payment.id}/paypal`,
-      methods: ['PayPal', 'Credit Card'],
+      provider: 'PayPal'
+      url: `${baseUrl}/api/payments/${payment.id}/paypal`
+      methods: ['PayPal', 'Credit Card']
     }
   }
 }
@@ -244,84 +244,84 @@ export async function PUT(request: NextRequest) {
       // Retornar pacotes disponíveis
       const packages = [
         {
-          id: 'basic_consultation',
-          name: 'Consulta Básica',
-          description: 'Análise de elegibilidade com IA + Consultoria humana de 30min',
-          price: 299,
-          currency: 'BRL',
+          id: 'basic_consultation'
+          name: 'Consulta Básica'
+          description: 'Análise de elegibilidade com IA + Consultoria humana de 30min'
+          price: 299
+          currency: 'BRL'
           features: [
-            'Análise IA completa de elegibilidade',
-            'Consultoria humana de 30 minutos',
-            'Relatório detalhado por país',
-            'Lista de documentos necessários',
+            'Análise IA completa de elegibilidade'
+            'Consultoria humana de 30 minutos'
+            'Relatório detalhado por país'
+            'Lista de documentos necessários'
             'Suporte por email 48h'
-          ],
+          ]
           popular: false
-        },
+        }
         {
-          id: 'premium_consultation',
-          name: 'Consulta Premium',
-          description: 'Análise + Consultoria + Preparação de documentos',
-          price: 599,
-          currency: 'BRL',
+          id: 'premium_consultation'
+          name: 'Consulta Premium'
+          description: 'Análise + Consultoria + Preparação de documentos'
+          price: 599
+          currency: 'BRL'
           features: [
-            'Tudo do pacote Básico',
-            'Consultoria humana de 60 minutos',
-            'Revisão e preparação de documentos',
-            'Timeline personalizado',
-            'Acompanhamento por 30 dias',
+            'Tudo do pacote Básico'
+            'Consultoria humana de 60 minutos'
+            'Revisão e preparação de documentos'
+            'Timeline personalizado'
+            'Acompanhamento por 30 dias'
             'Suporte prioritário'
-          ],
+          ]
           popular: true
-        },
+        }
         {
-          id: 'vip_full_service',
-          name: 'Serviço VIP Completo',
-          description: 'Serviço completo hands-off até a aprovação',
-          price: 1299,
-          currency: 'BRL',
+          id: 'vip_full_service'
+          name: 'Serviço VIP Completo'
+          description: 'Serviço completo hands-off até a aprovação'
+          price: 1299
+          currency: 'BRL'
           features: [
-            'Tudo do pacote Premium',
-            'Preenchimento completo de formulários',
-            'Agendamento de entrevistas',
-            'Acompanhamento até aprovação',
-            'Garantia de reembolso*',
-            'Suporte 24/7',
+            'Tudo do pacote Premium'
+            'Preenchimento completo de formulários'
+            'Agendamento de entrevistas'
+            'Acompanhamento até aprovação'
+            'Garantia de reembolso*'
+            'Suporte 24/7'
             'Consultor dedicado'
-          ],
-          popular: false,
+          ]
+          popular: false
           guarantee: true
-        },
+        }
         // Pacotes internacionais
         {
-          id: 'international_basic',
-          name: 'International Basic',
-          description: 'AI Analysis + 30min Human Consultation',
-          price: 99,
-          currency: 'USD',
+          id: 'international_basic'
+          name: 'International Basic'
+          description: 'AI Analysis + 30min Human Consultation'
+          price: 99
+          currency: 'USD'
           features: [
-            'Complete AI eligibility analysis',
-            '30-minute human consultation',
-            'Detailed country report',
-            'Required documents list',
+            'Complete AI eligibility analysis'
+            '30-minute human consultation'
+            'Detailed country report'
+            'Required documents list'
             '48h email support'
-          ],
+          ]
           popular: false
-        },
+        }
         {
-          id: 'international_premium',
-          name: 'International Premium',
-          description: 'Analysis + Consultation + Document Prep',
-          price: 199,
-          currency: 'USD',
+          id: 'international_premium'
+          name: 'International Premium'
+          description: 'Analysis + Consultation + Document Prep'
+          price: 199
+          currency: 'USD'
           features: [
-            'Everything in Basic',
-            '60-minute human consultation',
-            'Document review and preparation',
-            'Personalized timeline',
-            '30-day follow-up',
+            'Everything in Basic'
+            '60-minute human consultation'
+            'Document review and preparation'
+            'Personalized timeline'
+            '30-day follow-up'
             'Priority support'
-          ],
+          ]
           popular: true
         }
       ]
@@ -332,14 +332,14 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Dados inválidos' },
+      { error: 'Dados inválidos' }
       { status: 400 }
     )
 
   } catch (error) {
     console.error('Erro ao processar planos:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor' }
       { status: 500 }
     )
   }

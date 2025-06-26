@@ -8,11 +8,11 @@ import { NextRequest, NextResponse } from 'next/server'
 const defaultMaterials = [
   // Banners
   {
-    type: 'BANNER',
-    title: 'Banner Principal - Visa2Any',
-    description: 'Banner principal com logo e call-to-action',
-    category: 'banners',
-    tags: ['principal', 'logo', 'cta'],
+    type: 'BANNER'
+    title: 'Banner Principal - Visa2Any'
+    description: 'Banner principal com logo e call-to-action'
+    category: 'banners'
+    tags: ['principal', 'logo', 'cta']
     content: `
       <div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; font-family: Arial, sans-serif;">
         <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 16px;">🌍 Realize seu sonho de viver no exterior!</h1>
@@ -22,17 +22,17 @@ const defaultMaterials = [
         </div>
         <p style="margin-top: 20px; font-size: 14px;">Use o código: {{REFERRAL_CODE}}</p>
       </div>
-    `,
-    imageUrl: '/images/banners/banner-principal.jpg',
-    previewUrl: '/materials/preview/banner-principal',
+    `
+    imageUrl: '/images/banners/banner-principal.jpg'
+    previewUrl: '/materials/preview/banner-principal'
     isActive: true
-  },
+  }
   {
-    type: 'BANNER',
-    title: 'Banner Visto EUA',
-    description: 'Banner específico para promoção de visto americano',
-    category: 'banners',
-    tags: ['eua', 'visto', 'america'],
+    type: 'BANNER'
+    title: 'Banner Visto EUA'
+    description: 'Banner específico para promoção de visto americano'
+    category: 'banners'
+    tags: ['eua', 'visto', 'america']
     content: `
       <div style="background: linear-gradient(135deg, #1E40AF 0%, #DC2626 100%); padding: 30px; border-radius: 12px; text-align: center; color: white; font-family: Arial, sans-serif;">
         <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 12px;">🇺🇸 VISTO AMERICANO</h2>
@@ -47,19 +47,19 @@ const defaultMaterials = [
           <strong>Código: {{REFERRAL_CODE}}</strong>
         </div>
       </div>
-    `,
-    imageUrl: '/images/banners/banner-eua.jpg',
-    previewUrl: '/materials/preview/banner-eua',
+    `
+    imageUrl: '/images/banners/banner-eua.jpg'
+    previewUrl: '/materials/preview/banner-eua'
     isActive: true
-  },
+  }
 
   // Posts para Redes Sociais
   {
-    type: 'SOCIAL_POST',
-    title: 'Post Instagram - Consultoria',
-    description: 'Post otimizado para Instagram sobre consultoria',
-    category: 'instagram',
-    tags: ['instagram', 'consultoria', 'stories'],
+    type: 'SOCIAL_POST'
+    title: 'Post Instagram - Consultoria'
+    description: 'Post otimizado para Instagram sobre consultoria'
+    category: 'instagram'
+    tags: ['instagram', 'consultoria', 'stories']
     content: `🌍 QUER MORAR NO EXTERIOR? 
 
 A @visa2any é especialista em realizar esse sonho! 
@@ -82,16 +82,16 @@ E muito mais!
 📞 Link na bio para consultoria gratuita
 🎁 Use o código: {{REFERRAL_CODE}}
 
-#morarfora #intercambio #imigração #visa2any #vivernoexterior #visto #consultoria #sonhoamericano`,
-    imageUrl: '/images/posts/instagram-consultoria.jpg',
+#morarfora #intercambio #imigração #visa2any #vivernoexterior #visto #consultoria #sonhoamericano`
+    imageUrl: '/images/posts/instagram-consultoria.jpg'
     isActive: true
-  },
+  }
   {
-    type: 'SOCIAL_POST',
-    title: 'Post Facebook - Depoimento',
-    description: 'Post para Facebook com foco em depoimentos',
-    category: 'facebook',
-    tags: ['facebook', 'depoimento', 'sucesso'],
+    type: 'SOCIAL_POST'
+    title: 'Post Facebook - Depoimento'
+    description: 'Post para Facebook com foco em depoimentos'
+    category: 'facebook'
+    tags: ['facebook', 'depoimento', 'sucesso']
     content: `🌟 MAIS UM SONHO REALIZADO! 🌟
 
 "Graças à Visa2Any, consegui meu visto para o Canadá! O atendimento foi excepcional e me senti segura durante todo o processo. Recomendo muito!" 
@@ -116,18 +116,18 @@ E muito mais!
 
 Sua nova vida te espera! 🌍✈️
 
-#Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`,
-    imageUrl: '/images/posts/facebook-depoimento.jpg',
+#Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`
+    imageUrl: '/images/posts/facebook-depoimento.jpg'
     isActive: true
-  },
+  }
 
   // Templates de Email
   {
-    type: 'EMAIL_TEMPLATE',
-    title: 'Email - Bem-vindo Lead',
-    description: 'Template de email para novos leads',
-    category: 'email',
-    tags: ['email', 'lead', 'boas-vindas'],
+    type: 'EMAIL_TEMPLATE'
+    title: 'Email - Bem-vindo Lead'
+    description: 'Template de email para novos leads'
+    category: 'email'
+    tags: ['email', 'lead', 'boas-vindas']
     content: `
 <!DOCTYPE html>
 <html>
@@ -181,17 +181,17 @@ Sua nova vida te espera! 🌍✈️
   </div>
 </body>
 </html>
-    `,
+    `
     isActive: true
-  },
+  }
 
   // Vídeos
   {
-    type: 'VIDEO',
-    title: 'Vídeo Depoimento - Cliente Aprovado',
-    description: 'Vídeo com depoimento de cliente aprovado',
-    category: 'depoimentos',
-    tags: ['video', 'depoimento', 'aprovação'],
+    type: 'VIDEO'
+    title: 'Vídeo Depoimento - Cliente Aprovado'
+    description: 'Vídeo com depoimento de cliente aprovado'
+    category: 'depoimentos'
+    tags: ['video', 'depoimento', 'aprovação']
     content: `
 Script para vídeo de depoimento:
 
@@ -212,19 +212,19 @@ Se você também tem o sonho de viver no exterior, não perca tempo. Entre em co
 Sua nova vida te espera!"
 
 [Incluir na tela: Logo da Visa2Any, código {{REFERRAL_CODE}}, link {{AFFILIATE_LINK}}]
-    `,
-    imageUrl: '/images/videos/depoimento-maria.jpg',
-    previewUrl: '/materials/preview/video-depoimento',
+    `
+    imageUrl: '/images/videos/depoimento-maria.jpg'
+    previewUrl: '/materials/preview/video-depoimento'
     isActive: true
-  },
+  }
 
   // Guias/E-books
   {
-    type: 'GUIDE',
-    title: 'E-book - Guia Completo Visto EUA',
-    description: 'Guia completo sobre como conseguir visto americano',
-    category: 'guias',
-    tags: ['ebook', 'guia', 'eua', 'visto'],
+    type: 'GUIDE'
+    title: 'E-book - Guia Completo Visto EUA'
+    description: 'Guia completo sobre como conseguir visto americano'
+    category: 'guias'
+    tags: ['ebook', 'guia', 'eua', 'visto']
     content: `
 GUIA COMPLETO: COMO CONSEGUIR SEU VISTO AMERICANO
 
@@ -267,9 +267,9 @@ Consultoria gratuita: {{AFFILIATE_LINK}}
 Código especial: {{REFERRAL_CODE}}
 
 © Visa2Any - Todos os direitos reservados
-    `,
-    downloadUrl: '/downloads/guia-visto-eua.pdf',
-    imageUrl: '/images/guides/ebook-visto-eua.jpg',
+    `
+    downloadUrl: '/downloads/guia-visto-eua.pdf'
+    imageUrl: '/images/guides/ebook-visto-eua.jpg'
     isActive: true
   }
 ]
@@ -305,7 +305,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar materiais do banco
     const materials = await prisma.affiliateMaterial.findMany({
-      where,
+      where
       orderBy: { createdAt: 'desc' }
     })
 
@@ -319,11 +319,11 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         data: filteredDefaults.map((material, index) => ({
-          id: `default_${index}`,
-          ...material,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          views: Math.floor(Math.random() * 1000),
+          id: `default_${index}`
+          ...material
+          createdAt: new Date().toISOString()
+          updatedAt: new Date().toISOString()
+          views: Math.floor(Math.random() * 1000)
           downloads: Math.floor(Math.random() * 500)
         }))
       })
@@ -348,39 +348,39 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const {
-      type,
-      title,
-      description,
-      content,
-      category,
-      tags = [],
-      imageUrl,
-      downloadUrl,
-      previewUrl,
-      affiliateId,
-      language = 'pt',
+      type
+      title
+      description
+      content
+      category
+      tags = []
+      imageUrl
+      downloadUrl
+      previewUrl
+      affiliateId
+      language = 'pt'
     } = body
 
     // Validações básicas
     if (!type || !title || !description) {
       return NextResponse.json({
-        error: 'Tipo, título e descrição são obrigatórios',
+        error: 'Tipo, título e descrição são obrigatórios'
       }, { status: 400 })
     }
 
     const material = await prisma.affiliateMaterial.create({
       data: {
-        type,
-        title,
-        description,
-        content,
-        category,
-        tags,
-        imageUrl,
-        downloadUrl,
-        previewUrl,
-        affiliateId,
-        language,
+        type
+        title
+        description
+        content
+        category
+        tags
+        imageUrl
+        downloadUrl
+        previewUrl
+        affiliateId
+        language
       }
     })
 
@@ -411,9 +411,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const material = await prisma.affiliateMaterial.update({
-      where: { id },
+      where: { id }
       data: {
-        ...updateData,
+        ...updateData
         updatedAt: new Date()
       }
     })

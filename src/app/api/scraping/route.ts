@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         success: true
-        targets,
-        total: targets.length,
-        warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
+        targets
+        total: targets.length
+        warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.'
         message: 'Targets de scraping listados'
       })
     }
@@ -27,11 +27,11 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         success: result.success
-        slots: result.slots,
-        error: result.error,
-        lastUpdated: result.lastUpdated,
-        source: result.source,
-        warning: 'Dados obtidos via web scraping - podem estar desatualizados',
+        slots: result.slots
+        error: result.error
+        lastUpdated: result.lastUpdated
+        source: result.source
+        warning: 'Dados obtidos via web scraping - podem estar desatualizados'
         disclaimer: 'Este serviço é apenas para fins informativos'
       })
     }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { 
             error: 'Confirmação legal necessária para habilitar scraping'
-            warning: 'Web scraping pode violar ToS dos sites. Você assume total responsabilidade legal.',
+            warning: 'Web scraping pode violar ToS dos sites. Você assume total responsabilidade legal.'
             required: 'Envie legalConfirmation: true para confirmar'
           }
           { status: 400 }
@@ -80,9 +80,9 @@ export async function POST(request: NextRequest) {
       if (success) {
         return NextResponse.json({
           success: true
-          targetId,
-          enabled,
-          message: `Target ${enabled ? 'habilitado' : 'desabilitado'} com sucesso`,
+          targetId
+          enabled
+          message: `Target ${enabled ? 'habilitado' : 'desabilitado'} com sucesso`
           warning: enabled ? 'Scraping ativo - monitore possíveis bloqueios' : undefined
         })
       } else {
@@ -109,11 +109,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true
         monitoring: {
-          targets: targetIds,
-          interval: intervalMinutes || 30,
+          targets: targetIds
+          interval: intervalMinutes || 30
           status: 'started'
         }
-        message: 'Monitoramento iniciado',
+        message: 'Monitoramento iniciado'
         warning: 'Monitoramento contínuo pode ser detectado pelos sites'
       })
     }

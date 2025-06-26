@@ -5,12 +5,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const {
-      blogPostId,
-      platform,
-      content,
-      imageUrl,
-      hashtags,
-      scheduledAt,
+      blogPostId
+      platform
+      content
+      imageUrl
+      hashtags
+      scheduledAt
     } = body
 
     // Validar dados obrigatórios
@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     const socialPost = await prisma.socialPost.create({
       data: {
         blogPostId
-        platform: platformEnum as any,
-        content,
-        imageUrl,
-        hashtags: hashtags || [],
+        platform: platformEnum as any
+        content
+        imageUrl
+        hashtags: hashtags || []
         scheduledAt: new Date(scheduledAt || Date.now())
         status: 'SCHEDULED'
       }
@@ -45,11 +45,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      message: 'Post agendado com sucesso',
+      message: 'Post agendado com sucesso'
       socialPost: {
-        id: socialPost.id,
-        platform: socialPost.platform,
-        scheduledAt: socialPost.scheduledAt,
+        id: socialPost.id
+        platform: socialPost.platform
+        scheduledAt: socialPost.scheduledAt
         status: socialPost.status
       }
     })
@@ -76,12 +76,12 @@ export async function GET(request: NextRequest) {
 
     const socialPosts = await prisma.socialPost.findMany({
       where
-      orderBy: { scheduledAt: 'asc' },
+      orderBy: { scheduledAt: 'asc' }
       take: 100
     })
 
     const stats = {
-      total: socialPosts.length,
+      total: socialPosts.length
       byStatus: socialPosts.reduce((acc, post) => {
         acc[post.status] = (acc[post.status] || 0) + 1
         return acc
@@ -94,15 +94,15 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true
-      stats,
+      stats
       socialPosts: socialPosts.map(post => ({
-        id: post.id,
-        blogPostId: post.blogPostId,
-        platform: post.platform,
-        content: post.content.substring(0, 200) + '...',
-        scheduledAt: post.scheduledAt,
-        publishedAt: post.publishedAt,
-        status: post.status,
+        id: post.id
+        blogPostId: post.blogPostId
+        platform: post.platform
+        content: post.content.substring(0, 200) + '...'
+        scheduledAt: post.scheduledAt
+        publishedAt: post.publishedAt
+        status: post.status
         createdAt: post.createdAt
       }))
     })
