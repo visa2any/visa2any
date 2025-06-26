@@ -583,27 +583,27 @@ function getSofiaIntents() {
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
       patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances'],
-    }
+    },
     
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
       patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário'],
-    }
+    },
     
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
       patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo'],
-    }
+    },
     
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
       patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo'],
-    }
+    },
     
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
       patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano'],
-    }
+    },
     
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
