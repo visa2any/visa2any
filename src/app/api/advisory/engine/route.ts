@@ -22,7 +22,7 @@ const advisoryQuerySchema = z.object({
     status: z.string(),
     expiryDate: z.string().optional(),
     issuingCountry: z.string().optional()
-  })).optional()
+  })).optional(),
   queryType: z.enum([
     'eligibility_assessment'
     'document_requirements', 

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Obter requisitos específicos do país/visto
     const requirements = await getComplianceRequirements(
-      validatedData.country
+      validatedData.country,
       validatedData.visaType
     )
 

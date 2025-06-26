@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        clients
+        clients,
         pagination: {
           current: page
           total: Math.ceil(total / limit)

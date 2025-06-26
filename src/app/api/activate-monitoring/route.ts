@@ -108,7 +108,7 @@ async function activateEmailMonitoring() {
       try {
         console.log('📧 Verificando emails de consulados...')
         const [recentAlerts, consulateAlerts] = await Promise.all([
-          emailMonitoringService.checkRecentEmails()
+          emailMonitoringService.checkRecentEmails(),
           emailMonitoringService.checkConsulateEmails()
         ])
         

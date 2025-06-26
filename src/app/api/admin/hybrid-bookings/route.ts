@@ -160,7 +160,7 @@ async function assignConsultant(bookingId: string, consultantId: string) {
     // })
 
     return NextResponse.json({
-      booking
+      booking,
       message: 'Consultor atribuído com sucesso'
     })
 
