@@ -4,8 +4,7 @@ const nextConfig = {
   swcMinify: true,         // ✅ Usa SWC para minificação rápida
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error']     // Remove console.log em prod
- mantém errors
+      exclude: ['error']     // Remove console.log em prod, mantém errors
     } : false,
   },
   experimental: {
