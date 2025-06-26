@@ -270,11 +270,11 @@ export async function DELETE(
     // Log da deleção
     await prisma.automationLog.create({
       data: {
-        type: 'CLIENT_DELETED'
+        type: 'CLIENT_DELETED',
         action: 'delete_client',
         success: true,
         details: {
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
           action: 'automated_action'
         }
       }

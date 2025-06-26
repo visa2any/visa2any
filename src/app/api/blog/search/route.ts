@@ -168,7 +168,7 @@ async function performAdvancedSearch(query: string) {
             { country: { contains: word, mode: 'insensitive' } }
           ])
         ],
-      }
+      },
       select: {
         id: true,
         title: true,

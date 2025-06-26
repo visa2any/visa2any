@@ -201,7 +201,7 @@ function getNurturingSequence(type: string, client: any) {
       duration: 3,
       emails: [
         { day: 0, hour: 2, template: 'cart_reminder', subject: 'Esqueceu algo? Seu carrinho está esperando' },
-        { day: 1, hour: 12, template: 'cart_discount', subject: '15% OFF para finalizar hoje!' }
+        { day: 1, hour: 12, template: 'cart_discount', subject: '15% OFF para finalizar hoje!' },
         { day: 2, hour: 18, template: 'cart_urgency', subject: 'Último dia: itens saindo do estoque' }
       ],
     }

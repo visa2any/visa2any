@@ -101,7 +101,7 @@ export async function GET(
         clientId,
         content: 'Documentação acadêmica está completa. Próximo passo é reunir cartas de recomendação.',
         author: 'Ana Silva',
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
       }
     ]

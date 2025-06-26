@@ -505,7 +505,7 @@ async function analyzeGenericDocument(document: any, ocrResult: any) {
 async function validateAgainstCountryRequirements(document: any, analysisResult: any) {
   if (!document.client?.targetCountry) {
     return {
-      isValid: true
+      isValid: true,
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['País de destino não especificado']
@@ -522,7 +522,7 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   
   if (!requirements) {
     return {
-      isValid: true
+      isValid: true,
       needsReview: true,
       confidence: 0.7,
       countrySpecificIssues: ['Requisitos específicos não encontrados']
