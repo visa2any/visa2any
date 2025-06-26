@@ -25,26 +25,26 @@ export async function GET(request: NextRequest) {
       featuredPosts,
       trendingPosts,
       urgentPosts
-    ] = await Promise.all([,
-      prisma.blogPost.count()
+    ] = await Promise.all([
+      prisma.blogPost.count(),
       prisma.blogPost.aggregate({
         _sum: { views: true }
-      })
+      }),
       prisma.blogPost.aggregate({
         _sum: { likes: true }
-      })
+      }),
       prisma.blogPost.aggregate({
         _sum: { comments: true }
-      })
+      }),
       prisma.blogPost.count({
         where: { published: true }
-      })
+      }),
       prisma.blogPost.count({
         where: { featured: true, published: true }
-      })
+      }),
       prisma.blogPost.count({
         where: { trending: true, published: true }
-      })
+      }),
       prisma.blogPost.count({
         where: { urgent: true, published: true }
       })

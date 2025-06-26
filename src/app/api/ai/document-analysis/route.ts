@@ -213,7 +213,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
       analysis: {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
         processingTime: Date.now() - startTime
-      }
+      },
       validationNotes: 'Erro durante análise automática. Revisão manual necessária.',
       processingTime: Date.now() - startTime
     }

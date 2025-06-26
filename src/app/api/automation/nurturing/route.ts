@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Verificar se já existe sequência ativa
     const existingSequence = await prisma.automationLog.findFirst({
       where: {
-        clientId: validatedData.clientId
+        clientId: validatedData.clientId,
         type: 'NURTURING_SEQUENCE',
         executedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias

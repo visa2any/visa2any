@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 // Analisar trigger comportamental e decidir ação
 async function analyzeBehavioralTrigger(data: any) {
   const analysis = {
-    shouldTrigger: false
+    shouldTrigger: false,
     action: '',
     message: '',
     priority: 'low' as 'low' | 'medium' | 'high',
