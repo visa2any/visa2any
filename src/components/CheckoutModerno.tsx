@@ -297,8 +297,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   
   // Cálculo das economias
   const getAdultGroupSavings = () => {
-    // Sempre calcular se tem 4+ adultos
- independente do supportsQuantity para display
+    // Sempre calcular se tem 4+ adultos, independente do supportsQuantity para display
     if (currentAdults < 4) return 0
     const originalTotal = currentAdults * getBaseAdultPrice()
     const discountedTotal = currentAdults * getFinalAdultPrice()

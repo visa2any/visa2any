@@ -112,8 +112,7 @@ export default function SettingsPage() {
       const mockConfig: SystemConfig = {
         general: {
           siteName: 'Visa2Any Admin',
-          siteUrl: 'https://visa2any.com'
-
+          siteUrl: 'https://visa2any.com',
           timezone: 'America/Sao_Paulo',
           language: 'pt-BR',
           maintenanceMode: false

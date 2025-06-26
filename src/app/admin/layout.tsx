@@ -77,8 +77,7 @@ function AdminLayoutContent({
   }, [router, pathname])
 
   useEffect(() => {
-    // Se estivermos na página de login
- não fazer verificação
+    // Se estivermos na página de login, não fazer verificação
     if (isLoginPage) {
       setIsLoading(false)
       return

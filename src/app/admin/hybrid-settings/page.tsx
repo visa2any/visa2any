@@ -101,8 +101,7 @@ export default function HybridSettingsPage() {
       serviceFee: 150,
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
-      officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment'
-
+      officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment',
       isActive: true
     },
     {
