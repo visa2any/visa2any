@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     for (const field of requiredApplicantInfo) {
       if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {
         return NextResponse.json(
-          { error: `Campo applicantInfo.${field} é obrigatório` }
+          { error: `Campo applicantInfo.${field} é obrigatório` },
           { status: 400 }
         )
       }

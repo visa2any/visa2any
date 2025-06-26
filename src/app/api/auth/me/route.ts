@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     
     // Retornar dados do usuário
     return NextResponse.json({
-      user: user
+      user: user,
       data: user
     })
 

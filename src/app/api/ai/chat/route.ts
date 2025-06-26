@@ -457,7 +457,7 @@ ${docList}
 - ✅ Checklist personalizado  
 - ✅ Dicas para aumentar aprovação
 
-Quer uma análise completa do seu perfil?`
+Quer uma análise completa do seu perfil?`,
       suggestions: [
         'Fazer análise completa',
         'Ver dicas de aprovação',
