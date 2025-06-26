@@ -89,13 +89,13 @@ export async function GET(
     // Mock notes data
     const mockNotes = [
       {
-        id: 'note_1'
+        id: 'note_1',
         clientId,
         content: 'Cliente tem experiência internacional relevante. Sugerir visto O-1 como alternativa.',
         author: 'Carlos Santos',
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-      }
+      },
       {
         id: 'note_2',
         clientId,

@@ -194,13 +194,13 @@ function getNurturingSequence(type: string, client: any) {
         { day: 5, hour: 10, template: 'consultation_offer', subject: 'Quer acelerar? Fale com especialista' },
         { day: 7, hour: 16, template: 'assessment_final', subject: 'Não deixe sua análise esquecida' }
       ],
-    }
+    },
 
     cart_abandonment: {
       name: 'Recuperação Carrinho',
       duration: 3,
       emails: [
-        { day: 0, hour: 2, template: 'cart_reminder', subject: 'Esqueceu algo? Seu carrinho está esperando' }
+        { day: 0, hour: 2, template: 'cart_reminder', subject: 'Esqueceu algo? Seu carrinho está esperando' },
         { day: 1, hour: 12, template: 'cart_discount', subject: '15% OFF para finalizar hoje!' }
         { day: 2, hour: 18, template: 'cart_urgency', subject: 'Último dia: itens saindo do estoque' }
       ],

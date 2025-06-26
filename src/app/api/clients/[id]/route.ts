@@ -147,9 +147,9 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }
@@ -223,9 +223,9 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
-          error: 'Dados inválidos'
+          error: 'Dados inválidos',
           details: error.errors
-        }
+        },
         { status: 400 }
       )
     }

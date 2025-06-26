@@ -492,10 +492,10 @@ async function analyzePoliceClearance(document: any, ocrResult: any) {
 
 async function analyzeGenericDocument(document: any, ocrResult: any) {
   return {
-    isValid: true
+    isValid: true,
     needsReview: true,
     confidence: 0.6,
-    extractedData: {}
+    extractedData: {},
     issues: ['Tipo de documento requer análise manual'],
     recommendations: ['Solicitar revisão de especialista']
   }

@@ -163,8 +163,8 @@ async function performAdvancedSearch(query: string) {
           { author: { contains: query, mode: 'insensitive' } },
           // Busca individual por palavras
           ...searchWords.flatMap(word => [
-            { title: { contains: word, mode: 'insensitive' } }
-            { excerpt: { contains: word, mode: 'insensitive' } }
+            { title: { contains: word, mode: 'insensitive' } },
+            { excerpt: { contains: word, mode: 'insensitive' } },
             { country: { contains: word, mode: 'insensitive' } }
           ])
         ],
