@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
                 uk: '25 min',
                 germany: '45 min',
                 france: '35 min'
-              }
+              },
               status: 'Configurado'
             },
             notifications: {

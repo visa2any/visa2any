@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se cliente existe
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+      where: { id: validatedData.clientId },
       include: {
         interactions: {
           orderBy: { createdAt: 'desc' },

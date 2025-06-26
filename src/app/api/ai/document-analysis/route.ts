@@ -206,7 +206,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
   } catch (error) {
     console.error('Erro na análise avançada:', error)
     return {
-      isValid: false
+      isValid: false,
       needsReview: true,
       confidence: 0,
       ocrText: '',
