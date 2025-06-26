@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     console.error('Erro ao iniciar sequência de nurturing:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

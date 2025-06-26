@@ -15,15 +15,15 @@ export async function POST(
 
     if (!clientId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
+        { error: 'Dados inválidos' },
+        { status: 400 }
     )
     }
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
+        { error: 'Dados inválidos' },
+        { status: 400 }
     )
     }
 
@@ -81,8 +81,8 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json(
-      { error: 'Dados inválidos' }
-      { status: 400 }
+        { error: 'Dados inválidos' },
+        { status: 400 }
     )
     }
 

@@ -36,11 +36,11 @@ export async function GET(
     const { id } = params
 
     const client = await prisma.client.findUnique({
-      where: { id }
+      where: { id },
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true, role: true }
-        }
+        },
         consultations: {
           orderBy: { createdAt: 'desc' },
           include: {
@@ -48,7 +48,7 @@ export async function GET(
               select: { id: true, name: true, email: true }
             }
           }
-        }
+        },
         payments: {
           orderBy: { createdAt: 'desc' }
         }
