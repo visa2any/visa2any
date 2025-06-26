@@ -67,7 +67,8 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
     )
   }
 
-  // Variant 'full',  return (
+  // Variant 'full'
+  return (
     <div className={`bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 rounded-2xl p-8 text-white shadow-2xl ${className}`}>
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-8 items-center">

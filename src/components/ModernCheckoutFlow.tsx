@@ -85,7 +85,8 @@ export default function ModernCheckoutFlow({
     newsletter: true
   })
 
-  // Upsells inteligentes baseados no produto,  const getUpsellOffers = (): UpsellOffer[] => {
+  // Upsells inteligentes baseados no produto
+  const getUpsellOffers = (): UpsellOffer[] => {
     const offers: UpsellOffer[] = []
 
     if (productId.includes('vip')) {

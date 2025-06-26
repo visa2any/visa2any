@@ -61,7 +61,8 @@ export default function AffiliatesAdminPage() {
   const loadData = async () => {
     setLoading(true)
     try {
-      // Carregar dados mockados por enquanto,      setStats({
+      // Carregar dados mockados por enquanto
+      setStats({
         totalAffiliates: 247,
         activeAffiliates: 189,
         pendingAffiliates: 12,

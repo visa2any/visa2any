@@ -198,7 +198,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     variant = 'default'
   } = props
   
-  // Use first product for calculations if new interface, otherwise use legacy props,  const currentProduct = isNewInterface ? products[0] : {
+  // Use first product for calculations if new interface, otherwise use legacy props
+  const currentProduct = isNewInterface ? products[0] : {
     id: productId,
     name: productName,
     description,

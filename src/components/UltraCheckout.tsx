@@ -125,7 +125,8 @@ export default function UltraCheckout({
 
   const productData = PRODUCT_DATA[productId] || {}
 
-  // Auto-save functionality,  useEffect(() => {
+  // Auto-save functionality
+  useEffect(() => {
     const savedData = localStorage.getItem(`checkout_${productId}`)
     if (savedData) {
       try {
