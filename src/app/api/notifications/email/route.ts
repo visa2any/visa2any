@@ -1,22 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
+import { NextRequest, NextResponse } from 'next/server',import { prisma } from '@/lib/prisma',import { z } from 'zod'
 
-// Schema para envio de email
-const sendEmailSchema = z.object({
-  to: z.string().email('Email é obrigatório')
-  subject: z.string().min(1, 'Assunto é obrigatório').optional()
-  message: z.string().min(1, 'Mensagem é obrigatória').optional()
-  template: z.string().optional()
-  clientId: z.string().optional()
-  variables: z.record(z.any()).optional()
+// Schema para envio de email,const sendEmailSchema = z.object({,  to: z.string().email('Email é obrigatório'),  subject: z.string().min(1, 'Assunto é obrigatório').optional(),  message: z.string().min(1, 'Mensagem é obrigatória').optional(),  template: z.string().optional(),  clientId: z.string().optional(),  variables: z.record(z.any()).optional()
 })
 
-// Templates de email prontos
-const EMAIL_TEMPLATES = {
-  payment_confirmation: {
-    subject: '✅ Pagamento Confirmado - Visa2Any'
-    html: `
+// Templates de email prontos,const EMAIL_TEMPLATES = {,  payment_confirmation: {,    subject: '✅ Pagamento Confirmado - Visa2Any',    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
           <h1 style="margin: 0; font-size: 28px;">🎉 Pagamento Confirmado!</h1>
@@ -48,10 +35,7 @@ const EMAIL_TEMPLATES = {
         </div>
       </div>
     `
-  }
-  booking_confirmation: {
-    subject: '📅 Agendamento Confirmado - Visa2Any', 
-    html: `
+  },  booking_confirmation: {,    subject: '📅 Agendamento Confirmado - Visa2Any', ,    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
           <h1 style="margin: 0; font-size: 28px;">📅 Agendamento Confirmado!</h1>
@@ -79,169 +63,71 @@ const EMAIL_TEMPLATES = {
   }
 }
 
-// POST /api/notifications/email - Enviar email
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const validatedData = sendEmailSchema.parse(body)
-
-    let emailContent = {
-      subject: validatedData.subject || 'Mensagem da Visa2Any'
-      html: validatedData.message || ''
+// POST /api/notifications/email - Enviar email,export async function POST(request: NextRequest) {,  try {,    const body = await request.json(),    const validatedData = sendEmailSchema.parse(body),
+    let emailContent = {,      subject: validatedData.subject || 'Mensagem da Visa2Any',      html: validatedData.message || ''
     }
 
-    // Se usar template, carregar template e processar variáveis
-    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
-      const template = EMAIL_TEMPLATES[validatedData.template]
-      emailContent.subject = template.subject
-      emailContent.html = template.html
+    // Se usar template, carregar template e processar variáveis,    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {,      const template = EMAIL_TEMPLATES[validatedData.template]
+      emailContent.subject = template.subject,      emailContent.html = template.html
 
-      // Processar variáveis no template
-      if (validatedData.variables) {
-        Object.entries(validatedData.variables).forEach(([key, value]) => {
-          emailContent.html = emailContent.html.replace(
-            new RegExp(`{${key}}`, 'g') 
-            String(value)
-          )
-          emailContent.subject = emailContent.subject.replace(
-            new RegExp(`{${key}}`, 'g') 
-            String(value)
+      // Processar variáveis no template,      if (validatedData.variables) {,        Object.entries(validatedData.variables).forEach(([key, value]) => {,          emailContent.html = emailContent.html.replace(,            new RegExp(`{${key}}`, 'g') ,            String(value)
+          ),          emailContent.subject = emailContent.subject.replace(,            new RegExp(`{${key}}`, 'g') ,            String(value)
           )
         })
       }
     }
 
-    // Enviar email usando o provedor configurado
-    const emailResult = await sendEmailWithProvider({
-      to: validatedData.to
-      subject: emailContent.subject
-      html: emailContent.html
+    // Enviar email usando o provedor configurado,    const emailResult = await sendEmailWithProvider({,      to: validatedData.to,      subject: emailContent.subject,      html: emailContent.html
     })
 
-    // Log do envio
-    await prisma.automationLog.create({
-      data: {
-        type: 'EMAIL'
-        action: 'send_email'
-        success: emailResult.success
-        clientId: validatedData.clientId || null
-        error: emailResult.error || null
-        details: {
-          timestamp: new Date().toISOString()
-          action: 'automated_action'
+    // Log do envio,    await prisma.automationLog.create({,      data: {,        type: 'EMAIL',        action: 'send_email',        success: emailResult.success,        clientId: validatedData.clientId || null,        error: emailResult.error || null,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
+    }),
+    return NextResponse.json({,      data: {,        messageId: emailResult.messageId,        sent: emailResult.success,        provider: emailResult.provider,        to: validatedData.to
+      },      message: 'Email enviado com sucesso'
     })
 
-    return NextResponse.json({
-      data: {
-        messageId: emailResult.messageId
-        sent: emailResult.success
-        provider: emailResult.provider
-        to: validatedData.to
-      }
-      message: 'Email enviado com sucesso'
-    })
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Dados inválidos'
-          details: error.errors
-        }
-        { status: 400 }
+  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+        },        { status: 400 }
       )
-    }
-
-    console.error('Erro ao enviar email:', error)
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' }
-      { status: 500 }
+    },
+    console.error('Erro ao enviar email:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
     )
   }
 }
 
-// Função para enviar email usando SMTP Hostinger configurado
-async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
-  // Usar SMTP Hostinger (já configurado)
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    try {
-      const nodemailer = require('nodemailer')
-      
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST
-        port: parseInt(process.env.SMTP_PORT || '587')
-        secure: process.env.SMTP_SECURE === 'true'
-        auth: {
-          user: process.env.SMTP_USER
-          pass: process.env.SMTP_PASS
+// Função para enviar email usando SMTP Hostinger configurado,async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
+  // Usar SMTP Hostinger (já configurado),  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {,    try {,      const nodemailer = require('nodemailer'),      
+      const transporter = nodemailer.createTransport({,        host: process.env.SMTP_HOST,        port: parseInt(process.env.SMTP_PORT || '587'),        secure: process.env.SMTP_SECURE === 'true',        auth: {,          user: process.env.SMTP_USER,          pass: process.env.SMTP_PASS
         }
-      })
-
-      const result = await transporter.sendMail({
-        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`
-        to: to
-        subject: subject
-        html: html
-      })
-
-      console.log('✅ Email enviado via Hostinger:', result.messageId)
-      
-      return {
-        messageId: result.messageId
-        provider: 'hostinger_smtp'
+      }),
+      const result = await transporter.sendMail({,        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`,        to: to,        subject: subject,        html: html
+      }),
+      console.log('✅ Email enviado via Hostinger:', result.messageId),      
+      return {,        messageId: result.messageId,        provider: 'hostinger_smtp'
       }
-    } catch (error) {
-      console.error('❌ Erro SMTP Hostinger:', error)
+    } catch (error) {,      console.error('❌ Erro SMTP Hostinger:', error)
     }
   }
 
-  // Fallback: Tentar SendGrid se configurado
-  if (process.env.SENDGRID_API_KEY) {
-    try {
-      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-        method: 'POST'
-        headers: {
-          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`
-          'Content-Type': 'application/json'
-        }
-        body: JSON.stringify({
-          personalizations: [{
-            to: [{ email: to }]
+  // Fallback: Tentar SendGrid se configurado,  if (process.env.SENDGRID_API_KEY) {,    try {,      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {,        method: 'POST',        headers: {,          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,          'Content-Type': 'application/json'
+        },        body: JSON.stringify({,          personalizations: [{,            to: [{ email: to }]
             subject: subject
           }]
-          from: {
-            email: process.env.FROM_EMAIL || 'info@visa2any.com'
-            name: process.env.FROM_NAME || 'Visa2Any'
-          }
-          content: [{
-            type: 'text/html'
-            value: html
+          from: {,            email: process.env.FROM_EMAIL || 'info@visa2any.com',            name: process.env.FROM_NAME || 'Visa2Any'
+          },          content: [{,            type: 'text/html',            value: html
           }]
         })
-      })
-
-      if (response.ok) {
-        return {
-          messageId: `sg_${Date.now()}`
-          provider: 'sendgrid'
+      }),
+      if (response.ok) {,        return {,          messageId: `sg_${Date.now()}`,          provider: 'sendgrid'
         }
       }
-    } catch (error) {
-      console.error('SendGrid falhou:', error)
+    } catch (error) {,      console.error('SendGrid falhou:', error)
     }
   }
 
-  // Se nada funcionou, simular envio
-  console.log('📧 SIMULANDO ENVIO DE EMAIL (SMTP não configurado):')
-  console.log('Para:', to)
-  console.log('Assunto:', subject)
-  console.log('De:', process.env.FROM_EMAIL)
-  console.log('---')
-
-  return {
-    messageId: `sim_${Date.now()}`
-    provider: 'simulation'
+  // Se nada funcionou, simular envio,  console.log('📧 SIMULANDO ENVIO DE EMAIL (SMTP não configurado):'),  console.log('Para:', to),  console.log('Assunto:', subject),  console.log('De:', process.env.FROM_EMAIL),  console.log('---'),
+  return {,    messageId: `sim_${Date.now()}`,    provider: 'simulation'
   }
 }
