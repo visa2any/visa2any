@@ -470,10 +470,10 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
 // Análises genéricas para outros tipos
 async function analyzeBirthCertificate(document: any, ocrResult: any) {
   return {
-    isValid: true
+    isValid: true,
     needsReview: false,
     confidence: 0.8,
-    extractedData: {}
+    extractedData: {},
     issues: [],
     recommendations: ['Verificar se precisa de apostilamento']
   }

@@ -116,8 +116,8 @@ export async function PATCH(
 
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
-      where: { id }
-      data: validatedData
+      where: { id },
+      data: validatedData,
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true }
@@ -192,8 +192,8 @@ export async function PUT(
 
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
-      where: { id }
-      data: validatedData
+      where: { id },
+      data: validatedData,
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true }

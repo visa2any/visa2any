@@ -95,7 +95,7 @@ async function generateSuggestions(query: string) {
       },
       select: {
         category: true
-      }
+      },
       distinct: ['category'],
       take: 3
     })

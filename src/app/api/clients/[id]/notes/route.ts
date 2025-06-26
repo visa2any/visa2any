@@ -56,7 +56,7 @@ export async function POST(
     }
 
     return NextResponse.json({
-      message: 'Note added successfully'
+      message: 'Note added successfully',
       data: {
         note: newNote,
         timelineEntry: timelineEntry

@@ -174,12 +174,12 @@ function getNurturingSequence(type: string, client: any) {
       name: 'Boas-vindas para Lead',
       duration: 14,
       emails: [
-        { day: 0, hour: 2, template: 'welcome_immediate', subject: 'Bem-vindo! Seu material está aqui 🎁' }
-        { day: 1, hour: 10, template: 'education_1', subject: 'Os 3 erros mais comuns em vistos (evite!)' }
-        { day: 3, hour: 14, template: 'social_proof', subject: 'Como Maria conseguiu seu visto em 45 dias' }
-        { day: 5, hour: 11, template: 'education_2', subject: 'Checklist: está pronto para aplicar?' }
-        { day: 7, hour: 16, template: 'soft_sell', subject: 'Pronto para acelerar seu processo?' }
-        { day: 10, hour: 13, template: 'urgency', subject: 'Últimas vagas - não perca!' }
+        { day: 0, hour: 2, template: 'welcome_immediate', subject: 'Bem-vindo! Seu material está aqui 🎁' },
+        { day: 1, hour: 10, template: 'education_1', subject: 'Os 3 erros mais comuns em vistos (evite!)' },
+        { day: 3, hour: 14, template: 'social_proof', subject: 'Como Maria conseguiu seu visto em 45 dias' },
+        { day: 5, hour: 11, template: 'education_2', subject: 'Checklist: está pronto para aplicar?' },
+        { day: 7, hour: 16, template: 'soft_sell', subject: 'Pronto para acelerar seu processo?' },
+        { day: 10, hour: 13, template: 'urgency', subject: 'Últimas vagas - não perca!' },
         { day: 14, hour: 15, template: 'last_chance', subject: 'Última chance: oferta especial expira hoje' }
       ],
     }
