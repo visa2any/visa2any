@@ -79,7 +79,7 @@ async function generateSuggestions(query: string) {
       select: {
         country: true,
         flag: true
-      }
+      },
       distinct: ['country'],
       take: 3
     })

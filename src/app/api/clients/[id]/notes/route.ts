@@ -47,8 +47,8 @@ export async function POST(
       id: `timeline_${Date.now()}`,
       type: 'note',
       title: 'Nota adicionada',
-      description: content.trim()
-      timestamp: new Date().toISOString()
+      description: content.trim(),
+      timestamp: new Date().toISOString(),
       author: 'Current User',
       metadata: {
         noteId: noteId

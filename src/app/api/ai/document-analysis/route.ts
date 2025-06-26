@@ -458,9 +458,9 @@ async function analyzeWorkCertificate(document: any, ocrResult: any) {
   }
   
   return {
-    isValid: issues.length < 2
+    isValid: issues.length < 2,
     needsReview: issues.length > 0,
-    confidence: Math.max(confidence, 0.1)
+    confidence: Math.max(confidence, 0.1),
     extractedData: fields,
     issues: issues,
     recommendations: ['Verificar se atende tempo mínimo de experiência']

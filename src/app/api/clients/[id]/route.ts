@@ -80,7 +80,7 @@ export async function GET(
   } catch (error) {
     console.error('Erro ao buscar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -156,7 +156,7 @@ export async function PATCH(
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -232,7 +232,7 @@ export async function PUT(
 
     console.error('Erro ao atualizar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -287,7 +287,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Erro ao deletar cliente:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' }
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
