@@ -3,7 +3,9 @@ import { partnerIntegrationService, PartnerBookingRequest } from '@/lib/partner-
 
 // GET - Listar parceiros disponíveis
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const country =  
 const action = searchParams.get('action'),
     if (action === 'status') {
@@ -43,19 +45,24 @@ const urgency = searchParams.get('urgency') || 'normal',
 
 // POST - Fazer agendamento via parceiro
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body: PartnerBookingRequest = await request.json()
 
     // Validação dos campos obrigatórios
 
-    const requiredFields = ['applicantInfo', 'visaInfo'],    for (const field of requiredFields) {,      if (!body[field]) {,        return NextResponse.json(,          { error: `Campo ${field} é obrigatório` },          { status: 400 }
+    const requiredFields = ['applicantInfo', 'visaInfo']
+    for (const field of requiredFields) {
+    if (!body[field]) {,        return NextResponse.json(,          { error: `Campo ${field} é obrigatório` },          { status: 400 }
         )
       }
     }
 
     // Validar informações do aplicante
 
-    const requiredApplicantFields = ['fullName', 'email', 'nationality'],    for (const field of requiredApplicantFields) {,      if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {,        return NextResponse.json(,          { error: `Campo applicantInfo.${field} é obrigatório` },          { status: 400 }
+    const requiredApplicantFields = ['fullName', 'email', 'nationality']
+    for (const field of requiredApplicantFields) {
+    if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {,        return NextResponse.json(,          { error: `Campo applicantInfo.${field} é obrigatório` },          { status: 400 }
         )
       }
     }
@@ -68,7 +75,9 @@ export async function POST(request: NextRequest) {,  try {
 
     // Se partnerId não foi especificado
 
-    encontrar o melhor,    if (!body.partnerId) {,      const bestPartner = await partnerIntegrationService.findBestPartner(,        body.visaInfo.country,        body.visaInfo.visaType,        body.visaInfo.urgency
+    encontrar o melhor
+    if (!body.partnerId) {
+    const bestPartner = await partnerIntegrationService.findBestPartner(,        body.visaInfo.country,        body.visaInfo.visaType,        body.visaInfo.urgency
       ),
       if (!bestPartner) {,        return NextResponse.json(,          { error: 'Nenhum parceiro disponível para esta solicitação' },          { status: 400 }
         )

@@ -5,7 +5,9 @@ import { appointmentBookingService } from '@/lib/appointment-booking'
 
 export async function DELETE(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {,    const appointmentId =  
+) {
+try {
+const appointmentId =  
 const { searchParams } = new URL(request.url)
     const consulate = searchParams.get('consulate'),
     if (!consulate) {,      return NextResponse.json(,        { error: 'Parâmetro consulate é obrigatório' },        { status: 400 }

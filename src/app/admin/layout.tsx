@@ -79,7 +79,8 @@ function AdminLayoutContent({
 
   useEffect(() => {
     // Se estivermos na página de login
-    não fazer verificação,    if (isLoginPage) {
+    não fazer verificação
+    if (isLoginPage) {
       setIsLoading(false)
       return
     }
@@ -197,7 +198,8 @@ function AdminLayoutContent({
 
   // Para o dashboard unificado
 
-  usar layout sem sidebar,  if (pathname.startsWith('/admin/dashboard-unified')) {
+  usar layout sem sidebar
+  if (pathname.startsWith('/admin/dashboard-unified')) {
     return (
       <div className="min-h-screen" style={{ 
         background: 'linear-gradient(135deg, rgb(240 249 255) 0%, rgb(224 242 254) 25%, rgb(243 232 255) 50%, rgb(254 243 226) 75%, rgb(248 250 252) 100%)'

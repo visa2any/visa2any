@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const url =  
 const affiliateId = url.searchParams.get('affiliateId')
     const status =  
@@ -60,7 +61,8 @@ const skip = (page - 1) * limit
 
 // POST - Processar pagamento em lote
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { commissionIds, paymentMethod = 'PIX', notes } = body,
     if (!commissionIds || !Array.isArray(commissionIds) || commissionIds.length === 0) {,      return NextResponse.json({,        error: 'IDs de comissões são obrigatórios'
@@ -79,7 +81,9 @@ const { commissionIds, paymentMethod = 'PIX', notes } = body,
 
     // Agrupar comissões por afiliado
 
-    const groupedByAffiliate = commissions.reduce((acc, commission) => {,      const affiliateId = commission.affiliateId,      if (!acc[affiliateId]) {,        acc[affiliateId] = {,          affiliate: commission.affiliate,          commissions: []
+    const groupedByAffiliate = commissions.reduce((acc, commission) => {
+    const affiliateId = commission.affiliateId
+    if (!acc[affiliateId]) {,        acc[affiliateId] = {,          affiliate: commission.affiliate,          commissions: []
           totalAmount: 0
         }
       },      acc[affiliateId].commissions.push(commission),      acc[affiliateId].totalAmount += commission.amount,      return acc
@@ -88,7 +92,9 @@ const { commissionIds, paymentMethod = 'PIX', notes } = body,
     // Criar pagamentos para cada afiliado
 
     const payments = []
-    ,    for (const affiliateId of Object.keys(groupedByAffiliate)) {,      const group = groupedByAffiliate[affiliateId]
+    
+    for (const affiliateId of Object.keys(groupedByAffiliate)) {
+    const group = groupedByAffiliate[affiliateId]
       
       // Gerar código de referência único
       
@@ -133,13 +139,15 @@ const { commissionIds, paymentMethod = 'PIX', notes } = body,
 
 // PUT - Atualizar status de pagamento
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { paymentId, status, transactionId, receipt, notes } = body,
     if (!paymentId || !status) {,      return NextResponse.json({,        error: 'ID do pagamento e status são obrigatórios'
       }, { status: 400 })
     },
-    const validStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED'],    if (!validStatuses.includes(status)) {,      return NextResponse.json({,        error: 'Status inválido'
+    const validStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']
+    if (!validStatuses.includes(status)) {,      return NextResponse.json({,        error: 'Status inválido'
       }, { status: 400 })
     }
 
@@ -159,7 +167,8 @@ const { paymentId, status, transactionId, receipt, notes } = body,
 
     // Se pagamento foi completado
 
-    atualizar comissões e afiliado,    if (status === 'COMPLETED') {
+    atualizar comissões e afiliado
+    if (status === 'COMPLETED') {
       // Marcar comissões como pagas
       await prisma.affiliateCommission.updateMany({,        where: { paymentId },        data: {,          status: 'PAID',          paidAt: new Date()
         }
@@ -174,7 +183,8 @@ const { paymentId, status, transactionId, receipt, notes } = body,
 
     // Se pagamento falhou
 
-    reverter comissões,    if (status === 'FAILED' || status === 'CANCELLED') {,      await prisma.affiliateCommission.updateMany({,        where: { paymentId },        data: {,          status: 'PENDING',          paymentId: null
+    reverter comissões
+    if (status === 'FAILED' || status === 'CANCELLED') {,      await prisma.affiliateCommission.updateMany({,        where: { paymentId },        data: {,          status: 'PENDING',          paymentId: null
         }
       })
 
@@ -185,7 +195,8 @@ const { paymentId, status, transactionId, receipt, notes } = body,
       })
     }
 
-    // TODO: Enviar notificação para o afiliado,    // await sendPaymentNotification(payment)
+    // TODO: Enviar notificação para o afiliado
+    // await sendPaymentNotification(payment)
 
     return NextResponse.json({,      data: payment
     })

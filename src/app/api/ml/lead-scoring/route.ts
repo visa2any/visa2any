@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para análise de lead scoring,const leadScoringSchema = z.object({,  clientId: z.string().optional(),  profile: z.object({
+// Schema para análise de lead scoring
+const leadScoringSchema = z.object({,  clientId: z.string().optional(),  profile: z.object({
     // Dados demográficos
     age: z.number().optional(),    education: z.string().optional(),    income: z.string().optional(),    maritalStatus: z.string().optional()
     
@@ -26,13 +27,15 @@ import { z } from 'zod'
 
 // POST /api/ml/lead-scoring - Calcular lead score avançado
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const validatedData = leadScoringSchema.parse(body)
 
     // Buscar dados históricos do cliente se disponível
 
-    let clientData = null,    if (validatedData.clientId) {,      clientData = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          interactions: {,            orderBy: { createdAt: 'desc' },            take: 20
+    let clientData = null
+    if (validatedData.clientId) {,      clientData = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          interactions: {,            orderBy: { createdAt: 'desc' },            take: 20
           },          documents: true,          consultations: true,          payments: true
         }
       })
@@ -69,7 +72,8 @@ const validatedData = leadScoringSchema.parse(body)
       }
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -80,7 +84,9 @@ const validatedData = leadScoringSchema.parse(body)
 
 // GET /api/ml/lead-scoring/analytics - Analytics de lead scoring
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const period =  
 const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
 
@@ -115,7 +121,9 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
   }
 }
 
-// Algoritmo avançado de lead scoring,async function calculateAdvancedLeadScore(profile: any, clientData: any) {,  const breakdown = {,    demographic: 0,    behavioral: 0,    engagement: 0,    intent: 0,    fit: 0
+// Algoritmo avançado de lead scoring
+async function calculateAdvancedLeadScore(profile: any, clientData: any) {
+const breakdown = {,    demographic: 0,    behavioral: 0,    engagement: 0,    intent: 0,    fit: 0
   }
 
   // 1. SCORE DEMOGRÁFICO (0-20 pontos)
@@ -143,11 +151,14 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
   }
 }
 
-// Score demográfico,function calculateDemographicScore(profile: any): number {,  let score = 0
+// Score demográfico
+function calculateDemographicScore(profile: any): number {
+let score = 0
 
   // Idade (sweet spot: 25-45 anos)
 
-  if (profile.age) {,    if (profile.age >= 25 && profile.age <= 45) score += 5,    else if (profile.age >= 20 && profile.age <= 50) score += 3,    else score += 1
+  if (profile.age) {
+  if (profile.age >= 25 && profile.age <= 45) score += 5,    else if (profile.age >= 20 && profile.age <= 50) score += 3,    else score += 1
   }
 
   // Educação
@@ -167,7 +178,9 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
   return Math.min(score, 20)
 }
 
-// Score comportamental,function calculateBehavioralScore(profile: any, clientData: any): number {,  let score = 0
+// Score comportamental
+function calculateBehavioralScore(profile: any, clientData: any): number {
+let score = 0
 
   // Fonte de tráfego (qualidade)
 
@@ -176,7 +189,9 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
 
   // UTM tracking (campanhas específicas são melhores)
 
-  if (profile.utmMedium === 'cpc') score += 3,  if (profile.utmSource === 'google') score += 2,  if (profile.utmSource === 'facebook') score += 1
+  if (profile.utmMedium === 'cpc') score += 3
+  if (profile.utmSource === 'google') score += 2
+  if (profile.utmSource === 'facebook') score += 1
 
   // Device type (desktop users mais sérios)
 
@@ -184,35 +199,46 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
 
   // Histórico de interações
 
-  if (clientData?.interactions) {,    const interactionCount = clientData.interactions.length,    if (interactionCount > 10) score += 8,    else if (interactionCount > 5) score += 5,    else if (interactionCount > 2) score += 3
+  if (clientData?.interactions) {
+  const interactionCount = clientData.interactions.length
+  if (interactionCount > 10) score += 8,    else if (interactionCount > 5) score += 5,    else if (interactionCount > 2) score += 3
   },
   return Math.min(score, 25)
 }
 
-// Score de engagement,function calculateEngagementScore(profile: any, clientData: any): number {,  let score = 0
+// Score de engagement
+function calculateEngagementScore(profile: any, clientData: any): number {
+let score = 0
 
   // Page views (mais páginas = mais interesse)
 
-  if (profile.pageViews) {,    if (profile.pageViews > 10) score += 8,    else if (profile.pageViews > 5) score += 5,    else if (profile.pageViews > 2) score += 3
+  if (profile.pageViews) {
+  if (profile.pageViews > 10) score += 8,    else if (profile.pageViews > 5) score += 5,    else if (profile.pageViews > 2) score += 3
   }
 
   // Tempo no site (engagement profundo)
 
-  if (profile.timeOnSite) {,    const minutes = profile.timeOnSite / 60,    if (minutes > 15) score += 8,    else if (minutes > 8) score += 5,    else if (minutes > 3) score += 3
+  if (profile.timeOnSite) {
+  const minutes = profile.timeOnSite / 60
+  if (minutes > 15) score += 8,    else if (minutes > 8) score += 5,    else if (minutes > 3) score += 3
   }
 
   // Email engagement
 
-  if (profile.emailOpens > 3) score += 4,  if (profile.clickThroughs > 1) score += 5
+  if (profile.emailOpens > 3) score += 4
+  if (profile.clickThroughs > 1) score += 5
 
   // Visitas à página de preços (alta intenção)
 
-  if (profile.pricingPageVisits) {,    if (profile.pricingPageVisits > 3) score += 5,    else if (profile.pricingPageVisits > 1) score += 3
+  if (profile.pricingPageVisits) {
+  if (profile.pricingPageVisits > 3) score += 5,    else if (profile.pricingPageVisits > 1) score += 3
   },
   return Math.min(score, 25)
 }
 
-// Score de intenção,function calculateIntentScore(profile: any, clientData: any): number {,  let score = 0
+// Score de intenção
+function calculateIntentScore(profile: any, clientData: any): number {
+let score = 0
 
   // Assessment completado (alta intenção)
 
@@ -233,7 +259,9 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
   return Math.min(score, 20)
 }
 
-// Score de fit (produto-cliente),function calculateFitScore(profile: any): number {,  let score = 0
+// Score de fit (produto-cliente)
+function calculateFitScore(profile: any): number {
+let score = 0
 
   // Países com alta taxa de aprovação
 
@@ -247,14 +275,24 @@ const startDate = new Date(),    startDate.setDate(startDate.getDate() - period)
   return Math.min(score, 10)
 }
 
-// Identificar fatores-chave,function identifyKeyFactors(breakdown: any, profile: any): string[] {,  const factors = []
+// Identificar fatores-chave
+function identifyKeyFactors(breakdown: any, profile: any): string[] {
+const factors = []
 
-  if (breakdown.demographic >= 15) factors.push('Perfil demográfico ideal'),  if (breakdown.behavioral >= 20) factors.push('Comportamento de alta qualidade'),  if (breakdown.engagement >= 20) factors.push('Alto engagement'),  if (breakdown.intent >= 15) factors.push('Alta intenção de compra'),  if (breakdown.fit >= 8) factors.push('Excelente fit produto-cliente'),
-  if (profile.assessmentCompleted) factors.push('Assessment completado'),  if (profile.pricingPageVisits > 2) factors.push('Múltiplas visitas ao pricing'),  if (profile.timeOnSite > 600) factors.push('Sessão longa (10+ min)'),
+  if (breakdown.demographic >= 15) factors.push('Perfil demográfico ideal')
+  if (breakdown.behavioral >= 20) factors.push('Comportamento de alta qualidade')
+  if (breakdown.engagement >= 20) factors.push('Alto engagement')
+  if (breakdown.intent >= 15) factors.push('Alta intenção de compra')
+  if (breakdown.fit >= 8) factors.push('Excelente fit produto-cliente'),
+  if (profile.assessmentCompleted) factors.push('Assessment completado')
+  if (profile.pricingPageVisits > 2) factors.push('Múltiplas visitas ao pricing')
+  if (profile.timeOnSite > 600) factors.push('Sessão longa (10+ min)'),
   return factors
 }
 
-// Ações recomendadas baseadas no score,function getRecommendedActions(scoringResult: any): any[] {,  const score =  
+// Ações recomendadas baseadas no score
+function getRecommendedActions(scoringResult: any): any[] {
+const score =  
 const actions = [],
   if (score >= 80) {,    actions.push({,      priority: 'URGENT',      action: 'immediate_call',      description: 'Ligar imediatamente - lead quente',      sla: '15 minutos'
     }),    actions.push({,      priority: 'HIGH',      action: 'premium_offer',      description: 'Oferecer desconto premium',      sla: '1 hora'
@@ -271,20 +309,27 @@ const actions = [],
   return actions
 }
 
-// Calcular probabilidade de conversão,function calculateConversionProbability(scoringResult: any, clientData: any): number {,  let probability = 0
+// Calcular probabilidade de conversão
+function calculateConversionProbability(scoringResult: any, clientData: any): number {
+let probability = 0
 
   // Base no score
 
-  const score = scoringResult.totalScore,  if (score >= 80) probability = 85,  else if (score >= 60) probability = 65,  else if (score >= 40) probability = 35,  else if (score >= 20) probability = 15,  else probability = 5
+  const score = scoringResult.totalScore
+  if (score >= 80) probability = 85,  else if (score >= 60) probability = 65,  else if (score >= 40) probability = 35,  else if (score >= 20) probability = 15,  else probability = 5
 
   // Ajustes baseados em dados históricos
 
-  if (clientData?.interactions?.length > 5) probability += 10,  if (clientData?.documents?.length > 0) probability += 15,  if (clientData?.consultations?.length > 0) probability += 20
+  if (clientData?.interactions?.length > 5) probability += 10
+  if (clientData?.documents?.length > 0) probability += 15
+  if (clientData?.consultations?.length > 0) probability += 20
 
   return Math.min(probability, 95)
 }
 
-// Estimar LTV do cliente,function calculateEstimatedLTV(profile: any, scoringResult: any): number {,  let baseLTV = 0
+// Estimar LTV do cliente
+function calculateEstimatedLTV(profile: any, scoringResult: any): number {
+let baseLTV = 0
 
   // LTV base por país
 
@@ -304,14 +349,18 @@ const actions = [],
   return Math.round(baseLTV)
 }
 
-// Atualizar score do cliente,async function updateClientScore(clientId: string, scoringResult: any) {,  try {,    await prisma.client.update({,      where: { id: clientId },      data: {,        leadScore: scoringResult.totalScore,        lastScoredAt: new Date()
+// Atualizar score do cliente
+async function updateClientScore(clientId: string, scoringResult: any) {
+try {,    await prisma.client.update({,      where: { id: clientId },      data: {,        leadScore: scoringResult.totalScore,        lastScoredAt: new Date()
       }
     })
   } catch (error) {,    console.error('Erro ao atualizar score do cliente:', error)
   }
 }
 
-// Gerar insights,function generateInsights(scoringResult: any, clientData: any): string[] {,  const insights = []
+// Gerar insights
+function generateInsights(scoringResult: any, clientData: any): string[] {
+const insights = []
   const score = scoringResult.totalScore,
   if (score >= 80) {,    insights.push('🔥 Lead de altíssima qualidade - ação imediata recomendada')
   } else if (score >= 60) {,    insights.push('⭐ Lead qualificado - alta probabilidade de conversão')
@@ -325,12 +374,16 @@ const actions = [],
   return insights
 }
 
-// Funções auxiliares para analytics,function analyzeScoreDistribution(data: any[]) {,  const scores = data.map(d => d.details?.leadScore || 0),  
+// Funções auxiliares para analytics
+function analyzeScoreDistribution(data: any[]) {
+const scores = data.map(d => d.details?.leadScore || 0),  
   return {,    average: scores.reduce((sum, score) => sum + score, 0) / scores.length,    highQuality: scores.filter(score => score >= 70).length,    medium: scores.filter(score => score >= 40 && score < 70).length,    low: scores.filter(score => score < 40).length
   }
 },
 async function calculateModelAccuracy(data: any[]) {
-  // Calcular accuracy comparando previsões com conversões reais,  // Em produção, implementar análise mais sofisticada
+  // Calcular accuracy comparando previsões com conversões reais
+  // Em produção
+  implementar análise mais sofisticada
   return 78.5 // Placeholder
 },
 function analyzeConversionFactors(data: any[]) {
@@ -343,5 +396,10 @@ function generateTrends(data: any[]) {
   return {,    averageScoreImprovement: '+12%',    conversionRateImprovement: '+23%',    topPerformingSource: 'organic'
   }
 },
-function getScoreGrade(score: number): string {,  if (score >= 80) return 'A+',  if (score >= 70) return 'A',  if (score >= 60) return 'B+',  if (score >= 50) return 'B',  if (score >= 40) return 'C',  return 'D'
+function getScoreGrade(score: number): string {
+if (score >= 80) return 'A+'
+if (score >= 70) return 'A'
+if (score >= 60) return 'B+'
+if (score >= 50) return 'B'
+if (score >= 40) return 'C',  return 'D'
 }

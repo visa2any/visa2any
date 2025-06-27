@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { type, data, source } = body
     
     // Verify webhook secret
     
-    const secret = request.headers.get('x-n8n-webhook-secret'),    if (secret !== process.env.N8N_WEBHOOK_SECRET) {,      return NextResponse.json(,        { status: 401 }
+    const secret = request.headers.get('x-n8n-webhook-secret')
+    if (secret !== process.env.N8N_WEBHOOK_SECRET) {,      return NextResponse.json(,        { status: 401 }
       )
     }
 
@@ -28,7 +31,8 @@ const { type, data, source } = body
     )
   }
 },
-async function handleLegalChange(data: any) {,  const { country, changeType, description, affectedVisaTypes, sourceUrl, priority } = data
+async function handleLegalChange(data: any) {
+const { country, changeType, description, affectedVisaTypes, sourceUrl, priority } = data
   
   // Log the legal change
   
@@ -39,7 +43,8 @@ async function handleLegalChange(data: any) {,  const { country, changeType, des
 
   // Find affected clients
 
-  if (affectedVisaTypes?.length > 0) {,    const affectedClients = await prisma.client.findMany({,      where: {,        targetCountry: country,        visaType: { in: affectedVisaTypes },        status: { in: ['ACTIVE', 'IN_PROGRESS', 'DOCUMENTS_PENDING'] }
+  if (affectedVisaTypes?.length > 0) {
+  const affectedClients = await prisma.client.findMany({,      where: {,        targetCountry: country,        visaType: { in: affectedVisaTypes },        status: { in: ['ACTIVE', 'IN_PROGRESS', 'DOCUMENTS_PENDING'] }
       },      select: { id: true, name: true, email: true, phone: true }
     })
 
@@ -52,7 +57,8 @@ async function handleLegalChange(data: any) {,  const { country, changeType, des
     }
   }
 },
-async function handleConsularSlot(data: any) {,  const { country, consulate, city, availableSlots, visaType, earliestDate } = data
+async function handleConsularSlot(data: any) {
+const { country, consulate, city, availableSlots, visaType, earliestDate } = data
   
   // Log the slot availability
   
@@ -76,12 +82,15 @@ async function handleConsularSlot(data: any) {,  const { country, consulate, cit
 
     // Also send SMS backup
 
-    await prisma.interaction.create({,      data: {,        clientId: client.id,        type: 'URGENT_NOTIFICATION',        channel: 'SMS',        content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,        metadata: { slotData: data, priority: 'URGENT' },        scheduledAt: new Date(Date.now() + 2 * 60 * 1000), // 2 min delay,        status: 'PENDING'
+    await prisma.interaction.create({,      data: {,        clientId: client.id,        type: 'URGENT_NOTIFICATION',        channel: 'SMS',        content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,        metadata: { slotData: data, priority: 'URGENT' },        scheduledAt: new Date(Date.now() + 2 * 60 * 1000)
+    // 2 min delay
+    status: 'PENDING'
       }
     })
   }
 },
-async function handleDocumentValidation(data: any) {,  const { clientId, documentId, validationResult, issues, recommendations } = data
+async function handleDocumentValidation(data: any) {
+const { clientId, documentId, validationResult, issues, recommendations } = data
   
   // Update document status
   
@@ -101,9 +110,11 @@ async function handleDocumentValidation(data: any) {,  const { clientId, documen
 
   // Create client notification
 
-  if (clientId) {,    const client = await prisma.client.findUnique({,      where: { id: clientId },      select: { name: true, email: true }
+  if (clientId) {
+  const client = await prisma.client.findUnique({,      where: { id: clientId },      select: { name: true, email: true }
     }),
-    if (client) {,      const message = validationResult.isValid 
+    if (client) {
+    const message = validationResult.isValid 
         ? `✅ Documento validado com sucesso! Seu processo está avançando.`
         : `❌ Documento precisa de correções: ${issues?.join(', ')}. Recomendações: ${recommendations?.join(', ')}`,
       await prisma.interaction.create({,        data: {,          clientId,          type: 'DOCUMENT_UPDATE',          channel: 'EMAIL',          content: message,          metadata: {,            documentId,            validationResult,            issues,            recommendations
@@ -113,7 +124,8 @@ async function handleDocumentValidation(data: any) {,  const { clientId, documen
     }
   }
 },
-async function handleClientRiskAlert(data: any) {,  const { clientId, riskType, riskScore, factors, recommendations } = data
+async function handleClientRiskAlert(data: any) {
+const { clientId, riskType, riskScore, factors, recommendations } = data
   
   // Log risk alert
   
@@ -131,13 +143,17 @@ async function handleClientRiskAlert(data: any) {,  const { clientId, riskType, 
 
   // If high risk
 
-  schedule immediate consultant contact,  if (riskScore > 80) {,    await prisma.consultation.create({,      data: {,        clientId,        type: 'EMERGENCY',        status: 'SCHEDULED',        notes: `Consulta de emergência - Cliente em alto risco: ${riskType}`,        scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now,        metadata: {,          triggerType: 'RISK_ALERT',          riskData: data
+  schedule immediate consultant contact
+  if (riskScore > 80) {,    await prisma.consultation.create({,      data: {,        clientId,        type: 'EMERGENCY',        status: 'SCHEDULED',        notes: `Consulta de emergência - Cliente em alto risco: ${riskType}`,        scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000)
+  // 2 hours from now
+  metadata: {,          triggerType: 'RISK_ALERT',          riskData: data
         }
       }
     })
   }
 },
-async function handleAutomationCompleted(data: any) {,  const { workflowId, workflowName, clientId, result, metrics } = data
+async function handleAutomationCompleted(data: any) {
+const { workflowId, workflowName, clientId, result, metrics } = data
   
   // Log automation completion
   

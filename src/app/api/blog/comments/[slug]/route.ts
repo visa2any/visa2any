@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 export async function GET(,  request: NextRequest,  { params }: { params: { slug: string } }
-) {,  try {,    const { slug } = params
+) {
+try {
+const { slug } = params
 
     // Buscar comentários do post com informações do usuário
 

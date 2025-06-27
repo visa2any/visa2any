@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { type, content, clientId, template, subject, priority = 'medium' } = body,
     if (!type || !content || !clientId) {,      return NextResponse.json(,      { error: 'Dados inválidos' },      { status: 400 }
     )
@@ -10,7 +12,8 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
 
     // Get client information
 
-    let client,    try {,      client = await prisma.client.findUnique({,        where: { id: clientId },        select: { id: true, name: true, email: true, phone: true }
+    let client
+    try {,      client = await prisma.client.findUnique({,        where: { id: clientId },        select: { id: true, name: true, email: true, phone: true }
       })
     } catch (error) {
       // If client not found in database
@@ -23,7 +26,8 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
 
     // Process template if provided
 
-    let processedContent = content,    if (template && client) {,      processedContent = content
+    let processedContent = content
+    if (template && client) {,      processedContent = content
         .replace(/{nome}/g, client.name)
         .replace(/{email}/g, client.email)
         .replace(/{data}/g, new Date().toLocaleDateString('pt-BR'))
@@ -46,7 +50,8 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
       }
     }
 
-    // Here you would save to database,    // await saveCommunicationRecord(communicationRecord)
+    // Here you would save to database
+    // await saveCommunicationRecord(communicationRecord)
 
     return NextResponse.json({,      messageId: deliveryResult.messageId,      status: deliveryResult.status,      communication: communicationRecord
     })
@@ -56,7 +61,8 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
   }
 }
 
-// Simulated communication functions,async function sendWhatsApp(phone: string, message: string) {
+// Simulated communication functions
+async function sendWhatsApp(phone: string, message: string) {
   // Simulate WhatsApp API call
   await new Promise(resolve => setTimeout(resolve, 1000)),  
   return {,    messageId: `wa_${Date.now()}`,    status: 'sent'

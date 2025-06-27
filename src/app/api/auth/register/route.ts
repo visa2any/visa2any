@@ -3,12 +3,14 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
-// Schema para registro de usuário,const registerSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),  role: z.enum(['ADMIN', 'MANAGER', 'STAFF', 'CONSULTANT']).optional()
+// Schema para registro de usuário
+const registerSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),  role: z.enum(['ADMIN', 'MANAGER', 'STAFF', 'CONSULTANT']).optional()
 })
 
 // POST /api/auth/register - Registrar novo usuário (funcionário)
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
     
     // Validar dados
@@ -43,7 +45,8 @@ export async function POST(request: NextRequest) {,  try {
     return NextResponse.json({,      data: user,      message: 'Usuário criado com sucesso'
     }, { status: 201 })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },

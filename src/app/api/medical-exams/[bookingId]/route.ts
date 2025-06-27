@@ -5,7 +5,9 @@ import { medicalExamService } from '@/lib/medical-exams'
 
 export async function GET(
   request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId =  
+) {
+try {
+const bookingId =  
 const result = await medicalExamService.getExamStatus(bookingId),
     if (result.success) {,      return NextResponse.json({,        booking: result.booking,        message: 'Status do exame recuperado com sucesso'
       })
@@ -22,7 +24,9 @@ const result = await medicalExamService.getExamStatus(bookingId),
 
 export async function PUT(
   request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId =  
+) {
+try {
+const bookingId =  
 const body = await request.json()
     const { newDate, newTime } = body,
     if (!newDate || !newTime) {,      return NextResponse.json(,        { error: 'Campos newDate e newTime são obrigatórios' },        { status: 400 }
@@ -44,7 +48,9 @@ const body = await request.json()
 
 export async function DELETE(
   request: NextRequest,  { params }: { params: { bookingId: string } }
-) {,  try {,    const bookingId =  
+) {
+try {
+const bookingId =  
 const result = await medicalExamService.cancelExam(bookingId),
     if (result.success) {,      return NextResponse.json({,        message: result.message,        cancelledAt: new Date().toISOString()
       })

@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { name, phone, countries, terms } = body
 
     // Validação
@@ -13,7 +15,8 @@ const { name, phone, countries, terms } = body
 
     // Validar formato do telefone
 
-    const phoneRegex = /^\+[1-9]\d{1,14}$/,    if (!phoneRegex.test(phone)) {,      return NextResponse.json(,        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },        { status: 400 }
+    const phoneRegex = /^\+[1-9]\d{1,14}$/
+    if (!phoneRegex.test(phone)) {,      return NextResponse.json(,        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },        { status: 400 }
       )
     }
 
@@ -50,7 +53,9 @@ const { name, phone, countries, terms } = body
   }
 }
 
-// Função para enviar mensagem de boas-vindas,async function sendWelcomeMessage(phone: string, name: string) {,  const message = `🎉 Olá ${name}!
+// Função para enviar mensagem de boas-vindas
+async function sendWelcomeMessage(phone: string, name: string) {
+const message = `🎉 Olá ${name}!
 
 Bem-vindo(a) à Newsletter WhatsApp da *Visa2Any*!,
 Você agora receberá:
@@ -67,7 +72,9 @@ Para acessar nosso blog completo: https://visa2any.com/blog
 
 _Para cancelar, responda SAIR_`
 
-  // Aqui você integraria com sua API do WhatsApp,  // Por exemplo, usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
+  // Aqui você integraria com sua API do WhatsApp
+  // Por exemplo
+  usando a biblioteca @whiskeysockets/baileys ou WhatsApp Business API
   
   const whatsappResponse = await fetch('http://localhost:3000/api/whatsapp/send', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify({,      to: phone,      message: message
       type: 'newsletter_welcome'
@@ -80,7 +87,9 @@ _Para cancelar, responda SAIR_`
 
 // GET - Listar assinantes (admin only)
 
-export async function GET() {,  try {,    const subscribers = await prisma.whatsAppSubscriber.findMany({,      where: { isActive: true },      orderBy: { createdAt: 'desc' }
+export async function GET() {
+try {
+const subscribers = await prisma.whatsAppSubscriber.findMany({,      where: { isActive: true },      orderBy: { createdAt: 'desc' }
       take: 100
     }),
     const stats = {,      total: subscribers.length,      byCountry: subscribers.reduce((acc, sub) => {,        sub.countries.forEach(country => {,          acc[country] = (acc[country] || 0) + 1

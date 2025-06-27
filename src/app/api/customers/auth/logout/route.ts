@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const response = NextResponse.json({,      message: 'Logout realizado com sucesso'
+export async function POST(request: NextRequest) {
+try {
+const response = NextResponse.json({,      message: 'Logout realizado com sucesso'
     })
 
     // Remover cookie de autenticação

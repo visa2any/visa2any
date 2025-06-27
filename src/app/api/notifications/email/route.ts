@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para envio de email,const sendEmailSchema = z.object({,  to: z.string().email('Email é obrigatório'),  subject: z.string().min(1, 'Assunto é obrigatório').optional(),  message: z.string().min(1, 'Mensagem é obrigatória').optional(),  template: z.string().optional(),  clientId: z.string().optional(),  variables: z.record(z.any()).optional()
+// Schema para envio de email
+const sendEmailSchema = z.object({,  to: z.string().email('Email é obrigatório'),  subject: z.string().min(1, 'Assunto é obrigatório').optional(),  message: z.string().min(1, 'Mensagem é obrigatória').optional(),  template: z.string().optional(),  clientId: z.string().optional(),  variables: z.record(z.any()).optional()
 })
 
-// Templates de email prontos,const EMAIL_TEMPLATES = {,  payment_confirmation: {,    subject: '✅ Pagamento Confirmado - Visa2Any',    html: `
+// Templates de email prontos
+const EMAIL_TEMPLATES = {,  payment_confirmation: {,    subject: '✅ Pagamento Confirmado - Visa2Any',    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
           <h1 style="margin: 0; font-size: 28px;">🎉 Pagamento Confirmado!</h1>
@@ -67,7 +69,8 @@ import { z } from 'zod'
 
 // POST /api/notifications/email - Enviar email
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const validatedData = sendEmailSchema.parse(body)
 
@@ -76,7 +79,9 @@ const validatedData = sendEmailSchema.parse(body)
 
     // Se usar template
 
-    carregar template e processar variáveis,    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {,      const template = EMAIL_TEMPLATES[validatedData.template]
+    carregar template e processar variáveis
+    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
+    const template = EMAIL_TEMPLATES[validatedData.template]
       emailContent.subject = template.subject,      emailContent.html = template.html
 
       // Processar variáveis no template
@@ -103,7 +108,8 @@ const validatedData = sendEmailSchema.parse(body)
       },      message: 'Email enviado com sucesso'
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -112,9 +118,12 @@ const validatedData = sendEmailSchema.parse(body)
   }
 }
 
-// Função para enviar email usando SMTP Hostinger configurado,async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
+// Função para enviar email usando SMTP Hostinger configurado
+async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
   // Usar SMTP Hostinger (já configurado)
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {,    try {,      const nodemailer =  
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  try {
+  const nodemailer =  
 const transporter = nodemailer.createTransport({,        host: process.env.SMTP_HOST,        port: parseInt(process.env.SMTP_PORT || '587'),        secure: process.env.SMTP_SECURE === 'true',        auth: {,          user: process.env.SMTP_USER,          pass: process.env.SMTP_PASS
         }
       }),
@@ -129,7 +138,9 @@ const transporter = nodemailer.createTransport({,        host: process.env.SMTP_
 
   // Fallback: Tentar SendGrid se configurado
 
-  if (process.env.SENDGRID_API_KEY) {,    try {,      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {,        method: 'POST',        headers: {,          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,          'Content-Type': 'application/json'
+  if (process.env.SENDGRID_API_KEY) {
+  try {
+  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {,        method: 'POST',        headers: {,          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,          'Content-Type': 'application/json'
         },        body: JSON.stringify({,          personalizations: [{,            to: [{ email: to }]
             subject: subject
           }]

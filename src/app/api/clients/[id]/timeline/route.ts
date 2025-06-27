@@ -4,7 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(,  request: NextRequest,
   { params }: { params: { id: string } }
-) {,  try {,    const clientId = params.id,
+) {
+try {
+const clientId = params.id,
     if (!clientId) {,      return NextResponse.json(,      { error: 'Dados inválidos' },      { status: 400 }
     )
     }

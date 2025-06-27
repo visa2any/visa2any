@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para criar interação,const createInteractionSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),  channel: z.string().min(1, 'Canal é obrigatório'),  direction: z.enum(['inbound', 'outbound']),  subject: z.string().optional(),  content: z.string().min(1, 'Conteúdo é obrigatório'),  response: z.string().optional(),  scheduledAt: z.string().datetime().optional(),  completedAt: z.string().datetime().optional()
+// Schema para criar interação
+const createInteractionSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['EMAIL', 'WHATSAPP', 'PHONE_CALL', 'SMS', 'IN_PERSON', 'AUTOMATED_EMAIL', 'AUTOMATED_WHATSAPP', 'FOLLOW_UP', 'REMINDER']),  channel: z.string().min(1, 'Canal é obrigatório'),  direction: z.enum(['inbound', 'outbound']),  subject: z.string().optional(),  content: z.string().min(1, 'Conteúdo é obrigatório'),  response: z.string().optional(),  scheduledAt: z.string().datetime().optional(),  completedAt: z.string().datetime().optional()
 })
 
 // GET /api/interactions - Listar interações
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const page =  
 const limit = parseInt(searchParams.get('limit') || '10')
     const clientId = params.id
@@ -44,7 +47,8 @@ const type = searchParams.get('type')
 
 // POST /api/interactions - Criar nova interação
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
     
     // Validar dados
@@ -78,7 +82,8 @@ export async function POST(request: NextRequest) {,  try {
     return NextResponse.json({,      data: interaction
     }, { status: 201 })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },

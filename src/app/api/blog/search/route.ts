@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic',
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const query =  
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const query =  
 const suggest = searchParams.get('suggest') === 'true',    
     if (!query.trim()) {,      return NextResponse.json({,        results: [],        suggestions: []
       })
@@ -11,7 +14,9 @@ const suggest = searchParams.get('suggest') === 'true',
 
     // Se for para sugestões
 
-    retornar resultados mais rápidos,    if (suggest) {,      const suggestions = await generateSuggestions(query),      return NextResponse.json({,        suggestions
+    retornar resultados mais rápidos
+    if (suggest) {
+    const suggestions = await generateSuggestions(query),      return NextResponse.json({,        suggestions
       })
     }
 
@@ -27,7 +32,8 @@ const suggest = searchParams.get('suggest') === 'true',
     )
   }
 },
-async function generateSuggestions(query: string) {,  const searchTerm = query.toLowerCase().trim(),  
+async function generateSuggestions(query: string) {
+const searchTerm = query.toLowerCase().trim(),  
   try {
     // Buscar títulos que contenham o termo
     const titleMatches = await prisma.blogPost.findMany({,      where: {,        published: true,        title: {,          contains: searchTerm,          mode: 'insensitive'
@@ -61,7 +67,8 @@ async function generateSuggestions(query: string) {,  const searchTerm = query.t
 
     // Adicionar sugestões de países
 
-    countryMatches.forEach(country => {,      if (country.country) {,        suggestions.push({,          type: 'country',          text: `${country.flag || '🌍'} ${country.country}`,          category: 'País',          icon: country.flag || '🌍'
+    countryMatches.forEach(country => {
+    if (country.country) {,        suggestions.push({,          type: 'country',          text: `${country.flag || '🌍'} ${country.country}`,          category: 'País',          icon: country.flag || '🌍'
         })
       }
     })
@@ -76,7 +83,8 @@ async function generateSuggestions(query: string) {,  const searchTerm = query.t
   } catch (error) {,    console.error('Erro ao gerar sugestões:', error),    return []
   }
 },
-async function performAdvancedSearch(query: string) {,  const searchWords = query.toLowerCase().split(' ').filter(word => word.length > 1),  
+async function performAdvancedSearch(query: string) {
+const searchWords = query.toLowerCase().split(' ').filter(word => word.length > 1),  
   try {
     // Buscar posts com diferentes critérios de relevância
     const posts = await prisma.blogPost.findMany({,      where: {,        published: true,        OR: [
@@ -102,7 +110,8 @@ const excerptLower = post.excerpt.toLowerCase()
 
       // Score por match exato no título (alta relevância)
 
-      if (titleLower.includes(queryLower)) {,        score += 100,        if (titleLower.startsWith(queryLower)) score += 50
+      if (titleLower.includes(queryLower)) {,        score += 100
+      if (titleLower.startsWith(queryLower)) score += 50
       }
 
       // Score por match no resumo
@@ -117,16 +126,22 @@ const excerptLower = post.excerpt.toLowerCase()
 
       // Score por palavras individuais
 
-      searchWords.forEach(word => {,        if (titleLower.includes(word)) score += 20,        if (excerptLower.includes(word)) score += 10,        if (post.country && post.country.toLowerCase().includes(word)) score += 15
+      searchWords.forEach(word => {
+      if (titleLower.includes(word)) score += 20
+      if (excerptLower.includes(word)) score += 10
+      if (post.country && post.country.toLowerCase().includes(word)) score += 15
       })
 
       // Boost para posts especiais
 
-      if (post.featured) score += 10,      if (post.trending) score += 15,      if (post.urgent) score += 20
+      if (post.featured) score += 10
+      if (post.trending) score += 15
+      if (post.urgent) score += 20
 
       // Score por engagement
 
-      score += Math.min(post.views / 100, 20) // Max 20 pontos por views,      score += Math.min(post.likes / 10, 10) // Max 10 pontos por likes
+      score += Math.min(post.views / 100, 20) // Max 20 pontos por views
+      score += Math.min(post.likes / 10, 10) // Max 10 pontos por likes
 
       return {
         ...post,        score,        tags: Array.isArray(post.tags) ? post.tags : [],        relevance: score > 100 ? 'high' : score > 50 ? 'medium' : 'low'

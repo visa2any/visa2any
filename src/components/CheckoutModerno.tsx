@@ -205,8 +205,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   } = props
   
   // Use first product for calculations if new interface
-  
-  otherwise use legacy props
+  // otherwise use legacy props
   const currentProduct = isNewInterface ? products[0] : {
     id: productId,
     name: productName,

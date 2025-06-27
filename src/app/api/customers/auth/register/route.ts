@@ -5,7 +5,9 @@ import jwt from 'jsonwebtoken',
 
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { name, email, password, phone } = body,
     if (!name || !email || !password) {,      return NextResponse.json({,        error: 'Nome, email e senha são obrigatórios'
       }, { status: 400 })
@@ -31,14 +33,16 @@ const { name, email, password, phone } = body,
 
     // Gerar token JWT
 
-    const jwtSecret = process.env.JWT_SECRET,    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return NextResponse.json({,        error: 'Erro de configuração do servidor'
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return NextResponse.json({,        error: 'Erro de configuração do servidor'
       }, { status: 500 })
     },    
     const token = jwt.sign(,      { ,        customerId: customer.id, ,        email: customer.email,        type: 'customer'
       },      jwtSecret,      { expiresIn: '7d' }
     )
 
-    // Enviar email de boas-vindas (implementar posteriormente),    // await sendWelcomeEmail(customer.email
+    // Enviar email de boas-vindas (implementar posteriormente)
+    // await sendWelcomeEmail(customer.email
  customer.name)
 
     // Configurar resposta com cookie
@@ -49,7 +53,9 @@ const { name, email, password, phone } = body,
 
     // Definir cookie httpOnly
 
-    response.cookies.set('customer-token', token, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 60 * 60 * 24 * 7, // 7 dias,      path: '/'
+    response.cookies.set('customer-token', token, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 60 * 60 * 24 * 7
+    // 7 dias
+    path: '/'
     }),
     return response
 

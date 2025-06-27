@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para consulta do advisory engine,const advisoryQuerySchema = z.object({,  clientId: z.string().optional()
+// Schema para consulta do advisory engine
+const advisoryQuerySchema = z.object({,  clientId: z.string().optional()
 
   profile: z.object({,    targetCountry: z.string(),
     visaType: z.string(),
@@ -26,7 +27,8 @@ import { z } from 'zod'
 
 // POST /api/advisory/engine - Consultar advisory engine
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
     const validatedData = advisoryQuerySchema.parse(body)
 
@@ -63,7 +65,8 @@ export async function POST(request: NextRequest) {,  try {
       }
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -74,7 +77,9 @@ export async function POST(request: NextRequest) {,  try {
 
 // GET /api/advisory/engine/countries - Listar países suportados
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const includeStats = includeStatsVar
     const supportedCountries = await getSupportedCountries(includeStats),
     return NextResponse.json({,      data: {,        countries: supportedCountries,        totalSupported: supportedCountries.length,        lastUpdated: new Date().toISOString()
@@ -86,7 +91,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 }
 
-// Obter expertise específica do país/visto,async function getCountrySpecificExpertise(country: string, visaType: string) {,  const expertise = {,    source: 'internal_database',    lastUpdated: new Date().toISOString(),    confidenceLevel: 0.95,    data: {} as any
+// Obter expertise específica do país/visto
+async function getCountrySpecificExpertise(country: string, visaType: string) {
+const expertise = {,    source: 'internal_database',    lastUpdated: new Date().toISOString(),    confidenceLevel: 0.95,    data: {} as any
   }
 
   // Base de conhecimento por país
@@ -138,7 +145,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
       }
     }
   },
-  const countryData = countryKnowledge[country],  if (countryData && countryData[visaType]) {,    expertise.data = countryData[visaType]
+  const countryData = countryKnowledge[country]
+  if (countryData && countryData[visaType]) {,    expertise.data = countryData[visaType]
     expertise.confidenceLevel = 0.95
   } else {
     // Fallback para países não mapeados
@@ -148,7 +156,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return expertise
 }
 
-// Realizar análise de elegibilidade,async function performEligibilityAssessment(profile: any, expertise: any) {,  const assessment = {,    overallScore: 0,    eligibilityLevel: 'low' as 'low' | 'medium' | 'high',    breakdown: {} as any,    blockers: [] as string[],    strengths: [] as string[]
+// Realizar análise de elegibilidade
+async function performEligibilityAssessment(profile: any, expertise: any) {
+const assessment = {,    overallScore: 0,    eligibilityLevel: 'low' as 'low' | 'medium' | 'high',    breakdown: {} as any,    blockers: [] as string[],    strengths: [] as string[]
     recommendations: [] as string[]
   },
   const country = countryVar
@@ -174,7 +184,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return assessment
 }
 
-// Análise específica para Canadá Express Entry,async function assessCanadaExpress(profile: any, expertise: any) {,  const breakdown = {,    ageScore: 0,    educationScore: 0,    languageScore: 0,    experienceScore: 0,    estimatedCRS: 0
+// Análise específica para Canadá Express Entry
+async function assessCanadaExpress(profile: any, expertise: any) {
+const breakdown = {,    ageScore: 0,    educationScore: 0,    languageScore: 0,    experienceScore: 0,    estimatedCRS: 0
   }
 
   // Idade (máximo 110 pontos)
@@ -201,7 +213,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return breakdown
 }
 
-// Análise específica para Austrália,async function assessAustraliaSkilled(profile: any, expertise: any) {,  const breakdown = {,    agePoints: 0,    educationPoints: 0,    englishPoints: 0,    experiencePoints: 0,    totalPoints: 0
+// Análise específica para Austrália
+async function assessAustraliaSkilled(profile: any, expertise: any) {
+const breakdown = {,    agePoints: 0,    educationPoints: 0,    englishPoints: 0,    experiencePoints: 0,    totalPoints: 0
   }
 
   // Sistema de pontos australiano
@@ -216,15 +230,18 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return breakdown
 }
 
-// Análise para Portugal,async function assessPortugal(profile: any, expertise: any) {,  return {,    documentationScore: 85,    financialScore: profile.income ? 80 : 50,    timelineScore: 90,    complianceScore: 85
+// Análise para Portugal
+async function assessPortugal(profile: any, expertise: any) {,  return {,    documentationScore: 85,    financialScore: profile.income ? 80 : 50,    timelineScore: 90,    complianceScore: 85
   }
 }
 
-// Análise genérica,async function assessGeneric(profile: any, expertise: any) {,  return {,    profileScore: 70,    documentationScore: 60,    complianceScore: 75,    timelineScore: 65
+// Análise genérica
+async function assessGeneric(profile: any, expertise: any) {,  return {,    profileScore: 70,    documentationScore: 60,    complianceScore: 75,    timelineScore: 65
   }
 }
 
-// Outras funções (implementação simplificada para demonstração),async function analyzeDocumentRequirements(profile: any, documents: any[], expertise: any) {,  return {,    required: expertise.data.keyRequirements || [],    missing: []
+// Outras funções (implementação simplificada para demonstração)
+async function analyzeDocumentRequirements(profile: any, documents: any[], expertise: any) {,  return {,    required: expertise.data.keyRequirements || [],    missing: []
     recommendations: ['Ensure all documents are apostilled', 'Translate to target language']
   }
 },
@@ -261,7 +278,8 @@ async function generateStrategicRecommendations(profile: any, analysis: any, exp
 function generateNextSteps(analysis: any, profile: any) {,  return [,    'Schedule consultation to discuss strategy',    'Begin document preparation',    'Consider language improvement if needed'
   ]
 },
-async function getSupportedCountries(includeStats: boolean) {,  const countries = [,    {
+async function getSupportedCountries(includeStats: boolean) {
+const countries = [,    {
       name: 'Canada',      code: 'CA',      visaTypes: ['SKILLED', 'WORK', 'STUDY', 'FAMILY']
       expertiseLevel: 'high'
       ...(includeStats && {,        successRate: '87%',        averageTimeline: '8 months',        clientsSucessful: 1247

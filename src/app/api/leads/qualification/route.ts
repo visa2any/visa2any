@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { email, name, phone, responses, score, category, priority, nextAction } = body,
     if (!email || !name || !responses) {,      return NextResponse.json({,        error: 'Dados obrigatórios faltando'
       }, { status: 400 })
@@ -55,11 +57,17 @@ const { email, name, phone, responses, score, category, priority, nextAction } =
     }, { status: 500 })
   }
 },
-async function createFollowUpTask(clientId: string, type: string, description: string, priority: number) {,  try {,    const dueDate = new Date()
+async function createFollowUpTask(clientId: string, type: string, description: string, priority: number) {
+try {
+const dueDate = new Date()
     
     // Definir prazo baseado no tipo da tarefa
     
-    switch (type) {,      case 'IMMEDIATE_CALL':,        dueDate.setMinutes(dueDate.getMinutes() + 30) // 30 minutos,        break,      case 'SCHEDULE_CONSULTATION':,        dueDate.setHours(dueDate.getHours() + 2) // 2 horas,        break,      case 'PERSONALIZED_EMAIL':,        dueDate.setHours(dueDate.getHours() + 1) // 1 hora,        break,      case 'OFFER_AI_ANALYSIS':,        dueDate.setHours(dueDate.getHours() + 4) // 4 horas,        break,      default:,        dueDate.setDate(dueDate.getDate() + 1) // 1 dia
+    switch (type) {,      case 'IMMEDIATE_CALL':,        dueDate.setMinutes(dueDate.getMinutes() + 30) // 30 minutos
+    break,      case 'SCHEDULE_CONSULTATION':,        dueDate.setHours(dueDate.getHours() + 2) // 2 horas
+    break,      case 'PERSONALIZED_EMAIL':,        dueDate.setHours(dueDate.getHours() + 1) // 1 hora
+    break,      case 'OFFER_AI_ANALYSIS':,        dueDate.setHours(dueDate.getHours() + 4) // 4 horas
+    break,      default:,        dueDate.setDate(dueDate.getDate() + 1) // 1 dia
     }
 
     // Criar tarefa no sistema (implementar posteriormente)
@@ -69,7 +77,9 @@ async function createFollowUpTask(clientId: string, type: string, description: s
   } catch (error) {,    console.error('Erro ao criar tarefa de follow-up:', error)
   }
 },
-async function triggerEmailAutomation(client: any, category: string, responses: any) {,  try {,    const automationData = {,      clientId: client.id,      email: client.email,      name: client.name,      category,      responses,      destinationCountry: responses.country,      urgency: responses.urgency,      budget: responses.budget
+async function triggerEmailAutomation(client: any, category: string, responses: any) {
+try {
+const automationData = {,      clientId: client.id,      email: client.email,      name: client.name,      category,      responses,      destinationCountry: responses.country,      urgency: responses.urgency,      budget: responses.budget
     }
 
     // Trigger automação baseada na categoria

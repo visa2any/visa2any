@@ -2,7 +2,10 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const page = pageVar
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const page = pageVar
     const limit = parseInt(searchParams.get('limit') || '50')
     const search = searchVar
     const status = searchParams.get('status') || ''
@@ -75,7 +78,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 },
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
     
     // Validação básica
     

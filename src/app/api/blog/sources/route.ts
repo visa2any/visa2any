@@ -3,7 +3,9 @@ import { prisma } from '@/lib/prisma'
 
 // GET - Listar todas as fontes de notícias
 
-export async function GET() {,  try {,    const sources = await prisma.newsSource.findMany({,      include: {,        logs: {,          orderBy: { createdAt: 'desc' }
+export async function GET() {
+try {
+const sources = await prisma.newsSource.findMany({,      include: {,        logs: {,          orderBy: { createdAt: 'desc' }
           take: 5
         }
       },      orderBy: [,        { priority: 'desc' },        { name: 'asc' }
@@ -19,7 +21,8 @@ export async function GET() {,  try {,    const sources = await prisma.newsSourc
 
 // POST - Adicionar nova fonte
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const {,      name,      url,      type,      category,      country,      flag,      keywords,      priority,      checkInterval
     } = body
@@ -50,7 +53,8 @@ const {,      name,      url,      type,      category,      country,      flag,
 
 // PUT - Atualizar fonte existente
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json(,        { error: 'ID da fonte é obrigatório' },        { status: 400 }
@@ -70,7 +74,10 @@ const { id, ...updateData } = body,
 
 // DELETE - Remover fonte
 
-export async function DELETE(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const id = searchParams.get('id')
+export async function DELETE(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const id = searchParams.get('id')
 
     if (!id) {,      return NextResponse.json(,        { error: 'ID da fonte é obrigatório' },        { status: 400 }
       )

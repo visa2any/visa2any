@@ -2,14 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const { clientId, score, level, answers, recommendations, nextSteps } = await request.json(),
+export async function POST(request: NextRequest) {
+try {
+const { clientId, score, level, answers, recommendations, nextSteps } = await request.json(),
     if (!clientId || !score) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
       )
     }
 
     // Criar consultoria IA com o resultado
 
-    const consultation = await prisma.consultation.create({,      data: {,        clientId,        type: 'AI_ANALYSIS',        status: 'COMPLETED',        completedAt: new Date(),        duration: 15, // 15 minutos estimados para análise IA,        score,        recommendation: recommendations.join('\n'),        nextSteps: nextSteps.join('\n'),        notes: `Análise de elegibilidade automática - Nível: ${level}`,        result: {,          score,          level,          answers,          recommendations,          nextSteps,          calculatedAt: new Date().toISOString()
+    const consultation = await prisma.consultation.create({,      data: {,        clientId,        type: 'AI_ANALYSIS',        status: 'COMPLETED',        completedAt: new Date(),        duration: 15
+    // 15 minutos estimados para análise IA
+    score,        recommendation: recommendations.join('\n'),        nextSteps: nextSteps.join('\n'),        notes: `Análise de elegibilidade automática - Nível: ${level}`,        result: {,          score,          level,          answers,          recommendations,          nextSteps,          calculatedAt: new Date().toISOString()
         }
       }
     })
@@ -28,7 +32,8 @@ export async function POST(request: NextRequest) {,  try {,    const { clientId,
 
     // Determinar próxima ação automática baseada no score
 
-    let automationAction = null,    if (score >= 85) {,      automationAction = 'high_score_followup'
+    let automationAction = null
+    if (score >= 85) {,      automationAction = 'high_score_followup'
     } else if (score >= 60) {,      automationAction = 'medium_score_nurturing'
     } else {,      automationAction = 'low_score_education'
     }

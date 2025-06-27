@@ -4,8 +4,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 
-// Templates de email por sequência,const EMAIL_TEMPLATES = {,  hot_lead_immediate: [,    {
-      delay: 0, // Imediato,      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',      template: `,Olá {name}
+// Templates de email por sequência
+const EMAIL_TEMPLATES = {,  hot_lead_immediate: [,    {
+      delay: 0
+      // Imediato
+      subject: '🔥 {name}, seu perfil é EXCELENTE! Vamos conversar?',      template: `,Olá {name}
 
 Acabei de analisar sua qualificação e tenho ÓTIMAS notícias! 🎉,
 Seu perfil para {destinationCountry} é EXCELENTE - score {score}/100!,
@@ -21,7 +24,9 @@ Att,Ana Silva,Consultora Sênior Visa2Any
 📱 +55 11 99999-9999
       `
     },    {
-      delay: 60, // 1 hora depois se não respondeu,      subject: '⏰ {name}, restam apenas algumas horas...',      template: `,{name}
+      delay: 60
+      // 1 hora depois se não respondeu
+      subject: '⏰ {name}, restam apenas algumas horas...',      template: `,{name}
 
 Notei que você ainda não agendou sua consultoria VIP.,
 Seu perfil é TÃO BOM que não quero que você perca essa oportunidade.,
@@ -51,7 +56,9 @@ Clique aqui para começar: {aiAnalysisLink}
 Att,Equipe Visa2Any
       `
     },    {
-      delay: 1440, // 24 horas,      subject: '📚 {name}, baixe nossos guias exclusivos',      template: `,Oi {name}!
+      delay: 1440
+      // 24 horas
+      subject: '📚 {name}, baixe nossos guias exclusivos',      template: `,Oi {name}!
 
 Vi que você tem interesse em {destinationCountry}. ,
 Separei nossos 3 materiais mais valiosos para você:
@@ -65,7 +72,9 @@ PS: Tudo 100% gratuito, sem pegadinha! ,
 Equipe Visa2Any
       `
     },    {
-      delay: 4320, // 3 dias,      subject: '🎯 {name}, vamos criar sua estratégia?',      template: `,{name}
+      delay: 4320
+      // 3 dias
+      subject: '🎯 {name}, vamos criar sua estratégia?',      template: `,{name}
 
 Espero que os materiais tenham sido úteis!,
 Para quem tem perfil como o seu ({score}/100), costumo recomendar nossa Consultoria Express.,
@@ -95,7 +104,9 @@ Nos próximos dias vou te enviar mais dicas valiosas!,
 Att,Equipe Visa2Any
       `
     },    {
-      delay: 2880, // 2 dias,      subject: '💡 {name}, dica #1: Por onde começar',      template: `,Oi {name}!
+      delay: 2880
+      // 2 dias
+      subject: '💡 {name}, dica #1: Por onde começar',      template: `,Oi {name}!
 
 Primeira dica importante: NUNCA comece juntando documentos aleatoriamente.,
 Primeiro você precisa:,1️⃣ Definir o tipo de visto ideal,2️⃣ Calcular suas chances reais,3️⃣ Criar uma estratégia específica,
@@ -106,7 +117,9 @@ Próxima dica chegará em 2 dias.,
 Equipe Visa2Any
       `
     },    {
-      delay: 7200, // 5 dias,      subject: '🔍 {name}, dica #2: Evite estes erros fatais',      template: `,{name}
+      delay: 7200
+      // 5 dias
+      subject: '🔍 {name}, dica #2: Evite estes erros fatais',      template: `,{name}
 
 Os 3 erros que mais reprovam vistos:
 
@@ -123,13 +136,16 @@ Equipe Visa2Any
   ]
 },
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { sequence, clientId, email, name, category, responses, destinationCountry, urgency, budget } = body,
     if (!sequence || !email || !name) {,      return NextResponse.json({,        error: 'Dados obrigatórios faltando'
       }, { status: 400 })
     },
     const templates = EMAIL_TEMPLATES[sequence as keyof typeof EMAIL_TEMPLATES]
-    ,    if (!templates) {,      return NextResponse.json({,        error: 'Sequência de email não encontrada'
+    
+    if (!templates) {,      return NextResponse.json({,        error: 'Sequência de email não encontrada'
       }, { status: 404 })
     }
 
@@ -139,13 +155,19 @@ const { sequence, clientId, email, name, category, responses, destinationCountry
 
     // Criar jobs de email para cada template da sequência
 
-    for (const template of templates) {,      const sendAt = new Date(),      sendAt.setMinutes(sendAt.getMinutes() + template.delay)
+    for (const template of templates) {
+    const sendAt = new Date(),      sendAt.setMinutes(sendAt.getMinutes() + template.delay)
 
       // Processar template com variáveis
 
       const processedSubject = processTemplate(template.subject, {,        name,        destinationCountry,        score,        urgency,        budget
       }),
-      const processedBody = processTemplate(template.template, {,        name,        destinationCountry,        score,        urgency,        budget,        schedulingLink: 'https://visa2any.com/agendar',        whatsappLink: 'https://wa.me/5511999999999',        aiAnalysisLink: 'https://visa2any.com/consultoria-ia',        leadMagnetsLink: 'https://visa2any.com/lead-magnets',        consultationLink: 'https://visa2any.com/precos',        educationalContentLink: 'https://visa2any.com/lead-magnets'
+      const processedBody = processTemplate(template.template, {,        name,        destinationCountry,        score,        urgency,        budget,        schedulingLink: 'https://visa2any.com/agendar'
+      whatsappLink: 'https://wa.me/5511999999999'
+      aiAnalysisLink: 'https://visa2any.com/consultoria-ia'
+      leadMagnetsLink: 'https://visa2any.com/lead-magnets'
+      consultationLink: 'https://visa2any.com/precos'
+      educationalContentLink: 'https://visa2any.com/lead-magnets'
         ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
@@ -161,8 +183,10 @@ const { sequence, clientId, email, name, category, responses, destinationCountry
     }, { status: 500 })
   }
 },
-function processTemplate(template: string, variables: Record<string, any>): string {,  let processed = template,  
-  Object.entries(variables).forEach(([key, value]) => {,    const regex = new RegExp(`\\{${key}\\}`, 'g'),    processed = processed.replace(regex, String(value))
+function processTemplate(template: string, variables: Record<string, any>): string {
+let processed = template,  
+  Object.entries(variables).forEach(([key, value]) => {
+  const regex = new RegExp(`\\{${key}\\}`, 'g'),    processed = processed.replace(regex, String(value))
   }),  
   return processed
 },
@@ -170,19 +194,23 @@ function calculateScoreFromResponses(responses: any): number {
   // Lógica simplificada de cálculo de score
   let score = 50
 
-  if (responses.education) {,    const educationScores: Record<string, number> = {,      'Doutorado': 20,      'Mestrado': 18,      'Pós-graduação': 15,      'Superior completo': 12,      'Superior incompleto': 8,      'Ensino médio': 5
+  if (responses.education) {
+  const educationScores: Record<string, number> = {,      'Doutorado': 20,      'Mestrado': 18,      'Pós-graduação': 15,      'Superior completo': 12,      'Superior incompleto': 8,      'Ensino médio': 5
     },    score += educationScores[responses.education] || 5
   },
-  if (responses.budget) {,    const budgetScores: Record<string, number> = {,      'Acima de R$ 500.000': 15,      'R$ 300.000 - R$ 500.000': 12,      'R$ 100.000 - R$ 300.000': 8,      'R$ 50.000 - R$ 100.000': 5
+  if (responses.budget) {
+  const budgetScores: Record<string, number> = {,      'Acima de R$ 500.000': 15,      'R$ 300.000 - R$ 500.000': 12,      'R$ 100.000 - R$ 300.000': 8,      'R$ 50.000 - R$ 100.000': 5
     },    score += budgetScores[responses.budget] || 2
   },
-  if (responses.urgency) {,    const urgencyScores: Record<string, number> = {,      'Extremamente urgente (preciso sair já)': 10,      'Muito urgente (próximos 3 meses)': 8,      'Urgente (próximos 6 meses)': 6
+  if (responses.urgency) {
+  const urgencyScores: Record<string, number> = {,      'Extremamente urgente (preciso sair já)': 10,      'Muito urgente (próximos 3 meses)': 8,      'Urgente (próximos 6 meses)': 6
     },    score += urgencyScores[responses.urgency] || 3
   },
   return Math.min(score, 100)
 },
 async function scheduleEmail(emailData: {,  to: string,  subject: string,  body: string,  sendAt: Date,  sequence: string,  clientId?: string,  templateIndex: number
-}) {,  try {
+}) {
+try {
     // Em produção
     usar serviço de queue como Bull/Redis
     // Por enquanto
@@ -192,7 +220,8 @@ async function scheduleEmail(emailData: {,  to: string,  subject: string,  body:
 
     // Se o delay for 0 (imediato)
 
-    enviar agora,    if (emailData.sendAt <= new Date()) {,      await sendEmailNow(emailData)
+    enviar agora
+    if (emailData.sendAt <= new Date()) {,      await sendEmailNow(emailData)
     }
 
     // Salvar na base para controle
@@ -206,7 +235,8 @@ async function scheduleEmail(emailData: {,  to: string,  subject: string,  body:
   }
 },
 async function sendEmailNow(emailData: {,  to: string,  subject: string,  body: string,  sequence: string,  clientId?: string
-}) {,  try {
+}) {
+try {
     // Usar serviço de email (Resend
     SendGrid, etc.),    console.log(`Enviando email imediato para ${emailData.to}`)
     

@@ -3,7 +3,8 @@ import { notificationService, NotificationData } from '@/lib/notification-servic
 
 // POST - Enviar notificações
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { action, data } = body,
     switch (action) {,      case 'send_booking_created':
@@ -22,7 +23,8 @@ const { action, data } = body,
           )
         },
         const paymentSent = await notificationService.sendPaymentLink(trackingId, paymentUrl, pixCode),        
-        return NextResponse.json({,          success: paymentSent,          notification: paymentSent ? 'Link de pagamento enviado via WhatsApp' : 'Falha ao enviar',          sharing: {,            whatsapp: `https://wa.me/?text=💳 Link de pagamento: ${paymentUrl}`,            telegram: `https://t.me/share/url?url=${paymentUrl}`
+        return NextResponse.json({,          success: paymentSent,          notification: paymentSent ? 'Link de pagamento enviado via WhatsApp' : 'Falha ao enviar',          sharing: {,            whatsapp: `https://wa.me/?text=💳 Link de pagamento: ${paymentUrl}`
+        telegram: `https://t.me/share/url?url=${paymentUrl}`
             email: `mailto:?subject=Link de Pagamento&body=Pague seu agendamento: ${paymentUrl}`
           }
         }),
@@ -62,7 +64,10 @@ const { action, data } = body,
 
 // GET - Verificar configuração e enviar testes
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const action = searchParams.get('action') || 'config'
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const action = searchParams.get('action') || 'config'
 
     switch (action) {,      case 'config':
         // Verificar configuração

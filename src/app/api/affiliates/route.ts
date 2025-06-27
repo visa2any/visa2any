@@ -4,12 +4,17 @@ import bcrypt from 'bcryptjs'
 
 
 
-// Função para gerar código de referência único,function generateReferralCode(name: string): string {,  const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase(),  const namePrefix = cleanName.substring(0, 4),  const timestamp = Date.now().toString().slice(-4),  return `${namePrefix}${timestamp}`
+// Função para gerar código de referência único
+function generateReferralCode(name: string): string {
+const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase()
+const namePrefix = cleanName.substring(0, 4)
+const timestamp = Date.now().toString().slice(-4),  return `${namePrefix}${timestamp}`
 }
 
 // GET - Listar afiliados (Admin)
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const url =  
 const page = parseInt(url.searchParams.get('page') || '1')
     const limit =  
@@ -62,7 +67,8 @@ const search = url.searchParams.get('search')
 
 // POST - Criar novo afiliado
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const {,      name,      email,      phone,      company,      website,      bio,      socialMedia = {},      commissionRate = 0.10
     } = body
@@ -85,7 +91,8 @@ const {,      name,      email,      phone,      company,      website,      bio
 
     let referralCode =  
 let attempts = 0,    
-    while (attempts < 10) {,      const existing = await prisma.affiliate.findUnique({,        where: { referralCode }
+    while (attempts < 10) {
+    const existing = await prisma.affiliate.findUnique({,        where: { referralCode }
       }),      
       if (!existing) break,      
       attempts++,      referralCode = generateReferralCode(name) + attempts
@@ -93,11 +100,16 @@ let attempts = 0,
 
     // Criar afiliado
 
-    const affiliate = await prisma.affiliate.create({,      data: {,        name,        email,        phone,        company,        website,        bio,        socialMedia,        referralCode,        commissionRate,        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto,        status: 'PENDING', // Aguardando aprovação,        tier: 'BRONZE'
+    const affiliate = await prisma.affiliate.create({,      data: {,        name,        email,        phone,        company,        website,        bio,        socialMedia,        referralCode,        commissionRate,        paymentDetails: {}
+    // Campo obrigatório - dados bancários/PIX vazios por enquanto
+    status: 'PENDING'
+    // Aguardando aprovação
+    tier: 'BRONZE'
       }
     })
 
-    // TODO: Enviar email de confirmação,    // await sendAffiliateWelcomeEmail(affiliate)
+    // TODO: Enviar email de confirmação
+    // await sendAffiliateWelcomeEmail(affiliate)
 
     return NextResponse.json({,      data: affiliate,      message: 'Inscrição enviada com sucesso! Entraremos em contato em até 24 horas.'
     })
@@ -110,7 +122,8 @@ let attempts = 0,
 
 // PUT - Atualizar afiliado (Admin)
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json({,        error: 'ID do afiliado é obrigatório'

@@ -7,13 +7,32 @@ interface ConsularFees {,  [key: string]: {,    visaFee: number,    serviceFee: 
   }
 }
 
-// Tabela completa de taxas consulares atualizadas,const CONSULAR_FEES: ConsularFees = {,  'EUA': {,    visaFee: 950, // USD 185 ≈ R$ 950,    serviceFee: 150, // Basic,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+// Tabela completa de taxas consulares atualizadas
+const CONSULAR_FEES: ConsularFees = {,  'EUA': {,    visaFee: 950
+// USD 185 ≈ R$ 950
+serviceFee: 150
+// Basic
+currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://ais.usvisa-info.com/pt-br/niv/users/payment'
-  },  'CANADA': {,    visaFee: 380, // CAD 100 ≈ R$ 380,    serviceFee: 200,    biometricFee: 320, // CAD 85 ≈ R$ 320,    additionalFees: 95, // Taxa VAC,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'CANADA': {,    visaFee: 380
+  // CAD 100 ≈ R$ 380
+  serviceFee: 200,    biometricFee: 320
+  // CAD 85 ≈ R$ 320
+  additionalFees: 95
+  // Taxa VAC
+  currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://visa.vfsglobal.com/bra/pt/can/pay-fees'
-  },  'REINO_UNIDO': {,    visaFee: 650, // GBP 100 ≈ R$ 650,    serviceFee: 180,    biometricFee: 125, // GBP 19.20 ≈ R$ 125,    additionalFees: 120, // Taxa TLS,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'REINO_UNIDO': {,    visaFee: 650
+  // GBP 100 ≈ R$ 650
+  serviceFee: 180,    biometricFee: 125
+  // GBP 19.20 ≈ R$ 125
+  additionalFees: 120
+  // Taxa TLS
+  currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment'
-  },  'FRANCA': {,    visaFee: 480, // EUR 80 ≈ R$ 480,    serviceFee: 160,    biometricFee: 120,    additionalFees: 100,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
+  },  'FRANCA': {,    visaFee: 480
+  // EUR 80 ≈ R$ 480
+  serviceFee: 160,    biometricFee: 120,    additionalFees: 100,    currency: 'BRL',    paymentMethods: ['PIX', 'CARTAO', 'BOLETO']
     officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
   }
 }
@@ -22,15 +41,20 @@ interface ConsularFees {,  [key: string]: {,    visaFee: number,    serviceFee: 
 const PLAN_MULTIPLIERS = {,  'BASIC': 1.0,  'PREMIUM': 2.2,  'VIP': 3.0
 }
 
-// Desconto PIX,const PIX_DISCOUNT = 0.05 // 5%
+// Desconto PIX
+const PIX_DISCOUNT = 0.05 // 5%
 
 
-export async function POST(request: NextRequest) {,  try {,    const data: PaymentRequest = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const data: PaymentRequest = await request.json()
 
     // 1. Validar país suportado
 
-    const countryKey = data.country.toUpperCase().replace(' ', '_'),    const countryFees = CONSULAR_FEES[countryKey]
-    ,    if (!countryFees) {,      return NextResponse.json({,        error: 'País não suportado no momento',        supportedCountries: Object.keys(CONSULAR_FEES)
+    const countryKey = data.country.toUpperCase().replace(' ', '_')
+    const countryFees = CONSULAR_FEES[countryKey]
+    
+    if (!countryFees) {,      return NextResponse.json({,        error: 'País não suportado no momento',        supportedCountries: Object.keys(CONSULAR_FEES)
       }, { status: 400 })
     }
 
@@ -57,7 +81,9 @@ const baseFee = Math.round(countryFees.serviceFee * multiplier)
 
     // 4. Criar registro de cobrança híbrida
 
-    const payment = await prisma.hybridPayment.create({,      data: {,        clientId: data.clientId,        country: data.country,        consulate: data.consulate,        availableDates: data.availableDates,        plan: data.plan,        urgency: data.urgency,        costs: costs,        status: 'PENDING',        expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos,        createdAt: new Date()
+    const payment = await prisma.hybridPayment.create({,      data: {,        clientId: data.clientId,        country: data.country,        consulate: data.consulate,        availableDates: data.availableDates,        plan: data.plan,        urgency: data.urgency,        costs: costs,        status: 'PENDING',        expiresAt: new Date(Date.now() + 30 * 60 * 1000)
+    // 30 minutos
+    createdAt: new Date()
       }
     })
 
@@ -84,7 +110,10 @@ const baseFee = Math.round(countryFees.serviceFee * multiplier)
   }
 },
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const paymentId =  
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const paymentId =  
 const clientId = searchParams.get('clientId'),
     if (paymentId) {
       // Buscar pagamento específico
@@ -117,7 +146,9 @@ const clientId = searchParams.get('clientId'),
   }
 }
 
-// Gerar links de pagamento para diferentes métodos,async function generatePaymentLinks(paymentId: string, costs: any, client: any) {,  const links = {,    pix: null as string | null,    card: null as string | null,    boleto: null as string | null
+// Gerar links de pagamento para diferentes métodos
+async function generatePaymentLinks(paymentId: string, costs: any, client: any) {
+const links = {,    pix: null as string | null,    card: null as string | null,    boleto: null as string | null
   },
   try {
     // PIX (com desconto)
@@ -140,7 +171,10 @@ const clientId = searchParams.get('clientId'),
   return links
 }
 
-// Criar preferência no MercadoPago,async function createMercadoPagoPreference(options: any) {,  try {,    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {,      method: 'POST',      headers: {,        'Content-Type': 'application/json',        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+// Criar preferência no MercadoPago
+async function createMercadoPagoPreference(options: any) {
+try {
+const response = await fetch('https://api.mercadopago.com/checkout/preferences', {,      method: 'POST',      headers: {,        'Content-Type': 'application/json',        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
       },      body: JSON.stringify({,        items: [{,          title: options.title,          description: options.description,          quantity: 1,          currency_id: 'BRL',          unit_price: options.amount
         }]
         external_reference: options.paymentId,        payment_methods: {,          excluded_payment_types: options.paymentMethods ? [] : ['credit_card', 'debit_card', 'ticket', 'digital_wallet']
@@ -157,7 +191,9 @@ const clientId = searchParams.get('clientId'),
   }
 }
 
-// Notificar consultor via Telegram,async function notifyConsultant(data: any) {,  const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
+// Notificar consultor via Telegram
+async function notifyConsultant(data: any) {
+const urgencyEmoji = {,    'NORMAL': '⏰',    'URGENT': '🚨',    'EMERGENCY': '🔥'
   },
   const planEmoji = {,    'BASIC': '🥉',    'PREMIUM': '🥈',    'VIP': '🥇'
   },
@@ -196,7 +232,9 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
   }
 }
 
-// Notificar cliente sobre cobrança,async function notifyClientAboutPayment(client: any, data: any) {,  const whatsappMessage = `🎯 VAGA ENCONTRADA! PAGAMENTO NECESSÁRIO
+// Notificar cliente sobre cobrança
+async function notifyClientAboutPayment(client: any, data: any) {
+const whatsappMessage = `🎯 VAGA ENCONTRADA! PAGAMENTO NECESSÁRIO
 
 Olá ${client.name}! 🎉,
 Conseguimos encontrar vagas para:

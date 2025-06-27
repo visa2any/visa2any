@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const {,      title,      excerpt,      content,      category,      author,      tags,      country,      flag,      difficulty,      type,      sourceUrl,      urgent,      trending
     } = body
 
@@ -41,7 +43,9 @@ const {,      title,      excerpt,      content,      category,      author,    
 
 // Endpoint para verificar status do sistema
 
-export async function GET() {,  try {,    const recentPosts = await prisma.blogPost.findMany({,      orderBy: { publishDate: 'desc' },      take: 5,      select: {,        id: true,        title: true,        publishDate: true,        author: true,        urgent: true
+export async function GET() {
+try {
+const recentPosts = await prisma.blogPost.findMany({,      orderBy: { publishDate: 'desc' },      take: 5,      select: {,        id: true,        title: true,        publishDate: true,        author: true,        urgent: true
         trending: true
       }
     }),
@@ -53,14 +57,17 @@ export async function GET() {,  try {,    const recentPosts = await prisma.blogP
   }
 }
 
-// Função auxiliar para calcular tempo de leitura,function calculateReadTime(content: string): string {,  const wordsPerMinute =  
+// Função auxiliar para calcular tempo de leitura
+function calculateReadTime(content: string): string {
+const wordsPerMinute =  
 const words = content.split(' ').length
   const minutes = Math.ceil(words / wordsPerMinute),  return `${minutes} min`
 }
 
 // Endpoint para atualizar posts existentes
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json(,        { error: 'ID do post é obrigatório' },        { status: 400 }

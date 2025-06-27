@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { loginCustomer, loginAdmin } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const { email, password, type } = await request.json(),
+export async function POST(request: NextRequest) {
+try {
+const { email, password, type } = await request.json(),
     if (!email) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
       )
     },
@@ -27,7 +29,9 @@ export async function POST(request: NextRequest) {,  try {,    const { email, pa
 
     // Configurar cookie httpOnly
 
-    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60, // 7 dias,      path: '/'
+    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60
+    // 7 dias
+    path: '/'
     }),
     return response
 

@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic',
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const period =  
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const period =  
 const periodDate = new Date(),    periodDate.setDate(periodDate.getDate() - period)
 
     // Overview Stats
@@ -45,7 +48,8 @@ const urgentTasks = 5
     // Conversion rate calculation
 
     const totalLeads = await prisma.client.count({,      where: { status: 'LEAD' }
-    }),    const convertedClients =  
+    })
+    const convertedClients =  
 const conversionRate = totalClients > 0 ? ,      Math.round((convertedClients / totalClients) * 100) : 0
 
     // Clients by status

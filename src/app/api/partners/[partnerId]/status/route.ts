@@ -5,7 +5,9 @@ import { partnerIntegrationService } from '@/lib/partner-integrations'
 
 export async function GET(
   request: NextRequest,  { params }: { params: { partnerId: string } }
-) {,  try {,    const partnerId =  
+) {
+try {
+const partnerId =  
 const { searchParams } = new URL(request.url)
     const reference = searchParams.get('reference'),
     if (!reference) {,      return NextResponse.json(,        { error: 'Parâmetro reference é obrigatório' },        { status: 400 }

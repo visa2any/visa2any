@@ -3,7 +3,9 @@ import { costEffectiveSolutions, ManualBookingRequest } from '@/lib/cost-effecti
 
 // POST - Agendamento manual assistido (gratuito)
 
-export async function POST(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function POST(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const action =  
 const body = await request.json(),
     switch (action) {,      case 'manual_booking':
@@ -42,7 +44,10 @@ const body = await request.json(),
 
 // GET - Listar métodos econômicos e calcular ROI
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const action = searchParams.get('action') || 'methods'
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const action = searchParams.get('action') || 'methods'
 
     switch (action) {,      case 'methods':
         // Listar todos os métodos econômicos
@@ -60,7 +65,8 @@ const monthlyVolume = parseInt(searchParams.get('volume') || '10')
         if (!method) {,          return NextResponse.json(,            { error: 'Parâmetro method é obrigatório' },            { status: 400 }
           )
         },
-        try {,          const roi = costEffectiveSolutions.calculateROI(method, monthlyVolume, revenuePerBooking),          
+        try {
+        const roi = costEffectiveSolutions.calculateROI(method, monthlyVolume, revenuePerBooking),          
           return NextResponse.json({,            success: true,            method: roi.method,            analysis: {,              monthlyVolume,              revenuePerBooking: `R$ ${revenuePerBooking}`,              monthlyCost: `R$ ${roi.monthlyCost}`,              monthlyRevenue: `R$ ${roi.monthlyRevenue}`,              profit: `R$ ${roi.profit}`,              roi: `${roi.roi.toFixed(1)}%`
             },            viability: roi.roi > 200 ? 'Excelente' : roi.roi > 100 ? 'Bom' : roi.roi > 0 ? 'Viável' : 'Não viável'
           })

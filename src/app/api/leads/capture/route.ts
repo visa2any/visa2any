@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para captura de leads,const leadCaptureSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  phone: z.string().optional(),  source: z.string().default('website'),  leadMagnet: z.string().optional(),  utmSource: z.string().optional(),  utmMedium: z.string().optional(),  utmCampaign: z.string().optional(),  utmContent: z.string().optional(),  referrer: z.string().optional(),  userAgent: z.string().optional(),  ip: z.string().optional(),  interests: z.array(z.string()).optional(),  notes: z.string().optional()
+// Schema para captura de leads
+const leadCaptureSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  phone: z.string().optional(),  source: z.string().default('website'),  leadMagnet: z.string().optional(),  utmSource: z.string().optional(),  utmMedium: z.string().optional(),  utmCampaign: z.string().optional(),  utmContent: z.string().optional(),  referrer: z.string().optional(),  userAgent: z.string().optional(),  ip: z.string().optional(),  interests: z.array(z.string()).optional(),  notes: z.string().optional()
 })
 
 // POST /api/leads/capture - Capturar lead
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const validatedData = leadCaptureSchema.parse(body)
 
@@ -20,7 +22,8 @@ const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip'
 
     let existingClient = await prisma.client.findUnique({,      where: { email: validatedData.email }
     }),
-    let client,    let isNewLead = false,
+    let client
+    let isNewLead = false,
     if (existingClient) {
       // Atualizar lead existente
       client = await prisma.client.update({,        where: { id: existingClient.id },        data: {,          name: validatedData.name,          phone: validatedData.phone || existingClient.phone,          lastActivityAt: new Date()
@@ -71,7 +74,8 @@ let recommendations = [],
       },      message: responseMessage
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -82,7 +86,9 @@ let recommendations = [],
 
 // GET /api/leads/capture/stats - Estatísticas de leads
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const period =  
 const days = parseInt(period)
     
@@ -115,7 +121,9 @@ const days = parseInt(period)
     ]),
     return NextResponse.json({,      data: {,        overview: {,          totalLeads,          newLeads,          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
         },        leadsBySource: leadsBySource.map(item => ({,          source: item.source,          count: item._count.id
-        })),        leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10,        period: `${days} dias`
+        })),        leadsByMagnet: leadsByMagnet.slice(0, 10)
+        // Top 10
+        period: `${days} dias`
       }
     })
 
@@ -124,8 +132,10 @@ const days = parseInt(period)
   }
 }
 
-// Calcular score do lead baseado em fatores,function calculateLeadScore(factors: {,  source?: string,  leadMagnet?: string,  hasPhone: boolean,  utmSource?: string,  utmMedium?: string
-}) {,  let score = 0
+// Calcular score do lead baseado em fatores
+function calculateLeadScore(factors: {,  source?: string,  leadMagnet?: string,  hasPhone: boolean,  utmSource?: string,  utmMedium?: string
+}) {
+let score = 0
 
   // Score por fonte
 
@@ -143,32 +153,42 @@ const days = parseInt(period)
 
   // Score por UTM (campanhas específicas)
 
-  if (factors.utmMedium === 'paid') score += 10,  if (factors.utmSource === 'google') score += 5,  if (factors.utmSource === 'facebook') score += 8
+  if (factors.utmMedium === 'paid') score += 10
+  if (factors.utmSource === 'google') score += 5
+  if (factors.utmSource === 'facebook') score += 8
 
   // Normalizar para 0-100
 
   return Math.min(score, 100)
 }
 
-// Determinar canal baseado na fonte,function getChannelFromSource(source: string): string {,  const channelMap: Record<string, string> = {,    'lead_magnet': 'website',    'assessment': 'website',    'pricing_page': 'website',    'consultation_page': 'website',    'referral': 'referral',    'organic': 'organic',    'paid': 'paid_ads',    'social': 'social_media',    'email': 'email'
+// Determinar canal baseado na fonte
+function getChannelFromSource(source: string): string {
+const channelMap: Record<string, string> = {,    'lead_magnet': 'website',    'assessment': 'website',    'pricing_page': 'website',    'consultation_page': 'website',    'referral': 'referral',    'organic': 'organic',    'paid': 'paid_ads',    'social': 'social_media',    'email': 'email'
   },  return channelMap[source] || 'website'
 }
 
-// Disparar sequência de boas-vindas,async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {,  try {
+// Disparar sequência de boas-vindas
+async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
+try {
     // Enviar email de boas-vindas imediato
     await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        template: 'welcome_lead',        clientId: clientId,        variables: {,          lead_magnet: leadMagnet || 'website'
         }
       })
     })
 
-    // Agendar emails de nurturing,    // Em produção, usar queue/scheduler
+    // Agendar emails de nurturing
+    // Em produção
+    usar queue/scheduler
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
   } catch (error) {,    console.error('Erro ao disparar sequência de boas-vindas:', error)
   }
 }
 
-// Disparar ações para leads de alta prioridade,async function triggerHighPriorityActions(clientId: string, leadScore: number) {,  try {
+// Disparar ações para leads de alta prioridade
+async function triggerHighPriorityActions(clientId: string, leadScore: number) {
+try {
     // Notificar equipe de vendas
     await prisma.automationLog.create({,      data: {,        type: 'HIGH_PRIORITY_LEAD',        action: 'notify_sales_team',        clientId: clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true

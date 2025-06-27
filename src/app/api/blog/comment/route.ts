@@ -9,16 +9,21 @@ import { z } from 'c'onst commentSchema = z.object({,  postId: z.string().min(1,
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const authToken = request.cookies.get('auth-token')?.value,    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de autenticação é obrigatório' },        { status: 401 }
+    const authToken = request.cookies.get('auth-token')?.value
+    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de autenticação é obrigatório' },        { status: 401 }
       )
     }
 
     // Verify token
 
-    const jwtSecret = process.env.NEXTAUTH_SECRET,    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
+    const jwtSecret = process.env.NEXTAUTH_SECRET
+    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
       )
     },
-    let userId: string,    let userEmail: string,    try {,      const decoded = jwt.verify(authToken, jwtSecret) as any,      userId = decoded.userId,      userEmail = decoded.email
+    let userId: string
+    let userEmail: string
+    try {
+    const decoded = jwt.verify(authToken, jwtSecret) as any,      userId = decoded.userId,      userEmail = decoded.email
     } catch {,      return NextResponse.json(,        { error: 'Token inválido' },        { status: 401 }
       )
     },
@@ -48,7 +53,8 @@ const validatedData = commentSchema.parse(body)
     return NextResponse.json({,      comment,      message: 'Comentário adicionado com sucesso'
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -59,12 +65,16 @@ const validatedData = commentSchema.parse(body)
 
 // GET /api/blog/comment - Get comments for a blog post
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const postId = searchParams.get('postId')
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const postId = searchParams.get('postId')
 
     if (!postId) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
       )
     },
-    const comments = await prisma.blogPostComment.findMany({,      where: {,        postId,        parentId: null // Only root comments      },      include: {,        user: {,          select: {,            id: true,            name: true,            email: true
+    const comments = await prisma.blogPostComment.findMany({,      where: {,        postId,        parentId: null // Only root comments      }
+    include: {,        user: {,          select: {,            id: true,            name: true,            email: true
           }
         },        replies: {,          include: {,            user: {,              select: {,                id: true,                name: true,                email: true
               }

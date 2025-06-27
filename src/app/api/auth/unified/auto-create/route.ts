@@ -3,7 +3,9 @@ import { createCustomerAccount } from 'next/server'
 
 export const dynamic = 'force-dynamic',
 
-export async function POST(request: NextRequest) {,  try {,    const data =  
+export async function POST(request: NextRequest) {
+try {
+const data =  
 const { name, email, phone, country, nationality, targetCountry, source, product, amount } = data,
     if (!name || !email) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
       )
@@ -21,7 +23,9 @@ const { name, email, phone, country, nationality, targetCountry, source, product
 
     // Configurar cookie httpOnly
 
-    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60, // 7 dias,      path: '/'
+    response.cookies.set('auth-token', result.token!, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 7 * 24 * 60 * 60
+    // 7 dias
+    path: '/'
     }),
     return response
 

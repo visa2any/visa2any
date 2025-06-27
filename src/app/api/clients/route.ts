@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
 
-// Schema de validação para criar cliente,const createClientSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  phone: z.string().optional(),  country: z.string().optional(),  nationality: z.string().optional(),  age: z.number().optional(),  profession: z.string().optional(),  education: z.string().optional(),  targetCountry: z.string().optional(),  visaType: z.string().optional(),  source: z.string().optional(),  notes: z.string().optional()
+// Schema de validação para criar cliente
+const createClientSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  phone: z.string().optional(),  country: z.string().optional(),  nationality: z.string().optional(),  age: z.number().optional(),  profession: z.string().optional(),  education: z.string().optional(),  targetCountry: z.string().optional(),  visaType: z.string().optional(),  source: z.string().optional(),  notes: z.string().optional()
 })
 
 // GET /api/clients - Listar clientes
@@ -11,8 +12,11 @@ import { z } from 'zod'
 export async function GET(request: NextRequest) {
   try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { searchParams } = new URL(request.url),    const page =  
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { searchParams } = new URL(request.url)
+    const page =  
 const limit = parseInt(searchParams.get('limit') || '10')
     const status =  
 const search = searchParams.get('search')
@@ -61,8 +65,10 @@ const hasMore = page < totalPages,
 export async function POST(request: NextRequest) {
   try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const body = await request.json()
     
     // Validar dados
     
@@ -94,7 +100,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({,      data: client
     }, { status: 201 })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },

@@ -4,16 +4,22 @@ import { headers } from 'next/headers'
 
 
 
-// Função para extrair informações do User-Agent,function parseUserAgent(userAgent: string) {,  const device =  
-let browser = 'unknown',  if (userAgent.includes('Chrome')) browser = 'chrome',  else if (userAgent.includes('Firefox')) browser = 'firefox',  else if (userAgent.includes('Safari')) browser = 'safari',  else if (userAgent.includes('Edge')) browser = 'edge',  
+// Função para extrair informações do User-Agent
+function parseUserAgent(userAgent: string) {
+const device =  
+let browser = 'unknown'
+if (userAgent.includes('Chrome')) browser = 'chrome',  else if (userAgent.includes('Firefox')) browser = 'firefox',  else if (userAgent.includes('Safari')) browser = 'safari',  else if (userAgent.includes('Edge')) browser = 'edge',  
   return { device, browser }
 }
 
-// Função para obter informações de geolocalização por IP,async function getLocationFromIP(ip: string) {,  try {
+// Função para obter informações de geolocalização por IP
+async function getLocationFromIP(ip: string) {
+try {
     // Em produção
     usar um serviço como ipapi.co ou similar
     // Para desenvolvimento
-    retornar valores padrão,    if (process.env.NODE_ENV === 'development') {,      return { country: 'Brazil', city: 'São Paulo' }
+    retornar valores padrão
+    if (process.env.NODE_ENV === 'development') {,      return { country: 'Brazil', city: 'São Paulo' }
     },    
     const response =  
 const data = await response.json(),    return {,      country: data.country_name || 'Unknown',      city: data.city || 'Unknown'
@@ -24,7 +30,8 @@ const data = await response.json(),    return {,      country: data.country_name
 
 // GET - Redirecionar com tracking
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const url =  
 const referralCode = url.searchParams.get('ref')
     const targetUrl =  
@@ -68,18 +75,22 @@ const userAgent = headersList.get('user-agent') || ''
 
     // Definir cookie para tracking de conversão
 
-    const response = NextResponse.redirect(new URL(targetUrl, request.url)),    response.cookies.set('affiliate_ref', referralCode, {,      maxAge: 30 * 24 * 60 * 60, // 30 dias,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax'
+    const response = NextResponse.redirect(new URL(targetUrl, request.url)),    response.cookies.set('affiliate_ref', referralCode, {,      maxAge: 30 * 24 * 60 * 60
+    // 30 dias
+    httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax'
     }),
     return response
 
-  } catch (error) {,    console.error('Erro no tracking de afiliado:', error),    const targetUrl = request.nextUrl.searchParams.get('url') || '/',    return NextResponse.redirect(new URL(targetUrl, request.url))
+  } catch (error) {,    console.error('Erro no tracking de afiliado:', error)
+  const targetUrl = request.nextUrl.searchParams.get('url') || '/',    return NextResponse.redirect(new URL(targetUrl, request.url))
   } finally {,    await prisma.$disconnect()
   }
 }
 
 // POST - Registrar conversão
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { clientId, conversionType, conversionValue, referralCode: bodyReferralCode } = body
 

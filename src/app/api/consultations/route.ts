@@ -3,7 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
 
-// Schema para criar consultoria,const createConsultationSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']),  scheduledAt: z.string().datetime().optional(),  duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas,  consultantId: z.string().optional(),  notes: z.string().optional()
+// Schema para criar consultoria
+const createConsultationSchema = z.object({,  clientId: z.string().min(1, 'Cliente é obrigatório'),  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']),  scheduledAt: z.string().datetime().optional(),  duration: z.number().min(15).max(480).optional()
+// 15 min - 8 horas
+consultantId: z.string().optional(),  notes: z.string().optional()
 })
 
 // GET /api/consultations - Listar consultorias
@@ -11,8 +14,11 @@ import { z } from 'zod'
 export async function GET(request: NextRequest) {
   try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { searchParams } = new URL(request.url),    const page =  
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { searchParams } = new URL(request.url)
+    const page =  
 const limit = parseInt(searchParams.get('limit') || '10')
     const status =  
 const type = searchParams.get('type')
@@ -54,8 +60,10 @@ const skip = (page - 1) * limit
 export async function POST(request: NextRequest) {
   try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const body = await request.json()
     
     // Validar dados
     
@@ -71,7 +79,9 @@ export async function POST(request: NextRequest) {
 
     // Se for consultoria humana
 
-    verificar se consultor existe,    if (validatedData.consultantId) {,      const consultant = await prisma.user.findUnique({,        where: { id: validatedData.consultantId }
+    verificar se consultor existe
+    if (validatedData.consultantId) {
+    const consultant = await prisma.user.findUnique({,        where: { id: validatedData.consultantId }
       }),
       if (!consultant) {,        return NextResponse.json(,          { status: 404 }
         )
@@ -81,7 +91,9 @@ export async function POST(request: NextRequest) {
     // Criar consultoria
 
     const consultation = await prisma.consultation.create({,      data: {
-        ...validatedData,        scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,        duration: validatedData.duration || 60, // Default 1 hora,        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
+        ...validatedData,        scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,        duration: validatedData.duration || 60
+        // Default 1 hora
+        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
       },      include: {,        client: {,          select: { ,            id: true, ,            name: true, ,            email: true, ,            targetCountry: true,            visaType: true
           }
         },        consultant: {,          select: { id: true, name: true, email: true }
@@ -104,7 +116,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({,      data: consultation
     }, { status: 201 })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },

@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
-// Configurar MercadoPago,const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN,if (!accessToken) {,  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
+// Configurar MercadoPago
+const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
+if (!accessToken) {,  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
 },
 const client = new MercadoPagoConfig({,  accessToken: accessToken!
 }),
 const payment = new Payment(client),
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const paymentId = searchParams.get('payment_id'),
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const paymentId = searchParams.get('payment_id'),
     if (!paymentId) {,      return NextResponse.json({,        error: 'payment_id é obrigatório'
       }, { status: 400 })
     },

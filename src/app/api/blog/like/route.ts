@@ -7,16 +7,20 @@ import jwt from 'jsonwebtoken'
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const authToken = request.cookies.get('auth-token')?.value,    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de acesso requerido' },        { status: 401 }
+    const authToken = request.cookies.get('auth-token')?.value
+    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de acesso requerido' },        { status: 401 }
       )
     }
 
     // Verify token
 
-    const jwtSecret = process.env.NEXTAUTH_SECRET,    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
+    const jwtSecret = process.env.NEXTAUTH_SECRET
+    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
       )
     },
-    let userId: string,    try {,      const decoded = jwt.verify(authToken, jwtSecret) as any,      userId = decoded.userId
+    let userId: string
+    try {
+    const decoded = jwt.verify(authToken, jwtSecret) as any,      userId = decoded.userId
     } catch {,      return NextResponse.json(,        { error: 'Token inválido' },        { status: 401 }
       )
     },

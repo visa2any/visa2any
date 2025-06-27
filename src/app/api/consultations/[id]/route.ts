@@ -3,17 +3,21 @@ import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
 
-// Schema para atualizar consultoria,const updateConsultationSchema = z.object({,  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']).optional(),  status: z.enum(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'RESCHEDULED']).optional(),  scheduledAt: z.string().optional(),  completedAt: z.string().datetime().optional(),  duration: z.number().optional(),  result: z.any().optional(),  score: z.number().min(0).max(100).optional(),  recommendation: z.string().optional(),  timeline: z.string().optional(),  nextSteps: z.string().optional(),  notes: z.string().optional(),  consultantId: z.string().optional()
+// Schema para atualizar consultoria
+const updateConsultationSchema = z.object({,  type: z.enum(['AI_ANALYSIS', 'HUMAN_CONSULTATION', 'FOLLOW_UP', 'DOCUMENT_REVIEW', 'INTERVIEW_PREP', 'VIP_SERVICE']).optional(),  status: z.enum(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'RESCHEDULED']).optional(),  scheduledAt: z.string().optional(),  completedAt: z.string().datetime().optional(),  duration: z.number().optional(),  result: z.any().optional(),  score: z.number().min(0).max(100).optional(),  recommendation: z.string().optional(),  timeline: z.string().optional(),  nextSteps: z.string().optional(),  notes: z.string().optional(),  consultantId: z.string().optional()
 })
 
 // GET /api/consultations/[id] - Buscar consultoria específica
 
 export async function GET(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params,
     const consultation = await prisma.consultation.findUnique({,      where: { id },      include: {,        client: {,          include: {,            documents: {,              orderBy: { uploadedAt: 'desc' }
             }
           }
@@ -33,11 +37,16 @@ export async function GET(
   }
 }
 
-// PATCH /api/consultations/[id] - Atualizar campo específico (inline edit),export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+// PATCH /api/consultations/[id] - Atualizar campo específico (inline edit)
+export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
+    const body = await request.json()
 
     // Validar dados
 
@@ -63,7 +72,8 @@ export async function GET(
 
     // Se está marcando como completa
 
-    definir completedAt automaticamente,    if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {,      updateData.completedAt = new Date()
+    definir completedAt automaticamente
+    if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {,      updateData.completedAt = new Date()
     }
 
     // Atualizar consultoria
@@ -83,7 +93,8 @@ export async function GET(
     return NextResponse.json({,      data: updatedConsultation
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -96,10 +107,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
+    const body = await request.json()
 
     // Validar dados
 
@@ -123,7 +138,8 @@ export async function PUT(
 
     // Se está marcando como completa
 
-    definir completedAt automaticamente,    if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {,      updateData.completedAt = new Date()
+    definir completedAt automaticamente
+    if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {,      updateData.completedAt = new Date()
     }
 
     // Atualizar consultoria
@@ -137,12 +153,14 @@ export async function PUT(
 
     // Atualizar status do cliente baseado no resultado da consultoria
 
-    if (validatedData.status === 'COMPLETED') {,      let newClientStatus = existingConsultation.client.status
+    if (validatedData.status === 'COMPLETED') {
+    let newClientStatus = existingConsultation.client.status
 
       // Lógica para determinar próximo status do cliente
 
       if (validatedData.score && validatedData.score >= 70) {,        newClientStatus = 'IN_PROCESS'
-      } else if (validatedData.score && validatedData.score < 40) {,        newClientStatus = 'QUALIFIED' // Precisa de mais trabalho      } else {,        newClientStatus = 'DOCUMENTS_PENDING'
+      } else if (validatedData.score && validatedData.score < 40) {,        newClientStatus = 'QUALIFIED' // Precisa de mais trabalho      } else {
+      newClientStatus = 'DOCUMENTS_PENDING'
       },
       await prisma.client.update({,        where: { id: existingConsultation.clientId },        data: { ,          status: newClientStatus,          score: validatedData.score || existingConsultation.client.score
         }
@@ -158,7 +176,8 @@ export async function PUT(
     return NextResponse.json({,      data: updatedConsultation
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -171,10 +190,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
 
     // Verificar se consultoria existe
 

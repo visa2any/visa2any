@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 export async function GET(,  request: NextRequest,  { params }: { params: { slug: string } }
-) {,  try {,    const { slug } = params
+) {
+try {
+const { slug } = params
 
     // Buscar post por ID (slug)
 
@@ -25,12 +27,14 @@ export async function GET(,  request: NextRequest,  { params }: { params: { slug
 
     // Buscar posts relacionados (mesma categoria
 
-    exceto o atual),    const relatedPosts = await prisma.blogPost.findMany({,      where: {,        category: post.category,        id: { not: post.id },        published: true
+    exceto o atual)
+    const relatedPosts = await prisma.blogPost.findMany({,      where: {,        category: post.category,        id: { not: post.id },        published: true
       },      take: 4,      orderBy: {,        publishDate: 'desc'
       }
     }),
     return NextResponse.json({,      post: {
-        ...post,        tags: Array.isArray(post.tags) ? post.tags : [],        views: post.views + 1 // Mostrar a view incrementada      },      relatedPosts: relatedPosts.map(p => ({
+        ...post,        tags: Array.isArray(post.tags) ? post.tags : [],        views: post.views + 1 // Mostrar a view incrementada      }
+        relatedPosts: relatedPosts.map(p => ({
         ...p,        tags: Array.isArray(p.tags) ? p.tags : []
       }))
     })
@@ -43,7 +47,10 @@ export async function GET(,  request: NextRequest,  { params }: { params: { slug
 },
 
 export async function PUT(,  request: NextRequest,  { params }: { params: { slug: string } }
-) {,  try {,    const { slug } = params,    const body = await request.json()
+) {
+try {
+const { slug } = params
+const body = await request.json()
 
     // Verificar se o post existe
 
@@ -74,7 +81,9 @@ export async function PUT(,  request: NextRequest,  { params }: { params: { slug
 },
 
 export async function DELETE(,  request: NextRequest,  { params }: { params: { slug: string } }
-) {,  try {,    const { slug } = params
+) {
+try {
+const { slug } = params
 
     // Verificar se o post existe
 

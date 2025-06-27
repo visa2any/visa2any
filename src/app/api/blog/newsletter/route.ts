@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { name, phone, countries = [] } = body
     
     // Validação básica
@@ -45,7 +47,9 @@ const { name, phone, countries = [] } = body
       }
     })
 
-    // Aqui você pode integrar com API do WhatsApp para enviar mensagem de boas-vindas,    // await sendWelcomeMessage(cleanPhone, name)
+    // Aqui você pode integrar com API do WhatsApp para enviar mensagem de boas-vindas
+    // await sendWelcomeMessage(cleanPhone
+    name)
 
     return NextResponse.json({,      message: 'Cadastro realizado com sucesso! Você receberá atualizações no WhatsApp.',      subscriber: {,        id: newSubscriber.id,        name: newSubscriber.name,        isActive: newSubscriber.isActive
       }
@@ -58,7 +62,10 @@ const { name, phone, countries = [] } = body
   }
 },
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const active = searchParams.get('active') !== 'false'
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const active = searchParams.get('active') !== 'false'
     
     // Estatísticas da newsletter
     
@@ -75,8 +82,10 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 
     // Contar países
 
-    const countryCount: Record<string, number> = {},    countryDistribution.forEach(sub => {,      const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
-      countries.forEach(country => {,        const countryKey = String(country),        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
+    const countryCount: Record<string, number> = {},    countryDistribution.forEach(sub => {
+    const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
+      countries.forEach(country => {
+      const countryKey = String(country),        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
       })
     })
 
@@ -100,8 +109,11 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 }
 
-// Função para enviar mensagem de boas-vindas (placeholder),async function sendWelcomeMessage(phone: string, name: string) {
-  // Aqui você integraria com a API do WhatsApp Business,  // Por exemplo: Twilio, WhatsApp Business API, etc.
+// Função para enviar mensagem de boas-vindas (placeholder)
+async function sendWelcomeMessage(phone: string, name: string) {
+  // Aqui você integraria com a API do WhatsApp Business
+  // Por exemplo: Twilio
+  WhatsApp Business API, etc.
   
   const message = `Olá ${name}! 👋,
 Bem-vindo à Newsletter WhatsApp da Visa2Any! 🎉,
@@ -114,7 +126,8 @@ Para parar de receber, responda "PARAR" a qualquer momento.,
 Sua jornada internacional começa agora! 🌍✈️`,
   console.log(`📱 Enviando mensagem de boas-vindas para ${phone}:`, message)
   
-  // Implementar integração real aqui,  // const result = await whatsappApi.sendMessage(phone
+  // Implementar integração real aqui
+  // const result = await whatsappApi.sendMessage(phone
  message)
   // return result
 }

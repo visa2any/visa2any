@@ -193,7 +193,8 @@ Consultoria gratuita: {{AFFILIATE_LINK}},Código especial: {{REFERRAL_CODE}}
 
 // GET - Listar materiais promocionais
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const url =  
 const type = url.searchParams.get('type')
     const category =  
@@ -209,7 +210,9 @@ const affiliateId = url.searchParams.get('affiliateId')
 
     // Se affiliateId for fornecido
 
-    incluir materiais específicos do afiliado,    if (affiliateId) {,      where.OR = [,        { affiliateId: null }, // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
+    incluir materiais específicos do afiliado
+    if (affiliateId) {,      where.OR = [,        { affiliateId: null }
+    // Materiais públicos,        { affiliateId } // Materiais específicos do afiliado
       ]
     } else {,      where.affiliateId = null // Apenas materiais públicos    }
 
@@ -220,7 +223,11 @@ const affiliateId = url.searchParams.get('affiliateId')
 
     // Se não houver materiais no banco
 
-    retornar materiais padrão,    if (materials.length === 0 && !affiliateId) {,      const filteredDefaults = defaultMaterials.filter(material => {,        if (type && material.type !== type) return false,        if (category && material.category !== category) return false,        return true
+    retornar materiais padrão
+    if (materials.length === 0 && !affiliateId) {
+    const filteredDefaults = defaultMaterials.filter(material => {
+    if (type && material.type !== type) return false
+    if (category && material.category !== category) return false,        return true
       }),
       return NextResponse.json({,        data: filteredDefaults.map((material, index) => ({,          id: `default_${index}`
           ...material,          createdAt: new Date().toISOString(),          updatedAt: new Date().toISOString(),          views: Math.floor(Math.random() * 1000),          downloads: Math.floor(Math.random() * 500)
@@ -238,7 +245,8 @@ const affiliateId = url.searchParams.get('affiliateId')
 
 // POST - Criar novo material
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const {,      type,      title,      description,      content,      category,      tags = []
       imageUrl,      downloadUrl,      previewUrl,      affiliateId,      language = 'pt'
@@ -263,7 +271,8 @@ const {,      type,      title,      description,      content,      category,  
 
 // PUT - Atualizar material
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { id, ...updateData } = body,
     if (!id) {,      return NextResponse.json({,        error: 'ID do material é obrigatório'

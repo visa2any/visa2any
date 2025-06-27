@@ -4,7 +4,8 @@ import { BookingRequest } from '@/lib/appointment-booking'
 
 // POST - Agendamento híbrido inteligente
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { bookingRequest, options }: { ,      bookingRequest: BookingRequest,      options: HybridBookingOptions 
     } = body
@@ -44,7 +45,9 @@ const { bookingRequest, options }: { ,      bookingRequest: BookingRequest,     
 
 // GET - Buscar vagas disponíveis em todos os métodos
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const country =  
 const visaType = searchParams.get('visaType'),
     if (!country || !visaType) {,      return NextResponse.json(,        { error: 'Parâmetros country e visaType são obrigatórios' },        { status: 400 }
@@ -69,7 +72,9 @@ const visaType = searchParams.get('visaType'),
   }
 }
 
-// Métodos auxiliares para recomendações,function generateRecommendations(attempts: any[]): string[] {,  const recommendations: string[] = []
+// Métodos auxiliares para recomendações
+function generateRecommendations(attempts: any[]): string[] {
+const recommendations: string[] = []
 
   const failedMethods =  
 const hasOfficialFailure = failedMethods.includes('official')
@@ -87,7 +92,8 @@ const hasScrapingFailure = failedMethods.includes('scraping'),
   },
   return recommendations
 },
-function generateAvailabilityRecommendations(results: any): string[] {,  const recommendations: string[] = [],
+function generateAvailabilityRecommendations(results: any): string[] {
+const recommendations: string[] = [],
   if (results.official.length > 0) {,    recommendations.push('✅ Use APIs oficiais para melhor confiabilidade')
   },
   if (results.partners.length > 0 && results.official.length === 0) {,    recommendations.push('💰 Parceiros disponíveis - agendamento pago mas confiável')

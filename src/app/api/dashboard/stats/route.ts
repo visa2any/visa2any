@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json(,        { status: 401 }
+    const user = await verifyAuth(request)
+    if (!user) {,      return NextResponse.json(,        { status: 401 }
       )
     }
 
@@ -17,7 +18,9 @@ export async function GET(request: NextRequest) {
 
     if (!isAdmin(user)) {,      return NextResponse.json(,        { status: 403 }
       )
-    },    const { searchParams } = new URL(request.url),    const period =  
+    }
+    const { searchParams } = new URL(request.url)
+    const period =  
 const days = parseInt(period)
     
     // Data de início do período
@@ -48,14 +51,22 @@ const days = parseInt(period)
 
     // Agrupar clientes por status
 
-    const clientsByStatus = allClients.reduce((acc, client) => {,      const existing = acc.find(item => item.status === client.status),      if (existing) {,        existing.count++
+    const clientsByStatus = allClients.reduce((acc, client) => {
+    const existing = acc.find(item => item.status === client.status)
+    if (existing) {,        existing.count++
       } else {,        acc.push({ status: client.status, count: 1 })
       },      return acc
     }, [] as Array<{ status: string, count: number }>)
 
     // Dados simulados para demonstração
 
-    const simulatedData = {,      overview: {,        totalClients,        newClientsThisPeriod,        clientsGrowth: Math.floor(Math.random() * 20) - 5, // -5% a +15%,        activeConsultations: Math.floor(totalClients * 0.3),        completedConsultations: Math.floor(totalClients * 0.15),        conversionRate: Math.floor(Math.random() * 30) + 15, // 15% a 45%,        totalRevenue: totalClients * 2500 + Math.floor(Math.random() * 50000),        revenueThisPeriod: newClientsThisPeriod * 2200 + Math.floor(Math.random() * 25000),        revenueGrowth: Math.floor(Math.random() * 25) - 5, // -5% a +20%,        averageTicket: 2200 + Math.floor(Math.random() * 800)
+    const simulatedData = {,      overview: {,        totalClients,        newClientsThisPeriod,        clientsGrowth: Math.floor(Math.random() * 20) - 5
+    // -5% a +15%
+    activeConsultations: Math.floor(totalClients * 0.3),        completedConsultations: Math.floor(totalClients * 0.15),        conversionRate: Math.floor(Math.random() * 30) + 15
+    // 15% a 45%
+    totalRevenue: totalClients * 2500 + Math.floor(Math.random() * 50000),        revenueThisPeriod: newClientsThisPeriod * 2200 + Math.floor(Math.random() * 25000),        revenueGrowth: Math.floor(Math.random() * 25) - 5
+    // -5% a +20%
+    averageTicket: 2200 + Math.floor(Math.random() * 800)
       },      clientsByStatus: clientsByStatus.length > 0 ? clientsByStatus : [,        { status: 'LEAD', count: Math.floor(totalClients * 0.4) },        { status: 'QUALIFIED', count: Math.floor(totalClients * 0.25) },        { status: 'IN_PROCESS', count: Math.floor(totalClients * 0.15) },        { status: 'COMPLETED', count: Math.floor(totalClients * 0.2) }
       ]
       consultationsByType: [,        { type: 'AI_ANALYSIS', count: Math.floor(totalClients * 0.5) },        { type: 'HUMAN_CONSULTATION', count: Math.floor(totalClients * 0.3) },        { type: 'FOLLOW_UP', count: Math.floor(totalClients * 0.15) },        { type: 'VIP_SERVICE', count: Math.floor(totalClients * 0.05) }
@@ -83,23 +94,38 @@ const days = parseInt(period)
     })
   }
 },
-async function generateRecentActivity(startDate: Date) {,  try {
-    // Retornar atividade simulada (comentar busca real temporariamente),    // const logs = await prisma.automationLog.findMany({
-    //   where: {,    //     executedAt: {
-    //       gte: startDate,    //     }
-    //   },    //   orderBy: {
-    //     executedAt: 'desc',    //   }
-    //   take: 10,    //   include: {
-    //     client: {,    //       select: {
-    //         id: true,    //         name: true
-    //         email: true,    //       }
-    //     },    //   }
+async function generateRecentActivity(startDate: Date) {
+try {
+    // Retornar atividade simulada (comentar busca real temporariamente)
+    // const logs = await prisma.automationLog.findMany({
+    //   where: {
+    //     executedAt: {
+    //       gte: startDate
+    //     }
+    //   }
+    //   orderBy: {
+    //     executedAt: 'desc'
+    //   }
+    //   take: 10
+    //   include: {
+    //     client: {
+    //       select: {
+    //         id: true
+    //         name: true
+    //         email: true
+    //       }
+    //     }
+    //   }
     // })
 
-    // return logs.map(log => ({,    //   id: log.id
-    //   type: log.type,    //   action: log.action
-    //   client: log.client,    //   success: log.success
-    //   executedAt: log.executedAt.toISOString(),    // }))
+    // return logs.map(log => ({
+    //   id: log.id
+    //   type: log.type
+    //   action: log.action
+    //   client: log.client
+    //   success: log.success
+    //   executedAt: log.executedAt.toISOString()
+    // }))
     
     // Retornar atividade simulada
     

@@ -3,12 +3,14 @@ import { prisma } from '@/lib/prisma'
 import { getWhatsAppService } from '@/lib/whatsapp'
 import { z } from 'zod'
 
-// Schema para envio de WhatsApp,const sendWhatsAppSchema = z.object({,  to: z.string().min(10, 'Número de telefone é obrigatório'),  message: z.string().min(1, 'Mensagem é obrigatória'),  clientId: z.string().optional(),  template: z.string().optional(),  variables: z.record(z.any()).optional(),  mediaUrl: z.string().url().optional()
+// Schema para envio de WhatsApp
+const sendWhatsAppSchema = z.object({,  to: z.string().min(10, 'Número de telefone é obrigatório'),  message: z.string().min(1, 'Mensagem é obrigatória'),  clientId: z.string().optional(),  template: z.string().optional(),  variables: z.record(z.any()).optional(),  mediaUrl: z.string().url().optional()
 })
 
 // POST /api/notifications/whatsapp - Enviar WhatsApp
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const validatedData = sendWhatsAppSchema.parse(body)
 
@@ -31,7 +33,8 @@ const validatedData = sendWhatsAppSchema.parse(body)
       },      message: whatsAppResult.queued ? 'WhatsApp adicionado à fila' : 'WhatsApp enviado com sucesso'
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -42,7 +45,8 @@ const validatedData = sendWhatsAppSchema.parse(body)
 
 // GET /api/notifications/whatsapp/status - Obter status do WhatsApp
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const whatsappService =  
 const status = whatsappService.getStatus(),
     return NextResponse.json({,      data: {,        status,        timestamp: new Date().toISOString()

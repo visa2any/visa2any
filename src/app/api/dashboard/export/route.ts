@@ -4,9 +4,11 @@ import { verifyAuth } from 'next/server'
 
 export const dynamic = 'force-dynamic',
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const user = await verifyAuth(request)
+    if (!user) {,      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     },
     const { searchParams } = new URL(request.url)
     const period =  

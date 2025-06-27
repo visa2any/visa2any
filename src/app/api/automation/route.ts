@@ -3,7 +3,8 @@ import { costEffectiveSolutions } from '@/lib/cost-effective-solutions'
 
 // POST - Automação com Playwright (baixo custo)
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { country, visaType, action } = body,
     if (!country || !visaType) {,      return NextResponse.json(,        { error: 'Campos country e visaType são obrigatórios' },        { status: 400 }
@@ -33,7 +34,10 @@ const { country, visaType, action } = body,
 
 // GET - Status do monitoramento
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const action = searchParams.get('action') || 'status'
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const action = searchParams.get('action') || 'status'
 
     switch (action) {,      case 'status':
         // Status geral do sistema de automação

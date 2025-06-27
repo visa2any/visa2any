@@ -10,7 +10,10 @@ export async function POST(request: NextRequest) {
     const authHeader =  
 const cookieToken = request.cookies.get('auth-token')?.value
     const token = authHeader?.replace('Bearer ', '') || cookieToken,    
-    if (token) {,      try {,        const jwtSecret = process.env.NEXTAUTH_SECRET,        if (!jwtSecret) {,          console.error('NEXTAUTH_SECRET não configurado')
+    if (token) {
+    try {
+    const jwtSecret = process.env.NEXTAUTH_SECRET
+    if (!jwtSecret) {,          console.error('NEXTAUTH_SECRET não configurado')
           // Continue with logout even if token verification fails        } else {
           const decoded = jwt.verify(token, jwtSecret) as any
         
@@ -42,7 +45,8 @@ const cookieToken = request.cookies.get('auth-token')?.value
     
     // Mesmo com erro
     
-    remover cookie,    const response = NextResponse.json({,      success: true,      message: 'Logout realizado'
+    remover cookie
+    const response = NextResponse.json({,      success: true,      message: 'Logout realizado'
     }),
     response.cookies.set('auth-token', '', {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'strict',      maxAge: 0
     }),

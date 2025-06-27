@@ -7,7 +7,8 @@ import { verifyAuth } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json(,        { status: 401 }
+    const user = await verifyAuth(request)
+    if (!user) {,      return NextResponse.json(,        { status: 401 }
       )
     },
     const userId = user.id
@@ -39,13 +40,15 @@ const baseNotification = {,        type: 'info' as const,        title: '',     
         case 'ANALYSIS_COMPLETED':,          return {
             ...baseNotification,            type: 'success' as const,            title: 'Análise concluída',            message: `Análise de elegibilidade concluída para ${log.client?.name || 'cliente'}`,            actionUrl: `/admin/consultations`,            actionLabel: 'Ver análise'
           },
-        case 'DOCUMENT_VALIDATED':,          const details = log.details as { documentName?: string },          return {
+        case 'DOCUMENT_VALIDATED':
+        const details = log.details as { documentName?: string },          return {
             ...baseNotification,            type: 'success' as const,            title: 'Documento validado',            message: `Documento ${details?.documentName || 'novo'} foi validado`,            actionUrl: `/admin/documents`,            actionLabel: 'Ver documentos'
           },
         case 'PAYMENT_CONFIRMED':,          return {
             ...baseNotification,            type: 'success' as const,            title: 'Pagamento confirmado',            message: `Pagamento recebido de ${log.client?.name || 'cliente'}`,            actionUrl: `/admin/payments`,            actionLabel: 'Ver pagamentos'
           },
-        case 'CLIENT_STATUS_CHANGED':,          const statusDetails = log.details as { newStatus?: string },          return {
+        case 'CLIENT_STATUS_CHANGED':
+        const statusDetails = log.details as { newStatus?: string },          return {
             ...baseNotification,            type: 'info' as const,            title: 'Status atualizado',            message: `Status do cliente ${log.client?.name || 'cliente'} foi atualizado para ${statusDetails?.newStatus || 'novo status'}`,            actionUrl: `/admin/clients`,            actionLabel: 'Ver cliente'
           },
         default:,          return {
@@ -84,7 +87,8 @@ const baseNotification = {,        type: 'info' as const,        title: '',     
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyAuth(request),    if (!user) {,      return NextResponse.json(,        { status: 401 }
+    const user = await verifyAuth(request)
+    if (!user) {,      return NextResponse.json(,        { status: 401 }
       )
     },
     const body = await request.json()

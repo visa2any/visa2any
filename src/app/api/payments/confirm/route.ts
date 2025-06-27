@@ -8,14 +8,16 @@ export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, RATE_LIMITS.checkout),  
   if (!rateLimitResult.success) {,    return createRateLimitResponse(rateLimitResult.resetTime)
   },  
-  try {,    const { payment_id, status, external_reference } = await request.json(),
+  try {
+  const { payment_id, status, external_reference } = await request.json(),
     if (!payment_id || !status) {,      return NextResponse.json(,      { error: 'Dados inválidos' },      { status: 400 }
     )
     }
 
     // Atualizar status do pagamento no banco
 
-    if (external_reference) {,      const payment = await prisma.payment.findFirst({,        where: { ,          OR: [,            { transactionId: payment_id },            { id: external_reference }
+    if (external_reference) {
+    const payment = await prisma.payment.findFirst({,        where: { ,          OR: [,            { transactionId: payment_id },            { id: external_reference }
           ]
         },        include: {,          client: true
         }
@@ -28,7 +30,8 @@ export async function POST(request: NextRequest) {
 
         // Se pagamento aprovado
 
-        atualizar status do cliente,        if (status === 'approved') {,          await prisma.client.update({,            where: { id: payment.clientId },            data: {,              status: 'IN_PROCESS' // Cliente que pagou entra em processo
+        atualizar status do cliente
+        if (status === 'approved') {,          await prisma.client.update({,            where: { id: payment.clientId },            data: {,              status: 'IN_PROCESS' // Cliente que pagou entra em processo
             }
           })
 

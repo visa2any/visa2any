@@ -7,10 +7,14 @@ let webScrapingActive = false
 let emailMonitoringActive = false
 let automationActive = false
 
-// Intervalos dos sistemas,let webScrapingInterval: NodeJS.Timeout | null = null,let emailInterval: NodeJS.Timeout | null = null
+// Intervalos dos sistemas
+let webScrapingInterval: NodeJS.Timeout | null = null
+let emailInterval: NodeJS.Timeout | null = null
 
 
-export async function POST(request: NextRequest) {,  try {,    const { action, system } = await request.json(),
+export async function POST(request: NextRequest) {
+try {
+const { action, system } = await request.json(),
     switch (action) {,      case 'activate_webscraping':,        return await activateWebScraping(),        
       case 'activate_email':,        return await activateEmailMonitoring(),        
       case 'activate_automation':,        return await activateAutomation(),        
@@ -23,14 +27,18 @@ export async function POST(request: NextRequest) {,  try {,    const { action, s
     }, { status: 500 })
   }
 },
-async function activateWebScraping() {,  try {,    if (webScrapingActive) {,      return NextResponse.json({ ,        message: 'Web scraping já está ativo',
+async function activateWebScraping() {
+try {
+if (webScrapingActive) {,      return NextResponse.json({ ,        message: 'Web scraping já está ativo',
         status: 'active'
       })
     }
 
     // Ativar web scraping com intervalo de 30 minutos
 
-    webScrapingInterval = setInterval(async () => {,      try {,        console.log('🔍 Verificando slots via web scraping...'),        const slots = await webScrapingService.checkAllSites(),        
+    webScrapingInterval = setInterval(async () => {
+    try {,        console.log('🔍 Verificando slots via web scraping...')
+    const slots = await webScrapingService.checkAllSites(),        
         if (slots.length > 0) {,          console.log(`✅ Encontrados ${slots.length} slots!`),          await webScrapingService.notifySlots(slots)
         } else {,          console.log('⏳ Nenhum slot encontrado desta vez')
         }
@@ -59,19 +67,24 @@ Você receberá alertas automáticos quando encontrarmos slots disponíveis!`),
     }, { status: 500 })
   }
 },
-async function activateEmailMonitoring() {,  try {,    if (emailMonitoringActive) {,      return NextResponse.json({ ,        message: 'Email monitoring já está ativo',
+async function activateEmailMonitoring() {
+try {
+if (emailMonitoringActive) {,      return NextResponse.json({ ,        message: 'Email monitoring já está ativo',
         status: 'active'
       })
     }
 
     // Ativar email monitoring com intervalo de 15 minutos
 
-    emailInterval = setInterval(async () => {,      try {,        console.log('📧 Verificando emails de consulados...'),        const [recentAlerts, consulateAlerts] = await Promise.all([,        emailMonitoringService.checkRecentEmails()
+    emailInterval = setInterval(async () => {
+    try {,        console.log('📧 Verificando emails de consulados...')
+    const [recentAlerts, consulateAlerts] = await Promise.all([,        emailMonitoringService.checkRecentEmails()
 
           emailMonitoringService.checkConsulateEmails()
         ]),        
         const allAlerts = [...recentAlerts, ...consulateAlerts]
-        ,        if (allAlerts.length > 0) {,          console.log(`📩 Encontrados ${allAlerts.length} emails relevantes!`),          await emailMonitoringService.notifyEmailAlerts(allAlerts)
+        
+        if (allAlerts.length > 0) {,          console.log(`📩 Encontrados ${allAlerts.length} emails relevantes!`),          await emailMonitoringService.notifyEmailAlerts(allAlerts)
         }
       } catch (error) {,        console.error('Erro no email monitoring:', error)
       }
@@ -94,7 +107,8 @@ Você receberá alertas quando consulados enviarem emails sobre vagas!`),
     }, { status: 500 })
   }
 },
-async function activateAutomation() {,  try {,    automationActive = true,
+async function activateAutomation() {
+try {,    automationActive = true,
     await sendActivationNotification('🤖 Browser Automation ATIVADO!'
       `Sistema de automação completa iniciado:
       
@@ -137,11 +151,15 @@ function getSystemStatus() {,  return NextResponse.json({,    webScraping: {,   
     },    totalCost: calculateTotalCost()
   })
 },
-function calculateTotalCost() {,  let total = 0,  if (emailMonitoringActive) total += 20,  if (automationActive) total += 50
+function calculateTotalCost() {
+let total = 0
+if (emailMonitoringActive) total += 20
+if (automationActive) total += 50
   // Web scraping é por uso (R$ 2/consulta)
   return `R$ ${total}/mês + R$ 2 por consulta web scraping`
 },
-async function sendActivationNotification(title: string, message: string) {,  const token = process.env.TELEGRAM_BOT_TOKEN
+async function sendActivationNotification(title: string, message: string) {
+const token = process.env.TELEGRAM_BOT_TOKEN
     const chatId = process.env.TELEGRAM_CHAT_ID,
   if (!token || !chatId) return,
   try {,    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        chat_id: chatId,        text: `${title}\n\n${message}`

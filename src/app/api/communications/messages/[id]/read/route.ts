@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {,    const messageId = params.id,
+) {
+try {
+const messageId = params.id,
     if (!messageId) {,      return NextResponse.json(,      { error: 'Dados inválidos' },      { status: 400 }
     )
     }
 
-    // Here you would update the message status in the database,    // For now, we'll simulate the update,    const updatedMessage = {,      id: messageId,      status: 'read'
+    // Here you would update the message status in the database
+    // For now
+    we'll simulate the update
+    const updatedMessage = {,      id: messageId,      status: 'read'
       readAt: new Date().toISOString()
     }
 

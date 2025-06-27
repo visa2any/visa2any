@@ -3,17 +3,21 @@ import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
 
-// Schema para atualizar cliente,const updateClientSchema = z.object({,  name: z.string().min(2).optional(),  email: z.string().email().optional(),  phone: z.string().optional(),  country: z.string().optional(),  nationality: z.string().optional(),  age: z.number().min(0).max(120).optional(),  profession: z.string().optional(),  education: z.string().optional(),  targetCountry: z.string().optional(),  visaType: z.string().optional(),  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional(),  score: z.number().min(0).max(100).optional(),  notes: z.string().optional(),  source: z.string().optional(),  assignedUserId: z.string().optional()
+// Schema para atualizar cliente
+const updateClientSchema = z.object({,  name: z.string().min(2).optional(),  email: z.string().email().optional(),  phone: z.string().optional(),  country: z.string().optional(),  nationality: z.string().optional(),  age: z.number().min(0).max(120).optional(),  profession: z.string().optional(),  education: z.string().optional(),  targetCountry: z.string().optional(),  visaType: z.string().optional(),  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional(),  score: z.number().min(0).max(100).optional(),  notes: z.string().optional(),  source: z.string().optional(),  assignedUserId: z.string().optional()
 })
 
 // GET /api/clients/[id] - Buscar cliente específico
 
 export async function GET(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params,
     const client = await prisma.client.findUnique({,      where: { id },      include: {,        assignedUser: {,          select: { id: true, name: true, email: true, role: true }
         },        consultations: {,          orderBy: { createdAt: 'desc' },          include: {,            consultant: {,              select: { id: true, name: true, email: true }
             }
@@ -36,11 +40,16 @@ export async function GET(
   }
 }
 
-// PATCH /api/clients/[id] - Atualizar campo específico (inline edit),export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+// PATCH /api/clients/[id] - Atualizar campo específico (inline edit)
+export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
+    const body = await request.json()
 
     // Validar dados
 
@@ -70,7 +79,8 @@ export async function GET(
     return NextResponse.json({,      data: updatedClient
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -83,10 +93,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params,    const body = await request.json()
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
+    const body = await request.json()
 
     // Validar dados
 
@@ -116,7 +130,8 @@ export async function PUT(
     return NextResponse.json({,      data: updatedClient
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -129,10 +144,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {
+) {
+try {
     // Verificar autenticação
-    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
-    },    const { id } = params
+    const user = await verifyAuth(request)
+    if (!user) {,      return createAuthError('Acesso não autorizado')
+    }
+    const { id } = params
 
     // Verificar se cliente existe
 

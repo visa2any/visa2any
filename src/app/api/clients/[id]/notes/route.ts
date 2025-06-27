@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 
 export async function POST(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {,    const clientId = params.id
+) {
+try {
+const clientId = params.id
 const body = await request.json()
     const { content } = body,
     if (!clientId) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
@@ -16,10 +18,14 @@ const body = await request.json()
     // Create note record
 
     const noteId =  
-const newNote = {,      id: noteId,      clientId,      content: content.trim(),      author: 'Current User', // In a real app, get from session,      createdAt: new Date().toISOString(),      updatedAt: new Date().toISOString()
+const newNote = {,      id: noteId,      clientId,      content: content.trim(),      author: 'Current User'
+// In a real app
+get from session,      createdAt: new Date().toISOString(),      updatedAt: new Date().toISOString()
     }
 
-    // Here you would save the note to the database,    // For now, we'll simulate the save operation
+    // Here you would save the note to the database
+    // For now
+    we'll simulate the save operation
     await new Promise(resolve => setTimeout(resolve, 200))
 
     // Create timeline entry for the note
@@ -37,7 +43,9 @@ const newNote = {,      id: noteId,      clientId,      content: content.trim(),
 },
 
 export async function GET(,  request: NextRequest,  { params }: { params: { id: string } }
-) {,  try {,    const clientId = params.id,
+) {
+try {
+const clientId = params.id,
     if (!clientId) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }
     )
     }

@@ -3,12 +3,15 @@ import { medicalExamService } from '@/lib/medical-exams'
 
 // GET - Buscar clínicas e exames médicos
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const action =  
 const country = searchParams.get('country')
     const city =  
 const state = searchParams.get('state'),
-    if (action === 'clinics') {,      if (!country) {,        return NextResponse.json(,          { error: 'Parâmetro country é obrigatório para buscar clínicas' },          { status: 400 }
+    if (action === 'clinics') {
+    if (!country) {,        return NextResponse.json(,          { error: 'Parâmetro country é obrigatório para buscar clínicas' },          { status: 400 }
         )
       },
       const clinics = await medicalExamService.getApprovedClinics(country, city, state),      
@@ -17,7 +20,8 @@ const state = searchParams.get('state'),
           : `Nenhuma clínica encontrada para ${country}`
       })
     },
-    if (action === 'exams') {,      if (!country) {,        return NextResponse.json(,          { error: 'Parâmetro country é obrigatório para buscar exames' },          { status: 400 }
+    if (action === 'exams') {
+    if (!country) {,        return NextResponse.json(,          { error: 'Parâmetro country é obrigatório para buscar exames' },          { status: 400 }
         )
       },
       const exams = medicalExamService.getRequiredExams(country),      
@@ -36,7 +40,8 @@ const state = searchParams.get('state'),
 
 // POST - Agendar exame médico
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const { ,      applicantId ,      clinicId, ,      examTypes, ,      appointmentDate, ,      appointmentTime, ,      totalCost,      notes 
     } = body

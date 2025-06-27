@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
   // Aplicar rate limiting para login
   const rateLimitResult = rateLimit(request, RATE_LIMITS.auth),  
   if (!rateLimitResult.success) {,    return createRateLimitResponse(rateLimitResult.resetTime)
-  },  try {,    const body = await request.json()
+  }
+  try {
+  const body = await request.json()
 const { email, password } = body,
     if (!email || !password) {,      return NextResponse.json({,        error: 'Email e senha são obrigatórios'
       }, { status: 400 })
@@ -34,7 +36,8 @@ const { email, password } = body,
 
     // Gerar token JWT
 
-    const jwtSecret = process.env.JWT_SECRET,    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return NextResponse.json({,        error: 'Erro de configuração do servidor'
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return NextResponse.json({,        error: 'Erro de configuração do servidor'
       }, { status: 500 })
     },    
     const token = jwt.sign(,      { ,        customerId: customer.id, ,        email: customer.email,        type: 'customer'
@@ -49,7 +52,9 @@ const { email, password } = body,
 
     // Definir cookie httpOnly
 
-    response.cookies.set('customer-token', token, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 60 * 60 * 24 * 7, // 7 dias,      path: '/'
+    response.cookies.set('customer-token', token, {,      httpOnly: true,      secure: process.env.NODE_ENV === 'production',      sameSite: 'lax',      maxAge: 60 * 60 * 24 * 7
+    // 7 dias
+    path: '/'
     }),
     return response
 

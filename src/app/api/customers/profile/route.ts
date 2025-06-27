@@ -4,10 +4,13 @@ import jwt from 'jsonwebtoken',
 
 
 export const dynamic = 'force-dynamic',
-async function getCustomerFromToken(request: NextRequest) {,  try {,    const token = request.cookies.get('customer-token')?.value,    
+async function getCustomerFromToken(request: NextRequest) {
+try {
+const token = request.cookies.get('customer-token')?.value,    
     if (!token) {,      return null
     },
-    const jwtSecret = process.env.JWT_SECRET,    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return null
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {,      console.error('JWT_SECRET não configurado'),      return null
     },
     const payload = jwt.verify(token, jwtSecret) as any,    
     if (payload.type !== 'customer') {,      return null
@@ -23,7 +26,9 @@ async function getCustomerFromToken(request: NextRequest) {,  try {,    const to
   }
 },
 
-export async function GET(request: NextRequest) {,  try {,    const customer = await getCustomerFromToken(request),
+export async function GET(request: NextRequest) {
+try {
+const customer = await getCustomerFromToken(request),
     if (!customer) {,      return NextResponse.json({,        error: 'Cliente não encontrado ou não autenticado'
       }, { status: 401 })
     }

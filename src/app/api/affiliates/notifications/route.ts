@@ -4,11 +4,13 @@ import { NextRequest, NextResponse } from 'i'nterface NotificationData {,  id: s
 
 // Simulação de storage de notificações (em produção
 
-usar Redis ou banco),const notificationsStore = new Map<string, NotificationData[]>()
+usar Redis ou banco)
+const notificationsStore = new Map<string, NotificationData[]>()
 
 // GET - Buscar notificações do afiliado
 
-export async function GET(request: NextRequest) {,  try {
+export async function GET(request: NextRequest) {
+try {
     const url =  
 const affiliateId = url.searchParams.get('affiliateId')
     const unreadOnly =  
@@ -23,7 +25,8 @@ const limit = parseInt(url.searchParams.get('limit') || '50'),
 
     // Se não há notificações
 
-    criar algumas de exemplo,    if (notifications.length === 0) {,      notifications = generateSampleNotifications(affiliateId),      notificationsStore.set(affiliateId, notifications)
+    criar algumas de exemplo
+    if (notifications.length === 0) {,      notifications = generateSampleNotifications(affiliateId),      notificationsStore.set(affiliateId, notifications)
     }
 
     // Filtrar apenas não lidas se solicitado
@@ -50,7 +53,8 @@ const limit = parseInt(url.searchParams.get('limit') || '50'),
 
 // POST - Criar nova notificação
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
 const {,      affiliateId,      type,      title,      message,      data = {},      priority = 'medium'
     } = body,
@@ -69,10 +73,12 @@ const {,      affiliateId,      type,      title,      message,      data = {}, 
     },    
     notificationsStore.set(affiliateId, existing)
 
-    // TODO: Enviar push notification real,    // await sendPushNotification(affiliateId
+    // TODO: Enviar push notification real
+    // await sendPushNotification(affiliateId
  notification)
 
-    // TODO: Enviar email se for urgente,    // if (priority === 'urgent') {
+    // TODO: Enviar email se for urgente
+    // if (priority === 'urgent') {
     //   await sendEmailNotification(affiliateId
     notification)
     // }
@@ -87,7 +93,8 @@ const {,      affiliateId,      type,      title,      message,      data = {}, 
 
 // PUT - Marcar notificações como lidas
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { affiliateId, notificationIds, markAllAsRead = false } = body,
     if (!affiliateId) {,      return NextResponse.json({,        error: 'ID do afiliado é obrigatório'
@@ -100,7 +107,8 @@ const { affiliateId, notificationIds, markAllAsRead = false } = body,
       notifications.forEach(n => n.read = true)
     } else if (notificationIds && Array.isArray(notificationIds)) {
       // Marcar específicas como lidas
-      notifications.forEach(n => {,        if (notificationIds.includes(n.id)) {,          n.read = true
+      notifications.forEach(n => {
+      if (notificationIds.includes(n.id)) {,          n.read = true
         }
       })
     },
@@ -115,7 +123,9 @@ const { affiliateId, notificationIds, markAllAsRead = false } = body,
   }
 }
 
-// Função para gerar notificações de exemplo,function generateSampleNotifications(affiliateId: string): NotificationData[] {,  const now =  
+// Função para gerar notificações de exemplo
+function generateSampleNotifications(affiliateId: string): NotificationData[] {
+const now =  
 const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
   return [,    {
@@ -140,7 +150,9 @@ const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   ]
 }
 
-// Funções utilitárias para envio de notificações específicas,async function sendConversionNotification(affiliateId: string, conversionData: any) {,  const notification = {,    affiliateId,    type: 'conversion',    title: '🎉 Nova Conversão!',    message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`,    data: conversionData,    priority: 'high'
+// Funções utilitárias para envio de notificações específicas
+async function sendConversionNotification(affiliateId: string, conversionData: any) {
+const notification = {,    affiliateId,    type: 'conversion',    title: '🎉 Nova Conversão!',    message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`,    data: conversionData,    priority: 'high'
   }
 
   // Simular envio da notificação
@@ -148,12 +160,14 @@ const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   return await fetch('/api/affiliates/notifications', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify(notification)
   })
 },
-async function sendPaymentNotification(affiliateId: string, paymentData: any) {,  const notification = {,    affiliateId,    type: 'payment',    title: '💰 Pagamento Processado',    message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`,    data: paymentData,    priority: 'high'
+async function sendPaymentNotification(affiliateId: string, paymentData: any) {
+const notification = {,    affiliateId,    type: 'payment',    title: '💰 Pagamento Processado',    message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`,    data: paymentData,    priority: 'high'
   },
   return await fetch('/api/affiliates/notifications', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify(notification)
   })
 },
-async function sendTierPromotionNotification(affiliateId: string, tierData: any) {,  const notification = {,    affiliateId,    type: 'tier_promotion',    title: '⭐ Promoção de Nível!',    message: `Parabéns! Você foi promovido para o nível ${tierData.newTier}!`,    data: tierData,    priority: 'urgent'
+async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
+const notification = {,    affiliateId,    type: 'tier_promotion',    title: '⭐ Promoção de Nível!',    message: `Parabéns! Você foi promovido para o nível ${tierData.newTier}!`,    data: tierData,    priority: 'urgent'
   },
   return await fetch('/api/affiliates/notifications', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify(notification)
   })

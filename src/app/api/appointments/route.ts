@@ -3,7 +3,9 @@ import { appointmentBookingService, BookingRequest, AppointmentSlot } from '@/li
 
 // GET - Buscar vagas disponíveis
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const consulate =  
 const visaType = searchParams.get('visaType')
     const days = parseInt(searchParams.get('days') || '60'),
@@ -23,19 +25,24 @@ const visaType = searchParams.get('visaType')
 
 // POST - Fazer agendamento
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body: BookingRequest = await request.json()
 
     // Validação dos dados obrigatórios
 
-    const required = ['applicantId', 'consulate', 'visaType', 'applicantInfo'],    for (const field of required) {,      if (!body[field as keyof BookingRequest]) {,        return NextResponse.json(,          { error: `Campo ${field} é obrigatório` },          { status: 400 }
+    const required = ['applicantId', 'consulate', 'visaType', 'applicantInfo']
+    for (const field of required) {
+    if (!body[field as keyof BookingRequest]) {,        return NextResponse.json(,          { error: `Campo ${field} é obrigatório` },          { status: 400 }
         )
       }
     }
 
     // Validação dos dados do requerente
 
-    const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality'],    for (const field of requiredApplicantInfo) {,      if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {,        return NextResponse.json(,          { error: `Campo applicantInfo.${field} é obrigatório` },          { status: 400 }
+    const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality']
+    for (const field of requiredApplicantInfo) {
+    if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {,        return NextResponse.json(,          { error: `Campo applicantInfo.${field} é obrigatório` },          { status: 400 }
         )
       }
     }
@@ -45,7 +52,8 @@ export async function POST(request: NextRequest) {,  try {
     const bookingResult = await appointmentBookingService.bookAppointment(body)
 
     if (bookingResult.success) {
-      // Salvar agendamento no banco de dados,      // TODO: Implementar salvamento no Prisma
+      // Salvar agendamento no banco de dados
+      // TODO: Implementar salvamento no Prisma
       
       return NextResponse.json({,        appointment: {,          id: bookingResult.appointmentId,          confirmationCode: bookingResult.confirmationCode,          date: bookingResult.date,          time: bookingResult.time,          location: bookingResult.location,          instructions: bookingResult.instructions
         },        message: 'Agendamento realizado com sucesso!'
@@ -62,7 +70,8 @@ export async function POST(request: NextRequest) {,  try {
 
 // PUT - Reagendar
 
-export async function PUT(request: NextRequest) {,  try {
+export async function PUT(request: NextRequest) {
+try {
     const body = await request.json()
 const { appointmentId, newDate, newTime, consulate } = body,
     if (!appointmentId || !newDate || !newTime || !consulate) {,      return NextResponse.json(,        { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' },        { status: 400 }

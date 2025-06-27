@@ -2,7 +2,10 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const clientId = params.id
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
+const clientId = params.id
 const type = searchParams.get('type')
     const limit = parseInt(searchParams.get('limit') || '50')
 
@@ -60,10 +63,14 @@ const type = searchParams.get('type')
   }
 },
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
+export async function POST(request: NextRequest) {
+try {
+const body = await request.json()
 const { type, content, clientId, subject, attachments } = body
 
-    // Here you would integrate with actual communication providers,    // For now, we'll simulate message sending
+    // Here you would integrate with actual communication providers
+    // For now
+    we'll simulate message sending
 
     const newMessage = {,      id: Date.now().toString(),      clientId,      client: { name: 'Client Name', email: 'client@email.com' },      type,      direction: 'outbound',      content,      subject,      status: 'sent',      timestamp: new Date().toISOString(),      assignedTo: 'Current User',      tags: []
       priority: 'medium',      attachments: attachments || []

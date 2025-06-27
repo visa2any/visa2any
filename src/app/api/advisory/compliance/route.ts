@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para verificação de compliance,const complianceCheckSchema = z.object({,  clientId: z.string()
+// Schema para verificação de compliance
+const complianceCheckSchema = z.object({,  clientId: z.string()
 
   country: z.string(),
   visaType: z.string(),
@@ -25,7 +26,8 @@ import { z } from 'zod'
 
 // POST /api/advisory/compliance - Verificar compliance
 
-export async function POST(request: NextRequest) {,  try {
+export async function POST(request: NextRequest) {
+try {
     const body = await request.json()
     const validatedData = complianceCheckSchema.parse(body)
 
@@ -56,7 +58,8 @@ export async function POST(request: NextRequest) {,  try {
       }
     })
 
-  } catch (error) {,    if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
+  } catch (error) {
+  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
         },        { status: 400 }
       )
     },
@@ -67,7 +70,9 @@ export async function POST(request: NextRequest) {,  try {
 
 // GET /api/advisory/compliance/requirements - Obter requisitos por país/visto
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
+export async function GET(request: NextRequest) {
+try {
+const { searchParams } = new URL(request.url)
     const country = countryVar
     const visaType = searchParams.get('visaType')
     const detailed = searchParams.get('detailed') === 'true',
@@ -84,7 +89,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 }
 
-// Obter requisitos de compliance por país/visto,async function getComplianceRequirements(country: string, visaType: string, detailed = false) {
+// Obter requisitos de compliance por país/visto
+async function getComplianceRequirements(country: string, visaType: string, detailed = false) {
   // Base de dados de requisitos por país/visto
   const requirementsDatabase: Record<string, any> = {,    'Canada': {,      'SKILLED': {,        mandatory: [,          {
             type: 'passport',            name: 'Passaporte válido',            validity: '6 months beyond intended stay',            pages: 'At least 2 blank pages',            specifications: {,              format: 'PDF scan',              resolution: '300 DPI minimum',              color: 'Color scan required',              pages: 'All pages including blank ones'
@@ -156,7 +162,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
       }
     }
   },
-  const countryReqs = requirementsDatabase[country],  if (!countryReqs || !countryReqs[visaType]) {,    return {,      mandatory: [],      optional: []
+  const countryReqs = requirementsDatabase[country]
+  if (!countryReqs || !countryReqs[visaType]) {,    return {,      mandatory: [],      optional: []
       note: 'Requirements not available - contact specialist',      lastUpdated: new Date().toISOString()
     }
   },
@@ -165,7 +172,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   }
 }
 
-// Realizar verificação de compliance,async function performComplianceCheck(documents: any[], requirements: any, checkType: string) {,  const result = {,    overallScore: 0,    complianceLevel: 'non_compliant' as 'compliant' | 'partial' | 'non_compliant',    issues: [] as any[],    passed: [] as any[]
+// Realizar verificação de compliance
+async function performComplianceCheck(documents: any[], requirements: any, checkType: string) {
+const result = {,    overallScore: 0,    complianceLevel: 'non_compliant' as 'compliant' | 'partial' | 'non_compliant',    issues: [] as any[],    passed: [] as any[]
     missing: [] as any[],    expiring: [] as any[]
     recommendations: [] as any[],    breakdown: {,      mandatory: { completed: 0, total: 0, score: 0 },      optional: { completed: 0, total: 0, score: 0 },      technical: { score: 0, issues: 0 }
     }
@@ -174,14 +183,16 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   // Verificar documentos obrigatórios
 
   if (requirements.mandatory) {,    result.breakdown.mandatory.total = requirements.mandatory.length,    
-    for (const req of requirements.mandatory) {,      const matchingDocs = documents.filter(doc => ,        doc.type === req.type || ,        doc.type.includes(req.type) ||,        req.type.includes(doc.type)
+    for (const req of requirements.mandatory) {
+    const matchingDocs = documents.filter(doc => ,        doc.type === req.type || ,        doc.type.includes(req.type) ||,        req.type.includes(doc.type)
       ),      
       if (matchingDocs.length === 0) {,        result.missing.push({,          type: req.type,          name: req.name,          severity: 'critical',          description: `Required document missing: ${req.name}`
         }),        result.issues.push({,          type: 'missing_document',          severity: 'critical',          document: req.name,          message: `Missing required document: ${req.name}`
         })
       } else {
         // Verificar cada documento correspondente
-        for (const doc of matchingDocs) {,          const docCheck = await checkDocumentCompliance(doc, req),          
+        for (const doc of matchingDocs) {
+        const docCheck = await checkDocumentCompliance(doc, req),          
           if (docCheck.compliant) {,            result.passed.push({,              type: doc.type,              name: req.name,              status: 'compliant'
             }),            result.breakdown.mandatory.completed++
           } else {,            result.issues.push(...docCheck.issues)
@@ -189,7 +200,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
           
           // Verificar validade
           
-          if (doc.expiryDate) {,            const expiryDate = expiryDateVar
+          if (doc.expiryDate) {
+          const expiryDate = expiryDateVar
     const now = new Date()
             const sixMonthsFromNow = new Date(now.getTime() + 6 * 30 * 24 * 60 * 60 * 1000),            
             if (expiryDate < now) {,              result.issues.push({,                type: 'expired_document',                severity: 'critical',                document: doc.fileName,                message: `Document expired on ${expiryDate.toLocaleDateString()}`
@@ -207,7 +219,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   // Verificar documentos opcionais
 
   if (requirements.optional) {,    result.breakdown.optional.total = requirements.optional.length,    
-    for (const req of requirements.optional) {,      const matchingDocs = documents.filter(doc => doc.type === req.type),      
+    for (const req of requirements.optional) {
+    const matchingDocs = documents.filter(doc => doc.type === req.type),      
       if (matchingDocs.length > 0) {,        result.breakdown.optional.completed++,        result.passed.push({,          type: req.type,          name: req.name,          status: 'bonus',          benefit: req.points || req.benefit
         })
       }
@@ -234,13 +247,16 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return result
 }
 
-// Verificar compliance de documento individual,async function checkDocumentCompliance(document: any, requirement: any) {,  const check = {,    compliant: true,    issues: [] as any[]
+// Verificar compliance de documento individual
+async function checkDocumentCompliance(document: any, requirement: any) {
+const check = {,    compliant: true,    issues: [] as any[]
     warnings: [] as any[]
   }
 
   // Verificar especificações técnicas
 
-  if (requirement.specifications) {,    const specs = requirement.specifications
+  if (requirement.specifications) {
+  const specs = requirement.specifications
     
     // Verificar formato
     
@@ -250,7 +266,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     
     // Verificar resolução (se disponível nos metadados)
     
-    if (specs.resolution && document.metadata?.resolution) {,      const requiredDPI = requiredDPIVar
+    if (specs.resolution && document.metadata?.resolution) {
+    const requiredDPI = requiredDPIVar
     const docDPI = parseInt(document.metadata.resolution),      
       if (docDPI < requiredDPI) {,        check.issues.push({,          type: 'quality_issue',          severity: 'medium',          document: document.fileName,          message: `Resolution ${docDPI} DPI is below required ${requiredDPI} DPI`
         }),        check.compliant = false
@@ -260,7 +277,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return check
 }
 
-// Gerar relatório detalhado de compliance,async function generateComplianceReport(result: any, requirements: any, country: string, visaType: string) {,  const report = {,    summary: {,      country: country,      visaType: visaType,      overallScore: result.overallScore,      complianceLevel: result.complianceLevel,      totalIssues: result.issues.length,      criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,      readinessLevel: getReadinessLevel(result)
+// Gerar relatório detalhado de compliance
+async function generateComplianceReport(result: any, requirements: any, country: string, visaType: string) {
+const report = {,    summary: {,      country: country,      visaType: visaType,      overallScore: result.overallScore,      complianceLevel: result.complianceLevel,      totalIssues: result.issues.length,      criticalIssues: result.issues.filter((i: any) => i.severity === 'critical').length,      readinessLevel: getReadinessLevel(result)
     },    sections: {,      mandatory: {,        title: 'Documentos Obrigatórios',        completed: result.breakdown.mandatory.completed,        total: result.breakdown.mandatory.total,        score: result.breakdown.mandatory.score,        status: result.breakdown.mandatory.score === 100 ? 'complete' : 'incomplete'
       },      optional: {,        title: 'Documentos Opcionais',        completed: result.breakdown.optional.completed,        total: result.breakdown.optional.total,        score: result.breakdown.optional.score,        benefit: 'Additional points/advantages'
       },      issues: {,        critical: result.issues.filter((i: any) => i.severity === 'critical'),        medium: result.issues.filter((i: any) => i.severity === 'medium'),        low: result.issues.filter((i: any) => i.severity === 'low')
@@ -271,10 +290,15 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return report
 }
 
-// Determinar nível de prontidão,function getReadinessLevel(result: any) {,  if (result.complianceLevel === 'compliant') return 'ready_to_submit',  if (result.complianceLevel === 'partial') return 'needs_minor_fixes',  return 'major_work_required'
+// Determinar nível de prontidão
+function getReadinessLevel(result: any) {
+if (result.complianceLevel === 'compliant') return 'ready_to_submit'
+if (result.complianceLevel === 'partial') return 'needs_minor_fixes',  return 'major_work_required'
 }
 
-// Gerar recomendações de compliance,function generateComplianceRecommendations(result: any) {,  const recommendations = []
+// Gerar recomendações de compliance
+function generateComplianceRecommendations(result: any) {
+const recommendations = []
   
   // Recomendações para documentos faltando
   
@@ -290,13 +314,16 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   
   // Recomendações para problemas de qualidade
   
-  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue'),  if (qualityIssues.length > 0) {,    recommendations.push({,      priority: 'medium',      category: 'document_quality',      action: 'Improve document quality (resolution, format)',      timeline: 'Before submission',      details: 'Ensure all scans meet embassy requirements'
+  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue')
+  if (qualityIssues.length > 0) {,    recommendations.push({,      priority: 'medium',      category: 'document_quality',      action: 'Improve document quality (resolution, format)',      timeline: 'Before submission',      details: 'Ensure all scans meet embassy requirements'
     })
   },  
   return recommendations
 }
 
-// Gerar recomendações detalhadas,function generateDetailedRecommendations(result: any, requirements: any) {,  const recommendations = {,    immediate: [] as any[],    shortTerm: [] as any[]
+// Gerar recomendações detalhadas
+function generateDetailedRecommendations(result: any, requirements: any) {
+const recommendations = {,    immediate: [] as any[],    shortTerm: [] as any[]
     longTerm: [] as any[],    optional: [] as any[]
   }
   
@@ -320,8 +347,11 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
   return recommendations
 }
 
-// Gerar próximos passos,function generateComplianceNextSteps(result: any, checkType: string) {,  const steps = []
-  ,  if (result.complianceLevel === 'compliant') {,    steps.push('✅ Ready for submission'),    steps.push('Schedule final review call'),    steps.push('Prepare submission timeline')
+// Gerar próximos passos
+function generateComplianceNextSteps(result: any, checkType: string) {
+const steps = []
+  
+  if (result.complianceLevel === 'compliant') {,    steps.push('✅ Ready for submission'),    steps.push('Schedule final review call'),    steps.push('Prepare submission timeline')
   } else if (result.complianceLevel === 'partial') {,    steps.push('🔧 Address medium-priority issues'),    steps.push('Verify document formats and quality'),    steps.push('Schedule compliance review')
   } else {,    steps.push('🚨 Address critical issues immediately'),    steps.push('Gather missing required documents'),    steps.push('Schedule emergency consultation')
   },  
