@@ -188,7 +188,8 @@ export default function UltraCheckout({
       })
     }
 
-    // Ofertas de bônus,    offers.push({
+    // Ofertas de bônus
+    offers.push({
       id: 'interview-mastery',
       name: '🎯 Preparação Completa',
       description: 'Kit completo de preparação para entrevista',

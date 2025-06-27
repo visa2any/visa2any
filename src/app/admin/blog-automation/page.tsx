@@ -151,7 +151,8 @@ export default function BlogAutomationPage() {
       })
 
       if (response.ok) {
-        setTimeout(loadData, 5000) // Reload after 5 seconds      }
+        setTimeout(loadData, 5000) // Reload after 5 seconds
+      }
     } catch (error) {
       console.error('Error triggering manual check:', error)
     } finally {

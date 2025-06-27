@@ -187,7 +187,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     supportsQuantity = true,
     showGroupDiscount = true,
     products = [],
-    // Legacy props,    productId = '',
+    // Legacy props
+    productId = '',
     productName = '',
     price = 0,
     originalPrice,
