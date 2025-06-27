@@ -51,13 +51,15 @@ export default function MercadoPagoSingle({
     console.log('🎯 MercadoPago Single - Iniciando')
     console.log('🔍 Verificando estado global...')
     
-    // Verificar se já existe instância global,    if (globalMPInstance) {
+    // Verificar se já existe instância global
+    if (globalMPInstance) {
       console.log('⚠️ Instância global já existe - reutilizando')
       setLoading(false)
       return
     }
 
-    // Verificar se já está inicializando,    if (isInitializing) {
+    // Verificar se já está inicializando
+    if (isInitializing) {
       console.log('⚠️ Já está inicializando - aguardando...')
       if (initializationPromise) {
         initializationPromise.then(() => setLoading(false))
@@ -65,7 +67,8 @@ export default function MercadoPagoSingle({
       return
     }
 
-    // Aguardar próximo tick para garantir que DOM está renderizado,    const timer = setTimeout(() => {
+    // Aguardar próximo tick para garantir que DOM está renderizado
+    const timer = setTimeout(() => {
       console.log('🚀 Criando nova instância única (após DOM ready)')
       initializationPromise = initializeSingleInstance()
     }, 100)
@@ -84,23 +87,27 @@ export default function MercadoPagoSingle({
       isInitializing = true
       console.log('1️⃣ Carregando SDK...')
       
-      // Carregar SDK se necessário,      if (!window.MercadoPago) {
+      // Carregar SDK se necessário
+      if (!window.MercadoPago) {
         await loadSDK()
       }
 
       console.log('2️⃣ Verificando container...')
       
-      // Container agora sempre existe no DOM,      const container = document.getElementById(CONTAINER_ID)
+      // Container agora sempre existe no DOM
+      const container = document.getElementById(CONTAINER_ID)
       if (!container) {
         throw new Error(`Container ${CONTAINER_ID} não encontrado`)
       }
       
-      // Limpar container,      container.innerHTML = ''
+      // Limpar container
+      container.innerHTML = ''
       console.log('3️⃣ Container limpo e pronto')
 
       console.log('4️⃣ Criando instância MercadoPago...')
       
-      // Criar instância global única,      const mp = new window.MercadoPago(publicKey, {
+      // Criar instância global única
+      const mp = new window.MercadoPago(publicKey, {
         locale: 'pt-BR'
       })
 
@@ -169,7 +176,8 @@ export default function MercadoPagoSingle({
                   setShowPixCode(true)
                   sendPixEmail(result.qr_code)
                   
-                  // Iniciar verificação automática de pagamento,                  startPaymentVerification(result.payment_id)
+                  // Iniciar verificação automática de pagamento
+                  startPaymentVerification(result.payment_id)
                 } else {
                   onSuccess?.(result)
                 }
@@ -202,7 +210,8 @@ export default function MercadoPagoSingle({
 
   const loadSDK = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Verificar se script já existe,      const existingScript = document.querySelector('script[src*="mercadopago"]')
+      // Verificar se script já existe
+      const existingScript = document.querySelector('script[src*="mercadopago"]')
       if (existingScript) {
         if (window.MercadoPago) {
           resolve()
@@ -234,7 +243,8 @@ export default function MercadoPagoSingle({
     console.log('🔄 Iniciando verificação automática de pagamento:', paymentId)
     setCheckingPayment(true)
     
-    // Verificar a cada 5 segundos,    paymentCheckInterval.current = setInterval(async () => {
+    // Verificar a cada 5 segundos
+    paymentCheckInterval.current = setInterval(async () => {
       try {
         console.log('🔍 Verificando status do pagamento...')
         
@@ -245,18 +255,22 @@ export default function MercadoPagoSingle({
           if (result.status === 'approved') {
             console.log('✅ Pagamento aprovado!')
             
-            // Parar verificação,            if (paymentCheckInterval.current) {
+            // Parar verificação
+            if (paymentCheckInterval.current) {
               clearInterval(paymentCheckInterval.current)
             }
             
-            // Chamar callback de sucesso,            onSuccess?.(result)
+            // Chamar callback de sucesso
+            onSuccess?.(result)
             
-            // Ou redirecionar diretamente,            // window.location.href = '/success?payment=approved'
+            // Ou redirecionar diretamente
+            // window.location.href = '/success?payment=approved'
             
           } else if (result.status === 'cancelled' || result.status === 'rejected') {
             console.log('❌ Pagamento cancelado/rejeitado')
             
-            // Parar verificação,            if (paymentCheckInterval.current) {
+            // Parar verificação
+            if (paymentCheckInterval.current) {
               clearInterval(paymentCheckInterval.current)
             }
             
@@ -267,8 +281,10 @@ export default function MercadoPagoSingle({
       } catch (error) {
         console.error('❌ Erro ao verificar pagamento:', error)
       }
-    }, 5000) // Verifica a cada 5 segundos,    
-    // Parar verificação após 15 minutos,    setTimeout(() => {
+    }, 5000) // Verifica a cada 5 segundos
+    
+    // Parar verificação após 15 minutos
+    setTimeout(() => {
       if (paymentCheckInterval.current) {
         clearInterval(paymentCheckInterval.current)
         setCheckingPayment(false)
@@ -294,18 +310,22 @@ export default function MercadoPagoSingle({
     setPaymentResult(null)
     setError('')
     
-    // CRÍTICO: Resetar estado global para forçar re-criação do formulário,    globalMPInstance = null
+    // CRÍTICO: Resetar estado global para forçar re-criação do formulário
+    globalMPInstance = null
     isInitializing = false
     initializationPromise = null
     
-    // Limpar container completamente,    const container = document.getElementById(CONTAINER_ID)
+    // Limpar container completamente
+    const container = document.getElementById(CONTAINER_ID)
     if (container) {
       container.innerHTML = ''
     }
     
-    // Resetar estado para forçar re-render completo,    setLoading(true)
+    // Resetar estado para forçar re-render completo
+    setLoading(true)
     
-    // Re-inicializar imediatamente (sem delay para melhor UX),    console.log('🔄 Re-inicializando MercadoPago após sair do PIX')
+    // Re-inicializar imediatamente (sem delay para melhor UX)
+    console.log('🔄 Re-inicializando MercadoPago após sair do PIX')
     setTimeout(() => {
       initializationPromise = initializeSingleInstance()
     }, 100)
@@ -349,7 +369,8 @@ export default function MercadoPagoSingle({
     }
   }
 
-  // Tela PIX,  if (showPixCode && paymentResult) {
+  // Tela PIX
+  if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-2xl mx-auto px-4">
@@ -529,7 +550,8 @@ export default function MercadoPagoSingle({
                 <p className="text-red-800">{error}</p>
                 <button
                   onClick={() => {
-                    // Reset global state,                    globalMPInstance = null
+                    // Reset global state
+                    globalMPInstance = null
                     isInitializing = false
                     initializationPromise = null
                     window.location.reload()

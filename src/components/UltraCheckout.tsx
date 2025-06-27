@@ -210,13 +210,15 @@ export default function UltraCheckout({
 
   const upsellOffers = getUpsellOffers()
 
-  // Cálculos de preço,  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
+  // Cálculos de preço
+  const selectedUpsellsData = upsellOffers.filter(offer => selectedUpsells.includes(offer.id))
   const upsellsTotal = selectedUpsellsData.reduce((sum, offer) => sum + offer.discountedPrice, 0)
   const totalSavings = selectedUpsellsData.reduce((sum, offer) => sum + offer.savings, 0)
   const subtotal = price + upsellsTotal
   const total = subtotal
 
-  // Validação em tempo real,  const validateField = (field: string, value: string): string => {
+  // Validação em tempo real
+  const validateField = (field: string, value: string): string => {
     switch (field) {
       case 'name':
         return value.length < 2 ? 'Nome muito curto' : ''
@@ -258,7 +260,8 @@ export default function UltraCheckout({
     setIsProcessing(true)
     
     try {
-      // Usar API real do MercadoPago,      const response = await fetch('/api/payments/mercadopago', {
+      // Usar API real do MercadoPago
+      const response = await fetch('/api/payments/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -292,7 +295,7 @@ export default function UltraCheckout({
             totalSavings,
             packageName: productName,
             checkoutVersion: 'ultra-checkout-v1',
-            selectedUpsells: selectedUpsells.map(u => u.id)
+            selectedUpsells: selectedUpsells
           }
         })
       })
@@ -300,7 +303,8 @@ export default function UltraCheckout({
       const data = await response.json()
       
       if (data.success && data.init_point) {
-        // Limpar dados salvos após sucesso,        localStorage.removeItem(`checkout_${productId}`)
+        // Limpar dados salvos após sucesso
+        localStorage.removeItem(`checkout_${productId}`)
         window.location.href = data.init_point
       } else {
         throw new Error(data.error || 'Erro ao processar pagamento')
