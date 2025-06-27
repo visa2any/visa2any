@@ -101,7 +101,8 @@ export function CommunicationCenter({
 
   useEffect(() => {
     // Apenas rolar ao mudar de conversa
-    não a cada atualização de mensagem,    if (selectedConversation) {
+    // não a cada atualização de mensagem
+    if (selectedConversation) {
       scrollToBottom(true)
     }
   }, [selectedConversation])

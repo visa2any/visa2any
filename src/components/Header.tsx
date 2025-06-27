@@ -18,7 +18,8 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<UserData | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(3) // Mock notifications count,  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState(3) // Mock notifications count
+  const [showNotifications, setShowNotifications] = useState(false)
   
   // Páginas que não precisam verificar autenticação
   
