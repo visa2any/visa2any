@@ -172,7 +172,8 @@ export default function UltraCheckout({
       })
     }
 
-    // Ofertas de suporte,    if (productId.includes('basic') || productId.includes('premium')) {
+    // Ofertas de suporte
+    if (productId.includes('basic') || productId.includes('premium')) {
       offers.push({
         id: 'personal-consultant',
         name: '👨‍💼 Consultor Pessoal',

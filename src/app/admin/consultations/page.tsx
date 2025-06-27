@@ -75,7 +75,8 @@ export default function ConsultationsPage() {
   useEffect(() => {
     fetchConsultations()
     
-    // Verificar se deve abrir slider de nova consultoria,    if (searchParams.get('action') === 'new') {
+    // Verificar se deve abrir slider de nova consultoria
+    if (searchParams.get('action') === 'new') {
       setShowNewConsultationSlider(true)
     }
   }, [])

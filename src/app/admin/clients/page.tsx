@@ -77,7 +77,8 @@ export default function ClientsPage() {
   useEffect(() => {
     fetchClients()
     
-    // Verificar se deve abrir slider de novo cliente,    if (searchParams.get('action') === 'new') {
+    // Verificar se deve abrir slider de novo cliente
+    if (searchParams.get('action') === 'new') {
       setShowNewClientSlider(true)
     }
   }, [])

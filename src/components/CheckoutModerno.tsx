@@ -178,9 +178,11 @@ const PRODUCT_DATA: Record<string, any> = {
 }
 
 export default function CheckoutModerno(props: CheckoutModernoProps) {
-  // Detect if using new interface (with products array) or legacy interface,  const isNewInterface = !!(props.products && props.products.length > 0)
+  // Detect if using new interface (with products array) or legacy interface
+  const isNewInterface = !!(props.products && props.products.length > 0)
   
-  // Extract props based on interface type,  const {
+  // Extract props based on interface type
+  const {
     title,
     subtitle, 
     ctaText = "Contratar Agora",
