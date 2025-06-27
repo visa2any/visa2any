@@ -539,9 +539,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     }
   }
 
-  // Se checkout inline ativo
-
-  usar componente real do MercadoPago
+  // Se checkout inline ativo usar componente real do MercadoPago
   if (showInlineCheckout && paymentData) {
     return (
       <MercadoPagoSingle

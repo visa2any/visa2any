@@ -195,9 +195,7 @@ function AdminLayoutContent({
     return null
   }
 
-  // Para o dashboard unificado
-
-  usar layout sem sidebar
+  // Para o dashboard unificado usar layout sem sidebar
   if (pathname.startsWith('/admin/dashboard-unified')) {
     return (
       <div className="min-h-screen" style={{ 
