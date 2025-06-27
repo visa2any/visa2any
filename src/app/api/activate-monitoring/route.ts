@@ -14,22 +14,34 @@ let emailInterval: NodeJS.Timeout | null = null
 
 export async function POST(request: NextRequest) {
 try {
-const { action, system } = await request.json(),
-    switch (action) {,      case 'activate_webscraping':,        return await activateWebScraping(),        
-      case 'activate_email':,        return await activateEmailMonitoring(),        
-      case 'activate_automation':,        return await activateAutomation(),        
-      case 'deactivate_all':,        return await deactivateAll(),        
-      case 'status':,        return getSystemStatus(),        
-      default:,        return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
+const { action, system } = await request.json()
+    switch (action) {
+      case 'activate_webscraping':
+        return await activateWebScraping()        
+      case 'activate_email':
+        return await activateEmailMonitoring()        
+      case 'activate_automation':
+        return await activateAutomation()        
+      case 'deactivate_all':
+        return await deactivateAll()        
+      case 'status':
+        return getSystemStatus()        
+      default:
+        return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
     }
-  } catch (error) {,    return NextResponse.json({ ,      error: 'Erro interno do servidor',
+  } catch (error) {
+    return NextResponse.json({
+      error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
-},
+}
+
 async function activateWebScraping() {
 try {
-if (webScrapingActive) {,      return NextResponse.json({ ,        message: 'Web scraping já está ativo',
+if (webScrapingActive) {
+      return NextResponse.json({
+        message: 'Web scraping já está ativo',
         status: 'active'
       })
     }
@@ -37,12 +49,17 @@ if (webScrapingActive) {,      return NextResponse.json({ ,        message: 'Web
     // Ativar web scraping com intervalo de 30 minutos
 
     webScrapingInterval = setInterval(async () => {
-    try {,        console.log('🔍 Verificando slots via web scraping...')
-    const slots = await webScrapingService.checkAllSites(),        
-        if (slots.length > 0) {,          console.log(`✅ Encontrados ${slots.length} slots!`),          await webScrapingService.notifySlots(slots)
-        } else {,          console.log('⏳ Nenhum slot encontrado desta vez')
+    try {
+        console.log('🔍 Verificando slots via web scraping...')
+    const slots = await webScrapingService.checkAllSites()        
+        if (slots.length > 0) {
+          console.log(`✅ Encontrados ${slots.length} slots!`)
+          await webScrapingService.notifySlots(slots)
+        } else {
+          console.log('⏳ Nenhum slot encontrado desta vez')
         }
-      } catch (error) {,        console.error('Erro no web scraping:', error)
+      } catch (error) {
+        console.error('Erro no web scraping:', error)
       }
     }, 30 * 60 * 1000) // 30 minutos
 
@@ -56,13 +73,17 @@ if (webScrapingActive) {,      return NextResponse.json({ ,        message: 'Web
 🎯 Sites monitorados: CASV, VFS Global
 ⏰ Intervalo: 30 minutos  
 💰 Custo: R$ 2 por consulta
-🔍 Status: Ativo e funcionando,
-Você receberá alertas automáticos quando encontrarmos slots disponíveis!`),
-    return NextResponse.json({,      success: true,
+🔍 Status: Ativo e funcionando
+
+Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
+    return NextResponse.json({
+      success: true,
       message: 'Web scraping ativado com sucesso!'
     })
 
-  } catch (error) {,    return NextResponse.json({,      error: 'Erro ao ativar web scraping',
+  } catch (error) {
+    return NextResponse.json({
+      error: 'Erro ao ativar web scraping',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }

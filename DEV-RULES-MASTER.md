@@ -136,6 +136,22 @@ npm run validate:full       # Validação completa quando necessário
 ✅ CORRETO: // Se estivermos na página de login não fazer verificação
 ```
 
+**Padrão 13: Texto português isolado com linhas vazias (NOVO - 2025-06-27)**
+```typescript
+❌ ERRO: // Se checkout inline ativo
+         
+         usar componente real do MercadoPago
+✅ CORRETO: // Se checkout inline ativo usar componente real do MercadoPago
+```
+
+**Padrão 14: Comentário português separado por linha vazia (NOVO - 2025-06-27)**
+```typescript
+❌ ERRO: // Para o dashboard unificado
+         
+         usar layout sem sidebar
+✅ CORRETO: // Para o dashboard unificado usar layout sem sidebar
+```
+
 **Detecção**: `npm run validate:precise` (100% preciso)
 **Correção**: `node scripts/fix-precise.js --apply` (seguro)
 
@@ -259,11 +275,15 @@ module.exports = {
 - **hybrid-bookings/page.tsx**: 1 comentário malformado em função (linha 91)
 - **hybrid-settings/page.tsx**: 2 vírgulas ausentes em objetos (linhas 127, 138)
 
-**TERCEIRA LEVA VERCEL FINAL:**
+**TERCEIRA LEVA VERCEL:**
 - **CheckoutModerno.tsx**: 1 texto português isolado sem // (linha 484)
 - **admin/layout.tsx**: 1 comentário português quebrado (linha 82)
 
-- **Total corrigido**: 1,206 erros em 91 arquivos (ZERO pendentes)
+**QUARTA LEVA VERCEL - SWEEP METHODOLOGY:**
+- **CheckoutModerno.tsx**: 1 texto português com linhas vazias (linha 544)  
+- **admin/layout.tsx**: 1 comentário separado por linha vazia (linha 200)
+
+- **Total corrigido**: 1,208 erros em 93 arquivos (ZERO pendentes)
 
 ### ✅ CONQUISTAS ANTERIORES (2025-06-25/26)
 - **182 erros corrigidos automaticamente**
@@ -405,10 +425,10 @@ npm run type-check:strict && npm run build
 - **Build Vercel**: Estável e funcionando automaticamente
 
 ### 🔬 **ANÁLISE TÉCNICA ULTRATHINK:**
-- **1,206 erros de sintaxe** eliminados TOTAL (1,194 + 12 finais críticos)
-- **91 arquivos** corrigidos em múltiplas iterações
+- **1,208 erros de sintaxe** eliminados TOTAL (1,194 + 14 finais críticos)
+- **93 arquivos** corrigidos em múltiplas iterações
 - **427 arquivos TypeScript** com 120,273 linhas otimizadas
-- **12 padrões críticos** identificados e documentados
+- **14 padrões críticos** identificados e documentados
 - **3 configurações TypeScript** criadas para diferentes cenários
 
 ### 📋 **NOVOS PADRÕES DESCOBERTOS (2025-06-27 - SESSÃO COMPLETA FINAL):**
@@ -423,6 +443,8 @@ npm run type-check:strict && npm run build
 - **Padrão 10**: Texto português sem comentário inline (1 caso - CheckoutModerno.tsx)
 - **Padrão 11**: Texto português isolado sem prefixo // (1 caso - CheckoutModerno.tsx:484)
 - **Padrão 12**: Comentário português quebrado múltiplas linhas (1 caso - admin/layout.tsx)
+- **Padrão 13**: Texto português isolado com linhas vazias (1 caso - CheckoutModerno.tsx:544)
+- **Padrão 14**: Comentário português separado por linha vazia (1 caso - admin/layout.tsx:200)
 
 ### 🎯 **COBERTURA TOTAL ALCANÇADA:**
 - ✅ Todos os padrões de comentários malformados identificados
