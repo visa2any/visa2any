@@ -5,40 +5,47 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(request: NextRequest) {
 try {
 const { searchParams } = new URL(request.url)
-const page = pageVar
+const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '50')
-    const search = searchVar
+    const search = searchParams.get('search') || ''
     const status = searchParams.get('status') || ''
-    const country = countryVar
+    const country = searchParams.get('country') || ''
     const offset = (page - 1) * limit
 
     // Construir filtros
 
     const where: any = {}
 
-    if (search) {,      where.OR = [,        { name: { contains: search } },
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
         { email: { contains: search } },
         { phone: { contains: search } },
         { profession: { contains: search } },
         { nationality: { contains: search } },
         { targetCountry: { contains: search } }
       ]
-    },
-    if (status && status !== 'ALL') {,      where.status = status
-    },
-    if (country && country !== 'ALL') {,      where.targetCountry = country
+    }
+    if (status && status !== 'ALL') {
+      where.status = status
+    }
+    if (country && country !== 'ALL') {
+      where.targetCountry = country
     }
 
     // Buscar clientes com fallback em caso de erro
 
     let clients: any[] = []
-    let total = 0,
-    try {,      [clients, total] = await Promise.all([
-        prisma.client.findMany({,          where,
+    let total = 0
+    try {
+      [clients, total] = await Promise.all([
+        prisma.client.findMany({
+          where,
           orderBy: { createdAt: 'desc' },
           take: limit,
           skip: offset,
-          select: {,            id: true,
+          select: {
+            id: true,
             name: true,
             email: true,
             phone: true,

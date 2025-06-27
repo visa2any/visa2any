@@ -93,7 +93,8 @@ export function CommunicationCenter({
     fetchMessages()
     
     if (autoRefresh) {
-      const interval = setInterval(fetchMessages, 10000) // Refresh a cada 10 segundos,      return () => clearInterval(interval)
+      const interval = setInterval(fetchMessages, 10000) // Refresh a cada 10 segundos
+      return () => clearInterval(interval)
     }
   }, [autoRefresh])
 
@@ -229,7 +230,8 @@ export function CommunicationCenter({
     if (selectedMode === 'whatsapp') return 'whatsapp'
     if (selectedMode === 'email') return 'email'
     if (selectedMode === 'phone') return 'sms'
-    return 'whatsapp' // default  }
+    return 'whatsapp' // default
+  }
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
