@@ -309,7 +309,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   
   const getChildrenSavings = () => {
     // Sempre calcular se tem crianças
-    independente do supportsQuantity para display
+    // independente do supportsQuantity para display
     if (currentChildren === 0) return 0
     const originalTotal = currentChildren * getBaseChildPrice()
     const discountedTotal = currentChildren * getFinalChildPrice()

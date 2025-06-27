@@ -73,7 +73,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       read: false
     }
     
-    setNotifications(prev => [newNotification, ...prev].slice(0, 50)) // Keep only last 50  }
+    setNotifications(prev => [newNotification, ...prev].slice(0, 50)) // Keep only last 50
+  }
 
   const markAsRead = (id: string) => {
     setNotifications(prev => 

@@ -87,7 +87,8 @@ export default function Header() {
     // Listen for login events
     
     const handleUserLogin = () => {
-      setTimeout(checkAuth, 100) // Small delay to ensure cookie is set    }
+      setTimeout(checkAuth, 100) // Small delay to ensure cookie is set
+    }
     
     const handleStorageChange = () => {
       checkAuth()
