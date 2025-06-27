@@ -227,7 +227,8 @@ export default function HybridSettingsPage() {
               onSave={() => setEditingCountry(null)}
               onCancel={() => {
                 setEditingCountry(null)
-                loadSettings() // Reload original values              }}
+                loadSettings() // Reload original values
+              }}
               onUpdate={(field: string, value: any) => updateFee(fee.country, field, value)}
               onRemove={() => removeCountry(fee.country)}
             />
