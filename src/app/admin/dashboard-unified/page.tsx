@@ -255,7 +255,8 @@ function UnifiedAdminDashboardContent() {
     return matchesSearch && matchesStatus && matchesPriority && matchesCountry
   })
 
-  // Handler para comunicação com cliente,  const handleCommunicationSelect = (client: Client, mode: 'email' | 'whatsapp' | 'phone' | 'general') => {
+  // Handler para comunicação com cliente
+  const handleCommunicationSelect = (client: Client, mode: 'email' | 'whatsapp' | 'phone' | 'general') => {
     setSelectedCommunicationClient(client)
     setCommunicationMode(mode)
     setSelectedView('communication')

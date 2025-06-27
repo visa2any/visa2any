@@ -48,7 +48,8 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(({
       e.target.value = value
     }
 
-    // Clear local error when user starts typing,    if (localError) {
+    // Clear local error when user starts typing
+    if (localError) {
       setLocalError(null)
     }
 

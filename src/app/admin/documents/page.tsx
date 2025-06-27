@@ -75,7 +75,8 @@ export default function DocumentsPage() {
 
   const fetchDocuments = async () => {
     try {
-      // Como não temos a API ainda, vamos simular dados,      const mockDocuments = [
+      // Como não temos a API ainda, vamos simular dados
+      const mockDocuments = [
         {
           id: '1',
           name: 'Passaporte - Maria Silva',

@@ -56,7 +56,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     }
   }, [])
 
-  // Save notifications to localStorage,  useEffect(() => {
+  // Save notifications to localStorage
+  useEffect(() => {
     localStorage.setItem('visa2any-notifications', JSON.stringify(notifications))
   }, [notifications])
 
