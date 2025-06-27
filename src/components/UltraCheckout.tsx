@@ -154,10 +154,12 @@ export default function UltraCheckout({
     }
   }, [customerData, autoSave])
 
-  // Upsells inteligentes e categorizados,  const getUpsellOffers = (): UpsellOffer[] => {
+  // Upsells inteligentes e categorizados
+  const getUpsellOffers = (): UpsellOffer[] => {
     const offers: UpsellOffer[] = []
 
-    // Ofertas de velocidade,    if (!productId.includes('vip')) {
+    // Ofertas de velocidade
+    if (!productId.includes('vip')) {
       offers.push({
         id: 'instant-notifications',
         name: '⚡ Notificações Instantâneas',

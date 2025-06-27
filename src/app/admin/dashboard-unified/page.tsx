@@ -164,7 +164,8 @@ function UnifiedAdminDashboardContent() {
     fetchDashboardData()
     fetchClients()
     
-    // Auto-refresh a cada 30 segundos,    const interval = setInterval(() => {
+    // Auto-refresh a cada 30 segundos
+    const interval = setInterval(() => {
       fetchDashboardData()
       fetchClients()
     }, 30000)

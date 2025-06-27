@@ -72,7 +72,8 @@ export default function ClientsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  // System notifications,  const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
+  // System notifications
+  const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
   useEffect(() => {
     fetchClients()
@@ -144,9 +145,11 @@ export default function ClientsPage() {
 
   const safeClients = Array.isArray(clients) ? clients : []
   
-  // Enhanced filtering logic,  const filteredAndSortedClients = safeClients
+  // Enhanced filtering logic
+  const filteredAndSortedClients = safeClients
     .filter(client => {
-      // Enhanced search across multiple fields,      const searchLower = searchTerm.toLowerCase()
+      // Enhanced search across multiple fields
+      const searchLower = searchTerm.toLowerCase()
       const matchesSearch = searchTerm === '' || 
         client.name.toLowerCase().includes(searchLower) ||
         client.email.toLowerCase().includes(searchLower) ||
@@ -192,7 +195,8 @@ export default function ClientsPage() {
       return 0
     })
   
-  // For backwards compatibility,  const filteredClients = filteredAndSortedClients
+  // For backwards compatibility
+  const filteredClients = filteredAndSortedClients
 
   const handleNewClient = () => {
     setShowNewClientSlider(true)
@@ -247,7 +251,8 @@ export default function ClientsPage() {
   }
 
   const handleEmailClient = (client: Client) => {
-    // Quick email action,    window.open(`mailto:${client.email}?subject=Visa2Any - Contato`)
+    // Quick email action
+    window.open(`mailto:${client.email}?subject=Visa2Any - Contato`)
   }
 
   const handleWhatsAppClient = (client: Client) => {
@@ -580,7 +585,8 @@ export default function ClientsPage() {
             </div>
           ) : (
             viewMode === 'list' ? (
-              // Modern Table View with Inline Editing,              <div className="card-elevated overflow-hidden">
+              // Modern Table View with Inline Editing
+              <div className="card-elevated overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -716,7 +722,8 @@ export default function ClientsPage() {
                 </div>
               </div>
             ) : (
-              // Grid View (simplified cards),              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              // Grid View (simplified cards)
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredClients.map((client) => (
                   <RowActions
                     key={client.id}
@@ -871,7 +878,8 @@ function NewClientSlider({
           `Cliente ${formData.name} foi criado com sucesso`
         )
         
-        // Reset form,        setFormData({
+        // Reset form
+        setFormData({
           name: '',
           email: '',
           phone: '',
