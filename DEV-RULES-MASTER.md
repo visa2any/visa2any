@@ -121,6 +121,21 @@ npm run validate:full       # Validação completa quando necessário
 ✅ CORRETO: // Se não suporta quantidade usar preço base
 ```
 
+**Padrão 11: Texto português isolado sem prefixo // (NOVO - 2025-06-27)**
+```typescript
+❌ ERRO: // Se for produto Vaga Express
+         
+         processar com integração
+✅ CORRETO: // Se for produto Vaga Express processar com integração
+```
+
+**Padrão 12: Comentário português quebrado em múltiplas linhas (NOVO - 2025-06-27)**
+```typescript
+❌ ERRO: // Se estivermos na página de login
+         não fazer verificação
+✅ CORRETO: // Se estivermos na página de login não fazer verificação
+```
+
 **Detecção**: `npm run validate:precise` (100% preciso)
 **Correção**: `node scripts/fix-precise.js --apply` (seguro)
 
@@ -244,7 +259,11 @@ module.exports = {
 - **hybrid-bookings/page.tsx**: 1 comentário malformado em função (linha 91)
 - **hybrid-settings/page.tsx**: 2 vírgulas ausentes em objetos (linhas 127, 138)
 
-- **Total corrigido**: 1,204 erros em 89 arquivos (ZERO pendentes)
+**TERCEIRA LEVA VERCEL FINAL:**
+- **CheckoutModerno.tsx**: 1 texto português isolado sem // (linha 484)
+- **admin/layout.tsx**: 1 comentário português quebrado (linha 82)
+
+- **Total corrigido**: 1,206 erros em 91 arquivos (ZERO pendentes)
 
 ### ✅ CONQUISTAS ANTERIORES (2025-06-25/26)
 - **182 erros corrigidos automaticamente**
@@ -386,13 +405,13 @@ npm run type-check:strict && npm run build
 - **Build Vercel**: Estável e funcionando automaticamente
 
 ### 🔬 **ANÁLISE TÉCNICA ULTRATHINK:**
-- **1,204 erros de sintaxe** eliminados TOTAL (1,194 + 10 finais críticos)
-- **89 arquivos** corrigidos em múltiplas iterações
+- **1,206 erros de sintaxe** eliminados TOTAL (1,194 + 12 finais críticos)
+- **91 arquivos** corrigidos em múltiplas iterações
 - **427 arquivos TypeScript** com 120,273 linhas otimizadas
-- **10 padrões críticos** identificados e documentados
+- **12 padrões críticos** identificados e documentados
 - **3 configurações TypeScript** criadas para diferentes cenários
 
-### 📋 **NOVOS PADRÕES DESCOBERTOS (2025-06-27 - SESSÃO COMPLETA):**
+### 📋 **NOVOS PADRÕES DESCOBERTOS (2025-06-27 - SESSÃO COMPLETA FINAL):**
 - **Padrão 2**: Texto português sem // (2 casos encontrados)
 - **Padrão 3**: Múltiplas declarações const (1 caso encontrado)
 - **Padrão 4**: Comentário+código+if misturado (cobertura expandida)
@@ -402,6 +421,8 @@ npm run type-check:strict && npm run build
 - **Padrão 8**: Vírgulas ausentes em propriedades de objeto (2 casos - hybrid-settings.tsx)
 - **Padrão 9**: Comentário malformado em função (1 caso - hybrid-bookings.tsx)
 - **Padrão 10**: Texto português sem comentário inline (1 caso - CheckoutModerno.tsx)
+- **Padrão 11**: Texto português isolado sem prefixo // (1 caso - CheckoutModerno.tsx:484)
+- **Padrão 12**: Comentário português quebrado múltiplas linhas (1 caso - admin/layout.tsx)
 
 ### 🎯 **COBERTURA TOTAL ALCANÇADA:**
 - ✅ Todos os padrões de comentários malformados identificados
