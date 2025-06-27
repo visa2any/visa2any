@@ -22,7 +22,8 @@ export default function CheckoutMinimo() {
     setIsProcessing(true)
 
     try {
-      // Criar pagamento MercadoPago,      const response = await fetch('/api/payments/mercadopago', {
+      // Criar pagamento MercadoPago
+      const response = await fetch('/api/payments/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -44,9 +45,12 @@ export default function CheckoutMinimo() {
       const data = await response.json()
       
       if (data.success && data.init_point) {
-        // Salvar dados no localStorage (opcional),        localStorage.setItem('cliente-dados', JSON.stringify(formData))
+        // Salvar dados no localStorage (opcional)
+        localStorage.setItem('cliente-dados', JSON.stringify(formData))
         
-        // Redirecionar para MercadoPago,        window.location.href = data.init_point
+        // Redirecionar para MercadoPago
+        
+        window.location.href = data.init_point
       } else {
         alert('Erro ao processar pagamento. Tente novamente.')
       }

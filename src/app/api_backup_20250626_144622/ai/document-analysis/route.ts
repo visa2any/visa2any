@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = documentAnalysisSchema.parse(body)
 
-    // Buscar documento,    const document = await prisma.document.findUnique({
+    // Buscar documento
+
+    const document = await prisma.document.findUnique({
       where: { id: validatedData.documentId },
       include: {
         client: {
@@ -34,7 +36,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já foi analisado,    if (document.analysis && !validatedData.forceReanalysis) {
+    // Verificar se já foi analisado
+
+    if (document.analysis && !validatedData.forceReanalysis) {
       return NextResponse.json({
         data: {
           documentId: document.id,
@@ -45,14 +49,20 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Marcar como analisando,    await prisma.document.update({
+    // Marcar como analisando
+
+    await prisma.document.update({
       where: { id: validatedData.documentId },
       data: { status: 'ANALYZING' }
     })
 
-    // Fazer análise com IA,    const analysisResult = await performAdvancedDocumentAnalysis(document)
+    // Fazer análise com IA
 
-    // Atualizar documento com resultado,    const updatedDocument = await prisma.document.update({
+    const analysisResult = await performAdvancedDocumentAnalysis(document)
+
+    // Atualizar documento com resultado
+
+    const updatedDocument = await prisma.document.update({
       where: { id: validatedData.documentId },
       data: {
         status: analysisResult.isValid ? 'VALID' : (analysisResult.needsReview ? 'NEEDS_REVIEW' : 'INVALID'),
@@ -64,7 +74,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da análise,    await prisma.automationLog.create({
+    // Log da análise
+
+    await prisma.automationLog.create({
       data: {
         type: 'AI_DOCUMENT_ANALYSIS',
         action: 'analyze_document_ai',
@@ -79,7 +91,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Se documento foi aprovado, verificar se pode prosseguir com próximo passo
+    // Se documento foi aprovado
+
+    verificar se pode prosseguir com próximo passo
     if (analysisResult.isValid) {
       await checkAndTriggerNextSteps(document.clientId, document.type)
     }
@@ -163,17 +177,24 @@ async function performAdvancedDocumentAnalysis(document: any) {
   const startTime = Date.now()
   
   try {
-    // Simular OCR (em produção usar Google Vision API, AWS Textract, etc.)
+    // Simular OCR (em produção usar Google Vision API
+    AWS Textract, etc.)
     const ocrResult = await performOCR(document)
     
-    // Análise específica por tipo de documento,    const analysisResult = await analyzeByDocumentType(document, ocrResult)
+    // Análise específica por tipo de documento
     
-    // Validação cruzada com requisitos do país,    const countryValidation = await validateAgainstCountryRequirements(
+    const analysisResult = await analyzeByDocumentType(document, ocrResult)
+    
+    // Validação cruzada com requisitos do país
+    
+    const countryValidation = await validateAgainstCountryRequirements(
       document, 
       analysisResult
     )
     
-    // Detecção de fraudes/problemas,    const fraudDetection = await detectPotentialIssues(document, ocrResult, analysisResult)
+    // Detecção de fraudes/problemas
+    
+    const fraudDetection = await detectPotentialIssues(document, ocrResult, analysisResult)
     
     const processingTime = Date.now() - startTime
     
@@ -213,7 +234,8 @@ async function performAdvancedDocumentAnalysis(document: any) {
 
 // Simular OCR
 async function performOCR(document: any) {
-  // Em produção, usar serviço real de OCR
+  // Em produção
+  usar serviço real de OCR
   await new Promise(resolve => setTimeout(resolve, 1500)) // Simular processamento,  
   const mockTexts: Record<string, string> = {
     'PASSPORT': `PASSPORT
@@ -332,7 +354,9 @@ async function analyzePassport(document: any, ocrResult: any) {
   const issues: string[] = []
   let confidence = 0.9
   
-  // Verificar validade,  if (fields.expiryDate) {
+  // Verificar validade
+  
+  if (fields.expiryDate) {
     const expiryDate = new Date(fields.expiryDate.split('/').reverse().join('-'))
     const sixMonthsFromNow = new Date()
     sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6)
@@ -346,7 +370,9 @@ async function analyzePassport(document: any, ocrResult: any) {
     confidence -= 0.2
   }
   
-  // Verificar se tem número do passaporte,  if (!fields.passportNumber) {
+  // Verificar se tem número do passaporte
+  
+  if (!fields.passportNumber) {
     issues.push('Número do passaporte não identificado')
     confidence -= 0.2
   }
@@ -500,7 +526,9 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
     }
   }
   
-  // Buscar requisitos específicos,  const requirements = await prisma.visaRequirement.findFirst({
+  // Buscar requisitos específicos
+  
+  const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: document.client.targetCountry }
       isActive: true
@@ -530,7 +558,9 @@ async function validateAgainstCountryRequirements(document: any, analysisResult:
   
   const issues: string[] = []
   
-  // Verificar validade específica,  if (relevantDoc.validityMonths && document.type === 'PASSPORT') {
+  // Verificar validade específica
+  
+  if (relevantDoc.validityMonths && document.type === 'PASSPORT') {
     const extractedData = analysisResult.extractedData
     if (extractedData.expiryDate) {
       const expiryDate = new Date(extractedData.expiryDate.split('/').reverse().join('-'))
@@ -557,11 +587,15 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
   const warnings: string[] = []
   const criticalIssues: string[] = []
   
-  // Verificar qualidade da imagem/OCR,  if (ocrResult.confidence < 0.7) {
+  // Verificar qualidade da imagem/OCR
+  
+  if (ocrResult.confidence < 0.7) {
     warnings.push('Qualidade da imagem pode estar comprometida')
   }
   
-  // Verificar consistência de dados,  if (document.client && analysisResult.extractedData) {
+  // Verificar consistência de dados
+  
+  if (document.client && analysisResult.extractedData) {
     const extractedName = ocrResult.text.toUpperCase()
     const clientName = document.client.name.toUpperCase()
     
@@ -570,7 +604,9 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
     }
   }
   
-  // Verificar padrões suspeitos no texto,  const suspiciousPatterns = [
+  // Verificar padrões suspeitos no texto
+  
+  const suspiciousPatterns = [
     /COPY/gi,
     /REPLICA/gi,
     /SAMPLE/gi,
@@ -597,15 +633,21 @@ async function detectPotentialIssues(document: any, ocrResult: any, analysisResu
 function generateRecommendations(analysisResult: any, countryValidation: any, fraudDetection: any) {
   const recommendations: string[] = []
   
-  // Adicionar recomendações da análise específica,  if (analysisResult.recommendations) {
+  // Adicionar recomendações da análise específica
+  
+  if (analysisResult.recommendations) {
     recommendations.push(...analysisResult.recommendations)
   }
   
-  // Adicionar recomendações de validação do país,  if (countryValidation.countrySpecificIssues?.length > 0) {
+  // Adicionar recomendações de validação do país
+  
+  if (countryValidation.countrySpecificIssues?.length > 0) {
     recommendations.push('Verificar requisitos específicos do país de destino')
   }
   
-  // Adicionar recomendações de segurança,  if (fraudDetection.hasWarnings) {
+  // Adicionar recomendações de segurança
+  
+  if (fraudDetection.hasWarnings) {
     recommendations.push('Revisar qualidade e autenticidade do documento')
   }
   
@@ -642,16 +684,20 @@ function generateValidationNotes(analysisResult: any, countryValidation: any, fr
 // Verificar e disparar próximos passos
 async function checkAndTriggerNextSteps(clientId: string, documentType: string) {
   try {
-    // Buscar todos os documentos do cliente,    const clientDocuments = await prisma.document.findMany({
+    // Buscar todos os documentos do cliente
+    const clientDocuments = await prisma.document.findMany({
       where: { clientId, status: 'VALID' }
     })
     
-    // Verificar se tem documentos essenciais,    const hasPassport = clientDocuments.some(d => d.type === 'PASSPORT')
+    // Verificar se tem documentos essenciais
+    
+    const hasPassport = clientDocuments.some(d => d.type === 'PASSPORT')
     const hasEducation = clientDocuments.some(d => ['DIPLOMA', 'TRANSCRIPT'].includes(d.type))
     const hasWork = clientDocuments.some(d => d.type === 'WORK_CERTIFICATE')
     
     if (hasPassport && hasEducation && hasWork) {
-      // Cliente tem documentos básicos, pode agendar consultoria
+      // Cliente tem documentos básicos
+      pode agendar consultoria
       const existingConsultation = await prisma.consultation.findFirst({
         where: { 
           clientId,
@@ -660,7 +706,8 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
       })
       
       if (!existingConsultation) {
-        // Agendar consultoria automática,        await prisma.consultation.create({
+        // Agendar consultoria automática
+        await prisma.consultation.create({
           data: {
             type: 'HUMAN_CONSULTATION',
             status: 'SCHEDULED',

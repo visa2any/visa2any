@@ -247,14 +247,20 @@ export function UKVisaForm({ onSubmit, initialData }: UKVisaFormProps) {
     }
   }
 
-  // Calculadora de pontos para Skilled Worker visa,  const calculatePointsBasedScore = () => {
+  // Calculadora de pontos para Skilled Worker visa
+
+  const calculatePointsBasedScore = () => {
     let points = 0
     
-    // Mandatory requirements (50 points),    if (formData.workInfo.hasJobOfferUK) points += 20
+    // Mandatory requirements (50 points)
+    
+    if (formData.workInfo.hasJobOfferUK) points += 20
     if (formData.workInfo.skillsAssessment) points += 20
     if (formData.educationInfo.languageSkills.english === 'advanced') points += 10
     
-    // Tradeable requirements,    if (formData.workInfo.monthlyIncome >= 2500) points += 20 // £30k+ annually
+    // Tradeable requirements
+    
+    if (formData.workInfo.monthlyIncome >= 2500) points += 20 // £30k+ annually
     if (formData.educationInfo.highestEducation === 'phd') points += 20
     if (formData.educationInfo.languageSkills.english === 'native') points += 10
     

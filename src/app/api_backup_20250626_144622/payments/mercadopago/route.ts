@@ -14,16 +14,22 @@ export async function POST(request: NextRequest) {
     
     console.log('🛒 Criando preferência MercadoPago:', body)
 
-    // Detectar ambiente,    const isProduction = process.env.NODE_ENV === 'production'
+    // Detectar ambiente
+
+    const isProduction = process.env.NODE_ENV === 'production'
     
-    // Validar dados obrigatórios,    if (!body.customer?.email) {
+    // Validar dados obrigatórios
+    
+    if (!body.customer?.email) {
       return NextResponse.json({
         error: 'Email do comprador é obrigatório',
         code: 'MISSING_PAYER_EMAIL'
       }, { status: 400 })
     }
 
-    // Preparar dados dos items com informações completas,    const items = body.items?.map((item: any, index: number) => ({
+    // Preparar dados dos items com informações completas
+
+    const items = body.items?.map((item: any, index: number) => ({
       id: item.id || `visa2any-item-${index + 1}`,
       title: item.title || 'Consultoria Express - Visa2Any',
       description: item.description || 'Consultoria personalizada para processo de visto',
@@ -43,31 +49,41 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    // Preparar dados do payer com informações completas,    const payer: any = {
+    // Preparar dados do payer com informações completas
+
+    const payer: any = {
       email: body.customer.email
     }
 
-    // Adicionar nome e sobrenome se disponível,    if (body.customer.name) {
+    // Adicionar nome e sobrenome se disponível
+
+    if (body.customer.name) {
       const nameParts = body.customer.name.split(' ')
       payer.first_name = nameParts[0] || ''
       payer.last_name = nameParts.slice(1).join(' ') || nameParts[0] || ''
     }
 
-    // Adicionar telefone se disponível,    if (body.customer.phone) {
+    // Adicionar telefone se disponível
+
+    if (body.customer.phone) {
       payer.phone = {
         area_code: body.customer.phone.replace(/\D/g, '').substring(0, 2),
         number: body.customer.phone.replace(/\D/g, '').substring(2)
       }
     }
 
-    // Adicionar identificação se disponível,    if (body.customer.cpf) {
+    // Adicionar identificação se disponível
+
+    if (body.customer.cpf) {
       payer.identification = {
         type: 'CPF',
         number: body.customer.cpf.replace(/\D/g, '')
       }
     }
 
-    // Adicionar endereço se disponível,    if (body.customer.address) {
+    // Adicionar endereço se disponível
+
+    if (body.customer.address) {
       payer.address = {
         street_name: body.customer.address.street || '',
         street_number: body.customer.address.number || '',
@@ -75,7 +91,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Criar preferência no MercadoPago,    const preferenceData = {
+    // Criar preferência no MercadoPago
+
+    const preferenceData = {
       items,
       payer,
       back_urls: {
@@ -100,7 +118,9 @@ export async function POST(request: NextRequest) {
 
     console.log('📋 Dados da preferência:', JSON.stringify(preferenceData, null, 2))
 
-    // Criar preferência,    const result = await preference.create({ body: preferenceData })
+    // Criar preferência
+
+    const result = await preference.create({ body: preferenceData })
     
     console.log('✅ Preferência criada:', result)
 

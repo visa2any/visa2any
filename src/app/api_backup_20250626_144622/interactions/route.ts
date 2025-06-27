@@ -26,7 +26,9 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
+    // Construir filtros
+
+    const where: any = {}
     
     if (clientId) {
       where.clientId = clientId
@@ -36,7 +38,9 @@ export async function GET(request: NextRequest) {
       where.type = type
     }
 
-    // Buscar interações,    const [interactions, total] = await Promise.all([,
+    // Buscar interações
+
+    const [interactions, total] = await Promise.all([,
       prisma.interaction.findMany({
         where,
         skip,
@@ -86,9 +90,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validar dados,    const validatedData = createInteractionSchema.parse(body)
+    // Validar dados
+    
+    const validatedData = createInteractionSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe
+
+    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
     })
 
@@ -98,7 +106,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar interação,    const interaction = await prisma.interaction.create({
+    // Criar interação
+
+    const interaction = await prisma.interaction.create({
       data: {
         ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
@@ -116,7 +126,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({
+    // Log da criação
+
+    await prisma.automationLog.create({
       data: {
         type: 'EMAIL',
         action: 'create_interaction',

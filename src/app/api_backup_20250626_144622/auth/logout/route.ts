@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken'
 // POST /api/auth/logout - Logout de usuário
 export async function POST(request: NextRequest) {
   try {
-    // Buscar token para log,    const authHeader = request.headers.get('authorization')
+    // Buscar token para log
+    const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
     const token = authHeader?.replace('Bearer ', '') || cookieToken
     
@@ -17,7 +18,9 @@ export async function POST(request: NextRequest) {
           // Continue with logout even if token verification fails        } else {
           const decoded = jwt.verify(token, jwtSecret) as any
         
-          // Log do logout,          await prisma.automationLog.create({
+          // Log do logout
+        
+          await prisma.automationLog.create({
             data: {
               type: 'USER_LOGOUT',
               action: 'logout',
@@ -33,16 +36,21 @@ export async function POST(request: NextRequest) {
           })
         }
       } catch (tokenError) {
-        // Token inválido, mas continua com logout
+        // Token inválido
+        mas continua com logout
       }
     }
 
-    // Criar resposta de sucesso,    const response = NextResponse.json({
+    // Criar resposta de sucesso
+
+    const response = NextResponse.json({
       success: true,
       message: 'Logout realizado com sucesso'
     })
 
-    // Remover cookie,    response.cookies.set('auth-token', '', {
+    // Remover cookie
+
+    response.cookies.set('auth-token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -53,7 +61,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no logout:', error)
     
-    // Mesmo com erro, remover cookie
+    // Mesmo com erro
+    
+    remover cookie
     const response = NextResponse.json({
       success: true,
       message: 'Logout realizado'

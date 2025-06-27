@@ -37,7 +37,8 @@ export async function GET(request: NextRequest) {
 // POST /api/whatsapp/status - Reconectar WhatsApp
 export async function POST(request: NextRequest) {
   try {
-    // Reconectar forçadamente,    const whatsappService = getWhatsAppServiceSimple()
+    // Reconectar forçadamente
+    const whatsappService = getWhatsAppServiceSimple()
     
     return NextResponse.json({
       message: 'Reconexão iniciada. Verifique o console para o QR Code.'

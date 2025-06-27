@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processScheduledPosts } from '@/lib/social-automation'
 
-// Esta rota deve ser chamada por um cron job (ex: Vercel Cron, GitHub Actions)
+// Esta rota deve ser chamada por um cron job (ex: Vercel Cron
+
+GitHub Actions)
 export async function POST(request: NextRequest) {
   try {
-    // Verificar authorization header se necessário,    const authHeader = request.headers.get('authorization')
+    // Verificar authorization header se necessário
+    const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
     
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
@@ -16,7 +19,9 @@ export async function POST(request: NextRequest) {
 
     console.log('🤖 Iniciando processamento de posts agendados...')
     
-    // Processar posts agendados,    await processScheduledPosts()
+    // Processar posts agendados
+    
+    await processScheduledPosts()
     
     console.log('✅ Processamento de posts agendados concluído')
     

@@ -15,7 +15,8 @@ const createConsultationSchema = z.object({
 // GET /api/consultations - Listar consultorias
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
@@ -28,7 +29,9 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
+    // Construir filtros
+
+    const where: any = {}
     
     if (status && status !== 'ALL') {
       where.status = status
@@ -42,7 +45,9 @@ export async function GET(request: NextRequest) {
       where.clientId = clientId
     }
 
-    // Buscar consultorias,    const [consultations, total] = await Promise.all([,
+    // Buscar consultorias
+
+    const [consultations, total] = await Promise.all([,
       prisma.consultation.findMany({
         where,
         skip,
@@ -95,15 +100,20 @@ export async function GET(request: NextRequest) {
 // POST /api/consultations - Criar nova consultoria
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const body = await request.json()
     
-    // Validar dados,    const validatedData = createConsultationSchema.parse(body)
+    // Validar dados
+    
+    const validatedData = createConsultationSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe
+
+    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
     })
 
@@ -113,7 +123,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Se for consultoria humana, verificar se consultor existe
+    // Se for consultoria humana
+
+    verificar se consultor existe
     if (validatedData.consultantId) {
       const consultant = await prisma.user.findUnique({
         where: { id: validatedData.consultantId }
@@ -126,7 +138,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Criar consultoria,    const consultation = await prisma.consultation.create({
+    // Criar consultoria
+
+    const consultation = await prisma.consultation.create({
       data: {
         ...validatedData
         scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
@@ -148,14 +162,18 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar status do cliente se necessário,    if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
+    // Atualizar status do cliente se necessário
+
+    if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
       await prisma.client.update({
         where: { id: validatedData.clientId }
         data: { status: 'CONSULTATION_SCHEDULED' }
       })
     }
 
-    // Log da criação,    await prisma.automationLog.create({
+    // Log da criação
+
+    await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_CREATED',
         action: 'create_consultation',

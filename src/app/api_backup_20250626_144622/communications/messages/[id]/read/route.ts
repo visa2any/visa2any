@@ -22,7 +22,9 @@ export async function PATCH(,
       readAt: new Date().toISOString()
     }
 
-    // Simulate database update delay,    await new Promise(resolve => setTimeout(resolve, 200))
+    // Simulate database update delay
+
+    await new Promise(resolve => setTimeout(resolve, 200))
 
     return NextResponse.json({
       message: 'Message marked as read'

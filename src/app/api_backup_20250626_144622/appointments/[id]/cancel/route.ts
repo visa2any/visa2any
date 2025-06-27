@@ -21,7 +21,7 @@ export async function DELETE(
     const result = await appointmentBookingService.cancelAppointment(appointmentId, consulate)
 
     if (result.success) {
-      // TODO: Atualizar status no banco de dados,      
+      // TODO: Atualizar status no banco de dados
       return NextResponse.json({
         message: result.message,
         cancelledAt: new Date().toISOString()

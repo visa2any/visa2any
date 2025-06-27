@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     const targetId = searchParams.get('targetId')
 
     if (action === 'targets') {
-      // Listar targets disponíveis,      const targets = webScrapingService.getAvailableTargets()
+      // Listar targets disponíveis
+      const targets = webScrapingService.getAvailableTargets()
       
       return NextResponse.json({
         success: true
@@ -21,7 +22,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (action === 'slots' && targetId) {
-      // Buscar slots via scraping,      const result = await webScrapingService.scrapeAvailableSlots(targetId)
+      // Buscar slots via scraping
+      const result = await webScrapingService.scrapeAvailableSlots(targetId)
       
       return NextResponse.json({
         success: result.success
@@ -101,7 +103,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Iniciar monitoramento em background,      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30)
+      // Iniciar monitoramento em background
+
+      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30)
       
       return NextResponse.json({
         success: true

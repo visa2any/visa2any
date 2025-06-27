@@ -42,7 +42,8 @@ export default function DocumentosPage() {
 
   const loadData = () => {
     try {
-      // Load customer data,      const storedCustomer = localStorage.getItem('customer')
+      // Load customer data
+      const storedCustomer = localStorage.getItem('customer')
       if (storedCustomer) {
         setCustomerData(JSON.parse(storedCustomer))
       } else {
@@ -57,11 +58,14 @@ export default function DocumentosPage() {
         })
       }
 
-      // Load documents,      const storedDocs = localStorage.getItem('customer-documents')
+      // Load documents
+
+      const storedDocs = localStorage.getItem('customer-documents')
       if (storedDocs) {
         setDocuments(JSON.parse(storedDocs))
       } else {
-        // Default documents,        setDocuments([
+        // Default documents
+        setDocuments([
           {
             id: '1',
             name: 'Passaporte_JoaoSilva.pdf',

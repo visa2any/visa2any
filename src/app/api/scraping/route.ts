@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { webScrapingService } from '@/lib/web-scraping-service'
 
-// GET - Buscar vagas via web scraping,
+// GET - Buscar vagas via web scraping
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const action =  
 const targetId = searchParams.get('targetId'),
     if (action === 'targets') {
-      // Listar targets disponíveis,      const targets = webScrapingService.getAvailableTargets(),      
+      // Listar targets disponíveis
+      const targets = webScrapingService.getAvailableTargets(),      
       return NextResponse.json({,        success: true,        targets,        total: targets.length,        warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',        message: 'Targets de scraping listados'
       })
     },
     if (action === 'slots' && targetId) {
-      // Buscar slots via scraping,      const result = await webScrapingService.scrapeAvailableSlots(targetId),      
+      // Buscar slots via scraping
+      const result = await webScrapingService.scrapeAvailableSlots(targetId),      
       return NextResponse.json({,        success: result.success,        slots: result.slots,        error: result.error,        lastUpdated: result.lastUpdated,        source: result.source,        warning: 'Dados obtidos via web scraping - podem estar desatualizados',        disclaimer: 'Este serviço é apenas para fins informativos'
       })
     },
@@ -23,7 +26,8 @@ const targetId = searchParams.get('targetId'),
   }
 }
 
-// POST - Configurar scraping,
+// POST - Configurar scraping
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const { action, targetId, enabled, legalConfirmation } = body,
@@ -46,7 +50,9 @@ const { action, targetId, enabled, legalConfirmation } = body,
         )
       }
 
-      // Iniciar monitoramento em background,      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30),      
+      // Iniciar monitoramento em background
+
+      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30),      
       return NextResponse.json({,        success: true,        monitoring: {,          targets: targetIds,          interval: intervalMinutes || 30,          status: 'started'
         },        message: 'Monitoramento iniciado',        warning: 'Monitoramento contínuo pode ser detectado pelos sites'
       })

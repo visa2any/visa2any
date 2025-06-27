@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { medicalExamService } from '@/lib/medical-exams'
 
-// GET - Buscar clínicas e exames médicos,
+// GET - Buscar clínicas e exames médicos
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const action =  
 const country = searchParams.get('country')
@@ -33,20 +34,25 @@ const state = searchParams.get('state'),
   }
 }
 
-// POST - Agendar exame médico,
+// POST - Agendar exame médico
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const { ,      applicantId ,      clinicId, ,      examTypes, ,      appointmentDate, ,      appointmentTime, ,      totalCost,      notes 
     } = body
 
-    // Validação dos campos obrigatórios,    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {,      return NextResponse.json(,        { error: 'Campos applicantId, clinicId, examTypes, appointmentDate e appointmentTime são obrigatórios' },        { status: 400 }
+    // Validação dos campos obrigatórios
+
+    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {,      return NextResponse.json(,        { error: 'Campos applicantId, clinicId, examTypes, appointmentDate e appointmentTime são obrigatórios' },        { status: 400 }
       )
     },
     if (!Array.isArray(examTypes) || examTypes.length === 0) {,      return NextResponse.json(,        { error: 'examTypes deve ser um array não vazio' },        { status: 400 }
       )
     }
 
-    // Fazer agendamento,    const result = await medicalExamService.bookMedicalExam({,      applicantId,      clinicId,      examTypes,      appointmentDate,      appointmentTime,      totalCost,      notes
+    // Fazer agendamento
+
+    const result = await medicalExamService.bookMedicalExam({,      applicantId,      clinicId,      examTypes,      appointmentDate,      appointmentTime,      totalCost,      notes
     }),
     if (result.success) {,      return NextResponse.json({,        booking: {,          bookingId: result.bookingId,          confirmationCode: result.confirmationCode,          instructions: result.instructions
         },        message: 'Exame médico agendado com sucesso!'

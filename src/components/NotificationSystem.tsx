@@ -41,7 +41,9 @@ interface NotificationProviderProps {
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  // Load notifications from localStorage on mount,  useEffect(() => {
+  // Load notifications from localStorage on mount
+
+  useEffect(() => {
     const stored = localStorage.getItem('visa2any-notifications')
     if (stored) {
       try {
@@ -346,7 +348,8 @@ export function ToastContainer() {
   const { notifications } = useNotifications()
 
   useEffect(() => {
-    // Show toasts for new notifications,    const newNotifications = notifications.filter(n => 
+    // Show toasts for new notifications
+    const newNotifications = notifications.filter(n => 
       !n.read && 
       !toasts.find(t => t.id === n.id) &&
       (Date.now() - n.timestamp.getTime()) < 1000 // Only show for very recent notifications    )

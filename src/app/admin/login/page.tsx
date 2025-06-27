@@ -24,7 +24,9 @@ export default function AdminLoginPage() {
     setError('')
     setSuccess('')
 
-    // Validação client-side,    if (!email || !password) {
+    // Validação client-side
+
+    if (!email || !password) {
       setError('Por favor, preencha todos os campos')
       setIsLoading(false)
       return
@@ -59,7 +61,9 @@ export default function AdminLoginPage() {
       if (data.success && data.data?.user) {
         console.log('✅ Login bem-sucedido:', data.data.user.email)
         
-        // Salvar dados no localStorage,        if (typeof window !== 'undefined') {
+        // Salvar dados no localStorage
+        
+        if (typeof window !== 'undefined') {
           localStorage.setItem('auth-token', data.data.token)
           localStorage.setItem('user', JSON.stringify(data.data.user))
           
@@ -72,7 +76,9 @@ export default function AdminLoginPage() {
         
         setSuccess('Login realizado com sucesso! Redirecionando...')
         
-        // Aguardar um pouco e redirecionar para o dashboard unificado,        setTimeout(() => {
+        // Aguardar um pouco e redirecionar para o dashboard unificado
+        
+        setTimeout(() => {
           router.push('/admin/dashboard-unified')
         }, 1500)
         
@@ -90,7 +96,10 @@ export default function AdminLoginPage() {
   }
 
 
-  // Carregar email salvo,  useState(() => {
+  // Carregar email salvo
+
+
+  useState(() => {
     if (typeof window !== 'undefined') {
       const savedEmail = localStorage.getItem('remember-email')
       if (savedEmail) {

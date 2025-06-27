@@ -52,7 +52,8 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
 
   const handleInputChange = (field: keyof ProfileData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing,    if (errors[field]) {
+    // Clear error when user starts typing
+    if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
   }
@@ -60,12 +61,15 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validate file size (max 5MB),      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
         alert('Foto deve ter no máximo 5MB')
         return
       }
 
-      // Validate file type,      if (!file.type.startsWith('image/')) {
+      // Validate file type
+
+      if (!file.type.startsWith('image/')) {
         alert('Por favor, selecione uma imagem válida')
         return
       }
@@ -84,20 +88,28 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    // Name validation,    if (!formData.name || formData.name.length < 2) {
+    // Name validation
+
+    if (!formData.name || formData.name.length < 2) {
       newErrors.name = 'Nome deve ter pelo menos 2 caracteres'
     }
 
-    // Email validation,    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    // Email validation
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email || !emailRegex.test(formData.email)) {
       newErrors.email = 'Email inválido'
     }
 
-    // Phone validation,    if (!formData.phone || formData.phone.length < 10) {
+    // Phone validation
+
+    if (!formData.phone || formData.phone.length < 10) {
       newErrors.phone = 'Telefone inválido'
     }
 
-    // Age validation,    if (!formData.age || formData.age < 16 || formData.age > 100) {
+    // Age validation
+
+    if (!formData.age || formData.age < 16 || formData.age > 100) {
       newErrors.age = 'Idade deve estar entre 16 e 100 anos'
     }
 
@@ -113,11 +125,16 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
     setIsLoading(true)
     
     try {
-      // Simulate API call,      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
-      // Save to localStorage,      localStorage.setItem('customer-profile', JSON.stringify(formData))
+      // Save to localStorage
       
-      // Also update the main customer data with the profile photo,      const existingCustomer = localStorage.getItem('customer')
+      localStorage.setItem('customer-profile', JSON.stringify(formData))
+      
+      // Also update the main customer data with the profile photo
+      
+      const existingCustomer = localStorage.getItem('customer')
       if (existingCustomer) {
         const customerData = JSON.parse(existingCustomer)
         customerData.profilePhoto = formData.profilePhoto

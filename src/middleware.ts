@@ -7,7 +7,8 @@ let servicesInitialized = false
 function initializeServicesAsync() {
   if (!servicesInitialized && process.env.NODE_ENV === 'development') {
     servicesInitialized = true
-    // Importar e inicializar serviços de forma assíncrona,    import('./lib/startup').then(({ initializeServices }) => {
+    // Importar e inicializar serviços de forma assíncrona
+    import('./lib/startup').then(({ initializeServices }) => {
       initializeServices().catch(console.error)
     }).catch(console.error)
   }
@@ -30,13 +31,19 @@ function decodeJWTUnsafe(token: string) {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // 🚀 Inicializar serviços automaticamente na primeira requisição,  initializeServicesAsync()
+  // 🚀 Inicializar serviços automaticamente na primeira requisição
 
-  // ✅ Log apenas em desenvolvimento,  if (process.env.NODE_ENV === 'development') {
+  initializeServicesAsync()
+
+  // ✅ Log apenas em desenvolvimento
+
+  if (process.env.NODE_ENV === 'development') {
     console.log('🛡️ Middleware verificando:', pathname)
   }
 
-  // Redirecionamentos para páginas duplicadas/depreciadas,  const redirects: Record<string, string> = {
+  // Redirecionamentos para páginas duplicadas/depreciadas
+
+  const redirects: Record<string, string> = {
     '/page-simple': '/',
     '/page-original': '/',
     '/precos-novo': '/precos',
@@ -51,7 +58,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(redirects[pathname], request.url), 301)
   }
 
-  // Pular verificação para rotas que não precisam de auth,  if (pathname.includes('/login') || 
+  // Pular verificação para rotas que não precisam de auth
+
+  if (pathname.includes('/login') || 
       pathname.includes('/unauthorized') ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/auth/login') ||
@@ -64,15 +73,21 @@ export function middleware(request: NextRequest) {
     return addSecurityHeaders(NextResponse.next())
   }
 
-  // Apenas proteger rotas admin específicas,  if (pathname.startsWith('/admin')) {
+  // Apenas proteger rotas admin específicas
+
+  if (pathname.startsWith('/admin')) {
     if (process.env.NODE_ENV === 'development') {
       console.log('🔒 Verificando auth para rota admin:', pathname)
     }
     
-    // Verificar token de autenticação,    const authHeader = request.headers.get('authorization')
+    // Verificar token de autenticação
+    
+    const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
     
-    // Também verificar em outros possíveis formatos de cookie,    const allCookies = request.headers.get('cookie') || ''
+    // Também verificar em outros possíveis formatos de cookie
+    
+    const allCookies = request.headers.get('cookie') || ''
     const cookieMatch = allCookies.match(/auth-token=([^;]+)/)
     const backupToken = cookieMatch ? cookieMatch[1] : null
     
@@ -94,7 +109,8 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      // Decodificar token (sem verificar assinatura - isso será feito pelas APIs),      const decoded = decodeJWTUnsafe(token)
+      // Decodificar token (sem verificar assinatura - isso será feito pelas APIs)
+      const decoded = decodeJWTUnsafe(token)
       
       if (!decoded || !decoded.email || !decoded.role) {
         if (process.env.NODE_ENV === 'development') {
@@ -108,7 +124,9 @@ export function middleware(request: NextRequest) {
         console.log('✅ Token válido para usuário verificado')
       }
       
-      // Verificar permissões de admin,      const adminRoles = ['ADMIN', 'MANAGER']
+      // Verificar permissões de admin
+      
+      const adminRoles = ['ADMIN', 'MANAGER']
       if (!adminRoles.includes(decoded.role)) {
         if (process.env.NODE_ENV === 'development') {
           console.log('❌ Role insuficiente:', decoded.role)
@@ -133,7 +151,9 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Outras rotas passam sem verificação,  if (process.env.NODE_ENV === 'development') {
+  // Outras rotas passam sem verificação
+
+  if (process.env.NODE_ENV === 'development') {
     console.log('✅ Rota pública:', pathname)
   }
   return addSecurityHeaders(NextResponse.next())

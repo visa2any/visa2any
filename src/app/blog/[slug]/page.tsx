@@ -9,7 +9,8 @@ interface Props {
 // Gerar metadata dinâmica para SEO (simplificada para reduzir tamanho)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    // Usar busca direta no banco ao invés de API para SSG,    const prisma = new PrismaClient()
+    // Usar busca direta no banco ao invés de API para SSG
+    const prisma = new PrismaClient()
     const post = await prisma.blogPost.findFirst({
       where: {
         id: params.slug,

@@ -28,26 +28,37 @@ export class WebScrapingService {
     }
   }
 
-  // Monitorar CASV (EUA),  async checkCASV(): Promise<VisaSlot[]> {
+  // Monitorar CASV (EUA)
+
+  async checkCASV(): Promise<VisaSlot[]> {
     const slots: VisaSlot[] = []
     
     try {
       await this.init()
       const page = await this.browser.newPage()
       
-      // Headers para simular usuário real,      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+      // Headers para simular usuário real
       
-      // Acessa CASV,      await page.goto('https://ais.usvisa-info.com/', { waitUntil: 'networkidle2' })
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
       
-      // Simular verificação de slots (implementação específica),      const availableSlots = await page.evaluate(() => {
-        // Código para extrair slots disponíveis,        const elements = document.querySelectorAll('.appointment-slot')
+      // Acessa CASV
+      
+      await page.goto('https://ais.usvisa-info.com/', { waitUntil: 'networkidle2' })
+      
+      // Simular verificação de slots (implementação específica)
+      
+      const availableSlots = await page.evaluate(() => {
+        // Código para extrair slots disponíveis
+        const elements = document.querySelectorAll('.appointment-slot')
         return Array.from(elements).map(el => ({
           date: el.textContent?.trim() || '',
           available: !el.classList.contains('disabled')
         }))
       })
 
-      // Converter para nosso formato,      availableSlots.forEach((slot: any) => {
+      // Converter para nosso formato
+
+      availableSlots.forEach((slot: any) => {
         if (slot.available) {
           slots.push({
             date: slot.date,
@@ -68,7 +79,9 @@ export class WebScrapingService {
     return slots
   }
 
-  // Monitorar VFS Global (Canadá/Reino Unido),  async checkVFS(): Promise<VisaSlot[]> {
+  // Monitorar VFS Global (Canadá/Reino Unido)
+
+  async checkVFS(): Promise<VisaSlot[]> {
     const slots: VisaSlot[] = []
     
     try {
@@ -78,7 +91,9 @@ export class WebScrapingService {
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
       await page.goto('https://visa.vfsglobal.com/bra/en/can/', { waitUntil: 'networkidle2' })
       
-      // Verificar slots VFS,      const vfsSlots = await page.evaluate(() => {
+      // Verificar slots VFS
+      
+      const vfsSlots = await page.evaluate(() => {
         const calendar = document.querySelector('.calendar')
         if (!calendar) return []
         
@@ -108,7 +123,9 @@ export class WebScrapingService {
     return slots
   }
 
-  // Verificar múltiplos sites,  async checkAllSites(): Promise<VisaSlot[]> {
+  // Verificar múltiplos sites
+
+  async checkAllSites(): Promise<VisaSlot[]> {
     const allSlots: VisaSlot[] = []
     
     try {
@@ -125,7 +142,9 @@ export class WebScrapingService {
     return allSlots
   }
 
-  // Notificar via Telegram quando encontrar slots,  async notifySlots(slots: VisaSlot[]) {
+  // Notificar via Telegram quando encontrar slots
+
+  async notifySlots(slots: VisaSlot[]) {
     if (slots.length === 0) return
 
     const token = process.env.TELEGRAM_BOT_TOKEN

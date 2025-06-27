@@ -77,7 +77,8 @@ export default function ReportsPage() {
   const fetchReportData = async () => {
     setIsLoading(true)
     try {
-      // Simulando dados de relatório,      const mockData: ReportData = {
+      // Simulando dados de relatório
+      const mockData: ReportData = {
         period: `Últimos ${period} dias`,
         metrics: {
           totalClients: 156,
@@ -132,7 +133,8 @@ export default function ReportsPage() {
 
   const generateReport = async () => {
     setIsGenerating(true)
-    // Simular geração de relatório,    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Simular geração de relatório
+    await new Promise(resolve => setTimeout(resolve, 2000))
     setIsGenerating(false)
   }
 

@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
   try {
     const body: BookingRequest = await request.json()
 
-    // Validação dos dados obrigatórios,    const required = ['applicantId', 'consulate', 'visaType', 'applicantInfo']
+    // Validação dos dados obrigatórios
+
+    const required = ['applicantId', 'consulate', 'visaType', 'applicantInfo']
     for (const field of required) {
       if (!body[field as keyof BookingRequest]) {
         return NextResponse.json(
@@ -52,7 +54,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validação dos dados do requerente,    const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality']
+    // Validação dos dados do requerente
+
+    const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality']
     for (const field of requiredApplicantInfo) {
       if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {
         return NextResponse.json(
@@ -62,7 +66,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Tentar fazer o agendamento,    const bookingResult = await appointmentBookingService.bookAppointment(body)
+    // Tentar fazer o agendamento
+
+    const bookingResult = await appointmentBookingService.bookAppointment(body)
 
     if (bookingResult.success) {
       // Salvar agendamento no banco de dados,      // TODO: Implementar salvamento no Prisma

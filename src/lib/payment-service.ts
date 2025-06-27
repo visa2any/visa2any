@@ -32,7 +32,8 @@ class PaymentService {
   private mercadoPago: MercadoPagoConfig
   
   constructor() {
-    // Configurar Mercado Pago,    this.mercadoPago = new MercadoPagoConfig({
+    // Configurar Mercado Pago
+    this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || 'TEST-your-access-token',
       options: {
         timeout: 5000,
@@ -41,7 +42,9 @@ class PaymentService {
     })
   }
 
-  // Criar cobrança PIX (mais rápido e barato),  async createPixPayment(request: PaymentRequest): Promise<PaymentResponse> {
+  // Criar cobrança PIX (mais rápido e barato)
+
+  async createPixPayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
       const payment = new Payment(this.mercadoPago)
       
@@ -69,7 +72,8 @@ class PaymentService {
       const result = await payment.create({ body: paymentData })
       
       if (result.status === 'pending') {
-        // Salvar no banco de dados,        await this.savePaymentRecord({
+        // Salvar no banco de dados
+        await this.savePaymentRecord({
           trackingId: request.trackingId,
           paymentId: result.id!.toString(),
           amount: request.amount,
@@ -102,7 +106,9 @@ class PaymentService {
     }
   }
 
-  // Criar cobrança com cartão de crédito,  async createCardPayment(request: PaymentRequest & {
+  // Criar cobrança com cartão de crédito
+
+  async createCardPayment(request: PaymentRequest & {
     cardToken: string
     installments: number
   }): Promise<PaymentResponse> {
@@ -151,7 +157,9 @@ class PaymentService {
     }
   }
 
-  // Verificar status do pagamento,  async checkPaymentStatus(paymentId: string): Promise<{
+  // Verificar status do pagamento
+
+  async checkPaymentStatus(paymentId: string): Promise<{
     status: string
     approved: boolean
     details?: any
@@ -176,7 +184,9 @@ class PaymentService {
     }
   }
 
-  // Calcular preço do serviço,  calculateServicePrice(serviceLevel: 'basic' | 'premium' | 'express') {
+  // Calcular preço do serviço
+
+  calculateServicePrice(serviceLevel: 'basic' | 'premium' | 'express') {
     const prices = {
       basic: {
         amount: 25.00,
@@ -198,7 +208,9 @@ class PaymentService {
     return prices[serviceLevel]
   }
 
-  // Gerar link de pagamento (para enviar por WhatsApp/Email),  async generatePaymentLink(trackingId: string, serviceLevel: 'basic' | 'premium' | 'express', customerInfo: any): Promise<{
+  // Gerar link de pagamento (para enviar por WhatsApp/Email)
+
+  async generatePaymentLink(trackingId: string, serviceLevel: 'basic' | 'premium' | 'express', customerInfo: any): Promise<{
     success: boolean
     paymentUrl?: string
     pixCode?: string
@@ -234,12 +246,16 @@ class PaymentService {
     }
   }
 
-  // Métodos auxiliares para banco de dados,  private async savePaymentRecord(record: any): Promise<void> {
+  // Métodos auxiliares para banco de dados
+
+  private async savePaymentRecord(record: any): Promise<void> {
     // Aqui você salvaria no banco de dados,    // Por enquanto
  vamos usar console.log para demonstração
     console.log('Pagamento salvo:', record)
     
-    // Em produção, seria algo como:
+    // Em produção
+    
+    seria algo como:
     // await db.payments.create(record)  }
 
   private async updatePaymentStatus(paymentId: string, status: string): Promise<void> {
@@ -247,7 +263,8 @@ class PaymentService {
     // await db.payments.update({ paymentId }, { status })  }
 
   private async getPaymentRecord(paymentId: string): Promise<any> {
-    // Simular busca no banco,    return {
+    // Simular busca no banco
+    return {
       trackingId: `MANUAL-${Date.now()}`,
       paymentId,
       amount: 25.00,
@@ -265,7 +282,9 @@ class PaymentService {
     expiration.setHours(expiration.getHours() + 24) // 24 horas para pagar,    return expiration.toISOString()
   }
 
-  // Método para testar a integração,  async testIntegration(): Promise<{
+  // Método para testar a integração
+
+  async testIntegration(): Promise<{
     success: boolean
     mercadoPagoStatus: string
     environment: string

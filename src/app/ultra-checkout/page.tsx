@@ -96,7 +96,8 @@ function UltraCheckoutContent() {
       features={product.features}
       variant={product.variant}
       onSuccess={() => {
-        // Redirect para página de sucesso personalizada,        window.location.href = `/success?product=${productId}&checkout=ultra`
+        // Redirect para página de sucesso personalizada
+        window.location.href = `/success?product=${productId}&checkout=ultra`
       }}
     />
   )

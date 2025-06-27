@@ -149,7 +149,8 @@ export function ConsultantWorkspace({ stats, clients }: ConsultantWorkspaceProps
 
   const fetchConsultantData = async () => {
     try {
-      // Simular dados do consultor atual,      const mockStats: ConsultantStats = {
+      // Simular dados do consultor atual
+      const mockStats: ConsultantStats = {
         totalClients: clients.length,
         activeClients: clients.filter(c => c.status !== 'COMPLETED' && c.status !== 'INACTIVE').length,
         completedThisMonth: 8,
@@ -171,7 +172,8 @@ export function ConsultantWorkspace({ stats, clients }: ConsultantWorkspaceProps
 
   const fetchTasks = async () => {
     try {
-      // Simular tarefas do consultor,      const mockTasks: Task[] = [
+      // Simular tarefas do consultor
+      const mockTasks: Task[] = [
         {
           id: '1',
           title: 'Revisão de Documentos - João Silva',
@@ -214,7 +216,8 @@ export function ConsultantWorkspace({ stats, clients }: ConsultantWorkspaceProps
 
   const fetchOrders = async () => {
     try {
-      // Simular pedidos de serviços,      const mockOrders: ServiceOrder[] = [
+      // Simular pedidos de serviços
+      const mockOrders: ServiceOrder[] = [
         {
           id: 'ORD-001',
           orderNumber: '#2024-001',
@@ -335,7 +338,8 @@ export function ConsultantWorkspace({ stats, clients }: ConsultantWorkspaceProps
 
   const fetchProcedures = async () => {
     try {
-      // Base de conhecimento com procedimentos expandida,      const mockProcedures: ServiceProcedure[] = [
+      // Base de conhecimento com procedimentos expandida
+      const mockProcedures: ServiceProcedure[] = [
         {
           id: 'proc-001',
           serviceType: 'certidoes',
@@ -953,7 +957,8 @@ export function ConsultantWorkspace({ stats, clients }: ConsultantWorkspaceProps
 
   const updateTaskStatus = async (taskId: string, status: string) => {
     try {
-      // Simular atualização da tarefa,      setTasks(prev => prev.map(task => 
+      // Simular atualização da tarefa
+      setTasks(prev => prev.map(task => 
         task.id === taskId ? { ...task, status: status as any } : task
       ))
       notifySuccess('Tarefa atualizada', 'Status da tarefa foi alterado com sucesso')

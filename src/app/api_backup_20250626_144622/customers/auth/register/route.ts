@@ -17,7 +17,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Verificar se já existe cliente com este email,    const existingCustomer = await prisma.client.findUnique({
+    // Verificar se já existe cliente com este email
+
+    const existingCustomer = await prisma.client.findUnique({
       where: { email }
     })
 
@@ -27,9 +29,13 @@ export async function POST(request: NextRequest) {
       }, { status: 409 })
     }
 
-    // Hash da senha,    const hashedPassword = await bcrypt.hash(password, 12)
+    // Hash da senha
 
-    // Criar novo cliente,    const customer = await prisma.client.create({
+    const hashedPassword = await bcrypt.hash(password, 12)
+
+    // Criar novo cliente
+
+    const customer = await prisma.client.create({
       data: {
         name,
         email,
@@ -43,7 +49,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Gerar token JWT,    const jwtSecret = process.env.JWT_SECRET
+    // Gerar token JWT
+
+    const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
@@ -64,7 +72,9 @@ export async function POST(request: NextRequest) {
     // Enviar email de boas-vindas (implementar posteriormente),    // await sendWelcomeEmail(customer.email
  customer.name)
 
-    // Configurar resposta com cookie,    const response = NextResponse.json({
+    // Configurar resposta com cookie
+
+    const response = NextResponse.json({
       message: 'Conta criada com sucesso',
       customer: {
         id: customer.id,
@@ -77,7 +87,9 @@ export async function POST(request: NextRequest) {
       token
     })
 
-    // Definir cookie httpOnly,    response.cookies.set('customer-token', token, {
+    // Definir cookie httpOnly
+
+    response.cookies.set('customer-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

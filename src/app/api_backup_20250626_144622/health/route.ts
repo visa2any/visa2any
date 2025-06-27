@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Verificar banco de dados,    const dbStart = Date.now()
+    // Verificar banco de dados
+    const dbStart = Date.now()
     await prisma.$queryRaw`SELECT 1`
     health.database = {
       status: 'connected',
@@ -27,7 +28,9 @@ export async function GET(request: NextRequest) {
     health.status = 'unhealthy'
   }
 
-  // Verificar Telegram,  if (process.env.TELEGRAM_BOT_TOKEN) {
+  // Verificar Telegram
+
+  if (process.env.TELEGRAM_BOT_TOKEN) {
     try {
       const telegramResponse = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getMe`, {
         signal: AbortSignal.timeout(5000)
@@ -52,7 +55,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Verificar WhatsApp Business API,  if (process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_ID) {
+  // Verificar WhatsApp Business API
+
+  if (process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_ID) {
     try {
       const whatsappResponse = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}`, {
         headers: {
@@ -81,7 +86,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Verificar Email (Resend),  if (process.env.RESEND_API_KEY) {
+  // Verificar Email (Resend)
+
+  if (process.env.RESEND_API_KEY) {
     try {
       const emailResponse = await fetch('https://api.resend.com/domains', {
         headers: {
@@ -118,7 +125,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Verificar MercadoPago,  if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
+  // Verificar MercadoPago
+
+  if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
     try {
       const mpResponse = await fetch('https://api.mercadopago.com/users/me', {
         headers: {
@@ -154,7 +163,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Verificar configurações gerais,  health.configuration = {
+  // Verificar configurações gerais
+
+  health.configuration = {
     nextauth: {
       url: !!process.env.NEXTAUTH_URL,
       secret: !!process.env.NEXTAUTH_SECRET
@@ -170,7 +181,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Determinar status geral,  const criticalServices = ['database', 'payment']
+  // Determinar status geral
+
+  const criticalServices = ['database', 'payment']
   const hasCriticalErrors = criticalServices.some(service => {
     if (service === 'database') return health.database.status === 'error'
     if (service === 'payment') return health.services.payment?.status === 'error'
@@ -189,7 +202,9 @@ export async function GET(request: NextRequest) {
       health.status = 'degraded' // Alguns serviços com problema    }
   }
 
-  // Retornar status HTTP baseado na saúde,  const statusCode = health.status === 'healthy' ? 200 : 
+  // Retornar status HTTP baseado na saúde
+
+  const statusCode = health.status === 'healthy' ? 200 : 
                      health.status === 'degraded' ? 200 : 
                      health.status === 'minimal' ? 200 : 503
 

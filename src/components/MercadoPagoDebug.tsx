@@ -47,7 +47,9 @@ export default function MercadoPagoDebug({
     try {
       addDebug('📝 Verificando SDK existente...')
       
-      // Verificar se SDK já existe,      if (window.MercadoPago) {
+      // Verificar se SDK já existe
+      
+      if (window.MercadoPago) {
         addDebug('✅ SDK já carregado, inicializando...')
         await initializeMercadoPago()
         return
@@ -131,7 +133,8 @@ export default function MercadoPagoDebug({
           },
           onSubmit: async (data: any) => {
             addDebug(`💳 Submissão recebida: ${JSON.stringify(data)}`)
-            // Simular sucesso por enquanto,            addDebug('✅ Pagamento processado (simulado)')
+            // Simular sucesso por enquanto
+            addDebug('✅ Pagamento processado (simulado)')
           },
           onError: (error: any) => {
             addDebug(`❌ Erro do brick: ${JSON.stringify(error)}`)

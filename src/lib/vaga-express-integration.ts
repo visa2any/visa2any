@@ -25,7 +25,9 @@ interface MonitoringConfig {
 
 export class VagaExpressIntegration {
   
-  // Configurações dos planos,  private planConfigs = {
+  // Configurações dos planos
+  
+  private planConfigs = {
     'vaga-express-basic': {
       duration: 30,
       priority: 'basic' as const,
@@ -49,9 +51,12 @@ export class VagaExpressIntegration {
     }
   }
 
-  // Processar novo pedido do Vaga Express,  async processVagaExpressOrder(orderData: any): Promise<void> {
+  // Processar novo pedido do Vaga Express
+
+  async processVagaExpressOrder(orderData: any): Promise<void> {
     try {
-      // Criar registro do pedido,      const order: VagaExpressOrder = {
+      // Criar registro do pedido
+      const order: VagaExpressOrder = {
         orderId: `VE-${Date.now()}`,
         productId: orderData.product,
         customerName: orderData.customerName,
@@ -67,15 +72,25 @@ export class VagaExpressIntegration {
         createdAt: new Date().toISOString()
       }
 
-      // Salvar pedido,      await this.saveOrder(order)
+      // Salvar pedido
 
-      // Configurar monitoramento,      await this.setupMonitoringForOrder(order)
+      await this.saveOrder(order)
 
-      // Ativar sistemas necessários,      await this.activateRequiredSystems(order)
+      // Configurar monitoramento
 
-      // Enviar notificação de ativação,      await this.sendActivationNotification(order)
+      await this.setupMonitoringForOrder(order)
 
-      // Agendar tarefas automáticas,      await this.scheduleAutomatedTasks(order)
+      // Ativar sistemas necessários
+
+      await this.activateRequiredSystems(order)
+
+      // Enviar notificação de ativação
+
+      await this.sendActivationNotification(order)
+
+      // Agendar tarefas automáticas
+
+      await this.scheduleAutomatedTasks(order)
 
     } catch (error) {
       console.error('Erro ao processar pedido Vaga Express:', error)
@@ -84,7 +99,8 @@ export class VagaExpressIntegration {
   }
 
   private async saveOrder(order: VagaExpressOrder): Promise<void> {
-    // Salvar no localStorage (em produção seria banco de dados),    if (typeof window !== 'undefined') {
+    // Salvar no localStorage (em produção seria banco de dados)
+    if (typeof window !== 'undefined') {
       const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
       orders.push(order)
       localStorage.setItem('vaga-express-orders', JSON.stringify(orders))
@@ -95,19 +111,29 @@ export class VagaExpressIntegration {
     const config = this.planConfigs[order.productId]
     if (!config) return
 
-    // Ativar canais baseados no plano,    const channelsToActivate = []
+    // Ativar canais baseados no plano
 
-    // Todos os planos incluem monitoramento básico,    channelsToActivate.push('telegram-monitoring', 'basic-scraping')
+    const channelsToActivate = []
 
-    // Premium e VIP incluem monitoramento avançado,    if (order.priority === 'premium' || order.priority === 'vip') {
+    // Todos os planos incluem monitoramento básico
+
+    channelsToActivate.push('telegram-monitoring', 'basic-scraping')
+
+    // Premium e VIP incluem monitoramento avançado
+
+    if (order.priority === 'premium' || order.priority === 'vip') {
       channelsToActivate.push('advanced-scraping', 'email-monitoring')
     }
 
-    // VIP inclui monitoramento premium,    if (order.priority === 'vip') {
+    // VIP inclui monitoramento premium
+
+    if (order.priority === 'vip') {
       channelsToActivate.push('browser-automation', 'phone-notifications')
     }
 
-    // Configurar cada canal,    for (const channel of channelsToActivate) {
+    // Configurar cada canal
+
+    for (const channel of channelsToActivate) {
       await this.activateMonitoringChannel(channel, order)
     }
   }
@@ -120,7 +146,8 @@ export class VagaExpressIntegration {
         break
         
       case 'basic-scraping':
-        // Ativar web scraping básico,        await this.activateSystemAPI('activate_webscraping')
+        // Ativar web scraping básico
+        await this.activateSystemAPI('activate_webscraping')
         break
         
       case 'advanced-scraping':
@@ -129,11 +156,13 @@ export class VagaExpressIntegration {
         break
         
       case 'email-monitoring':
-        // Ativar monitoramento de email,        await this.activateSystemAPI('activate_email')
+        // Ativar monitoramento de email
+        await this.activateSystemAPI('activate_email')
         break
         
       case 'browser-automation':
-        // Ativar automação completa,        await this.activateSystemAPI('activate_automation')
+        // Ativar automação completa
+        await this.activateSystemAPI('activate_automation')
         break
     }
   }
@@ -158,7 +187,9 @@ export class VagaExpressIntegration {
     const config = this.planConfigs[order.productId]
     if (!config) return
 
-    // Configurar notificações baseadas no plano,    const notificationConfig = {
+    // Configurar notificações baseadas no plano
+
+    const notificationConfig = {
       channels: ['telegram'],
       priority: config.priority,
       delay: config.notificationDelay,
@@ -170,7 +201,9 @@ export class VagaExpressIntegration {
       }
     }
 
-    // Adicionar canais premium,    if (order.priority === 'premium' || order.priority === 'vip') {
+    // Adicionar canais premium
+
+    if (order.priority === 'premium' || order.priority === 'vip') {
       notificationConfig.channels.push('email', 'whatsapp')
     }
 
@@ -178,7 +211,9 @@ export class VagaExpressIntegration {
       notificationConfig.channels.push('sms', 'phone-call')
     }
 
-    // Salvar configuração,    await this.saveNotificationConfig(order.orderId, notificationConfig)
+    // Salvar configuração
+
+    await this.saveNotificationConfig(order.orderId, notificationConfig)
   }
 
   private async saveNotificationConfig(orderId: string, config: any): Promise<void> {
@@ -210,9 +245,13 @@ export class VagaExpressIntegration {
 
 ID: ${order.orderId}`
 
-    // Enviar para admin via Telegram,    await this.sendTelegramMessage(message)
+    // Enviar para admin via Telegram
 
-    // Enviar confirmação para cliente,    await this.sendCustomerConfirmation(order)
+    await this.sendTelegramMessage(message)
+
+    // Enviar confirmação para cliente
+
+    await this.sendCustomerConfirmation(order)
   }
 
   private async sendCustomerConfirmation(order: VagaExpressOrder): Promise<void> {
@@ -241,7 +280,9 @@ Seu monitoramento já está ATIVO! 🚀
 
 Agora relaxe! Nossa IA está trabalhando 24/7 para você! 💪`
 
-    // Em produção, enviaria WhatsApp/Email real para o cliente
+    // Em produção
+
+    enviaria WhatsApp/Email real para o cliente
     console.log('Mensagem para cliente:', customerMessage)
   }
 
@@ -268,11 +309,13 @@ Agora relaxe! Nossa IA está trabalhando 24/7 para você! 💪`
 
   private async scheduleAutomatedTasks(order: VagaExpressOrder): Promise<void> {
     // Agendar relatórios semanais,    // Agendar verificação de renovação
-    // Agendar follow-ups com cliente,    
+    // Agendar follow-ups com cliente
     console.log(`Tarefas automáticas agendadas para pedido ${order.orderId}`)
   }
 
-  // Simular detecção de vaga para cliente específico,  async simulateVagaForCustomer(orderId: string, vagaDetails: any): Promise<void> {
+  // Simular detecção de vaga para cliente específico
+
+  async simulateVagaForCustomer(orderId: string, vagaDetails: any): Promise<void> {
     const order = await this.getOrder(orderId)
     if (!order) return
 
@@ -289,9 +332,13 @@ Agora relaxe! Nossa IA está trabalhando 24/7 para você! 💪`
       priority: order.priority
     }
 
-    // await monitoringDataService.addAlert(alert),    console.log('Alert criado:', alert)
+    // await monitoringDataService.addAlert(alert)
 
-    // Notificar cliente baseado na prioridade do plano,    await this.notifyCustomerAboutVaga(order, alert)
+    console.log('Alert criado:', alert)
+
+    // Notificar cliente baseado na prioridade do plano
+
+    await this.notifyCustomerAboutVaga(order, alert)
   }
 
   private async notifyCustomerAboutVaga(order: VagaExpressOrder, alert: any): Promise<void> {
@@ -315,9 +362,13 @@ ${order.priority === 'premium' ? '⚡ PRIORIDADE ALTA - Ação recomendada imedi
 ID: ${order.orderId}
 Plano: ${order.productId.replace('vaga-express-', '').toUpperCase()}`
 
-    // Simular notificação (em produção seria WhatsApp/Email real),    console.log(`Notificação para ${order.customerName}:`, message)
+    // Simular notificação (em produção seria WhatsApp/Email real)
+
+    console.log(`Notificação para ${order.customerName}:`, message)
     
-    // Enviar também para admin,    await this.sendTelegramMessage(`📨 Vaga notificada para cliente ${order.customerName} (${order.orderId})`)
+    // Enviar também para admin
+    
+    await this.sendTelegramMessage(`📨 Vaga notificada para cliente ${order.customerName} (${order.orderId})`)
   }
 
   private async getOrder(orderId: string): Promise<VagaExpressOrder | null> {
@@ -328,7 +379,9 @@ Plano: ${order.productId.replace('vaga-express-', '').toUpperCase()}`
     return null
   }
 
-  // Obter estatísticas dos pedidos,  async getOrderStatistics(): Promise<any> {
+  // Obter estatísticas dos pedidos
+
+  async getOrderStatistics(): Promise<any> {
     if (typeof window !== 'undefined') {
       const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
       

@@ -32,11 +32,15 @@ export default function SocialProof() {
   const [showNotification, setShowNotification] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Previne hidratação diferente no primeiro render,  useEffect(() => {
+  // Previne hidratação diferente no primeiro render
+
+  useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Dados simulados de notificações,  const sampleNotifications: Notification[] = [
+  // Dados simulados de notificações
+
+  const sampleNotifications: Notification[] = [
     {
       id: '1',
       type: 'approval',
@@ -90,7 +94,9 @@ export default function SocialProof() {
   useEffect(() => {
     if (!mounted) return
 
-    // Simula atualizações em tempo real,    const updateStats = () => {
+    // Simula atualizações em tempo real
+
+    const updateStats = () => {
       setStats(prev => ({
         approvals: prev.approvals + Math.floor(Math.random() * 3),
         consultations: prev.consultations + Math.floor(Math.random() * 2),
@@ -99,7 +105,9 @@ export default function SocialProof() {
       }))
     }
 
-    // Adiciona nova notificação,    const addNotification = () => {
+    // Adiciona nova notificação
+
+    const addNotification = () => {
       const names = ['Carlos', 'Mariana', 'Felipe', 'Juliana', 'Ricardo', 'Fernanda', 'Lucas', 'Beatriz']
       const countries = ['Estados Unidos', 'Canadá', 'Austrália', 'Reino Unido', 'França', 'Alemanha']
       const flags = ['🇺🇸', '🇨🇦', '🇦🇺', '🇬🇧', '🇫🇷', '🇩🇪']
@@ -137,7 +145,9 @@ export default function SocialProof() {
 
     const statsInterval = setInterval(updateStats, 30000) // 30 segundos,    const notificationInterval = setInterval(addNotification, 15000) // 15 segundos
 
-    // Inicializa com notificações de exemplo,    setNotifications(sampleNotifications)
+    // Inicializa com notificações de exemplo
+
+    setNotifications(sampleNotifications)
 
     return () => {
       clearInterval(statsInterval)
@@ -145,7 +155,9 @@ export default function SocialProof() {
     }
   }, [mounted])
 
-  // Controla exibição das notificações popup,  useEffect(() => {
+  // Controla exibição das notificações popup
+
+  useEffect(() => {
     if (notifications.length > 0) {
       setShowNotification(true)
       const timer = setTimeout(() => {

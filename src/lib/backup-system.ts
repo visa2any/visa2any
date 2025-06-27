@@ -16,25 +16,34 @@ export class BackupSystem {
     this.backupDir = path.join(process.cwd(), 'backups')
     this.dbPath = path.join(process.cwd(), 'prisma', 'dev.db')
     this.maxBackups = 30 // Manter 30 backups,    
-    // Criar diretório de backup se não existir,    if (!fs.existsSync(this.backupDir)) {
+    // Criar diretório de backup se não existir
+    if (!fs.existsSync(this.backupDir)) {
       fs.mkdirSync(this.backupDir, { recursive: true })
     }
   }
 
-  // Criar backup completo do banco de dados,  async createDatabaseBackup(): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  // Criar backup completo do banco de dados
+
+  async createDatabaseBackup(): Promise<{ success: boolean; filePath?: string; error?: string }> {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0] + '_' + 
                       new Date().toTimeString().slice(0, 8).replace(/:/g, '-')
       const backupFileName = `visa2any_backup_${timestamp}.db`
       const backupPath = path.join(this.backupDir, backupFileName)
 
-      // Verificar se o banco existe,      if (!fs.existsSync(this.dbPath)) {
+      // Verificar se o banco existe
+
+      if (!fs.existsSync(this.dbPath)) {
         throw new Error('Database file not found')
       }
 
-      // Copiar arquivo do banco,      fs.copyFileSync(this.dbPath, backupPath)
+      // Copiar arquivo do banco
 
-      // Verificar integridade do backup,      const isValid = await this.verifyBackupIntegrity(backupPath)
+      fs.copyFileSync(this.dbPath, backupPath)
+
+      // Verificar integridade do backup
+
+      const isValid = await this.verifyBackupIntegrity(backupPath)
       if (!isValid) {
         fs.unlinkSync(backupPath)
         throw new Error('Backup integrity check failed')
@@ -42,7 +51,9 @@ export class BackupSystem {
 
       console.log(`✅ Backup criado: ${backupFileName}`)
       
-      // Limpar backups antigos,      await this.cleanOldBackups()
+      // Limpar backups antigos
+      
+      await this.cleanOldBackups()
 
 
     } catch (error) {
@@ -50,9 +61,12 @@ export class BackupSystem {
     }
   }
 
-  // Verificar integridade do backup,  private async verifyBackupIntegrity(backupPath: string): Promise<boolean> {
+  // Verificar integridade do backup
+
+  private async verifyBackupIntegrity(backupPath: string): Promise<boolean> {
     try {
-      // Testar conexão com o backup,      const { stdout } = await execAsync(`sqlite3 "${backupPath}" "PRAGMA integrity_check;"`)
+      // Testar conexão com o backup
+      const { stdout } = await execAsync(`sqlite3 "${backupPath}" "PRAGMA integrity_check;"`)
       return stdout.trim() === 'ok'
     } catch (error) {
       console.error('Erro na verificação de integridade:', error)
@@ -60,13 +74,17 @@ export class BackupSystem {
     }
   }
 
-  // Criar backup dos dados críticos em JSON,  async createDataExport(): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  // Criar backup dos dados críticos em JSON
+
+  async createDataExport(): Promise<{ success: boolean; filePath?: string; error?: string }> {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0]
       const exportFileName = `visa2any_data_export_${timestamp}.json`
       const exportPath = path.join(this.backupDir, exportFileName)
 
-      // Exportar dados críticos,      const exportData = {
+      // Exportar dados críticos
+
+      const exportData = {
         timestamp: new Date().toISOString(),
         version: '1.0',
         data: {
@@ -107,7 +125,9 @@ export class BackupSystem {
         }
       }
 
-      // Salvar arquivo JSON,      fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2))
+      // Salvar arquivo JSON
+
+      fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2))
 
       console.log(`✅ Export de dados criado: ${exportFileName}`)
 
@@ -116,7 +136,9 @@ export class BackupSystem {
     }
   }
 
-  // Limpar backups antigos,  private async cleanOldBackups(): Promise<void> {
+  // Limpar backups antigos
+
+  private async cleanOldBackups(): Promise<void> {
     try {
       const files = fs.readdirSync(this.backupDir)
       const backupFiles = files
@@ -128,7 +150,9 @@ export class BackupSystem {
         }))
         .sort((a, b) => b.stats.mtime.getTime() - a.stats.mtime.getTime())
 
-      // Manter apenas os últimos N backups,      if (backupFiles.length > this.maxBackups) {
+      // Manter apenas os últimos N backups
+
+      if (backupFiles.length > this.maxBackups) {
         const filesToDelete = backupFiles.slice(this.maxBackups)
         
         for (const file of filesToDelete) {
@@ -142,25 +166,36 @@ export class BackupSystem {
     }
   }
 
-  // Restaurar backup,  async restoreBackup(backupPath: string): Promise<{ success: boolean; error?: string }> {
+  // Restaurar backup
+
+  async restoreBackup(backupPath: string): Promise<{ success: boolean; error?: string }> {
     try {
-      // Verificar se o backup existe,      if (!fs.existsSync(backupPath)) {
+      // Verificar se o backup existe
+      if (!fs.existsSync(backupPath)) {
         throw new Error('Backup file not found')
       }
 
-      // Verificar integridade antes de restaurar,      const isValid = await this.verifyBackupIntegrity(backupPath)
+      // Verificar integridade antes de restaurar
+
+      const isValid = await this.verifyBackupIntegrity(backupPath)
       if (!isValid) {
         throw new Error('Backup file is corrupted')
       }
 
-      // Fazer backup do banco atual antes de restaurar,      const currentBackup = await this.createDatabaseBackup()
+      // Fazer backup do banco atual antes de restaurar
+
+      const currentBackup = await this.createDatabaseBackup()
       if (!currentBackup.success) {
         throw new Error('Failed to backup current database')
       }
 
-      // Fechar conexões do Prisma,      await prisma.$disconnect()
+      // Fechar conexões do Prisma
 
-      // Restaurar banco,      fs.copyFileSync(backupPath, this.dbPath)
+      await prisma.$disconnect()
+
+      // Restaurar banco
+
+      fs.copyFileSync(backupPath, this.dbPath)
 
       console.log('✅ Backup restaurado com sucesso')
       return { success: true }
@@ -170,7 +205,9 @@ export class BackupSystem {
     }
   }
 
-  // Listar backups disponíveis,  getAvailableBackups(): Array<{ name: string; size: number; date: Date; type: 'database' | 'export' }> {
+  // Listar backups disponíveis
+
+  getAvailableBackups(): Array<{ name: string; size: number; date: Date; type: 'database' | 'export' }> {
     try {
       const files = fs.readdirSync(this.backupDir)
       
@@ -198,7 +235,9 @@ export class BackupSystem {
     }
   }
 
-  // Backup completo (banco + dados),  async createFullBackup(): Promise<{ success: boolean; files?: string[]; error?: string }> {
+  // Backup completo (banco + dados)
+
+  async createFullBackup(): Promise<{ success: boolean; files?: string[]; error?: string }> {
     try {
       const results = await Promise.allSettled([
         this.createDatabaseBackup(),
@@ -235,10 +274,15 @@ export class BackupScheduler {
     this.backupSystem = new BackupSystem()
   }
 
-  // Iniciar backups automáticos,  startAutomaticBackups() {
-    // Backup diário às 02:00,    this.scheduleDailyBackup()
+  // Iniciar backups automáticos
+
+  startAutomaticBackups() {
+    // Backup diário às 02:00
+    this.scheduleDailyBackup()
     
-    // Backup semanal completo aos domingos às 03:00,    this.scheduleWeeklyBackup()
+    // Backup semanal completo aos domingos às 03:00
+    
+    this.scheduleWeeklyBackup()
 
     console.log('🕐 Sistema de backup automático iniciado')
   }
@@ -248,7 +292,9 @@ export class BackupScheduler {
     const target = new Date(now)
     target.setHours(2, 0, 0, 0)
     
-    // Se já passou das 02:00 hoje, agendar para amanhã
+    // Se já passou das 02:00 hoje
+    
+    agendar para amanhã
     if (target <= now) {
       target.setDate(target.getDate() + 1)
     }
@@ -258,7 +304,9 @@ export class BackupScheduler {
     setTimeout(() => {
       this.performDailyBackup()
       
-      // Agendar próximo backup em 24h,      const interval = setInterval(() => {
+      // Agendar próximo backup em 24h
+      
+      const interval = setInterval(() => {
         this.performDailyBackup()
       }, 24 * 60 * 60 * 1000)
       
@@ -270,7 +318,9 @@ export class BackupScheduler {
     const now = new Date()
     const target = new Date(now)
     
-    // Próximo domingo às 03:00,    const daysUntilSunday = (7 - now.getDay()) % 7
+    // Próximo domingo às 03:00
+    
+    const daysUntilSunday = (7 - now.getDay()) % 7
     target.setDate(target.getDate() + daysUntilSunday)
     target.setHours(3, 0, 0, 0)
     
@@ -283,7 +333,9 @@ export class BackupScheduler {
     setTimeout(() => {
       this.performWeeklyBackup()
       
-      // Agendar próximo backup em 7 dias,      const interval = setInterval(() => {
+      // Agendar próximo backup em 7 dias
+      
+      const interval = setInterval(() => {
         this.performWeeklyBackup()
       }, 7 * 24 * 60 * 60 * 1000)
       
@@ -313,7 +365,9 @@ export class BackupScheduler {
     }
   }
 
-  // Parar todos os backups automáticos,  stopAutomaticBackups() {
+  // Parar todos os backups automáticos
+
+  stopAutomaticBackups() {
     this.intervals.forEach(interval => clearInterval(interval))
     this.intervals = []
     console.log('⏹️ Sistema de backup automático parado')

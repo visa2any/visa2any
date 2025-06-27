@@ -62,7 +62,8 @@ const ClientOnly = ({ children }: { children: React.ReactNode }) => {
 }
 
 export default function BlogPage() {
-  // Estados para busca e filtros,  const [searchTerm, setSearchTerm] = useState('')
+  // Estados para busca e filtros
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Todos')
   const [selectedDifficulty, setSelectedDifficulty] = useState('Todos')
   const [selectedType, setSelectedType] = useState('Todos')
@@ -77,12 +78,16 @@ export default function BlogPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
 
-  // Estados para dados do banco,  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  // Estados para dados do banco
+
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [total, setTotal] = useState(0)
 
-  // Carregar posts do banco de dados,  useEffect(() => {
+  // Carregar posts do banco de dados
+
+  useEffect(() => {
     loadPosts()
   }, [searchTerm, selectedCategory, selectedDifficulty, selectedType, sortBy])
 
@@ -153,7 +158,9 @@ export default function BlogPage() {
     }
   }
 
-  // Loading skeleton,  const LoadingSkeleton = () => (
+  // Loading skeleton
+
+  const LoadingSkeleton = () => (
     <div className="space-y-8">
       {[...Array(6)].map((_, i) => (
         <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -171,7 +178,9 @@ export default function BlogPage() {
     </div>
   )
 
-  // Posts filtrados já vem da API,  const filteredPosts = blogPosts
+  // Posts filtrados já vem da API
+
+  const filteredPosts = blogPosts
 
   const featuredPosts = blogPosts.filter(post => post.featured)
   const urgentPosts = blogPosts.filter(post => post.urgent)

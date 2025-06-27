@@ -18,7 +18,9 @@ export async function GET(,
     )
     }
 
-    // Mock timeline data for the client,    const mockTimeline = [
+    // Mock timeline data for the client
+
+    const mockTimeline = [
       {
         id: '1'
         type: 'status_change',
@@ -153,7 +155,9 @@ export async function GET(,
       }
     ]
 
-    // Sort timeline by timestamp (newest first),    const sortedTimeline = mockTimeline.sort((a, b) => 
+    // Sort timeline by timestamp (newest first)
+
+    const sortedTimeline = mockTimeline.sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
 

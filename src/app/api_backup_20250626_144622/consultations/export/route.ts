@@ -6,12 +6,15 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Buscar todas as consultorias,    const consultations = await prisma.consultation.findMany({
+    // Buscar todas as consultorias
+
+    const consultations = await prisma.consultation.findMany({
       include: {
         client: {
           select: {
@@ -32,7 +35,9 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Gerar CSV,    const csvRows = [
+    // Gerar CSV
+
+    const csvRows = [
       // Header,      [
         'ID',
         'Tipo',
@@ -68,7 +73,9 @@ export async function GET(request: NextRequest) {
 
     const csvContent = csvRows.join('\n')
     
-    // Adicionar BOM para suporte ao UTF-8 no Excel,    const bom = '\uFEFF'
+    // Adicionar BOM para suporte ao UTF-8 no Excel
+    
+    const bom = '\uFEFF'
     const finalCsv = bom + csvContent
     
     return new NextResponse(finalCsv, {

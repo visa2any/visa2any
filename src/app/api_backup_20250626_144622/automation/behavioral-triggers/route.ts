@@ -36,13 +36,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = behavioralTriggerSchema.parse(body)
 
-    // Analisar comportamento e decidir ação,    const triggerAnalysis = await analyzeBehavioralTrigger(validatedData)
+    // Analisar comportamento e decidir ação
+
+    const triggerAnalysis = await analyzeBehavioralTrigger(validatedData)
     
     if (triggerAnalysis.shouldTrigger) {
       await executeTriggerAction(triggerAnalysis)
     }
 
-    // Log do trigger,    await prisma.automationLog.create({
+    // Log do trigger
+
+    await prisma.automationLog.create({
       data: {
         type: 'BEHAVIORAL_TRIGGER',
         action: `trigger_${validatedData.event}`,
@@ -100,7 +104,8 @@ async function analyzeBehavioralTrigger(data: any) {
 
   switch (data.event) {
     case 'pricing_page_time':
-      // Se usuário passou mais de 3 minutos na página de preços,      if (data.data?.timeSpent && data.data.timeSpent > 180) {
+      // Se usuário passou mais de 3 minutos na página de preços
+      if (data.data?.timeSpent && data.data.timeSpent > 180) {
         analysis.shouldTrigger = true
         analysis.action = 'whatsapp_pricing_help'
         analysis.message = 'Usuário interessado mas com dúvidas no pricing'
@@ -109,7 +114,8 @@ async function analyzeBehavioralTrigger(data: any) {
       break
 
     case 'assessment_abandon':
-      // Se usuário abandonou assessment na metade,      const assessmentProgress = await getAssessmentProgress(data.clientId)
+      // Se usuário abandonou assessment na metade
+      const assessmentProgress = await getAssessmentProgress(data.clientId)
       if (assessmentProgress && assessmentProgress.step >= 3) {
         analysis.shouldTrigger = true
         analysis.action = 'email_assessment_recovery'
@@ -119,14 +125,16 @@ async function analyzeBehavioralTrigger(data: any) {
       break
 
     case 'cart_abandon':
-      // Carrinho abandonado,      analysis.shouldTrigger = true
+      // Carrinho abandonado
+      analysis.shouldTrigger = true
       analysis.action = 'cart_recovery_sequence'
       analysis.message = 'Carrinho abandonado - iniciar recuperação'
       analysis.priority = 'high'
       analysis.delay = 1800 // 30 minutos de delay,      break
 
     case 'scroll_depth':
-      // Se usuário chegou no final da página mas não converteu,      if (data.data?.scrollDepth && data.data.scrollDepth > 90) {
+      // Se usuário chegou no final da página mas não converteu
+      if (data.data?.scrollDepth && data.data.scrollDepth > 90) {
         const hasConverted = await checkUserConversion(data.clientId)
         if (!hasConverted) {
           analysis.shouldTrigger = true
@@ -139,7 +147,8 @@ async function analyzeBehavioralTrigger(data: any) {
       break
 
     case 'video_watch':
-      // Se usuário assistiu mais de 70% do vídeo,      if (data.data?.videoProgress && data.data.videoProgress > 0.7) {
+      // Se usuário assistiu mais de 70% do vídeo
+      if (data.data?.videoProgress && data.data.videoProgress > 0.7) {
         analysis.shouldTrigger = true
         analysis.action = 'video_completion_offer'
         analysis.message = 'Usuário engajado com conteúdo'
@@ -148,7 +157,8 @@ async function analyzeBehavioralTrigger(data: any) {
       break
 
     case 'form_interaction':
-      // Se usuário começou a preencher formulário mas não finalizou,      if (data.data?.formFields && data.data.formFields.length > 2) {
+      // Se usuário começou a preencher formulário mas não finalizou
+      if (data.data?.formFields && data.data.formFields.length > 2) {
         analysis.shouldTrigger = true
         analysis.action = 'form_completion_help'
         analysis.message = 'Ajudar a completar formulário'
@@ -157,7 +167,8 @@ async function analyzeBehavioralTrigger(data: any) {
       break
 
     case 'time_spent':
-      // Se usuário passou muito tempo no site mas não converteu,      if (data.data?.timeSpent && data.data.timeSpent > 600) { // 10 minutos
+      // Se usuário passou muito tempo no site mas não converteu
+      if (data.data?.timeSpent && data.data.timeSpent > 600) { // 10 minutos
         const sessionActions = await getSessionActions(data.sessionId)
         if (sessionActions.pageViews > 5 && !sessionActions.hasConverted) {
           analysis.shouldTrigger = true
@@ -177,42 +188,50 @@ async function analyzeBehavioralTrigger(data: any) {
 async function executeTriggerAction(analysis: any) {
   const actions = {
     whatsapp_pricing_help: async () => {
-      // Enviar WhatsApp com ajuda sobre preços,      return await sendWhatsAppTrigger('pricing_help', {
+      // Enviar WhatsApp com ajuda sobre preços
+      return await sendWhatsAppTrigger('pricing_help', {
         message: "Oi! Vi que você está interessado em nossos planos. Posso tirar alguma dúvida sobre preços? 😊"
       })
     },
 
     email_assessment_recovery: async () => {
-      // Email para recuperar assessment,      return await sendEmailTrigger('assessment_recovery', {
+      // Email para recuperar assessment
+      return await sendEmailTrigger('assessment_recovery', {
         subject: "Continue sua análise - faltam só 2 minutos! ⏰",
         template: 'assessment_recovery'
       })
     },
 
     cart_recovery_sequence: async () => {
-      // Sequência de recuperação de carrinho,      return await startCartRecoverySequence()
+      // Sequência de recuperação de carrinho
+      return await startCartRecoverySequence()
     },
 
     exit_intent_offer: async () => {
-      // Mostrar oferta de última chance,      return await triggerExitIntentOffer()
+      // Mostrar oferta de última chance
+      return await triggerExitIntentOffer()
     },
 
     video_completion_offer: async () => {
-      // Oferta após assistir vídeo,      return await sendVideoCompletionOffer()
+      // Oferta após assistir vídeo
+      return await sendVideoCompletionOffer()
     },
 
     form_completion_help: async () => {
-      // Ajuda para completar formulário,      return await sendFormHelp()
+      // Ajuda para completar formulário
+      return await sendFormHelp()
     },
 
     high_intent_contact: async () => {
-      // Contato prioritário para alta intenção,      return await triggerHighIntentContact()
+      // Contato prioritário para alta intenção
+      return await triggerHighIntentContact()
     }
   }
 
   const actionFunction = actions[analysis.action as keyof typeof actions]
   if (actionFunction) {
-    // Executar com delay se especificado,    if (analysis.delay > 0) {
+    // Executar com delay se especificado
+    if (analysis.delay > 0) {
       setTimeout(actionFunction, analysis.delay * 1000)
     } else {
       await actionFunction()
@@ -258,7 +277,8 @@ async function checkUserConversion(clientId?: string) {
 }
 
 async function getSessionActions(sessionId?: string) {
-  // Em produção, usar analytics ou session tracking
+  // Em produção
+  usar analytics ou session tracking
   return {
     pageViews: 7,
     hasConverted: false,
@@ -268,7 +288,8 @@ async function getSessionActions(sessionId?: string) {
 
 async function sendWhatsAppTrigger(type: string, data: any) {
   try {
-    // Implementar envio de WhatsApp com base no comportamento,    console.log(`📱 WhatsApp Trigger: ${type}`, data)
+    // Implementar envio de WhatsApp com base no comportamento
+    console.log(`📱 WhatsApp Trigger: ${type}`, data)
     return { success: true }
   } catch (error) {
     console.error('Erro ao enviar WhatsApp trigger:', error)
@@ -278,7 +299,8 @@ async function sendWhatsAppTrigger(type: string, data: any) {
 
 async function sendEmailTrigger(type: string, data: any) {
   try {
-    // Implementar envio de email com base no comportamento,    console.log(`📧 Email Trigger: ${type}`, data)
+    // Implementar envio de email com base no comportamento
+    console.log(`📧 Email Trigger: ${type}`, data)
     return { success: true }
   } catch (error) {
     console.error('Erro ao enviar email trigger:', error)
@@ -289,7 +311,8 @@ async function sendEmailTrigger(type: string, data: any) {
 async function startCartRecoverySequence() {
   try {
     console.log('🛒 Iniciando sequência de recuperação de carrinho...')
-    // Implementar sequência de emails/WhatsApp para carrinho abandonado,    return { success: true }
+    // Implementar sequência de emails/WhatsApp para carrinho abandonado
+    return { success: true }
   } catch (error) {
     console.error('Erro na recuperação de carrinho:', error)
     return { success: false }
@@ -299,7 +322,8 @@ async function startCartRecoverySequence() {
 async function triggerExitIntentOffer() {
   try {
     console.log('🚪 Trigger: Exit Intent Offer')
-    // Implementar popup/modal de última chance,    return { success: true }
+    // Implementar popup/modal de última chance
+    return { success: true }
   } catch (error) {
     console.error('Erro no exit intent:', error)
     return { success: false }
@@ -329,7 +353,8 @@ async function sendFormHelp() {
 async function triggerHighIntentContact() {
   try {
     console.log('🎯 Contato de alta prioridade disparado')
-    // Notificar equipe de vendas para contato imediato,    return { success: true }
+    // Notificar equipe de vendas para contato imediato
+    return { success: true }
   } catch (error) {
     console.error('Erro no contato prioritário:', error)
     return { success: false }

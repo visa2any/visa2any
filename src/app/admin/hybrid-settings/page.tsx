@@ -280,7 +280,8 @@ function CountryFeeCard({ fee, isEditing, onEdit, onSave, onCancel, onUpdate, on
   }, [fee])
 
   const handleSave = () => {
-    // Update parent state,    Object.keys(localFee).forEach(key => {
+    // Update parent state
+    Object.keys(localFee).forEach(key => {
       onUpdate(key, localFee[key])
     })
     onSave()

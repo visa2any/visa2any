@@ -44,13 +44,16 @@ export function VagaExpressStats() {
   useEffect(() => {
     loadVagaExpressData()
     
-    // Atualizar a cada 30 segundos,    const interval = setInterval(loadVagaExpressData, 30000)
+    // Atualizar a cada 30 segundos
+    
+    const interval = setInterval(loadVagaExpressData, 30000)
     return () => clearInterval(interval)
   }, [])
 
   const loadVagaExpressData = async () => {
     try {
-      // Carregar estatísticas,      const statsResponse = await fetch('/api/vaga-express?type=statistics')
+      // Carregar estatísticas
+      const statsResponse = await fetch('/api/vaga-express?type=statistics')
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
         if (statsData.success) {
@@ -58,7 +61,9 @@ export function VagaExpressStats() {
         }
       }
 
-      // Carregar pedidos recentes,      const ordersResponse = await fetch('/api/vaga-express?type=orders')
+      // Carregar pedidos recentes
+
+      const ordersResponse = await fetch('/api/vaga-express?type=orders')
       if (ordersResponse.ok) {
         const ordersData = await ordersResponse.json()
         if (ordersData.success) {

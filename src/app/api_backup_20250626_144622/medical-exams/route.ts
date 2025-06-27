@@ -76,7 +76,9 @@ export async function POST(request: NextRequest) {
       notes 
     } = body
 
-    // Validação dos campos obrigatórios,    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {
+    // Validação dos campos obrigatórios
+
+    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {
       return NextResponse.json(
         { error: 'Campos applicantId, clinicId, examTypes, appointmentDate e appointmentTime são obrigatórios' }
         { status: 400 }
@@ -90,7 +92,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fazer agendamento,    const result = await medicalExamService.bookMedicalExam({
+    // Fazer agendamento
+
+    const result = await medicalExamService.bookMedicalExam({
       applicantId
       clinicId,
       examTypes,

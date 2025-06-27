@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
@@ -17,7 +18,9 @@ export async function GET(request: NextRequest) {
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - period)
 
-    // Buscar dados do período,    const [clients, consultations, payments] = await Promise.all([,
+    // Buscar dados do período
+
+    const [clients, consultations, payments] = await Promise.all([,
       prisma.client.findMany({
         where: {
           createdAt: { gte: startDate }
@@ -55,7 +58,9 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    // Gerar CSV,    const csvRows = [
+    // Gerar CSV
+
+    const csvRows = [
       // Header,      ['Tipo', 'Data', 'Cliente', 'Email', 'Status', 'Valor', 'Descrição'].join(',')
       
       // Clientes,      ...clients.map(client => [
@@ -91,7 +96,9 @@ export async function GET(request: NextRequest) {
 
     const csvContent = csvRows.join('\n')
     
-    // Retornar CSV como download,    return new NextResponse(csvContent, {
+    // Retornar CSV como download
+    
+    return new NextResponse(csvContent, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`

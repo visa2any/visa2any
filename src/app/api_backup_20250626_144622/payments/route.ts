@@ -23,7 +23,9 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
+    // Construir filtros
+
+    const where: any = {}
     
     if (clientId) {
       where.clientId = clientId
@@ -33,7 +35,9 @@ export async function GET(request: NextRequest) {
       where.status = status
     }
 
-    // Buscar pagamentos,    const [payments, total] = await Promise.all([
+    // Buscar pagamentos
+
+    const [payments, total] = await Promise.all([
       prisma.payment.findMany({
         where,
         skip,
@@ -53,7 +57,9 @@ export async function GET(request: NextRequest) {
       prisma.payment.count({ where })
     ])
 
-    // Estatísticas,    const stats = await prisma.payment.aggregate({
+    // Estatísticas
+
+    const stats = await prisma.payment.aggregate({
       where: clientId ? { clientId } : {},
       _sum: { amount: true },
       _count: { id: true }
@@ -107,7 +113,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = createPaymentSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({
+    // Verificar se cliente existe
+
+    const client = await prisma.client.findUnique({
       where: { id: validatedData.clientId }
     })
 
@@ -118,9 +126,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Gerar ID de transação único,    const transactionId = generateTransactionId()
+    // Gerar ID de transação único
 
-    // Criar pagamento,    const payment = await prisma.payment.create({
+    const transactionId = generateTransactionId()
+
+    // Criar pagamento
+
+    const payment = await prisma.payment.create({
       data: {
         ...validatedData,
         transactionId,
@@ -139,7 +151,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({
+    // Log da criação
+
+    await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_CREATED',
         action: 'create_payment',
@@ -152,7 +166,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Gerar link de pagamento (simulado),    const paymentLink = await generatePaymentLink(payment)
+    // Gerar link de pagamento (simulado)
+
+    const paymentLink = await generatePaymentLink(payment)
 
     return NextResponse.json({
       data: {
@@ -190,12 +206,16 @@ function generateTransactionId(): string {
 
 // Função para gerar link de pagamento (simulado)
 async function generatePaymentLink(payment: any) {
-  // Em produção, integraria com Stripe, Mercado Pago, etc.
+  // Em produção
+  integraria com Stripe, Mercado Pago, etc.
   
-  // Simular diferentes métodos de pagamento baseado na moeda,  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  // Simular diferentes métodos de pagamento baseado na moeda
+  
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
   
   if (payment.currency === 'BRL') {
-    // Mercado Pago para BRL,    return {
+    // Mercado Pago para BRL
+    return {
       provider: 'Mercado Pago',
       url: `${baseUrl}/api/payments/${payment.id}/mercadopago`,
       qrCode: `${baseUrl}/api/payments/${payment.id}/qr`,
@@ -203,13 +223,15 @@ async function generatePaymentLink(payment: any) {
       methods: ['PIX', 'Cartão de Crédito', 'Boleto']
     }
   } else if (payment.currency === 'USD') {
-    // Stripe para USD,    return {
+    // Stripe para USD
+    return {
       provider: 'Stripe',
       url: `${baseUrl}/api/payments/${payment.id}/stripe`,
       methods: ['Credit Card', 'Bank Transfer']
     }
   } else {
-    // PayPal para outras moedas,    return {
+    // PayPal para outras moedas
+    return {
       provider: 'PayPal',
       url: `${baseUrl}/api/payments/${payment.id}/paypal`,
       methods: ['PayPal', 'Credit Card']
@@ -229,7 +251,8 @@ export async function PUT(request: NextRequest) {
     const { action } = body
 
     if (action === 'get_plans') {
-      // Retornar pacotes disponíveis,      const packages = [
+      // Retornar pacotes disponíveis
+      const packages = [
         {
           id: 'basic_consultation',
           name: 'Consulta Básica',

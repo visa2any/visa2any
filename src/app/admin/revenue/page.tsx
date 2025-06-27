@@ -74,7 +74,8 @@ export default function RevenueOperationsPage() {
   const fetchRevenueData = async () => {
     setLoading(true)
     try {
-      // Simulated data - in production this would come from API,      const mockData: RevenueData = {
+      // Simulated data - in production this would come from API
+      const mockData: RevenueData = {
         totalRevenue: 542800,
         monthlyGrowth: 23.5,
         totalClients: 1247,

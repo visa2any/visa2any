@@ -25,7 +25,8 @@ export async function GET(,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
@@ -75,16 +76,21 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
 
-    // Validar dados,    const validatedData = updateConsultationSchema.parse(body)
+    // Validar dados
 
-    // Verificar se consultoria existe,    const existingConsultation = await prisma.consultation.findUnique({
+    const validatedData = updateConsultationSchema.parse(body)
+
+    // Verificar se consultoria existe
+
+    const existingConsultation = await prisma.consultation.findUnique({
       where: { id }
     })
 
@@ -94,22 +100,29 @@ export async function PATCH(
       )
     }
 
-    // Preparar dados para atualização,    const updateData: any = { ...validatedData }
+    // Preparar dados para atualização
+
+    const updateData: any = { ...validatedData }
     
     if (validatedData.scheduledAt) {
-      // Handle both ISO string and datetime-local format,      if (validatedData.scheduledAt.includes('T')) {
+      // Handle both ISO string and datetime-local format
+      if (validatedData.scheduledAt.includes('T')) {
         updateData.scheduledAt = new Date(validatedData.scheduledAt)
       } else {
         updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z')
       }
     }
 
-    // Se está marcando como completa, definir completedAt automaticamente
+    // Se está marcando como completa
+
+    definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
       updateData.completedAt = new Date()
     }
 
-    // Atualizar consultoria,    const updatedConsultation = await prisma.consultation.update({
+    // Atualizar consultoria
+
+    const updatedConsultation = await prisma.consultation.update({
       where: { id }
       data: updateData,
       include: {
@@ -122,7 +135,9 @@ export async function PATCH(
       }
     })
 
-    // Log da atualização,    await prisma.automationLog.create({
+    // Log da atualização
+
+    await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'inline_edit',
@@ -164,16 +179,21 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
     const body = await request.json()
 
-    // Validar dados,    const validatedData = updateConsultationSchema.parse(body)
+    // Validar dados
 
-    // Verificar se consultoria existe,    const existingConsultation = await prisma.consultation.findUnique({
+    const validatedData = updateConsultationSchema.parse(body)
+
+    // Verificar se consultoria existe
+
+    const existingConsultation = await prisma.consultation.findUnique({
       where: { id }
       include: { client: true }
     })
@@ -184,7 +204,9 @@ export async function PUT(
       )
     }
 
-    // Preparar dados para atualização,    const updateData: any = { ...validatedData }
+    // Preparar dados para atualização
+
+    const updateData: any = { ...validatedData }
     
     if (validatedData.scheduledAt) {
       updateData.scheduledAt = new Date(validatedData.scheduledAt)
@@ -194,12 +216,16 @@ export async function PUT(
       updateData.completedAt = new Date(validatedData.completedAt)
     }
 
-    // Se está marcando como completa, definir completedAt automaticamente
+    // Se está marcando como completa
+
+    definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
       updateData.completedAt = new Date()
     }
 
-    // Atualizar consultoria,    const updatedConsultation = await prisma.consultation.update({
+    // Atualizar consultoria
+
+    const updatedConsultation = await prisma.consultation.update({
       where: { id }
       data: updateData,
       include: {
@@ -217,10 +243,14 @@ export async function PUT(
       }
     })
 
-    // Atualizar status do cliente baseado no resultado da consultoria,    if (validatedData.status === 'COMPLETED') {
+    // Atualizar status do cliente baseado no resultado da consultoria
+
+    if (validatedData.status === 'COMPLETED') {
       let newClientStatus = existingConsultation.client.status
 
-      // Lógica para determinar próximo status do cliente,      if (validatedData.score && validatedData.score >= 70) {
+      // Lógica para determinar próximo status do cliente
+
+      if (validatedData.score && validatedData.score >= 70) {
         newClientStatus = 'IN_PROCESS'
       } else if (validatedData.score && validatedData.score < 40) {
         newClientStatus = 'QUALIFIED' // Precisa de mais trabalho      } else {
@@ -236,7 +266,9 @@ export async function PUT(
       })
     }
 
-    // Log da atualização,    await prisma.automationLog.create({
+    // Log da atualização
+
+    await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_UPDATED',
         action: 'update_consultation',
@@ -278,13 +310,16 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const { id } = params
 
-    // Verificar se consultoria existe,    const existingConsultation = await prisma.consultation.findUnique({
+    // Verificar se consultoria existe
+
+    const existingConsultation = await prisma.consultation.findUnique({
       where: { id }
     })
 
@@ -294,11 +329,15 @@ export async function DELETE(
       )
     }
 
-    // Deletar consultoria,    await prisma.consultation.delete({
+    // Deletar consultoria
+
+    await prisma.consultation.delete({
       where: { id }
     })
 
-    // Log da deleção,    await prisma.automationLog.create({
+    // Log da deleção
+
+    await prisma.automationLog.create({
       data: {
         type: 'CONSULTATION_DELETED'
         action: 'delete_consultation',

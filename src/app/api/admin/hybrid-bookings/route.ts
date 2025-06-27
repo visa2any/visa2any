@@ -21,7 +21,9 @@ export async function GET(request: NextRequest) {,  try {
     //       createdAt: 'asc' // Mais antigos primeiro,    //     }
     //   ],    // })
 
-    // Calcular estatísticas,    const stats = {,      total: bookings.length
+    // Calcular estatísticas
+
+    const stats = {,      total: bookings.length
 
       pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length,
       inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length,
@@ -60,15 +62,21 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
       updatedAt: new Date()
     }
 
-    // Se marcando como concluído, adicionar data de conclusão,    if (status === 'COMPLETED') {,      updateData.completedAt = new Date(),      
+    // Se marcando como concluído
+
+    adicionar data de conclusão,    if (status === 'COMPLETED') {,      updateData.completedAt = new Date(),      
       if (appointmentDetails) {,        updateData.appointmentDetails = appointmentDetails
       }
     }
 
-    // Se marcando como em progresso, registrar início,    if (status === 'IN_PROGRESS') {,      updateData.startedAt = new Date()
+    // Se marcando como em progresso
+
+    registrar início,    if (status === 'IN_PROGRESS') {,      updateData.startedAt = new Date()
     }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId },    //   data: updateData
     //   include: {,    //     client: {
     //       select: {,    //         name: true
@@ -88,7 +96,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
 }
 
 // Atribuir consultor,async function assignConsultant(bookingId: string, consultantId: string) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema
+    vamos simular resposta,    const booking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId },    //   data: {
     //     assignedConsultant: consultantId,    //     assignedAt: new Date()
     //     updatedAt: new Date(),    //   }
@@ -104,7 +113,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
 }
 
 // Adicionar nota ao agendamento,async function addBookingNote(bookingId: string, note: string) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = { notes: [] } // await prisma.hybridBooking.findUnique({
+    // Como hybridBooking não existe no schema
+    vamos simular resposta,    const booking = { notes: [] } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId },    // })
 
     if (!booking) {,      return NextResponse.json({,        error: 'Agendamento não encontrado'
@@ -113,9 +123,12 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
     const currentNotes = booking.notes || []
     const newNote = {,      id: Date.now().toString(),      content: note,      createdAt: new Date().toISOString(),      author: 'Sistema' // TODO: pegar do usuário logado    }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId },    //   data: {
-    //     notes: [...currentNotes, newNote]
+    //     notes: [...currentNotes
+    newNote]
     //     updatedAt: new Date(),    //   }
     // })
 
@@ -128,7 +141,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
 }
 
 // Estender prazo,async function extendDeadline(bookingId: string, hours: number) {,  try {
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({
+    // Como hybridBooking não existe no schema
+    vamos simular resposta,    const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({
     //   where: { id: bookingId },    // })
 
     if (!booking) {,      return NextResponse.json({,        error: 'Agendamento não encontrado'
@@ -137,7 +151,9 @@ export async function POST(request: NextRequest) {,  try {,    const { action, b
     const currentDeadline = currentDeadlineVar
     const newDeadline = new Date(currentDeadline.getTime() + (hours * 60 * 60 * 1000))
 
-    // Como hybridBooking não existe no schema, vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta,    const updatedBooking = {} // await prisma.hybridBooking.update({
     //   where: { id: bookingId },    //   data: {
     //     deadline: newDeadline,    //     updatedAt: new Date()
     //   },    // })

@@ -4,7 +4,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validar webhook secret,    const headers = request.headers
+    // Validar webhook secret
+    
+    const headers = request.headers
     const webhookSecret = headers.get('x-webhook-secret')
     
     if (webhookSecret !== 'visa2any_webhook_secret_2024') {
@@ -13,7 +15,9 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Dados do pagamento confirmado,    const {
+    // Dados do pagamento confirmado
+
+    const {
       purchaseId,
       clientId,
       clientName,
@@ -31,13 +35,17 @@ export async function POST(request: NextRequest) {
       urgencyLevel
     } = body
 
-    // Validar que pagamento foi aprovado,    if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
+    // Validar que pagamento foi aprovado
+
+    if (paymentStatus !== 'COMPLETED' && paymentStatus !== 'approved') {
       return NextResponse.json({
         error: 'Payment not completed'
       }, { status: 400 })
     }
 
-    // Preparar dados para webhook N8N,    const n8nWebhookData = {
+    // Preparar dados para webhook N8N
+
+    const n8nWebhookData = {
       purchaseId,
       clientId,
       clientName,
@@ -58,7 +66,9 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString()
     }
 
-    // Enviar para webhook N8N que ativa o Vaga Express,    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/vaga-express-purchase'
+    // Enviar para webhook N8N que ativa o Vaga Express
+
+    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/vaga-express-purchase'
     
     try {
       const n8nResponse = await fetch(n8nWebhookUrl, {
@@ -79,10 +89,13 @@ export async function POST(request: NextRequest) {
 
     } catch (n8nError) {
       console.error('❌ Erro ao enviar para N8N:', n8nError)
-      // Não falhar a API por isso, apenas logar
+      // Não falhar a API por isso
+      apenas logar
     }
 
-    // Salvar no banco de dados local (simulado),    console.log('💾 Salvando Vaga Express no banco:', {
+    // Salvar no banco de dados local (simulado)
+
+    console.log('💾 Salvando Vaga Express no banco:', {
       purchaseId,
       plan,
       clientName,

@@ -435,7 +435,9 @@ export default function FAQPage() {
     }
   ]
 
-  // Função de busca e filtro,  const filteredFAQ = faqData.map(category => ({
+  // Função de busca e filtro
+
+  const filteredFAQ = faqData.map(category => ({
     ...category,
     questions: category.questions.filter(q => 
       (selectedCategory === 'all' || category.category === selectedCategory) &&

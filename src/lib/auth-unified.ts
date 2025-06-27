@@ -39,7 +39,8 @@ export function generateToken(user: UnifiedUser): string {
 // Verificar token e buscar usuário (unificado)
 export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUser | null> {
   try {
-    // Buscar token no header ou cookie,    const authHeader = request.headers.get('authorization')
+    // Buscar token no header ou cookie
+    const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
     
     const token = authHeader?.replace('Bearer ', '') || cookieToken
@@ -48,10 +49,13 @@ export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUs
       return null
     }
 
-    // Verificar e decodificar token,    const decoded = jwt.verify(token, JWT_SECRET) as any
+    // Verificar e decodificar token
+
+    const decoded = jwt.verify(token, JWT_SECRET) as any
 
     if (decoded.type === 'CUSTOMER') {
-      // Buscar como cliente,      const client = await prisma.client.findUnique({
+      // Buscar como cliente
+      const client = await prisma.client.findUnique({
         where: { id: decoded.userId },
         select: {
           id: true,
@@ -85,7 +89,8 @@ export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUs
         }
       }
     } else {
-      // Buscar como usuário admin/staff,      const user = await prisma.user.findUnique({
+      // Buscar como usuário admin/staff
+      const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
         select: {
           id: true,
@@ -212,12 +217,14 @@ export async function createCustomerAccount(data: {
   amount?: number
 }): Promise<{ success: boolean; user?: UnifiedUser; token?: string; error?: string }> {
   try {
-    // Verificar se cliente já existe,    let client = await prisma.client.findUnique({
+    // Verificar se cliente já existe
+    let client = await prisma.client.findUnique({
       where: { email: data.email }
     })
 
     if (!client) {
-      // Criar novo cliente,      client = await prisma.client.create({
+      // Criar novo cliente
+      client = await prisma.client.create({
         data: {
           name: data.name,
           email: data.email,
@@ -229,7 +236,8 @@ export async function createCustomerAccount(data: {
           status: 'QUALIFIED' // Cliente que comprou já é qualificado        }
       })
     } else {
-      // Atualizar dados se cliente já existe,      client = await prisma.client.update({
+      // Atualizar dados se cliente já existe
+      client = await prisma.client.update({
         where: { id: client.id },
         data: {
           name: data.name,
@@ -242,7 +250,9 @@ export async function createCustomerAccount(data: {
       })
     }
 
-    // Se foi passado dados de compra, criar registro de pagamento
+    // Se foi passado dados de compra
+
+    criar registro de pagamento
     if (data.product && data.amount) {
       await prisma.payment.create({
         data: {

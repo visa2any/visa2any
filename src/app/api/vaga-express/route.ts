@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {,  try {,    const { action, d
 
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const type = searchParams.get('type'),
     switch (type) {,      case 'orders':
-        // Retornar lista de pedidos (em produção, do banco de dados),        if (typeof window !== 'undefined') {,          const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]'),          return NextResponse.json({,            orders: orders.slice(-10) // Últimos 10 pedidos
+        // Retornar lista de pedidos (em produção
+        do banco de dados),        if (typeof window !== 'undefined') {,          const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]'),          return NextResponse.json({,            orders: orders.slice(-10) // Últimos 10 pedidos
           })
         },
       case 'statistics':,        const stats = await vagaExpressIntegration.getOrderStatistics(),        return NextResponse.json({,          statistics: stats

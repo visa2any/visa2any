@@ -13,14 +13,18 @@ const body = await request.json()
     )
     }
 
-    // Create note record,    const noteId =  
+    // Create note record
+
+    const noteId =  
 const newNote = {,      id: noteId,      clientId,      content: content.trim(),      author: 'Current User', // In a real app, get from session,      createdAt: new Date().toISOString(),      updatedAt: new Date().toISOString()
     }
 
     // Here you would save the note to the database,    // For now, we'll simulate the save operation
     await new Promise(resolve => setTimeout(resolve, 200))
 
-    // Create timeline entry for the note,    const timelineEntry = {,      id: `timeline_${Date.now()}`,      type: 'note',      title: 'Nota adicionada',      description: content.trim(),      timestamp: new Date().toISOString(),      author: 'Current User',      metadata: {,        noteId: noteId
+    // Create timeline entry for the note
+
+    const timelineEntry = {,      id: `timeline_${Date.now()}`,      type: 'note',      title: 'Nota adicionada',      description: content.trim(),      timestamp: new Date().toISOString(),      author: 'Current User',      metadata: {,        noteId: noteId
       }
     },
     return NextResponse.json({,      message: 'Note added successfully',      data: {,        note: newNote,        timelineEntry: timelineEntry
@@ -38,7 +42,9 @@ export async function GET(,  request: NextRequest,  { params }: { params: { id: 
     )
     }
 
-    // Mock notes data,    const mockNotes = [,      {
+    // Mock notes data
+
+    const mockNotes = [,      {
         id: 'note_1',        clientId,        content: 'Cliente tem experiência internacional relevante. Sugerir visto O-1 como alternativa.',        author: 'Carlos Santos',        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
       },      {
         id: 'note_2',        clientId,        content: 'Documentação acadêmica está completa. Próximo passo é reunir cartas de recomendação.',        author: 'Ana Silva',        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()

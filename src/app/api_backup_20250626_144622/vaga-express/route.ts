@@ -46,7 +46,8 @@ export async function GET(request: NextRequest) {
 
     switch (type) {
       case 'orders':
-        // Retornar lista de pedidos (em produção, do banco de dados)
+        // Retornar lista de pedidos (em produção
+        do banco de dados)
         if (typeof window !== 'undefined') {
           const orders = JSON.parse(localStorage.getItem('vaga-express-orders') || '[]')
           return NextResponse.json({

@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
+    // Construir filtros
+
+    const where: any = {}
     
     if (affiliateId) {
       where.affiliateId = affiliateId
@@ -25,7 +27,9 @@ export async function GET(request: NextRequest) {
       where.status = status
     }
 
-    // Buscar comissões,    const [commissions, total] = await Promise.all([,
+    // Buscar comissões
+
+    const [commissions, total] = await Promise.all([,
       prisma.affiliateCommission.findMany({
         where,
         skip,
@@ -57,7 +61,9 @@ export async function GET(request: NextRequest) {
       prisma.affiliateCommission.count({ where })
     ])
 
-    // Buscar estatísticas de pagamentos,    const stats = await prisma.affiliateCommission.groupBy({
+    // Buscar estatísticas de pagamentos
+
+    const stats = await prisma.affiliateCommission.groupBy({
       by: ['status'],
       _sum: {
         amount: true
@@ -111,7 +117,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Buscar comissões pendentes,    const commissions = await prisma.affiliateCommission.findMany({
+    // Buscar comissões pendentes
+
+    const commissions = await prisma.affiliateCommission.findMany({
       where: {
         id: { in: commissionIds },
         status: 'PENDING'
@@ -127,7 +135,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Agrupar comissões por afiliado,    const groupedByAffiliate = commissions.reduce((acc, commission) => {
+    // Agrupar comissões por afiliado
+
+    const groupedByAffiliate = commissions.reduce((acc, commission) => {
       const affiliateId = commission.affiliateId
       if (!acc[affiliateId]) {
         acc[affiliateId] = {
@@ -141,14 +151,20 @@ export async function POST(request: NextRequest) {
       return acc
     }, {} as Record<string, any>)
 
-    // Criar pagamentos para cada afiliado,    const payments = []
+    // Criar pagamentos para cada afiliado
+
+    const payments = []
     
     for (const affiliateId of Object.keys(groupedByAffiliate)) {
       const group = groupedByAffiliate[affiliateId]
       
-      // Gerar código de referência único,      const referenceCode = `PAY${Date.now()}${affiliateId.slice(-4)}`
+      // Gerar código de referência único
       
-      // Criar pagamento,      const payment = await prisma.affiliatePayment.create({
+      const referenceCode = `PAY${Date.now()}${affiliateId.slice(-4)}`
+      
+      // Criar pagamento
+      
+      const payment = await prisma.affiliatePayment.create({
         data: {
           affiliateId,
           amount: group.totalAmount,
@@ -165,7 +181,9 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Atualizar comissões para referenciar o pagamento,      await prisma.affiliateCommission.updateMany({
+      // Atualizar comissões para referenciar o pagamento
+
+      await prisma.affiliateCommission.updateMany({
         where: {
           id: { in: group.commissions.map((c: any) => c.id) }
         },
@@ -175,7 +193,9 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Atualizar saldos do afiliado,      await prisma.affiliate.update({
+      // Atualizar saldos do afiliado
+
+      await prisma.affiliate.update({
         where: { id: affiliateId },
         data: {
           pendingEarnings: { decrement: group.totalAmount }
@@ -185,7 +205,9 @@ export async function POST(request: NextRequest) {
       payments.push(payment)
     }
 
-    // TODO: Integrar com sistema de pagamento (PIX, transferência, etc.)
+    // TODO: Integrar com sistema de pagamento (PIX
+
+    transferência, etc.)
     // await processPayments(payments)
 
     return NextResponse.json({
@@ -224,7 +246,9 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Atualizar pagamento,    const updateData: any = {
+    // Atualizar pagamento
+
+    const updateData: any = {
       status,
       notes
     }
@@ -250,9 +274,12 @@ export async function PUT(request: NextRequest) {
       }
     })
 
-    // Se pagamento foi completado, atualizar comissões e afiliado
+    // Se pagamento foi completado
+
+    atualizar comissões e afiliado
     if (status === 'COMPLETED') {
-      // Marcar comissões como pagas,      await prisma.affiliateCommission.updateMany({
+      // Marcar comissões como pagas
+      await prisma.affiliateCommission.updateMany({
         where: { paymentId },
         data: {
           status: 'PAID',
@@ -260,7 +287,9 @@ export async function PUT(request: NextRequest) {
         }
       })
 
-      // Atualizar saldos do afiliado,      await prisma.affiliate.update({
+      // Atualizar saldos do afiliado
+
+      await prisma.affiliate.update({
         where: { id: payment.affiliateId },
         data: {
           paidEarnings: { increment: payment.amount }
@@ -268,7 +297,9 @@ export async function PUT(request: NextRequest) {
       })
     }
 
-    // Se pagamento falhou, reverter comissões
+    // Se pagamento falhou
+
+    reverter comissões
     if (status === 'FAILED' || status === 'CANCELLED') {
       await prisma.affiliateCommission.updateMany({
         where: { paymentId },
@@ -278,7 +309,9 @@ export async function PUT(request: NextRequest) {
         }
       })
 
-      // Reverter saldos do afiliado,      await prisma.affiliate.update({
+      // Reverter saldos do afiliado
+
+      await prisma.affiliate.update({
         where: { id: payment.affiliateId },
         data: {
           pendingEarnings: { increment: payment.amount }

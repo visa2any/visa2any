@@ -19,7 +19,8 @@ export default function UrgencyBanner({ type = 'slots', className = '' }: Urgenc
   const [recentActivity, setRecentActivity] = useState(12)
 
   useEffect(() => {
-    // Countdown timer,    const timer = setInterval(() => {
+    // Countdown timer
+    const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev.seconds > 0) {
           return { ...prev, seconds: prev.seconds - 1 }
@@ -32,13 +33,17 @@ export default function UrgencyBanner({ type = 'slots', className = '' }: Urgenc
       })
     }, 1000)
 
-    // Simulate slot reduction,    const slotTimer = setInterval(() => {
+    // Simulate slot reduction
+
+    const slotTimer = setInterval(() => {
       if (Math.random() < 0.3 && slotsLeft > 2) {
         setSlotsLeft(prev => prev - 1)
       }
     }, 180000) // Every 3 minutes
 
-    // Simulate activity,    const activityTimer = setInterval(() => {
+    // Simulate activity
+
+    const activityTimer = setInterval(() => {
       setRecentActivity(prev => prev + Math.floor(Math.random() * 3))
     }, 45000) // Every 45 seconds
 

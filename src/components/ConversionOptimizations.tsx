@@ -47,9 +47,12 @@ export function LiveSocialProof() {
   ]
 
   useEffect(() => {
-    // Mostrar primeira notificação após 3 segundos,    const showTimer = setTimeout(() => setIsVisible(true), 3000)
+    // Mostrar primeira notificação após 3 segundos
+    const showTimer = setTimeout(() => setIsVisible(true), 3000)
     
-    // Rotacionar proofs a cada 8 segundos,    const interval = setInterval(() => {
+    // Rotacionar proofs a cada 8 segundos
+    
+    const interval = setInterval(() => {
       setCurrentProof((prev) => (prev + 1) % proofs.length)
     }, 8000)
 
@@ -114,7 +117,9 @@ export function ScarcityTimer({ endDate }: { endDate?: Date }) {
       }
     }, 1000)
 
-    // Simular redução de vagas,    const spotInterval = setInterval(() => {
+    // Simular redução de vagas
+
+    const spotInterval = setInterval(() => {
       setSpots(prev => prev > 3 ? prev - 1 : prev)
     }, 120000) // A cada 2 minutos
 

@@ -242,7 +242,9 @@ function UnifiedAdminDashboardContent() {
     return colors[priority] || 'text-gray-600 bg-gray-50 border-gray-200'
   }
 
-  // Filtrar clientes baseado na busca e filtros,  const filteredClients = clients.filter(client => {
+  // Filtrar clientes baseado na busca e filtros
+
+  const filteredClients = clients.filter(client => {
     const matchesSearch = searchTerm === '' || 
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -496,10 +498,14 @@ function MonitoringView() {
   
   const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
-  // Carregar dados reais na inicialização,  useEffect(() => {
+  // Carregar dados reais na inicialização
+
+  useEffect(() => {
     loadMonitoringData()
     
-    // Atualizar dados a cada 30 segundos,    const interval = setInterval(loadMonitoringData, 30000)
+    // Atualizar dados a cada 30 segundos
+    
+    const interval = setInterval(loadMonitoringData, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -533,7 +539,9 @@ function MonitoringView() {
         return
       }
       
-      // Marcar como notificado,      const response = await fetch('/api/monitoring-data', {
+      // Marcar como notificado
+      
+      const response = await fetch('/api/monitoring-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -543,7 +551,8 @@ function MonitoringView() {
       })
 
       if (response.ok) {
-        // Atualizar estado local,        setAlerts(prev => prev.map((a, i) => 
+        // Atualizar estado local
+        setAlerts(prev => prev.map((a, i) => 
           i === alertIndex ? { ...a, notified: true } : a
         ))
         
@@ -567,7 +576,9 @@ function MonitoringView() {
         const result = await response.json()
         notifySuccess('Vaga Simulada', `Nova vaga criada: ${result.alert.country} - ${result.alert.type} em ${result.alert.location}`)
         
-        // Recarregar dados,        loadMonitoringData()
+        // Recarregar dados
+        
+        loadMonitoringData()
       }
     } catch (error) {
       console.error('Erro ao simular vaga:', error)
@@ -834,7 +845,9 @@ function MonitoringView() {
                     notifySuccess('Web Scraping Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
                     notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
-                    // Forçar refresh dos dados para atualizar status,                    await fetch('/api/monitoring-data', {
+                    // Forçar refresh dos dados para atualizar status
+                    
+                    await fetch('/api/monitoring-data', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ action: 'refresh' })
@@ -890,7 +903,9 @@ function MonitoringView() {
                     notifySuccess('Email Monitor Ativado', `Sistema: ${result.system}. Custo: ${result.details?.cost}`)
                     notifyInfo('Sucesso', 'Notificação enviada para seu Telegram!')
                     
-                    // Forçar refresh dos dados para atualizar status,                    await fetch('/api/monitoring-data', {
+                    // Forçar refresh dos dados para atualizar status
+                    
+                    await fetch('/api/monitoring-data', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ action: 'refresh' })

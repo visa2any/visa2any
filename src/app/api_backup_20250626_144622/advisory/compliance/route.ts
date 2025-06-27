@@ -32,25 +32,33 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = complianceCheckSchema.parse(body)
 
-    // Obter requisitos específicos do país/visto,    const requirements = await getComplianceRequirements(
+    // Obter requisitos específicos do país/visto
+
+    const requirements = await getComplianceRequirements(
       validatedData.country,
       validatedData.visaType
     )
 
-    // Realizar verificação de compliance,    const complianceResult = await performComplianceCheck(
+    // Realizar verificação de compliance
+
+    const complianceResult = await performComplianceCheck(
       validatedData.documents,
       requirements,
       validatedData.checkType
     )
 
-    // Gerar relatório detalhado,    const detailedReport = await generateComplianceReport(
+    // Gerar relatório detalhado
+
+    const detailedReport = await generateComplianceReport(
       complianceResult,
       requirements,
       validatedData.country,
       validatedData.visaType
     )
 
-    // Salvar resultado da verificação,    await prisma.automationLog.create({
+    // Salvar resultado da verificação
+
+    await prisma.automationLog.create({
       data: {
         type: 'COMPLIANCE_CHECK',
         action: `compliance_${validatedData.checkType}`,
@@ -131,7 +139,8 @@ export async function GET(request: NextRequest) {
 
 // Obter requisitos de compliance por país/visto
 async function getComplianceRequirements(country: string, visaType: string, detailed = false) {
-  // Base de dados de requisitos por país/visto,  const requirementsDatabase: Record<string, any> = {
+  // Base de dados de requisitos por país/visto
+  const requirementsDatabase: Record<string, any> = {
     'Canada': {
       'SKILLED': {
         mandatory: [
@@ -362,7 +371,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     }
   }
 
-  // Verificar documentos obrigatórios,  if (requirements.mandatory) {
+  // Verificar documentos obrigatórios
+
+  if (requirements.mandatory) {
     result.breakdown.mandatory.total = requirements.mandatory.length
     
     for (const req of requirements.mandatory) {
@@ -386,7 +397,8 @@ async function performComplianceCheck(documents: any[], requirements: any, check
           message: `Missing required document: ${req.name}`
         })
       } else {
-        // Verificar cada documento correspondente,        for (const doc of matchingDocs) {
+        // Verificar cada documento correspondente
+        for (const doc of matchingDocs) {
           const docCheck = await checkDocumentCompliance(doc, req)
           
           if (docCheck.compliant) {
@@ -400,7 +412,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
             result.issues.push(...docCheck.issues)
           }
           
-          // Verificar validade,          if (doc.expiryDate) {
+          // Verificar validade
+          
+          if (doc.expiryDate) {
             const expiryDate = new Date(doc.expiryDate)
             const now = new Date()
             const sixMonthsFromNow = new Date(now.getTime() + 6 * 30 * 24 * 60 * 60 * 1000)
@@ -428,7 +442,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     result.breakdown.mandatory.score = (result.breakdown.mandatory.completed / result.breakdown.mandatory.total) * 100
   }
 
-  // Verificar documentos opcionais,  if (requirements.optional) {
+  // Verificar documentos opcionais
+
+  if (requirements.optional) {
     result.breakdown.optional.total = requirements.optional.length
     
     for (const req of requirements.optional) {
@@ -450,7 +466,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     }
   }
 
-  // Calcular score geral,  const mandatoryWeight = 0.8
+  // Calcular score geral
+
+  const mandatoryWeight = 0.8
   const optionalWeight = 0.2
   
   result.overallScore = (
@@ -458,7 +476,9 @@ async function performComplianceCheck(documents: any[], requirements: any, check
     (result.breakdown.optional.score * optionalWeight)
   )
 
-  // Determinar nível de compliance,  if (result.overallScore >= 90 && result.missing.length === 0) {
+  // Determinar nível de compliance
+
+  if (result.overallScore >= 90 && result.missing.length === 0) {
     result.complianceLevel = 'compliant'
   } else if (result.overallScore >= 70 && result.issues.filter(i => i.severity === 'critical').length === 0) {
     result.complianceLevel = 'partial'
@@ -477,10 +497,14 @@ async function checkDocumentCompliance(document: any, requirement: any) {
     warnings: [] as any[]
   }
 
-  // Verificar especificações técnicas,  if (requirement.specifications) {
+  // Verificar especificações técnicas
+
+  if (requirement.specifications) {
     const specs = requirement.specifications
     
-    // Verificar formato,    if (specs.format && !document.fileName.toLowerCase().endsWith('.pdf')) {
+    // Verificar formato
+    
+    if (specs.format && !document.fileName.toLowerCase().endsWith('.pdf')) {
       check.issues.push({
         type: 'format_issue',
         severity: 'medium',
@@ -490,7 +514,9 @@ async function checkDocumentCompliance(document: any, requirement: any) {
       check.compliant = false
     }
     
-    // Verificar resolução (se disponível nos metadados),    if (specs.resolution && document.metadata?.resolution) {
+    // Verificar resolução (se disponível nos metadados)
+    
+    if (specs.resolution && document.metadata?.resolution) {
       const requiredDPI = parseInt(specs.resolution)
       const docDPI = parseInt(document.metadata.resolution)
       
@@ -563,7 +589,9 @@ function getReadinessLevel(result: any) {
 function generateComplianceRecommendations(result: any) {
   const recommendations = []
   
-  // Recomendações para documentos faltando,  if (result.missing.length > 0) {
+  // Recomendações para documentos faltando
+  
+  if (result.missing.length > 0) {
     recommendations.push({
       priority: 'critical',
       category: 'missing_documents',
@@ -573,7 +601,9 @@ function generateComplianceRecommendations(result: any) {
     })
   }
   
-  // Recomendações para documentos expirando,  if (result.expiring.length > 0) {
+  // Recomendações para documentos expirando
+  
+  if (result.expiring.length > 0) {
     recommendations.push({
       priority: 'high',
       category: 'expiring_documents', 
@@ -583,7 +613,9 @@ function generateComplianceRecommendations(result: any) {
     })
   }
   
-  // Recomendações para problemas de qualidade,  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue')
+  // Recomendações para problemas de qualidade
+  
+  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue')
   if (qualityIssues.length > 0) {
     recommendations.push({
       priority: 'medium',
@@ -606,7 +638,9 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     optional: [] as any[]
   }
   
-  // Ações imediatas para problemas críticos,  const criticalIssues = result.issues.filter((i: any) => i.severity === 'critical')
+  // Ações imediatas para problemas críticos
+  
+  const criticalIssues = result.issues.filter((i: any) => i.severity === 'critical')
   criticalIssues.forEach((issue: any) => {
     recommendations.immediate.push({
       action: `Resolve: ${issue.message}`,
@@ -615,7 +649,9 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     })
   })
   
-  // Ações de curto prazo,  if (result.expiring.length > 0) {
+  // Ações de curto prazo
+  
+  if (result.expiring.length > 0) {
     recommendations.shortTerm.push({
       action: 'Renew expiring documents',
       documents: result.expiring.map((e: any) => e.name),
@@ -623,7 +659,9 @@ function generateDetailedRecommendations(result: any, requirements: any) {
     })
   }
   
-  // Melhorias opcionais,  if (requirements.optional && result.breakdown.optional.completed < result.breakdown.optional.total) {
+  // Melhorias opcionais
+  
+  if (requirements.optional && result.breakdown.optional.completed < result.breakdown.optional.total) {
     recommendations.optional.push({
       action: 'Consider providing optional documents for additional points',
       benefit: 'Improved application strength',

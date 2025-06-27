@@ -27,7 +27,9 @@ export async function POST(
     )
     }
 
-    // Create note record,    const noteId = `note_${Date.now()}`
+    // Create note record
+
+    const noteId = `note_${Date.now()}`
     const newNote = {
       id: noteId,
       clientId,
@@ -41,7 +43,9 @@ export async function POST(
  we'll simulate the save operation
     await new Promise(resolve => setTimeout(resolve, 200))
 
-    // Create timeline entry for the note,    const timelineEntry = {
+    // Create timeline entry for the note
+
+    const timelineEntry = {
       id: `timeline_${Date.now()}`,
       type: 'note',
       title: 'Nota adicionada',
@@ -84,7 +88,9 @@ export async function GET(
     )
     }
 
-    // Mock notes data,    const mockNotes = [
+    // Mock notes data
+
+    const mockNotes = [
       {
         id: 'note_1',
         clientId,

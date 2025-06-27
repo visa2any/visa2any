@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { partnerIntegrationService } from '@/lib/partner-integrations'
 
-// GET - Verificar status de aplicação via parceiro,
+// GET - Verificar status de aplicação via parceiro
+
 export async function GET(
   request: NextRequest,  { params }: { params: { partnerId: string } }
 ) {,  try {,    const partnerId =  

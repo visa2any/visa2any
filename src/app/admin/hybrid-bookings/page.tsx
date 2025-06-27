@@ -55,7 +55,9 @@ export default function HybridBookingsPage() {
   useEffect(() => {
     fetchBookings()
     
-    // Auto-refresh a cada 30 segundos,    const interval = setInterval(fetchBookings, 30000)
+    // Auto-refresh a cada 30 segundos
+    
+    const interval = setInterval(fetchBookings, 30000)
     return () => clearInterval(interval)
   }, [])
 

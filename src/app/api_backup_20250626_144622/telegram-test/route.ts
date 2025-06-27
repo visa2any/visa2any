@@ -8,10 +8,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
-    // Buscar updates do Telegram,    const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates`)
+    // Buscar updates do Telegram
+
+    const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates`)
     const data = await response.json()
 
-    // Extrair chat IDs únicos,    const chatIds = new Set()
+    // Extrair chat IDs únicos
+
+    const chatIds = new Set()
     const messages = []
 
     if (data.result && data.result.length > 0) {
@@ -59,7 +63,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
-    // Enviar mensagem de teste,    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    // Enviar mensagem de teste
+
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

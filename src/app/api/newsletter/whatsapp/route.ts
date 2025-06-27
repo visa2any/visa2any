@@ -5,29 +5,41 @@ import { prisma } from 'next/server'
 export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
 const { name, phone, countries, terms } = body
 
-    // Validação,    if (!name || !phone || !terms) {,      return NextResponse.json(,        { error: 'Nome, telefone e aceite dos termos são obrigatórios' },        { status: 400 }
+    // Validação
+
+    if (!name || !phone || !terms) {,      return NextResponse.json(,        { error: 'Nome, telefone e aceite dos termos são obrigatórios' },        { status: 400 }
       )
     }
 
-    // Validar formato do telefone,    const phoneRegex = /^\+[1-9]\d{1,14}$/,    if (!phoneRegex.test(phone)) {,      return NextResponse.json(,        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },        { status: 400 }
+    // Validar formato do telefone
+
+    const phoneRegex = /^\+[1-9]\d{1,14}$/,    if (!phoneRegex.test(phone)) {,      return NextResponse.json(,        { error: 'Formato de telefone inválido. Use +55 11 99999-9999' },        { status: 400 }
       )
     }
 
-    // Verificar se já existe,    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({,      where: { phone }
+    // Verificar se já existe
+
+    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({,      where: { phone }
     }),
     if (existingSubscriber) {,      return NextResponse.json(,        { error: 'Este número já está cadastrado na nossa newsletter' },        { status: 409 }
       )
     }
 
-    // Criar novo assinante,    const subscriber = await prisma.whatsAppSubscriber.create({,      data: {,        name,        phone,        countries: countries || ['Global'],        isActive: true,        source: 'blog_newsletter'
+    // Criar novo assinante
+
+    const subscriber = await prisma.whatsAppSubscriber.create({,      data: {,        name,        phone,        countries: countries || ['Global'],        isActive: true,        source: 'blog_newsletter'
       }
     })
 
-    // Enviar mensagem de boas-vindas via WhatsApp,    try {,      await sendWelcomeMessage(phone, name)
+    // Enviar mensagem de boas-vindas via WhatsApp
+
+    try {,      await sendWelcomeMessage(phone, name)
     } catch (error) {,      console.error('Erro ao enviar mensagem de boas-vindas:', error)
       // Não falhar o cadastro se a mensagem não for enviada    }
 
-    // Log da atividade,    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
+    // Log da atividade
+
+    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
 
     return NextResponse.json({,      success: true,      message: 'Cadastro realizado com sucesso! Você receberá uma mensagem de confirmação em breve.',      subscriber: {,        id: subscriber.id,        name: subscriber.name,        phone: subscriber.phone,        countries: subscriber.countries
       }
@@ -66,7 +78,8 @@ _Para cancelar, responda SAIR_`
   return true
 }
 
-// GET - Listar assinantes (admin only),
+// GET - Listar assinantes (admin only)
+
 export async function GET() {,  try {,    const subscribers = await prisma.whatsAppSubscriber.findMany({,      where: { isActive: true },      orderBy: { createdAt: 'desc' }
       take: 100
     }),

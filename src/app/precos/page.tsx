@@ -302,7 +302,9 @@ export default function PrecosPage() {
   const [selectedPlan, setSelectedPlan] = useState('')
   const [showOtherCountries, setShowOtherCountries] = useState(false)
 
-  // Função para gerar product ID baseado nas seleções,  const generateProductId = (planId, country, visaType) => {
+  // Função para gerar product ID baseado nas seleções
+
+  const generateProductId = (planId, country, visaType) => {
     if (planId === 'free') return 'pre-analise'
     
     const countryPrefix = country === 'usa' ? 'usa' : 
@@ -328,7 +330,9 @@ export default function PrecosPage() {
     return `${countryPrefix}-${visaTypeSuffix}-${planSuffix}`
   }
 
-  // Função para obter preço baseado nas seleções,  const getPrice = (planId) => {
+  // Função para obter preço baseado nas seleções
+
+  const getPrice = (planId) => {
     if (planId === 'free') return 0
     if (!selectedCountry || !selectedVisaType) return 97
     
@@ -336,13 +340,17 @@ export default function PrecosPage() {
     const planPrices = countryData.prices[planId]
     
     if (typeof planPrices === 'object') {
-      // Se tem preços específicos por tipo de visto,      return planPrices[selectedVisaType] || planPrices.base || 97
+      // Se tem preços específicos por tipo de visto
+      return planPrices[selectedVisaType] || planPrices.base || 97
     } else {
-      // Se é preço fixo (para backward compatibility),      return planPrices || 97
+      // Se é preço fixo (para backward compatibility)
+      return planPrices || 97
     }
   }
 
-  // Função para resetar seleção,  const resetSelection = () => {
+  // Função para resetar seleção
+
+  const resetSelection = () => {
     setSelectedCountry('')
     setSelectedVisaType('')
     setSelectedPlan('')

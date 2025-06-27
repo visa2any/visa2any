@@ -12,7 +12,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar consultoria IA com o resultado,    const consultation = await prisma.consultation.create({
+    // Criar consultoria IA com o resultado
+
+    const consultation = await prisma.consultation.create({
       data: {
         clientId,
         type: 'AI_ANALYSIS',
@@ -33,7 +35,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar score do cliente,    await prisma.client.update({
+    // Atualizar score do cliente
+
+    await prisma.client.update({
       where: { id: clientId },
       data: {
         score,
@@ -41,7 +45,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Criar interação de análise realizada,    await prisma.interaction.create({
+    // Criar interação de análise realizada
+
+    await prisma.interaction.create({
       data: {
         clientId,
         type: 'AUTOMATED_EMAIL',
@@ -53,7 +59,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Determinar próxima ação automática baseada no score,    let automationAction = null
+    // Determinar próxima ação automática baseada no score
+
+    let automationAction = null
     if (score >= 85) {
       automationAction = 'high_score_followup'
     } else if (score >= 60) {
@@ -62,7 +70,9 @@ export async function POST(request: NextRequest) {
       automationAction = 'low_score_education'
     }
 
-    // Criar log de automação,    await prisma.automationLog.create({
+    // Criar log de automação
+
+    await prisma.automationLog.create({
       data: {
         clientId,
         type: 'ANALYSIS_COMPLETED',

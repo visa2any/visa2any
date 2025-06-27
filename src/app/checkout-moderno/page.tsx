@@ -136,8 +136,11 @@ function CheckoutContent() {
   
   let product = PRODUCTS[productId as keyof typeof PRODUCTS]
   
-  // Fallback para produtos dinâmicos (países/vistos),  if (!product) {
-    // Tentar encontrar produto baseado em padrões,    if (productId.includes('-free')) {
+  // Fallback para produtos dinâmicos (países/vistos)
+  
+  if (!product) {
+    // Tentar encontrar produto baseado em padrões
+    if (productId.includes('-free')) {
       const country = productId.split('-')[0]
       product = {
         name: `${country.toUpperCase()} - Análise Gratuita`,
@@ -168,7 +171,8 @@ function CheckoutContent() {
         supportsQuantity: false
       }
     } else {
-      // Produto genérico,      product = {
+      // Produto genérico
+      product = {
         name: 'Serviço Personalizado',
         price: 97,
         description: 'Serviço especializado para seu caso',
@@ -184,7 +188,9 @@ function CheckoutContent() {
     }
   }
 
-  // Para produtos que não suportam quantidade, usar valores padrão
+  // Para produtos que não suportam quantidade
+
+  usar valores padrão
   const finalAdults = product.supportsQuantity ? adults : 1
   const finalChildren = product.supportsQuantity ? children : 0
   const finalPrice = (product.supportsQuantity && totalFromUrl > 0) ? totalFromUrl : product.price

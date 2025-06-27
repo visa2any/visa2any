@@ -41,13 +41,15 @@ export default function MercadoPagoSimple({
   const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    // Evitar inicialização múltipla,    if (initialized) return
+    // Evitar inicialização múltipla
+    if (initialized) return
     
     setInitialized(true)
     loadMercadoPago()
 
     return () => {
-      // Cleanup,      const container = containerRef.current
+      // Cleanup
+      const container = containerRef.current
       if (container) {
         container.innerHTML = ''
       }
@@ -56,13 +58,16 @@ export default function MercadoPagoSimple({
 
   const loadMercadoPago = async () => {
     try {
-      // Se SDK já existe, inicializar diretamente
+      // Se SDK já existe
+      inicializar diretamente
       if (window.MercadoPago) {
         await initializeBrick()
         return
       }
 
-      // Carregar SDK,      console.log('🔄 Carregando SDK MercadoPago...')
+      // Carregar SDK
+
+      console.log('🔄 Carregando SDK MercadoPago...')
       
       const script = document.createElement('script')
       script.src = 'https://sdk.mercadopago.com/js/v2'
@@ -105,9 +110,13 @@ export default function MercadoPagoSimple({
         throw new Error('Container não encontrado')
       }
 
-      // Limpar container,      container.innerHTML = ''
+      // Limpar container
 
-      // Configuração básica e robusta,      const bricksBuilder = mp.bricks()
+      container.innerHTML = ''
+
+      // Configuração básica e robusta
+
+      const bricksBuilder = mp.bricks()
       
       console.log('🎯 Criando Payment Brick...')
 
@@ -134,7 +143,9 @@ export default function MercadoPagoSimple({
             console.log('✅ Payment Brick pronto!')
             setLoading(false)
             
-            // Aplicar estilos básicos após carregamento,            setTimeout(() => {
+            // Aplicar estilos básicos após carregamento
+            
+            setTimeout(() => {
               applyBasicStyles()
             }, 1000)
           },
@@ -162,7 +173,9 @@ export default function MercadoPagoSimple({
                   setPaymentResult(result)
                   setShowPixCode(true)
                   
-                  // Enviar email,                  sendPixEmail(result.qr_code)
+                  // Enviar email
+                  
+                  sendPixEmail(result.qr_code)
                 } else {
                   onSuccess?.(result)
                 }
@@ -192,7 +205,9 @@ export default function MercadoPagoSimple({
     const container = containerRef.current
     if (!container) return
 
-    // Aplicar estilos básicos sem interferir na funcionalidade,    container.style.cssText = `
+    // Aplicar estilos básicos sem interferir na funcionalidade
+
+    container.style.cssText = `
       background: white;
       border-radius: 12px;
       padding: 24px;
@@ -200,7 +215,9 @@ export default function MercadoPagoSimple({
       margin: 20px 0;
     `
 
-    // Encontrar métodos de pagamento e aplicar estilos básicos,    setTimeout(() => {
+    // Encontrar métodos de pagamento e aplicar estilos básicos
+
+    setTimeout(() => {
       const methods = container.querySelectorAll('[data-cy*="payment"], button[class*="payment"], .mp-payment-method')
       
       methods.forEach((method) => {
@@ -257,7 +274,9 @@ export default function MercadoPagoSimple({
     }
   }
 
-  // Tela PIX,  if (showPixCode && paymentResult) {
+  // Tela PIX
+
+  if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-2xl mx-auto px-4">

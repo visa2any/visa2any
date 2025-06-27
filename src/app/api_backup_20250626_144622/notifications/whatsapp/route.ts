@@ -19,9 +19,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = sendWhatsAppSchema.parse(body)
 
-    // Obter serviço WhatsApp integrado,    const whatsappService = getWhatsAppService()
+    // Obter serviço WhatsApp integrado
 
-    // Enviar WhatsApp usando o serviço integrado,    const whatsAppResult = await whatsappService.sendMessage({
+    const whatsappService = getWhatsAppService()
+
+    // Enviar WhatsApp usando o serviço integrado
+
+    const whatsAppResult = await whatsappService.sendMessage({
       to: validatedData.to,
       message: validatedData.message,
       clientId: validatedData.clientId,
@@ -29,7 +33,9 @@ export async function POST(request: NextRequest) {
       variables: validatedData.variables
     })
 
-    // Log do envio,    await prisma.automationLog.create({
+    // Log do envio
+
+    await prisma.automationLog.create({
       data: {
         type: 'WHATSAPP',
         action: 'send_whatsapp',

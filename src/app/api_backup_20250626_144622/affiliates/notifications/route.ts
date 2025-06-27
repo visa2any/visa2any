@@ -15,7 +15,9 @@ interface NotificationData {
   priority: 'low' | 'medium' | 'high' | 'urgent'
 }
 
-// Simulação de storage de notificações (em produção, usar Redis ou banco)
+// Simulação de storage de notificações (em produção
+
+usar Redis ou banco)
 const notificationsStore = new Map<string, NotificationData[]>()
 
 // GET - Buscar notificações do afiliado
@@ -32,21 +34,31 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Buscar notificações do storage,    let notifications = notificationsStore.get(affiliateId) || []
+    // Buscar notificações do storage
 
-    // Se não há notificações, criar algumas de exemplo
+    let notifications = notificationsStore.get(affiliateId) || []
+
+    // Se não há notificações
+
+    criar algumas de exemplo
     if (notifications.length === 0) {
       notifications = generateSampleNotifications(affiliateId)
       notificationsStore.set(affiliateId, notifications)
     }
 
-    // Filtrar apenas não lidas se solicitado,    if (unreadOnly) {
+    // Filtrar apenas não lidas se solicitado
+
+    if (unreadOnly) {
       notifications = notifications.filter(n => !n.read)
     }
 
-    // Limitar quantidade,    notifications = notifications.slice(0, limit)
+    // Limitar quantidade
 
-    // Contar não lidas,    const unreadCount = (notificationsStore.get(affiliateId) || [])
+    notifications = notifications.slice(0, limit)
+
+    // Contar não lidas
+
+    const unreadCount = (notificationsStore.get(affiliateId) || [])
       .filter(n => !n.read).length
 
     return NextResponse.json({
@@ -95,9 +107,12 @@ export async function POST(request: NextRequest) {
       priority
     }
 
-    // Adicionar ao storage,    const existing = notificationsStore.get(affiliateId) || []
+    // Adicionar ao storage
+
+    const existing = notificationsStore.get(affiliateId) || []
     existing.unshift(notification) // Adicionar no início,    
-    // Manter apenas últimas 100 notificações,    if (existing.length > 100) {
+    // Manter apenas últimas 100 notificações
+    if (existing.length > 100) {
       existing.splice(100)
     }
     
@@ -107,7 +122,8 @@ export async function POST(request: NextRequest) {
  notification)
 
     // TODO: Enviar email se for urgente,    // if (priority === 'urgent') {
-    //   await sendEmailNotification(affiliateId, notification)
+    //   await sendEmailNotification(affiliateId
+    notification)
     // }
 
     return NextResponse.json({
@@ -137,9 +153,11 @@ export async function PUT(request: NextRequest) {
     const notifications = notificationsStore.get(affiliateId) || []
 
     if (markAllAsRead) {
-      // Marcar todas como lidas,      notifications.forEach(n => n.read = true)
+      // Marcar todas como lidas
+      notifications.forEach(n => n.read = true)
     } else if (notificationIds && Array.isArray(notificationIds)) {
-      // Marcar específicas como lidas,      notifications.forEach(n => {
+      // Marcar específicas como lidas
+      notifications.forEach(n => {
         if (notificationIds.includes(n.id)) {
           n.read = true
         }
@@ -271,7 +289,9 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
     priority: 'high'
   }
 
-  // Simular envio da notificação,  return await fetch('/api/affiliates/notifications', {
+  // Simular envio da notificação
+
+  return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)

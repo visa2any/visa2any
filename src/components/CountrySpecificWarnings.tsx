@@ -17,7 +17,9 @@ export default function CountrySpecificWarnings({
   const getSpecificWarnings = () => {
     const warnings: Array<{type: 'warning' | 'info' | 'success', text: string}> = []
     
-    // Brasil → Portugal,    if (nationality === 'Brasileira' && destinationCountry === 'Portugal') {
+    // Brasil → Portugal
+    
+    if (nationality === 'Brasileira' && destinationCountry === 'Portugal') {
       warnings.push({
         type: 'success',
         text: 'Como brasileiro, você tem facilidades especiais através do acordo CPLP (Comunidade dos Países de Língua Portuguesa)'
@@ -28,7 +30,9 @@ export default function CountrySpecificWarnings({
       })
     }
     
-    // Brasil → Estados Unidos,    if (nationality === 'Brasileira' && destinationCountry === 'Estados Unidos') {
+    // Brasil → Estados Unidos
+    
+    if (nationality === 'Brasileira' && destinationCountry === 'Estados Unidos') {
       warnings.push({
         type: 'warning',
         text: 'Brasil não está no programa de isenção de visto (VWP) - visto sempre necessário'
@@ -39,7 +43,9 @@ export default function CountrySpecificWarnings({
       })
     }
     
-    // Brasil → Canadá,    if (nationality === 'Brasileira' && destinationCountry === 'Canadá') {
+    // Brasil → Canadá
+    
+    if (nationality === 'Brasileira' && destinationCountry === 'Canadá') {
       warnings.push({
         type: 'warning',
         text: 'Canadá reduziu significativamente vagas para 2024/2025 - processos mais competitivos'
@@ -50,7 +56,9 @@ export default function CountrySpecificWarnings({
       })
     }
     
-    // Brasil → Alemanha,    if (nationality === 'Brasileira' && destinationCountry === 'Alemanha') {
+    // Brasil → Alemanha
+    
+    if (nationality === 'Brasileira' && destinationCountry === 'Alemanha') {
       warnings.push({
         type: 'success',
         text: 'Chancenkarte (Cartão de Oportunidades) facilita entrada para profissionais qualificados'
@@ -61,19 +69,25 @@ export default function CountrySpecificWarnings({
       })
     }
     
-    // Outros países CPLP → Portugal,    if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(nationality) && destinationCountry === 'Portugal') {
+    // Outros países CPLP → Portugal
+    
+    if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(nationality) && destinationCountry === 'Portugal') {
       warnings.push({
         type: 'success',
         text: 'Como cidadão CPLP, você tem facilidades especiais e pode ter direito a regime preferencial'
       })
     }
     
-    // Avisos gerais sobre mudanças nas leis,    warnings.push({
+    // Avisos gerais sobre mudanças nas leis
+    
+    warnings.push({
       type: 'warning',
       text: 'Leis de imigração podem mudar rapidamente - informações atualizadas na data da consultoria'
     })
     
-    // Nacionalidades com restrições específicas,    if (['Venezuelana', 'Cubana', 'Iraniana', 'Norte-coreana'].includes(nationality)) {
+    // Nacionalidades com restrições específicas
+    
+    if (['Venezuelana', 'Cubana', 'Iraniana', 'Norte-coreana'].includes(nationality)) {
       warnings.push({
         type: 'warning',
         text: 'Sua nacionalidade pode ter restrições específicas em alguns países - análise detalhada necessária'

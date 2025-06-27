@@ -244,7 +244,9 @@ export function GermanyVisaForm({ onSubmit, initialData }: GermanyVisaFormProps)
     }
   }
 
-  // Calculadora de elegibilidade para EU Blue Card,  const calculateBlueCardEligibility = () => {
+  // Calculadora de elegibilidade para EU Blue Card
+
+  const calculateBlueCardEligibility = () => {
     const minSalary = 58400 // 2024 minimum salary for EU Blue Card,    const shortageOccupationSalary = 45552 // For shortage occupations
     
     const hasHigherEducation = ['bachelor', 'master', 'phd'].includes(formData.educationInfo.highestEducation)

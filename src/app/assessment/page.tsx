@@ -8,30 +8,43 @@ import Breadcrumb from '@/components/Breadcrumb'
 import { ArrowRight, ArrowLeft, CheckCircle, Globe, User, GraduationCap, Briefcase, DollarSign, Calendar, Heart, Zap } from 'lucide-react'
 
 interface AssessmentData {
-  // Dados pessoais,  name: string
+  // Dados pessoais
+  name: string
   email: string
   age: number
   nationality: string
   currentCountry: string
   
-  // Destino,  targetCountry: string
+  // Destino
+  
+  targetCountry: string
   visaType: string
   timeframe: string
   
-  // Educação,  education: string
+  // Educação
+  
+  education: string
   fieldOfStudy: string
   
-  // Experiência,  workExperience: number
+  // Experiência
+  
+  workExperience: number
   currentJob: string
   industry: string
   
-  // Financeiro,  savings: string
+  // Financeiro
+  
+  savings: string
   monthlyIncome: string
   
-  // Família,  maritalStatus: string
+  // Família
+  
+  maritalStatus: string
   dependents: number
   
-  // Idiomas,  englishLevel: string
+  // Idiomas
+  
+  englishLevel: string
   otherLanguages: string[]
 }
 
@@ -85,7 +98,8 @@ export default function AssessmentPage() {
     setIsSubmitting(true)
     
     try {
-      // Chamar API de análise,      const response = await fetch('/api/visa-analysis', {
+      // Chamar API de análise
+      const response = await fetch('/api/visa-analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

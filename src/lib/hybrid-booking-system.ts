@@ -1,5 +1,6 @@
 // Sistema Híbrido de Agendamento
-// Combina parceiros, scraping e APIs oficiais com fallback inteligente
+// Combina parceiros
+scraping e APIs oficiais com fallback inteligente
 
 import { appointmentBookingService, BookingRequest, BookingResponse } from './appointment-booking'
 import { partnerIntegrationService, PartnerBookingRequest } from './partner-integrations'
@@ -44,7 +45,9 @@ class HybridBookingSystem {
     'partner': 2,     // Parceiros (VisaHQ, iVisa)
     'scraping': 3     // Web scraping (último recurso)  }
 
-  // Método principal de agendamento híbrido,  async bookAppointment(
+  // Método principal de agendamento híbrido
+
+  async bookAppointment(
     request: BookingRequest, 
     options: HybridBookingOptions
   ): Promise<HybridBookingResult> {
@@ -53,7 +56,8 @@ class HybridBookingSystem {
     let finalResult: HybridBookingResult
 
     try {
-      // Determinar ordem de tentativas baseada na preferência,      const methods = this.determineMethodOrder(options.preferredMethod)
+      // Determinar ordem de tentativas baseada na preferência
+      const methods = this.determineMethodOrder(options.preferredMethod)
       
       for (const method of methods) {
         if (attempts.length >= options.maxRetries) {
@@ -84,7 +88,9 @@ class HybridBookingSystem {
             cost: result.cost
           })
 
-          // Se teve sucesso, retornar resultado
+          // Se teve sucesso
+
+          retornar resultado
           if (result.success) {
             return {
               method,
@@ -98,7 +104,9 @@ class HybridBookingSystem {
             }
           }
 
-          // Se fallback está desabilitado, parar na primeira falha
+          // Se fallback está desabilitado
+
+          parar na primeira falha
           if (!options.fallbackEnabled) {
             break
           }
@@ -113,7 +121,9 @@ class HybridBookingSystem {
         }
       }
 
-      // Se chegou aqui, todas as tentativas falharam
+      // Se chegou aqui
+
+      todas as tentativas falharam
       return {
         method: 'none',
         provider: 'none',
@@ -138,7 +148,9 @@ class HybridBookingSystem {
     }
   }
 
-  // Tentar API oficial (CASV/VFS),  private async tryOfficialAPI(request: BookingRequest): Promise<any> {
+  // Tentar API oficial (CASV/VFS)
+
+  private async tryOfficialAPI(request: BookingRequest): Promise<any> {
     try {
       const result = await appointmentBookingService.bookAppointment(request)
       
@@ -164,10 +176,13 @@ class HybridBookingSystem {
     }
   }
 
-  // Tentar parceiros (VisaHQ, iVisa)
+  // Tentar parceiros (VisaHQ
+
+  iVisa)
   private async tryPartnerAPI(request: BookingRequest, options: HybridBookingOptions): Promise<any> {
     try {
-      // Converter formato de request,      const partnerRequest: PartnerBookingRequest = {
+      // Converter formato de request
+      const partnerRequest: PartnerBookingRequest = {
         partnerId: '', // Será determinado automaticamente,        applicantInfo: request.applicantInfo,
         visaInfo: {
           country: this.extractCountryFromConsulate(request.consulate),
@@ -176,7 +191,9 @@ class HybridBookingSystem {
         }
       }
 
-      // Encontrar melhor parceiro,      const bestPartner = await partnerIntegrationService.findBestPartner(
+      // Encontrar melhor parceiro
+
+      const bestPartner = await partnerIntegrationService.findBestPartner(
         partnerRequest.visaInfo.country,
         partnerRequest.visaInfo.visaType,
         partnerRequest.visaInfo.urgency
@@ -189,7 +206,9 @@ class HybridBookingSystem {
         }
       }
 
-      // Verificar limite de orçamento,      if (options.budgetLimit && bestPartner.pricing.perTransaction > options.budgetLimit) {
+      // Verificar limite de orçamento
+
+      if (options.budgetLimit && bestPartner.pricing.perTransaction > options.budgetLimit) {
         return {
           provider: bestPartner.name,
           error: `Custo (${bestPartner.pricing.perTransaction}) excede limite (${options.budgetLimit})`
@@ -226,13 +245,17 @@ class HybridBookingSystem {
     }
   }
 
-  // Tentar web scraping (último recurso),  private async tryWebScraping(request: BookingRequest, warnings: string[]): Promise<any> {
+  // Tentar web scraping (último recurso)
+
+  private async tryWebScraping(request: BookingRequest, warnings: string[]): Promise<any> {
     try {
       warnings.push('⚠️ Usando web scraping - pode violar ToS dos sites')
       warnings.push('⚠️ Dados podem estar desatualizados')
       warnings.push('⚠️ Método instável - use apenas como último recurso')
 
-      // Determinar target de scraping baseado no consulado,      const targetId = this.getScrapingTarget(request.consulate)
+      // Determinar target de scraping baseado no consulado
+
+      const targetId = this.getScrapingTarget(request.consulate)
       
       if (!targetId) {
         return {
@@ -241,7 +264,9 @@ class HybridBookingSystem {
         }
       }
 
-      // Buscar vagas via scraping,      const result = await webScrapingService.scrapeAvailableSlots(targetId)
+      // Buscar vagas via scraping
+
+      const result = await webScrapingService.scrapeAvailableSlots(targetId)
       
       if (!result.success || result.slots.length === 0) {
         return {
@@ -250,8 +275,11 @@ class HybridBookingSystem {
         }
       }
 
-      // Para web scraping, apenas retornamos as vagas encontradas
-      // NÃO fazemos agendamento real (muito arriscado),      const firstSlot = result.slots[0]
+      // Para web scraping
+
+      apenas retornamos as vagas encontradas
+      // NÃO fazemos agendamento real (muito arriscado)
+      const firstSlot = result.slots[0]
       
       return {
         provider: 'Web Scraping',
@@ -276,7 +304,9 @@ class HybridBookingSystem {
     }
   }
 
-  // Buscar vagas disponíveis em todos os métodos,  async findAvailableSlots(country: string, visaType: string): Promise<{
+  // Buscar vagas disponíveis em todos os métodos
+
+  async findAvailableSlots(country: string, visaType: string): Promise<{
     official: any[]
     partners: any[]
     scraping: any[]
@@ -290,7 +320,8 @@ class HybridBookingSystem {
     }
 
     try {
-      // Buscar via API oficial,      try {
+      // Buscar via API oficial
+      try {
         const officialSlots = await appointmentBookingService.getAvailableSlots(
           this.getConsulateFromCountry(country), 
           visaType
@@ -300,7 +331,9 @@ class HybridBookingSystem {
         console.error('Erro ao buscar via API oficial:', error)
       }
 
-      // Buscar via parceiros,      try {
+      // Buscar via parceiros
+
+      try {
         const partners = await partnerIntegrationService.getAvailablePartners(country)
         for (const partner of partners.slice(0, 2)) { // Limitar a 2 parceiros,          // Simular busca de vagas (partners geralmente não expõem slots específicos)
           results.partners.push({
@@ -314,7 +347,9 @@ class HybridBookingSystem {
         console.error('Erro ao buscar via parceiros:', error)
       }
 
-      // Buscar via scraping,      try {
+      // Buscar via scraping
+
+      try {
         const targetId = this.getScrapingTarget(this.getConsulateFromCountry(country))
         if (targetId) {
           const scrapingResult = await webScrapingService.scrapeAvailableSlots(targetId)
@@ -326,7 +361,9 @@ class HybridBookingSystem {
         console.error('Erro ao buscar via scraping:', error)
       }
 
-      // Consolidar resultados,      results.consolidated = [
+      // Consolidar resultados
+
+      results.consolidated = [
         ...results.official.map(slot => ({ ...slot, source: 'official' })),
         ...results.partners.map(slot => ({ ...slot, source: 'partner' })),
         ...results.scraping.map(slot => ({ ...slot, source: 'scraping' }))
@@ -340,7 +377,9 @@ class HybridBookingSystem {
     }
   }
 
-  // Métodos auxiliares,  private determineMethodOrder(preference: string): string[] {
+  // Métodos auxiliares
+
+  private determineMethodOrder(preference: string): string[] {
     switch (preference) {
       case 'official':
         return ['official', 'partner', 'scraping']
@@ -366,7 +405,8 @@ class HybridBookingSystem {
   }
 
   private extractCountryFromConsulate(consulate: string): string {
-    // Extrair país do identificador do consulado,    if (consulate.includes('usa')) return 'usa'
+    // Extrair país do identificador do consulado
+    if (consulate.includes('usa')) return 'usa'
     if (consulate.includes('uk')) return 'uk'
     if (consulate.includes('canada')) return 'canada'
     if (consulate.includes('germany')) return 'germany'

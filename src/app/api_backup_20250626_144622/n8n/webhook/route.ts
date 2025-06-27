@@ -6,14 +6,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { type, data, source } = body
     
-    // Verify webhook secret,    const secret = request.headers.get('x-n8n-webhook-secret')
+    // Verify webhook secret
+    
+    const secret = request.headers.get('x-n8n-webhook-secret')
     if (secret !== process.env.N8N_WEBHOOK_SECRET) {
       return NextResponse.json(
         { status: 401 }
       )
     }
 
-    // Log incoming webhook,    console.log('N8N Webhook received:', { type, source, timestamp: new Date() })
+    // Log incoming webhook
+
+    console.log('N8N Webhook received:', { type, source, timestamp: new Date() })
 
     switch (type) {
       case 'legal_change_detected':
@@ -53,7 +57,9 @@ export async function POST(request: NextRequest) {
 async function handleLegalChange(data: any) {
   const { country, changeType, description, affectedVisaTypes, sourceUrl, priority } = data
   
-  // Log the legal change,  await prisma.automationLog.create({
+  // Log the legal change
+  
+  await prisma.automationLog.create({
     data: {
       type: 'LEGAL_CHANGE_DETECTED',
       status: 'SUCCESS',
@@ -66,7 +72,9 @@ async function handleLegalChange(data: any) {
     }
   })
 
-  // Find affected clients,  if (affectedVisaTypes?.length > 0) {
+  // Find affected clients
+
+  if (affectedVisaTypes?.length > 0) {
     const affectedClients = await prisma.client.findMany({
       where: {
         targetCountry: country,
@@ -76,7 +84,9 @@ async function handleLegalChange(data: any) {
       select: { id: true, name: true, email: true, phone: true }
     })
 
-    // Create notifications for affected clients,    for (const client of affectedClients) {
+    // Create notifications for affected clients
+
+    for (const client of affectedClients) {
       await prisma.interaction.create({
         data: {
           clientId: client.id,
@@ -100,7 +110,9 @@ async function handleLegalChange(data: any) {
 async function handleConsularSlot(data: any) {
   const { country, consulate, city, availableSlots, visaType, earliestDate } = data
   
-  // Log the slot availability,  await prisma.automationLog.create({
+  // Log the slot availability
+  
+  await prisma.automationLog.create({
     data: {
       type: 'CONSULAR_SLOT_DETECTED',
       status: 'SUCCESS',
@@ -113,7 +125,9 @@ async function handleConsularSlot(data: any) {
     }
   })
 
-  // Find clients waiting for appointments,  const waitingClients = await prisma.client.findMany({
+  // Find clients waiting for appointments
+
+  const waitingClients = await prisma.client.findMany({
     where: {
       targetCountry: country,
       visaType,
@@ -122,7 +136,9 @@ async function handleConsularSlot(data: any) {
     select: { id: true, name: true, email: true, phone: true }
   })
 
-  // Notify eligible clients immediately,  for (const client of waitingClients) {
+  // Notify eligible clients immediately
+
+  for (const client of waitingClients) {
     await prisma.interaction.create({
       data: {
         clientId: client.id,
@@ -138,7 +154,9 @@ async function handleConsularSlot(data: any) {
       }
     })
 
-    // Also send SMS backup,    await prisma.interaction.create({
+    // Also send SMS backup
+
+    await prisma.interaction.create({
       data: {
         clientId: client.id,
         type: 'URGENT_NOTIFICATION',
@@ -154,7 +172,9 @@ async function handleConsularSlot(data: any) {
 async function handleDocumentValidation(data: any) {
   const { clientId, documentId, validationResult, issues, recommendations } = data
   
-  // Update document status,  if (documentId) {
+  // Update document status
+  
+  if (documentId) {
     await prisma.document.update({
       where: { id: documentId }
       data: {
@@ -170,7 +190,9 @@ async function handleDocumentValidation(data: any) {
     })
   }
 
-  // Log validation,  await prisma.automationLog.create({
+  // Log validation
+
+  await prisma.automationLog.create({
     data: {
       type: 'DOCUMENT_VALIDATED',
       action: 'validate_document',
@@ -183,7 +205,9 @@ async function handleDocumentValidation(data: any) {
     }
   })
 
-  // Create client notification,  if (clientId) {
+  // Create client notification
+
+  if (clientId) {
     const client = await prisma.client.findUnique({
       where: { id: clientId }
       select: { name: true, email: true }
@@ -217,7 +241,9 @@ async function handleDocumentValidation(data: any) {
 async function handleClientRiskAlert(data: any) {
   const { clientId, riskType, riskScore, factors, recommendations } = data
   
-  // Log risk alert,  await prisma.automationLog.create({
+  // Log risk alert
+  
+  await prisma.automationLog.create({
     data: {
       type: 'CLIENT_RISK_ALERT',
       action: 'risk_alert',
@@ -232,7 +258,9 @@ async function handleClientRiskAlert(data: any) {
     }
   })
 
-  // Create internal alert for team,  await prisma.interaction.create({
+  // Create internal alert for team
+
+  await prisma.interaction.create({
     data: {
       clientId,
       type: 'INTERNAL_ALERT',
@@ -250,7 +278,9 @@ async function handleClientRiskAlert(data: any) {
     }
   })
 
-  // If high risk, schedule immediate consultant contact
+  // If high risk
+
+  schedule immediate consultant contact
   if (riskScore > 80) {
     await prisma.consultation.create({
       data: {
@@ -270,7 +300,9 @@ async function handleClientRiskAlert(data: any) {
 async function handleAutomationCompleted(data: any) {
   const { workflowId, workflowName, clientId, result, metrics } = data
   
-  // Log automation completion,  await prisma.automationLog.create({
+  // Log automation completion
+  
+  await prisma.automationLog.create({
     data: {
       type: 'AUTOMATION_COMPLETED',
       action: 'complete_workflow',
@@ -286,7 +318,9 @@ async function handleAutomationCompleted(data: any) {
     }
   })
 
-  // Update client status if applicable,  if (clientId && result.newStatus) {
+  // Update client status if applicable
+
+  if (clientId && result.newStatus) {
     await prisma.client.update({
       where: { id: clientId }
       data: {

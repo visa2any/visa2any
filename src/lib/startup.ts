@@ -13,20 +13,29 @@ export async function initializeServices() {
   console.log('🔄 Inicializando serviços da Visa2Any...\n')
 
   try {
-    // 1. Inicializar WhatsApp Service,    console.log('📱 Iniciando WhatsApp Service...')
-    // O WhatsApp se inicializa automaticamente ao ser importado,    console.log('✅ WhatsApp Service: Ativo (QR Code aparece no console)\n')
+    // 1. Inicializar WhatsApp Service
+    console.log('📱 Iniciando WhatsApp Service...')
+    // O WhatsApp se inicializa automaticamente ao ser importado
+    console.log('✅ WhatsApp Service: Ativo (QR Code aparece no console)\n')
 
-    // 2. Inicializar Sistema de Backup,    console.log('💾 Iniciando Sistema de Backup...')
+    // 2. Inicializar Sistema de Backup
+
+    console.log('💾 Iniciando Sistema de Backup...')
     try {
-      // Iniciar scheduler de backup (a cada 6 horas),      startBackupScheduler()
+      // Iniciar scheduler de backup (a cada 6 horas)
+      startBackupScheduler()
       console.log('✅ Sistema de Backup: Ativo (backup a cada 6 horas)\n')
     } catch (error) {
       console.log('⚠️ Sistema de Backup: Erro ao iniciar, mas não crítico\n')
     }
 
-    // 3. Rate Limiting (já ativo automaticamente),    console.log('🔒 Rate Limiting: Ativo automaticamente\n')
+    // 3. Rate Limiting (já ativo automaticamente)
 
-    // 4. Verificações de saúde,    console.log('🏥 Sistema de monitoramento: Ativo')
+    console.log('🔒 Rate Limiting: Ativo automaticamente\n')
+
+    // 4. Verificações de saúde
+
+    console.log('🏥 Sistema de monitoramento: Ativo')
     console.log('   - Status WhatsApp: /api/whatsapp/status')
     console.log('   - Health check: /api/health\n')
 
@@ -46,7 +55,8 @@ export async function initializeServices() {
 }
 
 function startBackupScheduler() {
-  // Backup inicial,  setTimeout(async () => {
+  // Backup inicial
+  setTimeout(async () => {
     try {
       console.log('💾 Executando backup inicial...')
       await backupSystem.createDatabaseBackup()
@@ -56,7 +66,9 @@ function startBackupScheduler() {
     }
   }, 30000) // 30 segundos após inicialização
 
-  // Backup a cada 6 horas,  setInterval(async () => {
+  // Backup a cada 6 horas
+
+  setInterval(async () => {
     try {
       console.log('💾 Executando backup automático...')
       const result = await backupSystem.createDatabaseBackup()

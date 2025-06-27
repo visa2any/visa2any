@@ -143,14 +143,17 @@ class MonitoringDataService {
       }
     ]
 
-    // Verificar status real dos sistemas de backend,    await this.checkRealSystemStatus(baseChannels)
+    // Verificar status real dos sistemas de backend
+
+    await this.checkRealSystemStatus(baseChannels)
 
     return baseChannels
   }
 
   private async checkRealSystemStatus(channels: MonitoringChannel[]) {
     try {
-      // Verificar Telegram Bot para todos os bots,      if (process.env.TELEGRAM_BOT_TOKEN) {
+      // Verificar Telegram Bot para todos os bots
+      if (process.env.TELEGRAM_BOT_TOKEN) {
         try {
           const telegramCheck = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getMe`, {
             signal: AbortSignal.timeout(5000)
@@ -176,7 +179,9 @@ class MonitoringDataService {
         }
       }
 
-      // Verificar WhatsApp Business API,      if (process.env.WHATSAPP_TOKEN) {
+      // Verificar WhatsApp Business API
+
+      if (process.env.WHATSAPP_TOKEN) {
         try {
           const whatsappCheck = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}`, {
             headers: {
@@ -199,7 +204,9 @@ class MonitoringDataService {
         }
       }
 
-      // Verificar Email Notifications,      if (process.env.RESEND_API_KEY || process.env.SMTP_HOST) {
+      // Verificar Email Notifications
+
+      if (process.env.RESEND_API_KEY || process.env.SMTP_HOST) {
         try {
           const emailChannel = channels.find(c => c.id === 'email-notifications')
           if (emailChannel && process.env.RESEND_API_KEY) {
@@ -225,7 +232,9 @@ class MonitoringDataService {
         }
       }
 
-      // Verificar MercadoPago,      if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
+      // Verificar MercadoPago
+
+      if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
         try {
           const mpCheck = await fetch('https://api.mercadopago.com/users/me', {
             headers: {
@@ -248,7 +257,9 @@ class MonitoringDataService {
         }
       }
 
-      // Verificar Web Scraping,      const webScrapingChannel = channels.find(c => c.id === 'web-scraping')
+      // Verificar Web Scraping
+
+      const webScrapingChannel = channels.find(c => c.id === 'web-scraping')
       if (webScrapingChannel) {
         if (process.env.ENABLE_REAL_MONITORING === 'true') {
           webScrapingChannel.status = 'active'
@@ -265,7 +276,8 @@ class MonitoringDataService {
   }
 
   private async loadAlerts(): Promise<MonitoringAlert[]> {
-    // Carregar alertas reais do localStorage (apenas no cliente),    if (typeof window !== 'undefined') {
+    // Carregar alertas reais do localStorage (apenas no cliente)
+    if (typeof window !== 'undefined') {
       const savedAlerts = localStorage.getItem('monitoring-alerts')
       if (savedAlerts) {
         try {
@@ -276,7 +288,9 @@ class MonitoringDataService {
       }
     }
 
-    // Se não houver alertas salvos, retornar array vazio
+    // Se não houver alertas salvos
+
+    retornar array vazio
     return []
   }
 
@@ -288,15 +302,20 @@ class MonitoringDataService {
     }
 
     this.alerts.unshift(newAlert) // Adicionar no início,    
-    // Manter apenas os últimos 50 alertas,    if (this.alerts.length > 50) {
+    // Manter apenas os últimos 50 alertas
+    if (this.alerts.length > 50) {
       this.alerts = this.alerts.slice(0, 50)
     }
 
-    // Salvar no localStorage (apenas no cliente),    if (typeof window !== 'undefined') {
+    // Salvar no localStorage (apenas no cliente)
+
+    if (typeof window !== 'undefined') {
       localStorage.setItem('monitoring-alerts', JSON.stringify(this.alerts))
     }
 
-    // Notificar via Telegram se configurado,    await this.notifyAlert(newAlert)
+    // Notificar via Telegram se configurado
+
+    await this.notifyAlert(newAlert)
   }
 
   private async notifyAlert(alert: MonitoringAlert) {
@@ -351,7 +370,9 @@ class MonitoringDataService {
     
     const totalVagas = this.alerts.length
     
-    // Calcular custo mensal baseado nos sistemas ativos,    let monthlyCost = 0
+    // Calcular custo mensal baseado nos sistemas ativos
+    
+    let monthlyCost = 0
     this.channels.forEach(channel => {
       if (channel.status === 'active') {
         if (channel.cost === 'R$ 20/mês') monthlyCost += 20
@@ -380,13 +401,17 @@ class MonitoringDataService {
     if (alert) {
       alert.notified = true
       
-      // Salvar no localStorage (apenas no cliente)  ,      if (typeof window !== 'undefined') {
+      // Salvar no localStorage (apenas no cliente)  
+      
+      if (typeof window !== 'undefined') {
         localStorage.setItem('monitoring-alerts', JSON.stringify(this.alerts))
       }
     }
   }
 
-  // Simular detecção de vaga para teste,  async simulateVagaDetection() {
+  // Simular detecção de vaga para teste
+
+  async simulateVagaDetection() {
     const countries = ['EUA', 'Canadá', 'Reino Unido', 'Alemanha']
     const types = ['Turismo', 'Trabalho', 'Estudante', 'Transit']
     const locations = ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Belo Horizonte']

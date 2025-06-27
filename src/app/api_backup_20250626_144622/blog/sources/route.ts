@@ -49,14 +49,18 @@ export async function POST(request: NextRequest) {
       checkInterval
     } = body
 
-    // Validação,    if (!name || !url || !type || !category) {
+    // Validação
+
+    if (!name || !url || !type || !category) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: name, url, type, category' },
         { status: 400 }
       )
     }
 
-    // Verificar se URL já existe,    const existingSource = await prisma.newsSource.findUnique({
+    // Verificar se URL já existe
+
+    const existingSource = await prisma.newsSource.findUnique({
       where: { url }
     })
 
@@ -145,11 +149,15 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Primeiro deletar logs relacionados,    await prisma.autoNewsLog.deleteMany({
+    // Primeiro deletar logs relacionados
+
+    await prisma.autoNewsLog.deleteMany({
       where: { sourceId: id }
     })
 
-    // Depois deletar a fonte,    await prisma.newsSource.delete({
+    // Depois deletar a fonte
+
+    await prisma.newsSource.delete({
       where: { id }
     })
 

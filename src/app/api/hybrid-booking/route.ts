@@ -2,24 +2,33 @@ import { NextRequest, NextResponse } from 'next/server'
 import { hybridBookingSystem, HybridBookingOptions } from '@/lib/hybrid-booking-system'
 import { BookingRequest } from '@/lib/appointment-booking'
 
-// POST - Agendamento híbrido inteligente,
+// POST - Agendamento híbrido inteligente
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const { bookingRequest, options }: { ,      bookingRequest: BookingRequest,      options: HybridBookingOptions 
     } = body
 
-    // Validação dos campos obrigatórios,    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {,      return NextResponse.json(,        { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' },        { status: 400 }
+    // Validação dos campos obrigatórios
+
+    if (!bookingRequest.applicantInfo || !bookingRequest.consulate || !bookingRequest.visaType) {,      return NextResponse.json(,        { error: 'Campos applicantInfo, consulate e visaType são obrigatórios' },        { status: 400 }
       )
     }
 
-    // Configurações padrão se não fornecidas,    const defaultOptions: HybridBookingOptions = {,      preferredMethod: 'auto',      fallbackEnabled: true,      urgency: 'normal',      maxRetries: 3
+    // Configurações padrão se não fornecidas
+
+    const defaultOptions: HybridBookingOptions = {,      preferredMethod: 'auto',      fallbackEnabled: true,      urgency: 'normal',      maxRetries: 3
       ...options
     }
 
-    // Log da tentativa de agendamento,    console.log(`Agendamento híbrido iniciado:`, {,      consulate: bookingRequest.consulate,      visaType: bookingRequest.visaType,      method: defaultOptions.preferredMethod,      urgency: defaultOptions.urgency
+    // Log da tentativa de agendamento
+
+    console.log(`Agendamento híbrido iniciado:`, {,      consulate: bookingRequest.consulate,      visaType: bookingRequest.visaType,      method: defaultOptions.preferredMethod,      urgency: defaultOptions.urgency
     })
 
-    // Executar agendamento híbrido,    const result = await hybridBookingSystem.bookAppointment(bookingRequest, defaultOptions)
+    // Executar agendamento híbrido
+
+    const result = await hybridBookingSystem.bookAppointment(bookingRequest, defaultOptions)
 
     if (result.success) {,      return NextResponse.json({,        booking: {,          method: result.method,          provider: result.provider,          appointmentDetails: result.appointmentDetails,          cost: result.cost,          processingTime: result.processingTime,          instructions: result.instructions
         },        attempts: result.attempts,        warnings: result.warnings,        message: `Agendamento realizado via ${result.method} (${result.provider})`
@@ -33,7 +42,8 @@ const { bookingRequest, options }: { ,      bookingRequest: BookingRequest,     
   }
 }
 
-// GET - Buscar vagas disponíveis em todos os métodos,
+// GET - Buscar vagas disponíveis em todos os métodos
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const country =  
 const visaType = searchParams.get('visaType'),
@@ -41,7 +51,9 @@ const visaType = searchParams.get('visaType'),
       )
     }
 
-    // Buscar vagas em todos os métodos,    const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
+    // Buscar vagas em todos os métodos
+
+    const results = await hybridBookingSystem.findAvailableSlots(country, visaType)
 
     return NextResponse.json({,      country,      visaType,      availability: {,        official: {,          source: 'APIs Oficiais (CASV/VFS)',          slots: results.official,          reliability: 'Alta',          cost: 'Gratuito'
         },        partners: {,          source: 'Parceiros (VisaHQ/iVisa)',          slots: results.partners,          reliability: 'Alta',          cost: 'Pago'

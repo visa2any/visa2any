@@ -7,14 +7,17 @@ export const dynamic = 'force-dynamic'
 // GET /api/dashboard/stats - Estatísticas do dashboard
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
         { status: 401 }
       )
     }
 
-    // Verificar se é admin,    if (!isAdmin(user)) {
+    // Verificar se é admin
+
+    if (!isAdmin(user)) {
       return NextResponse.json(
         { status: 403 }
       )
@@ -22,17 +25,25 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30' // dias,    const days = parseInt(period)
     
-    // Data de início do período,    const startDate = new Date()
+    // Data de início do período
+    
+    const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
 
-    // Buscar dados básicos,    const [totalClients, totalUsers, allClients] = await Promise.all([
+    // Buscar dados básicos
+
+    const [totalClients, totalUsers, allClients] = await Promise.all([
       // Total de clientes
 
       prisma.client.count().catch(() => 0)
       
-      // Total de usuários ,      prisma.user.count().catch(() => 0)
+      // Total de usuários 
       
-      // Todos os clientes para análise,      prisma.client.findMany({
+      prisma.user.count().catch(() => 0)
+      
+      // Todos os clientes para análise
+      
+      prisma.client.findMany({
         select: {
           id: true,
           status: true,
@@ -41,11 +52,15 @@ export async function GET(request: NextRequest) {
       }).catch(() => [])
     ])
 
-    // Filtrar dados por período,    const newClientsThisPeriod = allClients.filter(client => 
+    // Filtrar dados por período
+
+    const newClientsThisPeriod = allClients.filter(client => 
       new Date(client.createdAt) >= startDate
     ).length
 
-    // Agrupar clientes por status,    const clientsByStatus = allClients.reduce((acc, client) => {
+    // Agrupar clientes por status
+
+    const clientsByStatus = allClients.reduce((acc, client) => {
       const existing = acc.find(item => item.status === client.status)
       if (existing) {
         existing.count++
@@ -55,7 +70,9 @@ export async function GET(request: NextRequest) {
       return acc
     }, [] as Array<{ status: string, count: number }>)
 
-    // Dados simulados para demonstração,    const simulatedData = {
+    // Dados simulados para demonstração
+
+    const simulatedData = {
       overview: {
         totalClients,
         newClientsThisPeriod,
@@ -87,7 +104,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error)
     
-    // Retornar dados de fallback em caso de erro,    return NextResponse.json({
+    // Retornar dados de fallback em caso de erro
+    
+    return NextResponse.json({
       data: {
         overview: {
           totalClients: 156
@@ -157,7 +176,9 @@ async function generateRecentActivity(startDate: Date) {
     //   client: log.client,,    //   success: log.success,
     //   executedAt: log.executedAt.toISOString(),    // }))
     
-    // Retornar atividade simulada,    return [
+    // Retornar atividade simulada
+    
+    return [
       {
         id: '1'
         type: 'USER_LOGIN',
@@ -174,7 +195,8 @@ async function generateRecentActivity(startDate: Date) {
       }
     ]
   } catch (error) {
-    // Retornar atividade simulada,    return [
+    // Retornar atividade simulada
+    return [
       {
         id: '1'
         type: 'USER_LOGIN',

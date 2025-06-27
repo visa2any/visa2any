@@ -5,24 +5,31 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
 const { name, phone, countries = [] } = body
     
-    // Validação básica,    if (!name || !phone) {,      return NextResponse.json(,        {
+    // Validação básica
+    
+    if (!name || !phone) {,      return NextResponse.json(,        {
           error: 'Nome e telefone são obrigatórios'
         },        { status: 400 }
       )
     }
 
-    // Limpar e validar telefone,    const cleanPhone = phone.replace(/\D/g, ''),    
+    // Limpar e validar telefone
+
+    const cleanPhone = phone.replace(/\D/g, ''),    
     if (cleanPhone.length < 10) {,      return NextResponse.json(,        {
           error: 'Telefone inválido'
         },        { status: 400 }
       )
     }
 
-    // Verificar se já existe,    const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({,      where: {,        phone: cleanPhone
+    // Verificar se já existe
+
+    const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({,      where: {,        phone: cleanPhone
       }
     }),
     if (existingSubscriber) {
-      // Atualizar dados existentes,      const updatedSubscriber = await prisma.whatsAppSubscriber.update({,        where: {,          id: existingSubscriber.id
+      // Atualizar dados existentes
+      const updatedSubscriber = await prisma.whatsAppSubscriber.update({,        where: {,          id: existingSubscriber.id
         },        data: {,          name,          countries: countries.length > 0 ? countries : ['Global'],          isActive: true,          source: 'blog_newsletter'
         }
       }),
@@ -31,7 +38,9 @@ const { name, phone, countries = [] } = body
       })
     }
 
-    // Criar novo assinante,    const newSubscriber = await prisma.whatsAppSubscriber.create({,      data: {,        name,        phone: cleanPhone,        countries: countries.length > 0 ? countries : ['Global']
+    // Criar novo assinante
+
+    const newSubscriber = await prisma.whatsAppSubscriber.create({,      data: {,        name,        phone: cleanPhone,        countries: countries.length > 0 ? countries : ['Global']
         isActive: true,        source: 'blog_newsletter'
       }
     })
@@ -51,21 +60,29 @@ const { name, phone, countries = [] } = body
 
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const active = searchParams.get('active') !== 'false'
     
-    // Estatísticas da newsletter,    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([,      prisma.whatsAppSubscriber.count(),      prisma.whatsAppSubscriber.count({,        where: { isActive: true }
+    // Estatísticas da newsletter
+    
+    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([,      prisma.whatsAppSubscriber.count(),      prisma.whatsAppSubscriber.count({,        where: { isActive: true }
       }),      prisma.whatsAppSubscriber.count({,        where: {,          isActive: true,          createdAt: {,            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias          }
         }
       })
     ])
 
-    // Distribuição por países de interesse,    const countryDistribution = await prisma.whatsAppSubscriber.findMany({,      where: { isActive: active },      select: { countries: true }
+    // Distribuição por países de interesse
+
+    const countryDistribution = await prisma.whatsAppSubscriber.findMany({,      where: { isActive: active },      select: { countries: true }
     })
 
-    // Contar países,    const countryCount: Record<string, number> = {},    countryDistribution.forEach(sub => {,      const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
+    // Contar países
+
+    const countryCount: Record<string, number> = {},    countryDistribution.forEach(sub => {,      const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
       countries.forEach(country => {,        const countryKey = String(country),        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
       })
     })
 
-    // Assinantes por fonte,    const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({,      by: ['source'],      where: { isActive: active },      _count: {,        source: true
+    // Assinantes por fonte
+
+    const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({,      by: ['source'],      where: { isActive: active },      _count: {,        source: true
       }
     }),
     return NextResponse.json({,      stats: {,        total: totalSubscribers,        active: activeSubscribers,        inactive: totalSubscribers - activeSubscribers,        recent: recentSubscribers,        distribution: {,          countries: Object.entries(countryCount)

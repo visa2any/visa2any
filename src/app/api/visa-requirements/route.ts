@@ -9,7 +9,8 @@ import { z } from 'zod'
   }))
 })
 
-// GET /api/visa-requirements - Listar requisitos de visto,
+// GET /api/visa-requirements - Listar requisitos de visto
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const country =  
 const visaType = searchParams.get('visaType')
@@ -18,7 +19,9 @@ const page = parseInt(searchParams.get('page') || '1')
     const limit =  
 const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = { isActive: true },    
+    // Construir filtros
+
+    const where: any = { isActive: true },    
     if (country) {,      where.country = { contains: country }
     },    
     if (visaType) {,      where.visaType = { contains: visaType }
@@ -27,12 +30,16 @@ const skip = (page - 1) * limit
       ]
     }
 
-    // Buscar requisitos,    const [requirements, total] = await Promise.all([,      prisma.visaRequirement.findMany({,        where,        skip,        take: limit,        orderBy: [,          { country: 'asc' },          { visaType: 'asc' }
+    // Buscar requisitos
+
+    const [requirements, total] = await Promise.all([,      prisma.visaRequirement.findMany({,        where,        skip,        take: limit,        orderBy: [,          { country: 'asc' },          { visaType: 'asc' }
         ]
       }),      prisma.visaRequirement.count({ where })
     ])
 
-    // Estatísticas,    const countries = await prisma.visaRequirement.groupBy({,      by: ['country'],      _count: { country: true },      where: { isActive: true }
+    // Estatísticas
+
+    const countries = await prisma.visaRequirement.groupBy({,      by: ['country'],      _count: { country: true },      where: { isActive: true }
     }),
     const visaTypes = await prisma.visaRequirement.groupBy({,      by: ['visaType'],      _count: { visaType: true },      where: { isActive: true }
     }),
@@ -50,12 +57,15 @@ const skip = (page - 1) * limit
   }
 }
 
-// POST /api/visa-requirements - Criar requisitos de visto,
+// POST /api/visa-requirements - Criar requisitos de visto
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = visaRequirementSchema.parse(body)
 
-    // Verificar se já existe,    const existing = await prisma.visaRequirement.findUnique({,      where: {,        country_visaType_visaSubtype: {,          country: validatedData.country,          visaType: validatedData.visaType,          visaSubtype: validatedData.visaSubtype || ''
+    // Verificar se já existe
+
+    const existing = await prisma.visaRequirement.findUnique({,      where: {,        country_visaType_visaSubtype: {,          country: validatedData.country,          visaType: validatedData.visaType,          visaSubtype: validatedData.visaSubtype || ''
         }
       }
     }),
@@ -63,12 +73,16 @@ const validatedData = visaRequirementSchema.parse(body)
     )
     }
 
-    // Criar requisitos,    const requirement = await prisma.visaRequirement.create({,      data: {
+    // Criar requisitos
+
+    const requirement = await prisma.visaRequirement.create({,      data: {
         ...validatedData,        visaSubtype: validatedData.visaSubtype || null,        lastUpdated: new Date()
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENT_CREATED',        action: 'create_visa_requirement',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da criação
+
+    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENT_CREATED',        action: 'create_visa_requirement',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),
@@ -84,7 +98,8 @@ const validatedData = visaRequirementSchema.parse(body)
   }
 }
 
-// PUT /api/visa-requirements - Atualizar requisitos,
+// PUT /api/visa-requirements - Atualizar requisitos
+
 export async function PUT(request: NextRequest) {,  try {
     const body = await request.json()
 const { id, ...updateData } = body,    
@@ -97,7 +112,9 @@ const requirement = await prisma.visaRequirement.update({,      where: { id },  
       }
     })
 
-    // Log da atualização,    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENT_UPDATED',        action: 'update_visa_requirement',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da atualização
+
+    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENT_UPDATED',        action: 'update_visa_requirement',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),

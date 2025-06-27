@@ -61,12 +61,16 @@ export default function DocumentUpload({
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       
-      // Validate file size (max 10MB),      if (file.size > 10 * 1024 * 1024) {
+      // Validate file size (max 10MB)
+      
+      if (file.size > 10 * 1024 * 1024) {
         alert(`Arquivo ${file.name} é muito grande. Máximo 10MB.`)
         continue
       }
 
-      // Validate file type,      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      // Validate file type
+
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       if (!allowedTypes.includes(file.type)) {
         alert(`Tipo de arquivo não suportado: ${file.name}`)
         continue
@@ -86,18 +90,25 @@ export default function DocumentUpload({
 
     setDocuments(prev => [...prev, ...newDocuments])
 
-    // Simulate upload and AI analysis,    for (const doc of newDocuments) {
+    // Simulate upload and AI analysis
+
+    for (const doc of newDocuments) {
       try {
-        // Simulate upload progress,        await new Promise(resolve => setTimeout(resolve, 1000))
+        // Simulate upload progress
+        await new Promise(resolve => setTimeout(resolve, 1000))
         
         setDocuments(prev => prev.map(d => 
           d.id === doc.id ? { ...d, status: 'analyzing' } : d
         ))
 
-        // Simulate AI analysis,        setIsAnalyzing(true)
+        // Simulate AI analysis
+
+        setIsAnalyzing(true)
         await new Promise(resolve => setTimeout(resolve, 2000))
         
-        // Generate AI analysis results,        const aiScore = Math.floor(Math.random() * 30) + 70 // 70-100
+        // Generate AI analysis results
+        
+        const aiScore = Math.floor(Math.random() * 30) + 70 // 70-100
         const feedback = generateAIFeedback(doc.type, aiScore)
         const status = aiScore >= 90 ? 'valid' : aiScore >= 75 ? 'needs_review' : 'invalid'
 

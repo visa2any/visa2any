@@ -5,10 +5,14 @@ export async function GET(request: NextRequest) {,  try {,    const token = proc
     if (!token) {,      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
-    // Buscar updates do Telegram,    const response =  
+    // Buscar updates do Telegram
+
+    const response =  
 const data = await response.json()
 
-    // Extrair chat IDs únicos,    const chatIds =  
+    // Extrair chat IDs únicos
+
+    const chatIds =  
 const messages = [],
     if (data.result && data.result.length > 0) {,      data.result.forEach((update: any) => {,        if (update.message) {,          const chatId =  
 const firstName = update.message.chat.first_name || 'Sem nome'
@@ -31,7 +35,9 @@ export async function POST(request: NextRequest) {,  try {,    const { chatId, m
     if (!token) {,      return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
     }
 
-    // Enviar mensagem de teste,    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {,      method: 'POST',      headers: {,        'Content-Type': 'application/json'
+    // Enviar mensagem de teste
+
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {,      method: 'POST',      headers: {,        'Content-Type': 'application/json'
       },      body: JSON.stringify({,        chat_id: chatId,        text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅'
       })
     }),

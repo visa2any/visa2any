@@ -27,17 +27,22 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   const ip = getClientIP(request)
   const key = identifier || ip
   
-  // Buscar configuração para a rota,  const config = RATE_LIMIT_CONFIG[pathname] || RATE_LIMIT_CONFIG.default
+  // Buscar configuração para a rota
+  
+  const config = RATE_LIMIT_CONFIG[pathname] || RATE_LIMIT_CONFIG.default
   
   const now = Date.now()
   const entry = rateLimit.get(key)
   
-  // Limpar entradas expiradas periodicamente,  if (Math.random() < 0.01) { // 1% das vezes
+  // Limpar entradas expiradas periodicamente
+  
+  if (Math.random() < 0.01) { // 1% das vezes
     cleanupExpiredEntries()
   }
   
   if (!entry || now > entry.resetTime) {
-    // Primeira requisição ou janela expirada,    rateLimit.set(key, {
+    // Primeira requisição ou janela expirada
+    rateLimit.set(key, {
       count: 1,
       resetTime: now + config.windowMs
     })
@@ -50,7 +55,8 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   }
   
   if (entry.count >= config.limit) {
-    // Limite excedido,    return {
+    // Limite excedido
+    return {
       limit: config.limit,
       remaining: 0,
       reset: entry.resetTime,
@@ -58,7 +64,9 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
     }
   }
   
-  // Incrementar contador,  entry.count++
+  // Incrementar contador
+  
+  entry.count++
   rateLimit.set(key, entry)
   
   return {
@@ -136,15 +144,21 @@ export function withRateLimit<T extends any[]>(
   return async (...args: T): Promise<Response> => {
     const request = args[0] as NextRequest
     
-    // Aplicar rate limiting,    const rateLimitResult = applyRateLimit(request)
+    // Aplicar rate limiting
+    
+    const rateLimitResult = applyRateLimit(request)
     
     if (!rateLimitResult.success) {
       return createRateLimitResponse(rateLimitResult) as Response
     }
     
-    // Continuar com o handler original,    const response = await handler(...args)
+    // Continuar com o handler original
     
-    // Adicionar headers de rate limit à resposta,    const { headers } = createRateLimitResponse(rateLimitResult)
+    const response = await handler(...args)
+    
+    // Adicionar headers de rate limit à resposta
+    
+    const { headers } = createRateLimitResponse(rateLimitResult)
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value)
     })

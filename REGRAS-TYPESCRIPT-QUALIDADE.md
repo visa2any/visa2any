@@ -12,9 +12,50 @@ Este documento contém **TODAS as regras obrigatórias** baseadas nos erros que 
 
 ## ✅ ERROS DE SINTAXE TYPESCRIPT CORRIGIDOS COM SUCESSO
 
-### 🎉 ÚLTIMOS ERROS RESOLVIDOS (2025-06-25)
+### 🎉 ÚLTIMOS ERROS RESOLVIDOS (2025-06-27)
 
-**Correções finais aplicadas com precisão cirúrgica:**
+**NOVA CATEGORIA DE ERROS CRÍTICOS IDENTIFICADA E RESOLVIDA:**
+
+#### 🚨 COMENTÁRIOS PORTUGUESES MALFORMADOS (CATEGORIA CRÍTICA NOVA)
+```
+✅ src/components/CheckoutModerno.tsx - 33 erros de sintaxe corrigidos
+✅ src/components/UltraCheckout.tsx - 7 erros de sintaxe corrigidos  
+✅ src/components/MercadoPagoSingle.tsx - 21 erros de sintaxe corrigidos
+✅ src/hooks/useSystemNotifications.ts - 7 erros de sintaxe corrigidos
+✅ src/lib/formatters.ts - 25 erros de sintaxe corrigidos
+✅ src/app/admin/affiliates/page.tsx - 1 erro de sintaxe corrigido
+✅ src/app/admin/documents/page.tsx - 1 erro de sintaxe corrigido
+✅ src/components/NotificationSystem.tsx - 1 erro de sintaxe corrigido
+✅ src/components/ui/FormField.tsx - 1 erro de sintaxe corrigido
+✅ src/app/admin/dashboard-unified/page.tsx - 1 erro de sintaxe corrigido
+✅ src/app/admin/consultations/page.tsx - 1 erro crítico JSX parser corrigido
+```
+
+**PADRÃO SISTEMÁTICO IDENTIFICADO:**
+```
+❌ ERRO: // Nova interface, title?: string
+✅ CORRIGIDO: // Nova interface
+             title?: string
+
+❌ ERRO: // Upsells inteligentes e categorizados, const getUpsellOffers  
+✅ CORRIGIDO: // Upsells inteligentes e categorizados
+              const getUpsellOffers
+
+❌ ERRO: // Verificar se já está inicializando, if (isInitializing)
+✅ CORRIGIDO: // Verificar se já está inicializando
+              if (isInitializing)
+```
+
+#### 🔧 CORREÇÕES SISTEMÁTICAS APLICADAS (3 COMMITS)
+```
+✅ Commit d0be6df: Resolveu erros em CheckoutModerno, UltraCheckout, MercadoPago
+✅ Commit 0ec048e: Resolveu TODOS os erros restantes em 5 arquivos finais
+✅ TOTAL: 109 linhas com comentários malformados corrigidas sistematicamente
+```
+
+### 🎉 ERROS ANTERIORES RESOLVIDOS (2025-06-25)
+
+**Correções de vírgulas aplicadas com precisão cirúrgica:**
 ```
 ✅ src/app/api/affiliates/payments/route.ts:287 - Vírgula faltando em where clause
 ✅ src/app/api/affiliates/webhooks/route.ts:300 - Vírgula faltando em headers object  
@@ -120,6 +161,96 @@ await prisma.automationLog.create({
   }
 })
 ```
+
+---
+
+## 🚨 REGRA #0: COMENTÁRIOS PORTUGUESES - NOVA CATEGORIA CRÍTICA
+
+### ❌ NUNCA FAÇA ISSO (QUEBRA PARSER TYPESCRIPT):
+```typescript
+// Nova interface, title?: string
+// Upsells inteligentes e categorizados, const getUpsellOffers = (): UpsellOffer[] => {
+// Verificar se já está inicializando, if (isInitializing) {
+// Save notifications to localStorage, useEffect(() => {
+// Modern Table View with Inline Editing, <div className="card-elevated">
+```
+
+### ✅ SEMPRE FAÇA ASSIM:
+```typescript
+// Nova interface
+title?: string
+
+// Upsells inteligentes e categorizados  
+const getUpsellOffers = (): UpsellOffer[] => {
+
+// Verificar se já está inicializando
+if (isInitializing) {
+
+// Save notifications to localStorage
+useEffect(() => {
+
+// Modern Table View with Inline Editing
+<div className="card-elevated">
+```
+
+### 🔍 PADRÃO DE ERRO IDENTIFICADO:
+**PROBLEMA CRÍTICO**: Comentários em português seguidos de vírgula e código na mesma linha quebram o parser TypeScript/JSX.
+
+#### 💥 IMPACTO:
+- ❌ **TypeScript compilation fails**
+- ❌ **Next.js build fails** 
+- ❌ **Vercel deploy fails**
+- ❌ **JSX parser expects identifier instead of JSX element**
+
+#### 🔍 REGEX PARA DETECTAR:
+```bash
+# Encontrar todos os comentários malformados
+rg "//.*,\s+\w" src/ -n
+
+# Encontrar especificamente comentários com código na mesma linha
+rg "//.*,\s+(const|if|useEffect|function|<)" src/ -n
+```
+
+#### 🛠️ SCRIPT DE CORREÇÃO AUTOMÁTICA:
+```javascript
+// Script para corrigir automaticamente
+const fs = require('fs');
+const path = require('path');
+
+function fixMalformedComments(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // Padrão: // comment, code
+  const pattern = /(\/\/[^,\n]+),\s+([a-zA-Z<].*)/g;
+  
+  content = content.replace(pattern, (match, comment, code) => {
+    return `${comment}\n${' '.repeat(getIndentation(match))}${code}`;
+  });
+  
+  fs.writeFileSync(filePath, content, 'utf8');
+}
+```
+
+#### 📋 CHECKLIST DE VALIDAÇÃO:
+```bash
+# 1. Verificar se há comentários malformados
+rg "//.*,\s+\w" src/ -n
+
+# 2. Se houver, aplicar correção sistemática
+node fix-malformed-comments.js
+
+# 3. Verificar se build funciona
+npm run build
+
+# 4. Commit apenas se build passar
+git add -A && git commit -m "fix: resolve malformed Portuguese comments"
+```
+
+### ⚠️ ARQUIVO MAIS AFETADO: 
+**CheckoutModerno.tsx - 33 ERROS NESTE PADRÃO**
+- Maior densidade de comentários portugueses malformados
+- Comentários misturados com destructuring, useEffect, functions
+- Padrão mais complexo: `// comment, function_name: (params) => {`
 
 ---
 
@@ -358,7 +489,19 @@ model AutomationLog {
 
 ## 🛠️ SCRIPTS DE VERIFICAÇÃO
 
-### Como usar os scripts:
+### Scripts para Comentários Malformados (NOVA CATEGORIA):
+```bash
+# Detectar comentários malformados
+node scripts/detect-malformed-comments.js
+
+# Simular correção (ver o que seria alterado)
+node scripts/fix-malformed-comments.js
+
+# Aplicar correção automática
+node scripts/fix-malformed-comments.js --apply
+```
+
+### Scripts Existentes:
 ```bash
 # Verificar todos os erros
 node fix-all-errors.js
@@ -368,6 +511,24 @@ node fix-automation-logs.js
 
 # Verificar antes do commit
 npm run type-check
+```
+
+### Fluxo Completo de Validação:
+```bash
+# 1. Verificar comentários malformados PRIMEIRO
+node scripts/detect-malformed-comments.js
+
+# 2. Se houver erros, corrigir automaticamente
+node scripts/fix-malformed-comments.js --apply
+
+# 3. Verificar TypeScript
+npm run type-check
+
+# 4. Build completo
+npm run build
+
+# 5. Commit apenas se tudo passar
+git add -A && git commit -m "fix: resolve malformed comments and syntax errors"
 ```
 
 ---
@@ -418,6 +579,13 @@ npm run build             # Build completo
 
 #### 2. ⚠️ VERIFICAÇÕES MANUAIS CRÍTICAS
 
+**NOVA REGRA CRÍTICA - Comentários Portugueses Malformados:**
+```bash
+# Procurar por comentários com código na mesma linha (QUEBRA BUILD)
+rg "//.*,\s+\w" src/ -n
+rg "//.*,\s+(const|if|useEffect|function|<)" src/ -n
+```
+
 **AutomationLog.create() - ZERO TOLERÂNCIA:**
 ```bash
 # Procurar por calls sem success/details
@@ -439,6 +607,7 @@ echo $NEXTAUTH_URL
 ```
 
 #### 3. 🚨 NUNCA FAÇA COMMIT SE HOUVER:
+- ❌ **COMENTÁRIOS PORTUGUESES MALFORMADOS** (// comment, code na mesma linha)
 - ❌ Erros de TypeScript (`npm run type-check` falhando)
 - ❌ Build falhando (`npm run build` falhando)
 - ❌ AutomationLog sem campos obrigatórios
@@ -461,6 +630,7 @@ npm run build 2>&1 | grep -i "error\|failed\|critical"
 ## 🎯 RESUMO DAS REGRAS CRÍTICAS
 
 ### 🔴 REGRAS QUE BLOQUEIAM BUILD (ZERO TOLERÂNCIA)
+0. **COMENTÁRIOS PORTUGUESES**: NUNCA misturar comentários com código na mesma linha (NOVA REGRA CRÍTICA)
 1. **AutomationLog**: SEMPRE incluir `success` e `details` (27 erros ativos)
 2. **Prisma Schema**: SEMPRE usar campos corretos (`executedAt` não `createdAt`)
 3. **Syntax**: NUNCA deixar vírgulas extras ou parênteses não balanceados

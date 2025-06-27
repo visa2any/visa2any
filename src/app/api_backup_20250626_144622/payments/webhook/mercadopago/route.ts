@@ -7,7 +7,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Log do webhook recebido,    console.log('🔔 Webhook MercadoPago recebido:', JSON.stringify(body, null, 2))
+    // Log do webhook recebido
+    
+    console.log('🔔 Webhook MercadoPago recebido:', JSON.stringify(body, null, 2))
 
     const webhookResult = processWebhook(body)
 
@@ -18,7 +20,9 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Processar apenas webhooks de pagamento,    if (webhookResult.type !== 'payment') {
+    // Processar apenas webhooks de pagamento
+
+    if (webhookResult.type !== 'payment') {
     }
 
     const paymentId = webhookResult.payment_id
@@ -30,7 +34,9 @@ export async function POST(request: NextRequest) {
     )
     }
 
-    // Buscar informações do pagamento no MercadoPago,    const mpPaymentResult = await getPayment(paymentId)
+    // Buscar informações do pagamento no MercadoPago
+
+    const mpPaymentResult = await getPayment(paymentId)
 
     if (!mpPaymentResult.success) {
       console.error('Erro ao buscar pagamento no MercadoPago:', mpPaymentResult.error)
@@ -42,7 +48,9 @@ export async function POST(request: NextRequest) {
 
     const mpPayment = mpPaymentResult.payment
 
-    // Encontrar pagamento no nosso banco pelo external_reference,    const payment = await prisma.payment.findFirst({
+    // Encontrar pagamento no nosso banco pelo external_reference
+
+    const payment = await prisma.payment.findFirst({
       where: {
         externalReference: mpPayment.external_reference
       }
@@ -58,10 +66,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Mapear status do MercadoPago para nosso sistema,    const newStatus = mapPaymentStatus(mpPayment.status)
+    // Mapear status do MercadoPago para nosso sistema
+
+    const newStatus = mapPaymentStatus(mpPayment.status)
     const wasCompleted = payment.status === 'COMPLETED'
 
-    // Atualizar pagamento no banco,    const updatedPayment = await prisma.payment.update({
+    // Atualizar pagamento no banco
+
+    const updatedPayment = await prisma.payment.update({
       where: { id: payment.id }
       data: {
         status: newStatus as any
@@ -80,7 +92,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log do webhook processado,    await prisma.automationLog.create({
+    // Log do webhook processado
+
+    await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_WEBHOOK_PROCESSED',
         action: 'process_mercadopago_webhook',
@@ -93,7 +107,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Se pagamento foi aprovado e não estava aprovado antes, processar automações
+    // Se pagamento foi aprovado e não estava aprovado antes
+
+    processar automações
     if (newStatus === 'COMPLETED' && !wasCompleted) {
       await processPaymentSuccess(updatedPayment)
     }
@@ -103,7 +119,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar webhook MercadoPago:', error)
     
-    // Log do erro,    await prisma.automationLog.create({
+    // Log do erro
+    
+    await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_WEBHOOK_ERROR',
         action: 'process_mercadopago_webhook',
@@ -126,14 +144,17 @@ export async function POST(request: NextRequest) {
 // Processar automações quando pagamento é confirmado
 async function processPaymentSuccess(payment: any) {
   try {
-    // 1. Atualizar status do cliente,    await prisma.client.update({
+    // 1. Atualizar status do cliente
+    await prisma.client.update({
       where: { id: payment.clientId }
       data: { 
         status: 'IN_PROCESS'
       }
     })
 
-    // 2. Enviar email de confirmação,    try {
+    // 2. Enviar email de confirmação
+
+    try {
       await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -153,7 +174,9 @@ async function processPaymentSuccess(payment: any) {
       console.error('Erro ao enviar email de confirmação:', emailError)
     }
 
-    // 3. Enviar WhatsApp de confirmação,    try {
+    // 3. Enviar WhatsApp de confirmação
+
+    try {
       if (payment.client.phone) {
         await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
           method: 'POST',
@@ -173,7 +196,9 @@ async function processPaymentSuccess(payment: any) {
       console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError)
     }
 
-    // 4. Criar consultoria se aplicável,    const consultationTypes = ['consultoria-express', 'servico-vip']
+    // 4. Criar consultoria se aplicável
+
+    const consultationTypes = ['consultoria-express', 'servico-vip']
     
     if (consultationTypes.some(type => payment.productId.includes(type))) {
       const existingConsultation = await prisma.consultation.findFirst({
@@ -195,7 +220,9 @@ async function processPaymentSuccess(payment: any) {
       }
     }
 
-    // 5. Log das automações,    await prisma.automationLog.create({
+    // 5. Log das automações
+
+    await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS',
         action: 'process_payment_success_automations',
@@ -234,7 +261,9 @@ function getPaymentPackageName(productId: string): string {
     'servico-vip': 'Serviço VIP'
   }
 
-  // Encontrar o pacote baseado no productId,  for (const [key, name] of Object.entries(packageNames)) {
+  // Encontrar o pacote baseado no productId
+
+  for (const [key, name] of Object.entries(packageNames)) {
     if (productId.includes(key)) {
       return name
     }

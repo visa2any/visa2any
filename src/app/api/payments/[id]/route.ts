@@ -5,7 +5,8 @@ import { z } from 'zod'
 // Schema para atualizar pagamento,const updatePaymentSchema = z.object({,  status: z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED']).optional(),  paymentMethod: z.string().optional(),  transactionId: z.string().optional()
 })
 
-// GET /api/payments/[id] - Buscar pagamento específico,
+// GET /api/payments/[id] - Buscar pagamento específico
+
 export async function GET(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {,    const payment = await prisma.payment.findUnique({,      where: { id: params.id },      include: {,        client: {,          select: { ,            id: true, ,            name: true, ,            email: true,            phone: true,            targetCountry: true,            visaType: true
@@ -17,7 +18,9 @@ export async function GET(
       )
     }
 
-    // Gerar informações de pagamento baseado no status,    let paymentInfo: any = {},    
+    // Gerar informações de pagamento baseado no status
+
+    let paymentInfo: any = {},    
     if (payment.status === 'PENDING') {,      paymentInfo = await generatePaymentInfo(payment)
     },
     return NextResponse.json({,      data: {
@@ -30,19 +33,24 @@ export async function GET(
   }
 }
 
-// PUT /api/payments/[id] - Atualizar pagamento,
+// PUT /api/payments/[id] - Atualizar pagamento
+
 export async function PUT(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {,    const body = await request.json()
 const validatedData = updatePaymentSchema.parse(body)
 
-    // Verificar se pagamento existe,    const existingPayment = await prisma.payment.findUnique({,      where: { id: params.id },      include: { client: true }
+    // Verificar se pagamento existe
+
+    const existingPayment = await prisma.payment.findUnique({,      where: { id: params.id },      include: { client: true }
     }),
     if (!existingPayment) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Atualizar pagamento,    const payment = await prisma.payment.update({,      where: { id: params.id },      data: {
+    // Atualizar pagamento
+
+    const payment = await prisma.payment.update({,      where: { id: params.id },      data: {
         ...validatedData,        paidAt: validatedData.status === 'COMPLETED' ? new Date() : existingPayment.paidAt
       },      include: {,        client: {,          select: { ,            id: true, ,            name: true, ,            email: true 
           }
@@ -50,10 +58,14 @@ const validatedData = updatePaymentSchema.parse(body)
       }
     })
 
-    // Se pagamento foi confirmado, processar automações,    if (validatedData.status === 'COMPLETED' && existingPayment.status !== 'COMPLETED') {,      await processPaymentSuccess(payment)
+    // Se pagamento foi confirmado
+
+    processar automações,    if (validatedData.status === 'COMPLETED' && existingPayment.status !== 'COMPLETED') {,      await processPaymentSuccess(payment)
     }
 
-    // Log da atualização,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_UPDATED',        action: 'update_payment',        clientId: existingPayment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da atualização
+
+    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_UPDATED',        action: 'update_payment',        clientId: existingPayment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),
@@ -69,29 +81,40 @@ const validatedData = updatePaymentSchema.parse(body)
   }
 }
 
-// POST /api/payments/[id]/webhook - Webhook para notificações de pagamento,
+// POST /api/payments/[id]/webhook - Webhook para notificações de pagamento
+
 export async function POST(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {,    const body = await request.json()
 const { provider, status, transaction_id, external_id } = body
 
-    // Verificar se pagamento existe,    const payment = await prisma.payment.findUnique({,      where: { id: params.id },      include: { client: true }
+    // Verificar se pagamento existe
+
+    const payment = await prisma.payment.findUnique({,      where: { id: params.id },      include: { client: true }
     }),
     if (!payment) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Mapear status do provider para nosso status,    let newStatus = 'PENDING',    switch (status?.toLowerCase()) {,      case 'approved':,      case 'paid':,      case 'completed':,        newStatus = 'COMPLETED',        break,      case 'processing':,      case 'pending':,        newStatus = 'PROCESSING',        break,      case 'failed':,      case 'rejected':,        newStatus = 'FAILED',        break,      case 'cancelled':,        newStatus = 'CANCELLED',        break,      case 'refunded':,        newStatus = 'REFUNDED',        break
+    // Mapear status do provider para nosso status
+
+    let newStatus = 'PENDING',    switch (status?.toLowerCase()) {,      case 'approved':,      case 'paid':,      case 'completed':,        newStatus = 'COMPLETED',        break,      case 'processing':,      case 'pending':,        newStatus = 'PROCESSING',        break,      case 'failed':,      case 'rejected':,        newStatus = 'FAILED',        break,      case 'cancelled':,        newStatus = 'CANCELLED',        break,      case 'refunded':,        newStatus = 'REFUNDED',        break
     }
 
-    // Atualizar pagamento,    const updatedPayment = await prisma.payment.update({,      where: { id: params.id },      data: {,        status: newStatus as any,        paymentMethod: provider,        transactionId: transaction_id || external_id || payment.transactionId,        paidAt: newStatus === 'COMPLETED' ? new Date() : null
+    // Atualizar pagamento
+
+    const updatedPayment = await prisma.payment.update({,      where: { id: params.id },      data: {,        status: newStatus as any,        paymentMethod: provider,        transactionId: transaction_id || external_id || payment.transactionId,        paidAt: newStatus === 'COMPLETED' ? new Date() : null
       }
     })
 
-    // Se pagamento foi confirmado, processar automações,    if (newStatus === 'COMPLETED' && payment.status !== 'COMPLETED') {,      await processPaymentSuccess(updatedPayment)
+    // Se pagamento foi confirmado
+
+    processar automações,    if (newStatus === 'COMPLETED' && payment.status !== 'COMPLETED') {,      await processPaymentSuccess(updatedPayment)
     }
 
-    // Log do webhook,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_WEBHOOK',        action: 'webhook_received',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log do webhook
+
+    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_WEBHOOK',        action: 'webhook_received',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),
@@ -143,33 +166,43 @@ let interestRate = 0,    if (i > 6) {,      interestRate = 0.0199 // 1.99% a.m. 
 }
 
 // Processar automações quando pagamento é confirmado,async function processPaymentSuccess(payment: any) {,  try {
-    // 1. Atualizar status do cliente,    await prisma.client.update({,      where: { id: payment.clientId },      data: { ,        status: 'IN_PROCESS' // Cliente pagou, agora está em processo
+    // 1. Atualizar status do cliente
+    await prisma.client.update({,      where: { id: payment.clientId },      data: { ,        status: 'IN_PROCESS' // Cliente pagou, agora está em processo
       }
     })
 
-    // 2. Criar interação de confirmação,    await prisma.interaction.create({,      data: {,        type: 'AUTOMATED_EMAIL',        channel: 'email',        direction: 'outbound',        subject: 'Pagamento confirmado - Próximos passos',        content: `Olá! Seu pagamento de ${payment.currency} ${payment.amount} foi confirmado. Em breve nossa equipe entrará em contato para dar início ao seu processo.`,        clientId: payment.clientId,        completedAt: new Date()
+    // 2. Criar interação de confirmação
+
+    await prisma.interaction.create({,      data: {,        type: 'AUTOMATED_EMAIL',        channel: 'email',        direction: 'outbound',        subject: 'Pagamento confirmado - Próximos passos',        content: `Olá! Seu pagamento de ${payment.currency} ${payment.amount} foi confirmado. Em breve nossa equipe entrará em contato para dar início ao seu processo.`,        clientId: payment.clientId,        completedAt: new Date()
       }
     })
 
-    // 3. Agendar consultoria se aplicável,    const existingConsultation = await prisma.consultation.findFirst({,      where: { ,        clientId: payment.clientId,        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
+    // 3. Agendar consultoria se aplicável
+
+    const existingConsultation = await prisma.consultation.findFirst({,      where: { ,        clientId: payment.clientId,        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
       }
     }),
     if (!existingConsultation) {
-      // Criar consultoria baseada no valor pago,      let consultationType = 'HUMAN_CONSULTATION',      if (payment.amount >= 1000) {,        consultationType = 'VIP_SERVICE'
+      // Criar consultoria baseada no valor pago
+      let consultationType = 'HUMAN_CONSULTATION',      if (payment.amount >= 1000) {,        consultationType = 'VIP_SERVICE'
       },
       await prisma.consultation.create({,        data: {,          type: consultationType as any,          status: 'SCHEDULED',          clientId: payment.clientId,          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Agendar para amanhã,          notes: `Consultoria criada automaticamente após confirmação do pagamento de ${payment.currency} ${payment.amount}`
         }
       })
     }
 
-    // 4. Log do processamento,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_SUCCESS_PROCESSED',        action: 'process_payment_success',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // 4. Log do processamento
+
+    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_SUCCESS_PROCESSED',        action: 'process_payment_success',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     })
 
   } catch (error) {,    console.error('Erro ao processar automações do pagamento:', error)
     
-    // Log do erro,    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_SUCCESS_ERROR',        action: 'process_payment_success',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log do erro
+    
+    await prisma.automationLog.create({,      data: {,        type: 'PAYMENT_SUCCESS_ERROR',        action: 'process_payment_success',        clientId: payment.clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     })

@@ -328,7 +328,9 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
 
         let questionScore = 0
 
-        // Pontuação baseada nas respostas específicas,        switch (question.id) {
+        // Pontuação baseada nas respostas específicas
+
+        switch (question.id) {
           case 'age':
             if (response >= 25 && response <= 35) questionScore = 10
             else if (response >= 18 && response <= 45) questionScore = 8
@@ -485,7 +487,9 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
       setLeadData(finalLeadData)
       setIsCompleted(true)
 
-      // Salvar lead qualificado na base de dados,      await fetch('/api/leads/qualification', {
+      // Salvar lead qualificado na base de dados
+
+      await fetch('/api/leads/qualification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -493,7 +497,9 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
         body: JSON.stringify(finalLeadData)
       })
 
-      // Trigger automação de follow-up,      await fetch('/api/automation/lead-actions', {
+      // Trigger automação de follow-up
+
+      await fetch('/api/automation/lead-actions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

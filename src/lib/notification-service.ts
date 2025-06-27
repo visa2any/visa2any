@@ -44,7 +44,9 @@ class NotificationService {
 
   // === NOTIFICAÇÕES DE AGENDAMENTO ===
 
-  // Notificar criação de agendamento,  async sendBookingCreated(data: NotificationData): Promise<{
+  // Notificar criação de agendamento
+
+  async sendBookingCreated(data: NotificationData): Promise<{
     whatsappSent: boolean
     emailSent: boolean
     errors: string[]
@@ -54,7 +56,8 @@ class NotificationService {
     let emailSent = false
 
     try {
-      // WhatsApp,      const whatsappMessage = this.generateBookingCreatedWhatsApp(data)
+      // WhatsApp
+      const whatsappMessage = this.generateBookingCreatedWhatsApp(data)
       whatsappSent = await this.sendWhatsApp(whatsappMessage)
       
       if (!whatsappSent) {
@@ -65,7 +68,8 @@ class NotificationService {
     }
 
     try {
-      // Email,      const emailMessage = this.generateBookingCreatedEmail(data)
+      // Email
+      const emailMessage = this.generateBookingCreatedEmail(data)
       emailSent = await this.sendEmail(emailMessage)
       
       if (!emailSent) {
@@ -78,22 +82,29 @@ class NotificationService {
     return { whatsappSent, emailSent, errors }
   }
 
-  // Notificar confirmação de pagamento,  async sendPaymentConfirmation(trackingId: string): Promise<boolean> {
+  // Notificar confirmação de pagamento
+
+  async sendPaymentConfirmation(trackingId: string): Promise<boolean> {
     try {
-      // Buscar dados do agendamento,      const bookingData = await this.getBookingData(trackingId)
+      // Buscar dados do agendamento
+      const bookingData = await this.getBookingData(trackingId)
       
       if (!bookingData) {
         console.error('Dados do agendamento não encontrados:', trackingId)
         return false
       }
 
-      // WhatsApp,      const whatsappMessage: WhatsAppMessage = {
+      // WhatsApp
+
+      const whatsappMessage: WhatsAppMessage = {
         to: bookingData.customerPhone,
         message: `🎉 *Pagamento Confirmado!*\n\n✅ Agendamento: ${trackingId}\n💰 Valor: R$ ${bookingData.amount}\n🚀 Processamento iniciado!\n\nEm breve enviaremos atualizações sobre seu agendamento.\n\n_Visa2Any - Seu visto sem complicação_`,
         type: 'text'
       }
 
-      // Email,      const emailMessage: EmailMessage = {
+      // Email
+
+      const emailMessage: EmailMessage = {
         to: bookingData.customerEmail,
         subject: '🎉 Pagamento Confirmado - Visa2Any',
         html: this.generatePaymentConfirmedEmailTemplate(bookingData)
@@ -110,7 +121,9 @@ class NotificationService {
     }
   }
 
-  // Notificar atualização do agendamento,  async sendBookingUpdate(trackingId: string, status: string): Promise<boolean> {
+  // Notificar atualização do agendamento
+
+  async sendBookingUpdate(trackingId: string, status: string): Promise<boolean> {
     try {
       const bookingData = await this.getBookingData(trackingId)
       if (!bookingData) return false
@@ -131,7 +144,9 @@ class NotificationService {
     }
   }
 
-  // Notificar agendamento concluído,  async sendBookingCompleted(trackingId: string, appointmentDetails: any): Promise<boolean> {
+  // Notificar agendamento concluído
+
+  async sendBookingCompleted(trackingId: string, appointmentDetails: any): Promise<boolean> {
     try {
       const bookingData = await this.getBookingData(trackingId)
       if (!bookingData) return false
@@ -161,7 +176,9 @@ class NotificationService {
 
   // === NOTIFICAÇÕES DE PAGAMENTO ===
 
-  // Enviar link de pagamento,  async sendPaymentLink(trackingId: string, paymentUrl: string, pixCode?: string): Promise<boolean> {
+  // Enviar link de pagamento
+
+  async sendPaymentLink(trackingId: string, paymentUrl: string, pixCode?: string): Promise<boolean> {
     try {
       const bookingData = await this.getBookingData(trackingId)
       if (!bookingData) return false
@@ -182,13 +199,17 @@ class NotificationService {
 
   // === MÉTODOS DE ENVIO ===
 
-  // Enviar WhatsApp,  private async sendWhatsApp(message: WhatsAppMessage): Promise<boolean> {
+  // Enviar WhatsApp
+
+  private async sendWhatsApp(message: WhatsAppMessage): Promise<boolean> {
     try {
       if (!this.whatsappConfig.token) {
         console.log('WhatsApp não configurado - simulando envio:', message.message)
         return true // Simular sucesso em desenvolvimento      }
 
-      // Implementação real com WhatsApp Business API,      const response = await fetch(`${this.whatsappConfig.apiUrl}/messages`, {
+      // Implementação real com WhatsApp Business API
+
+      const response = await fetch(`${this.whatsappConfig.apiUrl}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.whatsappConfig.token}`,
@@ -209,7 +230,9 @@ class NotificationService {
     }
   }
 
-  // Enviar Email,  private async sendEmail(message: EmailMessage): Promise<boolean> {
+  // Enviar Email
+
+  private async sendEmail(message: EmailMessage): Promise<boolean> {
     try {
       if (!this.emailConfig.apiKey) {
         console.log('Email não configurado - simulando envio para:', message.to)
@@ -227,7 +250,9 @@ class NotificationService {
     }
   }
 
-  // SendGrid,  private async sendViaSendGrid(message: EmailMessage): Promise<boolean> {
+  // SendGrid
+
+  private async sendViaSendGrid(message: EmailMessage): Promise<boolean> {
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
@@ -245,7 +270,9 @@ class NotificationService {
     return response.ok
   }
 
-  // Resend,  private async sendViaResend(message: EmailMessage): Promise<boolean> {
+  // Resend
+
+  private async sendViaResend(message: EmailMessage): Promise<boolean> {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -453,9 +480,13 @@ class NotificationService {
     }
   }
 
-  // Método auxiliar para buscar dados do agendamento,  private async getBookingData(trackingId: string): Promise<any> {
-    // Em produção, buscaria do banco de dados
-    // Por enquanto, retornamos dados simulados
+  // Método auxiliar para buscar dados do agendamento
+
+  private async getBookingData(trackingId: string): Promise<any> {
+    // Em produção
+    buscaria do banco de dados
+    // Por enquanto
+    retornamos dados simulados
     return {
       trackingId,
       customerName: 'Cliente Teste',
@@ -468,7 +499,9 @@ class NotificationService {
     }
   }
 
-  // Testar configuração das notificações,  async testConfiguration(): Promise<{
+  // Testar configuração das notificações
+
+  async testConfiguration(): Promise<{
     whatsapp: { configured: boolean, status: string }
     email: { configured: boolean, status: string, provider: string }
   }> {

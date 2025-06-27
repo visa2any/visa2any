@@ -7,7 +7,8 @@ import bcrypt from 'bcryptjs'
 // Função para gerar código de referência único,function generateReferralCode(name: string): string {,  const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase(),  const namePrefix = cleanName.substring(0, 4),  const timestamp = Date.now().toString().slice(-4),  return `${namePrefix}${timestamp}`
 }
 
-// GET - Listar afiliados (Admin),
+// GET - Listar afiliados (Admin)
+
 export async function GET(request: NextRequest) {,  try {
     const url =  
 const page = parseInt(url.searchParams.get('page') || '1')
@@ -18,7 +19,9 @@ const search = url.searchParams.get('search')
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {},    
+    // Construir filtros
+
+    const where: any = {},    
     if (status && status !== 'all') {,      where.status = status
     },    
     if (tier && tier !== 'all') {,      where.tier = tier
@@ -27,14 +30,18 @@ const search = url.searchParams.get('search')
       ]
     }
 
-    // Buscar afiliados,    const [affiliates, total] = await Promise.all([,      prisma.affiliate.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          _count: {,            select: {,              referrals: true,              clicks: true,              commissions: true
+    // Buscar afiliados
+
+    const [affiliates, total] = await Promise.all([,      prisma.affiliate.findMany({,        where,        skip,        take: limit,        orderBy: { createdAt: 'desc' },        include: {,          _count: {,            select: {,              referrals: true,              clicks: true,              commissions: true
             }
           }
         }
       }),      prisma.affiliate.count({ where })
     ])
 
-    // Buscar estatísticas gerais,    const stats = await prisma.affiliate.aggregate({,      _count: { id: true },      _sum: {,        totalEarnings: true,        pendingEarnings: true,        totalClicks: true,        totalConversions: true
+    // Buscar estatísticas gerais
+
+    const stats = await prisma.affiliate.aggregate({,      _count: { id: true },      _sum: {,        totalEarnings: true,        pendingEarnings: true,        totalClicks: true,        totalConversions: true
       }
     }),
     const activeCount = await prisma.affiliate.count({,      where: { status: 'ACTIVE' }
@@ -53,23 +60,30 @@ const search = url.searchParams.get('search')
   }
 }
 
-// POST - Criar novo afiliado,
+// POST - Criar novo afiliado
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const {,      name,      email,      phone,      company,      website,      bio,      socialMedia = {},      commissionRate = 0.10
     } = body
 
-    // Validações básicas,    if (!name || !email) {,      return NextResponse.json({,        error: 'Nome e email são obrigatórios'
+    // Validações básicas
+
+    if (!name || !email) {,      return NextResponse.json({,        error: 'Nome e email são obrigatórios'
       }, { status: 400 })
     }
 
-    // Verificar se email já existe,    const existingAffiliate = await prisma.affiliate.findUnique({,      where: { email }
+    // Verificar se email já existe
+
+    const existingAffiliate = await prisma.affiliate.findUnique({,      where: { email }
     }),
     if (existingAffiliate) {,      return NextResponse.json({,        error: 'Email já cadastrado'
       }, { status: 400 })
     }
 
-    // Gerar código de referência único,    let referralCode =  
+    // Gerar código de referência único
+
+    let referralCode =  
 let attempts = 0,    
     while (attempts < 10) {,      const existing = await prisma.affiliate.findUnique({,        where: { referralCode }
       }),      
@@ -77,7 +91,9 @@ let attempts = 0,
       attempts++,      referralCode = generateReferralCode(name) + attempts
     }
 
-    // Criar afiliado,    const affiliate = await prisma.affiliate.create({,      data: {,        name,        email,        phone,        company,        website,        bio,        socialMedia,        referralCode,        commissionRate,        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto,        status: 'PENDING', // Aguardando aprovação,        tier: 'BRONZE'
+    // Criar afiliado
+
+    const affiliate = await prisma.affiliate.create({,      data: {,        name,        email,        phone,        company,        website,        bio,        socialMedia,        referralCode,        commissionRate,        paymentDetails: {}, // Campo obrigatório - dados bancários/PIX vazios por enquanto,        status: 'PENDING', // Aguardando aprovação,        tier: 'BRONZE'
       }
     })
 
@@ -92,7 +108,8 @@ let attempts = 0,
   }
 }
 
-// PUT - Atualizar afiliado (Admin),
+// PUT - Atualizar afiliado (Admin)
+
 export async function PUT(request: NextRequest) {,  try {
     const body = await request.json()
 const { id, ...updateData } = body,

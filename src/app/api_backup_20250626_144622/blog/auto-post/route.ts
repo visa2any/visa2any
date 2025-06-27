@@ -20,14 +20,18 @@ export async function POST(request: NextRequest) {
       trending
     } = body
 
-    // Validação básica,    if (!title || !excerpt || !content || !category) {
+    // Validação básica
+
+    if (!title || !excerpt || !content || !category) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: title, excerpt, content, category' },
         { status: 400 }
       )
     }
 
-    // Verificar se já existe um post com o mesmo título,    const existingPost = await prisma.blogPost.findFirst({
+    // Verificar se já existe um post com o mesmo título
+
+    const existingPost = await prisma.blogPost.findFirst({
       where: { title }
     })
 
@@ -38,7 +42,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar novo post no banco,    const newPost = await prisma.blogPost.create({
+    // Criar novo post no banco
+
+    const newPost = await prisma.blogPost.create({
       data: {
         title,
         excerpt,
@@ -62,7 +68,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da atividade,    console.log(`[AUTO-POST] Novo artigo criado: ${title}`)
+    // Log da atividade
+
+    console.log(`[AUTO-POST] Novo artigo criado: ${title}`)
 
     return NextResponse.json({
       success: true,

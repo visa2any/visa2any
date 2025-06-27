@@ -21,8 +21,10 @@ function parseUserAgent(userAgent: string) {
 // Função para obter informações de geolocalização por IP
 async function getLocationFromIP(ip: string) {
   try {
-    // Em produção, usar um serviço como ipapi.co ou similar
-    // Para desenvolvimento, retornar valores padrão
+    // Em produção
+    usar um serviço como ipapi.co ou similar
+    // Para desenvolvimento
+    retornar valores padrão
     if (process.env.NODE_ENV === 'development') {
       return { country: 'Brazil', city: 'São Paulo' }
     }
@@ -52,7 +54,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(targetUrl, request.url))
     }
 
-    // Buscar afiliado pelo código de referência,    const affiliate = await prisma.affiliate.findUnique({
+    // Buscar afiliado pelo código de referência
+
+    const affiliate = await prisma.affiliate.findUnique({
       where: { referralCode }
     })
 
@@ -60,18 +64,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(targetUrl, request.url))
     }
 
-    // Obter informações do request,    const headersList = headers()
+    // Obter informações do request
+
+    const headersList = headers()
     const userAgent = headersList.get('user-agent') || ''
     const ip = headersList.get('x-forwarded-for') || 
                headersList.get('x-real-ip') || 
                request.ip || 
                '127.0.0.1'
 
-    // Parsear User-Agent,    const { device, browser } = parseUserAgent(userAgent)
-    
-    // Obter localização,    const { country, city } = await getLocationFromIP(ip)
+    // Parsear User-Agent
 
-    // Registrar o clique,    await prisma.affiliateClick.create({
+    const { device, browser } = parseUserAgent(userAgent)
+    
+    // Obter localização
+    
+    const { country, city } = await getLocationFromIP(ip)
+
+    // Registrar o clique
+
+    await prisma.affiliateClick.create({
       data: {
         affiliateId: affiliate.id,
         referralCode,
@@ -87,7 +99,9 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Atualizar contador de cliques do afiliado,    await prisma.affiliate.update({
+    // Atualizar contador de cliques do afiliado
+
+    await prisma.affiliate.update({
       where: { id: affiliate.id },
       data: {
         totalClicks: { increment: 1 },
@@ -95,7 +109,9 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Definir cookie para tracking de conversão,    const response = NextResponse.redirect(new URL(targetUrl, request.url))
+    // Definir cookie para tracking de conversão
+
+    const response = NextResponse.redirect(new URL(targetUrl, request.url))
     response.cookies.set('affiliate_ref', referralCode, {
       maxAge: 30 * 24 * 60 * 60, // 30 dias,      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -119,7 +135,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { clientId, conversionType, conversionValue, referralCode: bodyReferralCode } = body
 
-    // Tentar obter código de referência do cookie ou do body,    const cookieReferralCode = request.cookies.get('affiliate_ref')?.value
+    // Tentar obter código de referência do cookie ou do body
+
+    const cookieReferralCode = request.cookies.get('affiliate_ref')?.value
     const referralCode = bodyReferralCode || cookieReferralCode
 
     if (!referralCode || !clientId) {
@@ -129,7 +147,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Buscar afiliado,    const affiliate = await prisma.affiliate.findUnique({
+    // Buscar afiliado
+
+    const affiliate = await prisma.affiliate.findUnique({
       where: { referralCode }
     })
 
@@ -140,7 +160,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já existe uma conversão para este cliente,    const existingReferral = await prisma.affiliateReferral.findFirst({
+    // Verificar se já existe uma conversão para este cliente
+
+    const existingReferral = await prisma.affiliateReferral.findFirst({
       where: {
         affiliateId: affiliate.id,
         clientId
@@ -153,10 +175,14 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Calcular comissão,    const commissionRate = affiliate.commissionRate
+    // Calcular comissão
+
+    const commissionRate = affiliate.commissionRate
     const commissionValue = conversionValue * commissionRate
 
-    // Criar referral e comissão,    const referral = await prisma.affiliateReferral.create({
+    // Criar referral e comissão
+
+    const referral = await prisma.affiliateReferral.create({
       data: {
         affiliateId: affiliate.id,
         clientId,
@@ -170,7 +196,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Criar comissão,    const dueDate = new Date()
+    // Criar comissão
+
+    const dueDate = new Date()
     dueDate.setMonth(dueDate.getMonth() + 1) // Pagamento no próximo mês
 
     await prisma.affiliateCommission.create({
@@ -185,7 +213,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Atualizar estatísticas do afiliado,    const conversionRate = affiliate.totalClicks > 0 
+    // Atualizar estatísticas do afiliado
+
+    const conversionRate = affiliate.totalClicks > 0 
       ? ((affiliate.totalConversions + 1) / affiliate.totalClicks) * 100 
       : 0
 
@@ -200,7 +230,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Marcar clique como convertido se existir,    await prisma.affiliateClick.updateMany({
+    // Marcar clique como convertido se existir
+
+    await prisma.affiliateClick.updateMany({
       where: {
         affiliateId: affiliate.id,
         referralCode,

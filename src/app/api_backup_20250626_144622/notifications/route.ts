@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'send_booking_created':
-        // Notificar criação de agendamento,        if (!data.trackingId || !data.customerName || !data.customerEmail) {
+        // Notificar criação de agendamento
+        if (!data.trackingId || !data.customerName || !data.customerEmail) {
           return NextResponse.json(
             { error: 'Campos trackingId, customerName e customerEmail são obrigatórios' },
             { status: 400 }
@@ -29,7 +30,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'send_payment_link':
-        // Enviar link de pagamento,        const { trackingId, paymentUrl, pixCode } = data
+        // Enviar link de pagamento
+        const { trackingId, paymentUrl, pixCode } = data
         
         if (!trackingId || !paymentUrl) {
           return NextResponse.json(
@@ -52,7 +54,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'send_payment_confirmation':
-        // Confirmar pagamento,        const confirmationSent = await notificationService.sendPaymentConfirmation(data.trackingId)
+        // Confirmar pagamento
+        const confirmationSent = await notificationService.sendPaymentConfirmation(data.trackingId)
         
         return NextResponse.json({
           success: confirmationSent,
@@ -62,7 +65,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'send_booking_update':
-        // Atualização de status,        const { trackingId: updateTrackingId, status } = data
+        // Atualização de status
+        const { trackingId: updateTrackingId, status } = data
         
         if (!updateTrackingId || !status) {
           return NextResponse.json(
@@ -81,7 +85,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'send_booking_completed':
-        // Agendamento concluído,        const { trackingId: completedTrackingId, appointmentDetails } = data
+        // Agendamento concluído
+        const { trackingId: completedTrackingId, appointmentDetails } = data
         
         if (!completedTrackingId || !appointmentDetails) {
           return NextResponse.json(
@@ -127,7 +132,8 @@ export async function GET(request: NextRequest) {
 
     switch (action) {
       case 'config':
-        // Verificar configuração,        const config = await notificationService.testConfiguration()
+        // Verificar configuração
+        const config = await notificationService.testConfiguration()
         
         return NextResponse.json({
           success: true,
@@ -156,7 +162,8 @@ export async function GET(request: NextRequest) {
         })
 
       case 'test':
-        // Enviar notificação de teste,        const testData: NotificationData = {
+        // Enviar notificação de teste
+        const testData: NotificationData = {
           trackingId: `TEST-${Date.now()}`,
           customerName: 'Cliente Teste',
           customerEmail: 'teste@email.com',
@@ -180,7 +187,8 @@ export async function GET(request: NextRequest) {
         })
 
       case 'templates':
-        // Listar templates disponíveis,        return NextResponse.json({
+        // Listar templates disponíveis
+        return NextResponse.json({
           success: true,
           templates: {
             whatsapp: [
@@ -227,7 +235,8 @@ export async function GET(request: NextRequest) {
         })
 
       case 'stats':
-        // Estatísticas de notificações (simulado),        return NextResponse.json({
+        // Estatísticas de notificações (simulado)
+        return NextResponse.json({
           success: true,
           statistics: {
             today: {

@@ -83,25 +83,31 @@ export default function BlogAutomationPage() {
 
   useEffect(() => {
     loadData()
-    // Refresh data every 30 seconds,    const interval = setInterval(loadData, 30000)
+    // Refresh data every 30 seconds
+    const interval = setInterval(loadData, 30000)
     return () => clearInterval(interval)
   }, [])
 
   const loadData = async () => {
     try {
-      // Load sources,      const sourcesRes = await fetch('/api/blog/sources')
+      // Load sources
+      const sourcesRes = await fetch('/api/blog/sources')
       const sourcesData = await sourcesRes.json()
       if (sourcesData.success) {
         setSources(sourcesData.sources)
       }
 
-      // Load recent posts,      const postsRes = await fetch('/api/blog/posts?limit=20&automated=true')
+      // Load recent posts
+
+      const postsRes = await fetch('/api/blog/posts?limit=20&automated=true')
       const postsData = await postsRes.json()
       if (postsData.success) {
         setRecentPosts(postsData.posts)
       }
 
-      // Calculate stats,      const totalSources = sourcesData.sources?.length || 0
+      // Calculate stats
+
+      const totalSources = sourcesData.sources?.length || 0
       const activeSources = sourcesData.sources?.filter((s: NewsSource) => s.isActive).length || 0
       const totalPosts = postsData.posts?.length || 0
       const urgentPosts = postsData.posts?.filter((p: BlogPost) => p.urgent).length || 0

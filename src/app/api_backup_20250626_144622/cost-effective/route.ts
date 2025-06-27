@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'manual_booking':
-        // Agendamento manual assistido,        const bookingRequest: ManualBookingRequest = body
+        // Agendamento manual assistido
+        const bookingRequest: ManualBookingRequest = body
         
         if (!bookingRequest.applicantInfo?.fullName || !bookingRequest.consularInfo?.country) {
           return NextResponse.json(
@@ -38,7 +39,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'setup_monitoring':
-        // Configurar monitoramento gratuito,        const { countries } = body
+        // Configurar monitoramento gratuito
+        const { countries } = body
         
         if (!Array.isArray(countries) || countries.length === 0) {
           return NextResponse.json(
@@ -59,7 +61,8 @@ export async function POST(request: NextRequest) {
         })
 
       case 'optimized_workflow':
-        // Workflow manual otimizado,        const workflowRequest: ManualBookingRequest = body
+        // Workflow manual otimizado
+        const workflowRequest: ManualBookingRequest = body
         
         const workflow = await costEffectiveSolutions.optimizedManualWorkflow(workflowRequest)
         
@@ -95,7 +98,8 @@ export async function GET(request: NextRequest) {
 
     switch (action) {
       case 'methods':
-        // Listar todos os métodos econômicos,        const methods = costEffectiveSolutions.getCostEffectiveMethods()
+        // Listar todos os métodos econômicos
+        const methods = costEffectiveSolutions.getCostEffectiveMethods()
         
         return NextResponse.json({
           success: true,
@@ -112,7 +116,8 @@ export async function GET(request: NextRequest) {
         })
 
       case 'roi':
-        // Calcular ROI de um método específico,        const method = searchParams.get('method')
+        // Calcular ROI de um método específico
+        const method = searchParams.get('method')
         const monthlyVolume = parseInt(searchParams.get('volume') || '10')
         const revenuePerBooking = parseInt(searchParams.get('revenue') || '100')
         
@@ -147,7 +152,8 @@ export async function GET(request: NextRequest) {
         }
 
       case 'telegram_setup':
-        // Configurar alertas Telegram gratuitos,        const telegramSetup = await costEffectiveSolutions.setupTelegramAlerts()
+        // Configurar alertas Telegram gratuitos
+        const telegramSetup = await costEffectiveSolutions.setupTelegramAlerts()
         
         return NextResponse.json({
           success: telegramSetup.success,
@@ -164,7 +170,8 @@ export async function GET(request: NextRequest) {
         })
 
       case 'email_setup':
-        // Configurar monitoramento por email,        const emailSetup = await costEffectiveSolutions.setupEmailMonitoring()
+        // Configurar monitoramento por email
+        const emailSetup = await costEffectiveSolutions.setupEmailMonitoring()
         
         return NextResponse.json({
           success: emailSetup.success,

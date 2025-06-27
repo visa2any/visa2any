@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken'
 // POST /api/blog/like - Toggle like on blog post
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication,    const authToken = request.cookies.get('auth-token')?.value
+    // Check authentication
+    const authToken = request.cookies.get('auth-token')?.value
     if (!authToken) {
       return NextResponse.json(
         { error: 'Token de acesso requerido' },
@@ -13,7 +14,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify token,    const jwtSecret = process.env.NEXTAUTH_SECRET
+    // Verify token
+
+    const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
@@ -43,7 +46,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'like') {
-      // Check if already liked,      const existingLike = await prisma.blogPostLike.findUnique({
+      // Check if already liked
+      const existingLike = await prisma.blogPostLike.findUnique({
         where: {
           userId_postId: {
             userId,
@@ -69,7 +73,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Get updated like count,    const likeCount = await prisma.blogPostLike.count({
+    // Get updated like count
+
+    const likeCount = await prisma.blogPostLike.count({
       where: { postId }
     })
 

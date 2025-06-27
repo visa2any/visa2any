@@ -122,13 +122,17 @@ Como especialistas em imigração, observamos que:
 function extractHighlights(content: string): string[] {
   const highlights = []
   
-  // Extrair pontos importantes baseados em marcadores comuns,  const strongRegex = /<strong>(.*?)<\/strong>/g
+  // Extrair pontos importantes baseados em marcadores comuns
+  
+  const strongRegex = /<strong>(.*?)<\/strong>/g
   let match
   while ((match = strongRegex.exec(content)) !== null && highlights.length < 3) {
     highlights.push(`• ${match[1]}`)
   }
   
-  // Se não encontrou highlights suficientes, usar pontos genéricos
+  // Se não encontrou highlights suficientes
+  
+  usar pontos genéricos
   if (highlights.length === 0) {
     highlights.push('• Informações atualizadas e verificadas')
     highlights.push('• Orientação especializada')
@@ -188,15 +192,21 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
   const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
   const now = new Date()
   
-  // Se é urgente, agenda para os próximos minutos respeitando intervalo mínimo
+  // Se é urgente
+  
+  agenda para os próximos minutos respeitando intervalo mínimo
   if (isUrgent) {
     const urgentDelay = Math.max(config.minInterval / 4, 15 * 60 * 1000) // Mín 15 min,    return new Date(now.getTime() + urgentDelay)
   }
   
-  // Buscar próximo horário ótimo,  const currentHour = now.getHours()
+  // Buscar próximo horário ótimo
+  
+  const currentHour = now.getHours()
   const optimalTimes = config.optimalTimes
   
-  // Encontrar próximo horário ótimo hoje,  const nextOptimalToday = optimalTimes.find(hour => hour > currentHour)
+  // Encontrar próximo horário ótimo hoje
+  
+  const nextOptimalToday = optimalTimes.find(hour => hour > currentHour)
   
   if (nextOptimalToday) {
     const nextTime = new Date(now)
@@ -204,7 +214,9 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
     return nextTime
   }
   
-  // Se não há mais horários hoje, usar primeiro horário de amanhã
+  // Se não há mais horários hoje
+  
+  usar primeiro horário de amanhã
   const tomorrow = new Date(now)
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(optimalTimes[0], 0, 0, 0)
@@ -219,10 +231,14 @@ async function canSchedulePost(platform: string): Promise<boolean> {
  consultar tabela SocialPost
     const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
     
-    // Verificar posts do dia,    const today = new Date()
+    // Verificar posts do dia
+    
+    const today = new Date()
     today.setHours(0, 0, 0, 0)
     
-    // Aqui deveria consultar: SELECT COUNT(*) FROM SocialPost WHERE platform = ? AND scheduledAt >= ?,    const postsToday = 0 // Placeholder
+    // Aqui deveria consultar: SELECT COUNT(*) FROM SocialPost WHERE platform = ? AND scheduledAt >= ?
+    
+    const postsToday = 0 // Placeholder
     
     if (postsToday >= config.dailyLimit) {
       console.log(`❌ Limite diário atingido para ${platform}: ${postsToday}/${config.dailyLimit}`)
@@ -244,19 +260,24 @@ export function generateSocialPosts(blogPost: BlogPost, baseUrl: string = 'https
   const highlights = extractHighlights(blogPost.content)
   
   for (const template of SOCIAL_TEMPLATES) {
-    // Truncar título se necessário,    let title = blogPost.title
+    // Truncar título se necessário
+    let title = blogPost.title
     if (template.platform === 'twitter' && title.length > 100) {
       title = title.substring(0, 97) + '...'
     }
     
-    // Truncar excerpt se necessário,    let excerpt = blogPost.excerpt
+    // Truncar excerpt se necessário
+    
+    let excerpt = blogPost.excerpt
     const baseLength = template.template.length + title.length + url.length + 100 // margem,    const availableLength = template.maxLength - baseLength
     
     if (excerpt.length > availableLength) {
       excerpt = excerpt.substring(0, availableLength - 3) + '...'
     }
     
-    // Substituir variáveis no template,    let content = template.template
+    // Substituir variáveis no template
+    
+    let content = template.template
       .replace('{emoji}', emoji)
       .replace('{title}', title)
       .replace('{excerpt}', excerpt)
@@ -265,7 +286,9 @@ export function generateSocialPosts(blogPost: BlogPost, baseUrl: string = 'https
       .replace('{country_action}', getCountryAction(blogPost.country || ''))
       .replace('{hashtags}', template.hashtags.join(' '))
     
-    // Adicionar hashtags específicas do post,    const postHashtags = [...template.hashtags]
+    // Adicionar hashtags específicas do post
+    
+    const postHashtags = [...template.hashtags]
     if (blogPost.country) {
       postHashtags.push(`#${blogPost.country.replace(' ', '')}`)
     }
@@ -275,7 +298,9 @@ export function generateSocialPosts(blogPost: BlogPost, baseUrl: string = 'https
       })
     }
     
-    // Calcular horário otimizado baseado na plataforma,    const scheduledAt = calculateOptimalPostTime(template.platform, blogPost.urgent)
+    // Calcular horário otimizado baseado na plataforma
+    
+    const scheduledAt = calculateOptimalPostTime(template.platform, blogPost.urgent)
     
     posts.push({
       platform: template.platform,
@@ -294,14 +319,17 @@ export async function scheduleAutomaticPosts(blogPost: BlogPost) {
     const socialPosts = generateSocialPosts(blogPost)
     
     for (const post of socialPosts) {
-      // Verificar se pode agendar post (anti-spam),      const canSchedule = await canSchedulePost(post.platform)
+      // Verificar se pode agendar post (anti-spam)
+      const canSchedule = await canSchedulePost(post.platform)
       
       if (!canSchedule) {
         console.log(`⏭️ Pulando ${post.platform}: limite de frequência atingido`)
         continue
       }
       
-      // Salvar no banco de dados para processamento posterior,      await fetch('/api/social/schedule', {
+      // Salvar no banco de dados para processamento posterior
+      
+      await fetch('/api/social/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -370,7 +398,9 @@ async function publishToInstagram(post: SocialPost) {
   const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN
   const accountId = process.env.INSTAGRAM_ACCOUNT_ID
   
-  // Instagram requer processo em 2 etapas: criar container, depois publicar
+  // Instagram requer processo em 2 etapas: criar container
+  
+  depois publicar
   const containerResponse = await fetch(`https://graph.facebook.com/${accountId}/media`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -383,7 +413,9 @@ async function publishToInstagram(post: SocialPost) {
   
   const container = await containerResponse.json()
   
-  // Publicar o container,  const publishResponse = await fetch(`https://graph.facebook.com/${accountId}/media_publish`, {
+  // Publicar o container
+  
+  const publishResponse = await fetch(`https://graph.facebook.com/${accountId}/media_publish`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -433,8 +465,11 @@ async function publishToTwitter(post: SocialPost) {
   const accessToken = process.env.TWITTER_ACCESS_TOKEN
   const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET
   
-  // Para Twitter, você precisaria usar a biblioteca twitter-api-v2 ou similar
-  // Aqui está um exemplo conceitual,  const response = await fetch('https://api.twitter.com/2/tweets', {
+  // Para Twitter
+  
+  você precisaria usar a biblioteca twitter-api-v2 ou similar
+  // Aqui está um exemplo conceitual
+  const response = await fetch('https://api.twitter.com/2/tweets', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -452,7 +487,9 @@ async function publishToTwitter(post: SocialPost) {
 async function publishToTikTok(post: SocialPost) {
   const accessToken = process.env.TIKTOK_ACCESS_TOKEN
   
-  // TikTok Business API para upload de vídeo,  const response = await fetch('https://open-api.tiktok.com/share/video/upload/', {
+  // TikTok Business API para upload de vídeo
+  
+  const response = await fetch('https://open-api.tiktok.com/share/video/upload/', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -482,14 +519,17 @@ export async function processScheduledPosts() {
         try {
           await publishToSocialMedia(scheduledPost)
           
-          // Marcar como publicado,          await fetch(`/api/social/${scheduledPost.id}/complete`, {
+          // Marcar como publicado
+          
+          await fetch(`/api/social/${scheduledPost.id}/complete`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: 'published' })
           })
           
         } catch (error) {
-          // Marcar como erro,          await fetch(`/api/social/${scheduledPost.id}/error`, {
+          // Marcar como erro
+          await fetch(`/api/social/${scheduledPost.id}/error`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 

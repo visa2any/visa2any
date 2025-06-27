@@ -72,7 +72,9 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
 
   const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
-  // Mock interview templates,  const mockInterviews: MockInterview[] = [
+  // Mock interview templates
+
+  const mockInterviews: MockInterview[] = [
     {
       id: 'usa-tourist',
       country: 'USA',
@@ -185,7 +187,8 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
   }, [sessionActive, timeRemaining])
 
   useEffect(() => {
-    // Load appropriate mock interview based on country and visa type,    const interview = mockInterviews.find(
+    // Load appropriate mock interview based on country and visa type
+    const interview = mockInterviews.find(
       m => m.country === country && m.visaType === visaType
     ) || mockInterviews[0]
     setSelectedMockInterview(interview)
@@ -216,7 +219,9 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
     const question = selectedMockInterview.questions[currentQuestion]
     const answerDuration = question.timeLimit - timeRemaining
 
-    // Simulate AI analysis,    const aiScore = Math.floor(Math.random() * 30) + 70 // 70-100
+    // Simulate AI analysis
+
+    const aiScore = Math.floor(Math.random() * 30) + 70 // 70-100
     const confidence = userAnswer.length > 50 ? Math.floor(Math.random() * 20) + 80 : Math.floor(Math.random() * 30) + 50
 
     const newAnswer = {
@@ -235,7 +240,9 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
 
     setCurrentSession(updatedSession)
 
-    // Move to next question or finish,    if (currentQuestion < selectedMockInterview.questions.length - 1) {
+    // Move to next question or finish
+
+    if (currentQuestion < selectedMockInterview.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
       setTimeRemaining(selectedMockInterview.questions[currentQuestion + 1].timeLimit)
       setUserAnswer('')
@@ -296,7 +303,8 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
       handleAnswer()
     } else {
       notifyError('Tempo Esgotado', 'Tente responder mais rapidamente na próxima pergunta.')
-      // Skip to next question,      if (currentQuestion < (selectedMockInterview?.questions.length || 0) - 1) {
+      // Skip to next question
+      if (currentQuestion < (selectedMockInterview?.questions.length || 0) - 1) {
         setCurrentQuestion(currentQuestion + 1)
         setTimeRemaining(selectedMockInterview?.questions[currentQuestion + 1]?.timeLimit || 60)
         setUserAnswer('')

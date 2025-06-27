@@ -7,10 +7,13 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirecionar automaticamente para o dashboard unificado,    router.replace('/admin/dashboard-unified')
+    // Redirecionar automaticamente para o dashboard unificado
+    router.replace('/admin/dashboard-unified')
   }, [router])
 
-  // Mostrar loading enquanto redireciona,  return (
+  // Mostrar loading enquanto redireciona
+
+  return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
       <div className="text-center">
         <div className="relative">

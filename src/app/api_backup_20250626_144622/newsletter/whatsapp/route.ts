@@ -6,14 +6,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, phone, countries, terms } = body
 
-    // Validação,    if (!name || !phone || !terms) {
+    // Validação
+
+    if (!name || !phone || !terms) {
       return NextResponse.json(
         { error: 'Nome, telefone e aceite dos termos são obrigatórios' }
         { status: 400 }
       )
     }
 
-    // Validar formato do telefone,    const phoneRegex = /^\+[1-9]\d{1,14}$/
+    // Validar formato do telefone
+
+    const phoneRegex = /^\+[1-9]\d{1,14}$/
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
         { error: 'Formato de telefone inválido. Use +55 11 99999-9999' }
@@ -21,7 +25,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já existe,    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
+    // Verificar se já existe
+
+    const existingSubscriber = await prisma.whatsAppSubscriber.findUnique({
       where: { phone }
     })
 
@@ -32,7 +38,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar novo assinante,    const subscriber = await prisma.whatsAppSubscriber.create({
+    // Criar novo assinante
+
+    const subscriber = await prisma.whatsAppSubscriber.create({
       data: {
         name
         phone,
@@ -42,13 +50,17 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Enviar mensagem de boas-vindas via WhatsApp,    try {
+    // Enviar mensagem de boas-vindas via WhatsApp
+
+    try {
       await sendWelcomeMessage(phone, name)
     } catch (error) {
       console.error('Erro ao enviar mensagem de boas-vindas:', error)
       // Não falhar o cadastro se a mensagem não for enviada    }
 
-    // Log da atividade,    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
+    // Log da atividade
+
+    console.log(`[WHATSAPP NEWSLETTER] Novo cadastro: ${name} - ${phone}`)
 
     return NextResponse.json({
       success: true

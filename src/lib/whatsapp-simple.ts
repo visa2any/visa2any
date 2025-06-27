@@ -44,7 +44,9 @@ class WhatsAppServiceSimple {
     console.log('4. Aponte para o QR Code acima')
     console.log('')
     
-    // Simular conexão após 3 segundos,    setTimeout(() => {
+    // Simular conexão após 3 segundos
+    
+    setTimeout(() => {
       this.isReady = true
       console.log('✅ WhatsApp conectado com sucesso! (simulação)')
       console.log('📊 Sistema pronto para enviar mensagens')

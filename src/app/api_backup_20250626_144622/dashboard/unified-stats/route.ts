@@ -14,7 +14,9 @@ export async function GET(request: NextRequest) {
     const periodDate = new Date()
     periodDate.setDate(periodDate.getDate() - period)
 
-    // Overview Stats,    const totalClients = await prisma.client.count()
+    // Overview Stats
+
+    const totalClients = await prisma.client.count()
     const newClientsThisPeriod = await prisma.client.count({
       where: { createdAt: { gte: periodDate } }
     })
@@ -35,12 +37,16 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Revenue calculations (mock data for now),    const totalRevenue = 150000
+    // Revenue calculations (mock data for now)
+
+    const totalRevenue = 150000
     const revenueThisPeriod = 45000
     const revenueGrowth = 15
     const averageTicket = 2500
 
-    // Client stats,    const clientsThisWeek = await prisma.client.count({
+    // Client stats
+
+    const clientsThisWeek = await prisma.client.count({
       where: { 
         createdAt: { 
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
@@ -56,17 +62,23 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Tasks (mock data),    const pendingTasks = 15
+    // Tasks (mock data)
+
+    const pendingTasks = 15
     const urgentTasks = 5
 
-    // Conversion rate calculation,    const totalLeads = await prisma.client.count({
+    // Conversion rate calculation
+
+    const totalLeads = await prisma.client.count({
       where: { status: 'LEAD' }
     })
     const convertedClients = totalClients - totalLeads
     const conversionRate = totalClients > 0 ? 
       Math.round((convertedClients / totalClients) * 100) : 0
 
-    // Clients by status,    const clientsByStatus = await prisma.client.groupBy({
+    // Clients by status
+
+    const clientsByStatus = await prisma.client.groupBy({
       by: ['status'],
       _count: { status: true }
     })
@@ -76,14 +88,18 @@ export async function GET(request: NextRequest) {
       count: item._count.status,
       growth: Math.floor(Math.random() * 20) - 10 // Mock growth data    }))
 
-    // Consultations by type (mock data),    const consultationsByType = [
+    // Consultations by type (mock data)
+
+    const consultationsByType = [
       { type: 'Inicial', count: 45, revenue: 22500 }
       { type: 'Revisão', count: 23, revenue: 11500 }
       { type: 'Urgente', count: 12, revenue: 18000 }
       { type: 'Especializada', count: 8, revenue: 12000 }
     ]
 
-    // Recent activity,    const recentActivity = [
+    // Recent activity
+
+    const recentActivity = [
       {
         id: '1',
         type: 'client_created',
@@ -110,13 +126,17 @@ export async function GET(request: NextRequest) {
       }
     ]
 
-    // Top performers (mock data),    const topPerformers = [
+    // Top performers (mock data)
+
+    const topPerformers = [
       { consultant: 'Ana Silva', clientsHandled: 23, revenue: 57500, satisfaction: 4.8 }
       { consultant: 'Carlos Santos', clientsHandled: 19, revenue: 47500, satisfaction: 4.6 }
       { consultant: 'Lucia Costa', clientsHandled: 17, revenue: 42500, satisfaction: 4.7 }
     ]
 
-    // Urgent tasks (mock data),    const urgentTasksList = [
+    // Urgent tasks (mock data)
+
+    const urgentTasksList = [
       {
         id: '1',
         title: 'Revisão de documentos - João Silva',
@@ -135,7 +155,9 @@ export async function GET(request: NextRequest) {
       }
     ]
 
-    // Communication stats (mock data),    const communicationStats = {
+    // Communication stats (mock data)
+
+    const communicationStats = {
       whatsappToday: 45,
       emailsToday: 23,
       callsToday: 12,

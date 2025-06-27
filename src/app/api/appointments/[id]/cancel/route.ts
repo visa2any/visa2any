@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { appointmentBookingService } from '@/lib/appointment-booking'
 
-// DELETE - Cancelar agendamento,
+// DELETE - Cancelar agendamento
+
 export async function DELETE(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {,    const appointmentId =  
@@ -12,7 +13,7 @@ const { searchParams } = new URL(request.url)
     },
     const result = await appointmentBookingService.cancelAppointment(appointmentId, consulate),
     if (result.success) {
-      // TODO: Atualizar status no banco de dados,      
+      // TODO: Atualizar status no banco de dados
       return NextResponse.json({,        message: result.message,        cancelledAt: new Date().toISOString()
       })
     } else {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }

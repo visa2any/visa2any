@@ -108,7 +108,8 @@ export default function SettingsPage() {
 
   const fetchConfig = async () => {
     try {
-      // Simulando dados de configuração,      const mockConfig: SystemConfig = {
+      // Simulando dados de configuração
+      const mockConfig: SystemConfig = {
         general: {
           siteName: 'Visa2Any Admin',
           siteUrl: 'https://visa2any.com',
@@ -179,7 +180,8 @@ export default function SettingsPage() {
   const saveConfig = async () => {
     setIsSaving(true)
     try {
-      // Simular salvamento,      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Simular salvamento
+      await new Promise(resolve => setTimeout(resolve, 1500))
       setSaveStatus('success')
       setTimeout(() => setSaveStatus('idle'), 3000)
     } catch (error) {

@@ -191,7 +191,8 @@ export default function SmartScheduler() {
     setLoading(true)
     
     try {
-      // 1. Criar conta do cliente automaticamente (integração unificada),      const accountData = {
+      // 1. Criar conta do cliente automaticamente (integração unificada)
+      const accountData = {
         name: appointmentData.clientInfo.name,
         email: appointmentData.clientInfo.email,
         phone: appointmentData.clientInfo.phone,
@@ -216,7 +217,9 @@ export default function SmartScheduler() {
 
       const clientData = { id: accountResult.user.id }
 
-      // 2. Criar agendamento,      const scheduledDateTime = new Date(`${selectedDate}T${selectedTime}:00`)
+      // 2. Criar agendamento
+
+      const scheduledDateTime = new Date(`${selectedDate}T${selectedTime}:00`)
       
       const consultationResponse = await fetch('/api/consultations', {
         method: 'POST',
@@ -238,7 +241,9 @@ Especialista: ${selectedSpecialist}`
 
       const consultationResult = await consultationResponse.json()
 
-      // 3. Mostrar confirmação com opção de acessar portal,      const confirmationMessage = `✅ Agendamento confirmado!
+      // 3. Mostrar confirmação com opção de acessar portal
+
+      const confirmationMessage = `✅ Agendamento confirmado!
 
 📅 Data: ${formatDate(selectedDate)}
 🕐 Horário: ${selectedTime}
@@ -256,7 +261,9 @@ Deseja acessar seu portal agora?`)) {
         alert('📧 Você receberá um email com todos os detalhes e o link da reunião.')
       }
 
-      // 4. Reset form,      setCurrentStep(1)
+      // 4. Reset form
+
+      setCurrentStep(1)
       setSelectedDate('')
       setSelectedTime('')
       setSelectedSpecialist('')
@@ -295,7 +302,9 @@ Deseja acessar seu portal agora?`)) {
     </div>
   )
 
-  // Step 1: Service Selection,  if (currentStep === 1) {
+  // Step 1: Service Selection
+
+  if (currentStep === 1) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
@@ -347,7 +356,9 @@ Deseja acessar seu portal agora?`)) {
     )
   }
 
-  // Step 2: Specialist Selection,  if (currentStep === 2) {
+  // Step 2: Specialist Selection
+
+  if (currentStep === 2) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
@@ -411,7 +422,9 @@ Deseja acessar seu portal agora?`)) {
     )
   }
 
-  // Step 3: Date & Time Selection,  if (currentStep === 3) {
+  // Step 3: Date & Time Selection
+
+  if (currentStep === 3) {
     const availableDays = getNext7Days()
 
     return (
@@ -538,7 +551,9 @@ Deseja acessar seu portal agora?`)) {
     )
   }
 
-  // Step 4: Client Information & Confirmation,  if (currentStep === 4) {
+  // Step 4: Client Information & Confirmation
+
+  if (currentStep === 4) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}

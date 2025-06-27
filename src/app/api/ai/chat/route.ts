@@ -6,27 +6,36 @@ import { z } from 'zod'
   }).optional()
 })
 
-// POST /api/ai/chat - Conversar com Sofia IA,
+// POST /api/ai/chat - Conversar com Sofia IA
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = chatMessageSchema.parse(body)
 
-    // Obter contexto do cliente se disponível,    let clientContext = null,    if (validatedData.clientId) {,      clientContext = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          consultations: {,            orderBy: { createdAt: 'desc' },            take: 1
+    // Obter contexto do cliente se disponível
+
+    let clientContext = null,    if (validatedData.clientId) {,      clientContext = await prisma.client.findUnique({,        where: { id: validatedData.clientId },        include: {,          consultations: {,            orderBy: { createdAt: 'desc' },            take: 1
           },          documents: {,            select: { type: true, status: true }
           }
         }
       })
     }
 
-    // Processar mensagem com Sofia IA,    const sofiaResponse = await processSofiaMessage(,      validatedData.message,      clientContext,      validatedData.context
+    // Processar mensagem com Sofia IA
+
+    const sofiaResponse = await processSofiaMessage(,      validatedData.message,      clientContext,      validatedData.context
     )
 
-    // Salvar interação se tem cliente,    if (validatedData.clientId) {,      await prisma.interaction.create({,        data: {,          type: 'AUTOMATED_EMAIL',          channel: 'chat',          direction: 'inbound',          content: validatedData.message,          response: sofiaResponse.message,          clientId: validatedData.clientId,          completedAt: new Date()
+    // Salvar interação se tem cliente
+
+    if (validatedData.clientId) {,      await prisma.interaction.create({,        data: {,          type: 'AUTOMATED_EMAIL',          channel: 'chat',          direction: 'inbound',          content: validatedData.message,          response: sofiaResponse.message,          clientId: validatedData.clientId,          completedAt: new Date()
         }
       })
     }
 
-    // Log da conversa,    await prisma.automationLog.create({,      data: {,        type: 'AI_CHAT_INTERACTION',        action: 'chat_with_sofia',        clientId: validatedData.clientId || null,        success: true,        details: {,          message: validatedData.message,          intent: sofiaResponse.intent,          confidence: sofiaResponse.confidence
+    // Log da conversa
+
+    await prisma.automationLog.create({,      data: {,        type: 'AI_CHAT_INTERACTION',        action: 'chat_with_sofia',        clientId: validatedData.clientId || null,        success: true,        details: {,          message: validatedData.message,          intent: sofiaResponse.intent,          confidence: sofiaResponse.confidence
         }
       }
     }),
@@ -43,7 +52,8 @@ const validatedData = chatMessageSchema.parse(body)
   }
 }
 
-// GET /api/ai/chat/intents - Listar intenções disponíveis,
+// GET /api/ai/chat/intents - Listar intenções disponíveis
+
 export async function GET(request: NextRequest) {,  try {,    const intents = getSofiaIntents()
 
     return NextResponse.json({,      data: { intents }
@@ -55,9 +65,12 @@ export async function GET(request: NextRequest) {,  try {,    const intents = ge
 }
 
 // Função principal da Sofia IA,async function processSofiaMessage(message: string, clientContext: any, context: any) {
-  // Detectar intenção,  const intent = detectIntent(message)
+  // Detectar intenção
+  const intent = detectIntent(message)
   
-  // Gerar resposta baseada na intenção e contexto,  const response = await generateSofiaResponse(intent, message, clientContext, context),  
+  // Gerar resposta baseada na intenção e contexto
+  
+  const response = await generateSofiaResponse(intent, message, clientContext, context),  
   return {,    message: response.message,    intent: intent.name,    confidence: intent.confidence,    suggestions: response.suggestions,    actions: response.actions,    conversationId: generateConversationId()
   }
 }
@@ -69,15 +82,21 @@ const intents = getSofiaIntents()
   for (const [intentName, intentData] of Object.entries(intents)) {,    let score =  
 const matchedKeywords: string[] = []
     
-    // Verificar keywords,    for (const keyword of intentData.keywords) {,      if (lowercaseMessage.includes(keyword.toLowerCase())) {,        score += 1,        matchedKeywords.push(keyword)
+    // Verificar keywords
+    
+    for (const keyword of intentData.keywords) {,      if (lowercaseMessage.includes(keyword.toLowerCase())) {,        score += 1,        matchedKeywords.push(keyword)
       }
     }
     
-    // Verificar patterns,    for (const pattern of intentData.patterns) {,      const regex = new RegExp(pattern, 'i'),      if (regex.test(lowercaseMessage)) {,        score += 2
+    // Verificar patterns
+    
+    for (const pattern of intentData.patterns) {,      const regex = new RegExp(pattern, 'i'),      if (regex.test(lowercaseMessage)) {,        score += 2
       }
     }
     
-    // Calcular confiança,    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1),    
+    // Calcular confiança
+    
+    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1),    
     if (confidence > bestMatch.confidence) {,      bestMatch = {,        name: intentName,        confidence,        keywords: matchedKeywords
       }
     }
@@ -228,7 +247,9 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
 
 // Obter resposta sobre documentos por país,async function getDocumentsResponse(country: string, clientName: string) {,  const countryLower = country.toLowerCase()
   
-  // Buscar requisitos na base de conhecimento,  const requirements = await prisma.visaRequirement.findFirst({,    where: {,      country: { contains: country },      isActive: true
+  // Buscar requisitos na base de conhecimento
+  
+  const requirements = await prisma.visaRequirement.findFirst({,    where: {,      country: { contains: country },      isActive: true
     }
   }),  
   if (requirements) {,    const docs =  
@@ -252,7 +273,9 @@ Quer uma análise completa do seu perfil?`,      suggestions: [,        'Fazer a
     }
   }
   
-  // Resposta genérica se não tem dados específicos,  const genericDocs = getGenericDocuments(countryLower),  return {,    message: `${clientName}, aqui estão os documentos típicos para ${country}:
+  // Resposta genérica se não tem dados específicos
+  
+  const genericDocs = getGenericDocuments(countryLower),  return {,    message: `${clientName}, aqui estão os documentos típicos para ${country}:
 
 📄 **Documentos Comuns:**
 ${genericDocs}

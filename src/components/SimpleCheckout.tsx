@@ -35,11 +35,14 @@ export default function SimpleCheckout({
     if (disabled) return
     
     if (price === 0) {
-      // Para produtos gratuitos, ir direto para o formulário,      window.location.href = '/consultoria-ia'
+      // Para produtos gratuitos
+      ir direto para o formulário,      window.location.href = '/consultoria-ia'
       return
     }
     
-    // ✅ Redirecionar DIRETAMENTE para checkout moderno sem modal,    const checkoutUrl = `/checkout-moderno?product=${encodeURIComponent(productId)}`
+    // ✅ Redirecionar DIRETAMENTE para checkout moderno sem modal
+    
+    const checkoutUrl = `/checkout-moderno?product=${encodeURIComponent(productId)}`
     window.location.href = checkoutUrl
     onSuccess?.()
   }
@@ -65,7 +68,9 @@ export default function SimpleCheckout({
     return 'border border-gray-200 shadow-md'
   }
 
-  // ✅ APENAS O CARD DO PRODUTO - SEM MODAL,  return (
+  // ✅ APENAS O CARD DO PRODUTO - SEM MODAL
+
+  return (
     <div className={`bg-white rounded-2xl p-6 ${getCardStyle()} ${className || ''} flex flex-col justify-between`}>
       {popular && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">

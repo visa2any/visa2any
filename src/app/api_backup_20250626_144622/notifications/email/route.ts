@@ -90,13 +90,17 @@ export async function POST(request: NextRequest) {
       html: validatedData.message || ''
     }
 
-    // Se usar template, carregar template e processar variáveis
+    // Se usar template
+
+    carregar template e processar variáveis
     if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
       const template = EMAIL_TEMPLATES[validatedData.template]
       emailContent.subject = template.subject
       emailContent.html = template.html
 
-      // Processar variáveis no template,      if (validatedData.variables) {
+      // Processar variáveis no template
+
+      if (validatedData.variables) {
         Object.entries(validatedData.variables).forEach(([key, value]) => {
           emailContent.html = emailContent.html.replace(
             new RegExp(`{${key}}`, 'g') 
@@ -110,13 +114,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Enviar email usando o provedor configurado,    const emailResult = await sendEmailWithProvider({
+    // Enviar email usando o provedor configurado
+
+    const emailResult = await sendEmailWithProvider({
       to: validatedData.to,
       subject: emailContent.subject,
       html: emailContent.html
     })
 
-    // Log do envio,    await prisma.automationLog.create({
+    // Log do envio
+
+    await prisma.automationLog.create({
       data: {
         type: 'EMAIL',
         action: 'send_email',
@@ -161,7 +169,8 @@ export async function POST(request: NextRequest) {
 
 // Função para enviar email usando SMTP Hostinger configurado
 async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
-  // Usar SMTP Hostinger (já configurado),  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  // Usar SMTP Hostinger (já configurado)
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     try {
       const nodemailer = require('nodemailer')
       
@@ -193,7 +202,9 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
     }
   }
 
-  // Fallback: Tentar SendGrid se configurado,  if (process.env.SENDGRID_API_KEY) {
+  // Fallback: Tentar SendGrid se configurado
+
+  if (process.env.SENDGRID_API_KEY) {
     try {
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
@@ -228,7 +239,9 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
     }
   }
 
-  // Se nada funcionou, simular envio
+  // Se nada funcionou
+
+  simular envio
   console.log('📧 SIMULANDO ENVIO DE EMAIL (SMTP não configurado):')
   console.log('Para:', to)
   console.log('Assunto:', subject)

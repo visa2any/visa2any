@@ -47,15 +47,20 @@ export function useProcessPayment() {
     setError(null)
 
     try {
-      // Preparar dados do pagamento com todos os campos obrigatórios,      const paymentRequest = {
+      // Preparar dados do pagamento com todos os campos obrigatórios
+      const paymentRequest = {
         token: paymentData.token,
         transaction_amount: paymentData.amount,
         installments: paymentData.installments,
         payment_method_id: 'credit_card', // Será determinado pelo token,        issuer_id: null, // Será determinado pelo token
         
-        // Device ID para prevenção de fraudes,        device_id: paymentData.deviceId,
+        // Device ID para prevenção de fraudes
         
-        // Dados completos do pagador,        payer: {
+        device_id: paymentData.deviceId,
+        
+        // Dados completos do pagador
+        
+        payer: {
           email: paymentData.customer.email,
           first_name: paymentData.customer.name.split(' ')[0] || '',
           last_name: paymentData.customer.name.split(' ').slice(1).join(' ') || '',
@@ -76,7 +81,9 @@ export function useProcessPayment() {
           } : undefined
         },
 
-        // Dados dos items,        additional_info: {
+        // Dados dos items
+
+        additional_info: {
           items: paymentData.items.map(item => ({
             id: item.id,
             title: item.title,
@@ -96,17 +103,29 @@ export function useProcessPayment() {
           }
         },
 
-        // Referência externa para correlação,        external_reference: paymentData.external_reference || `visa2any-${Date.now()}`,
-        
-        // URL de notificação webhook,        notification_url: `${window.location.origin}/api/payments/webhook/mercadopago`,
-        
-        // Descrição na fatura do cartão,        statement_descriptor: 'VISA2ANY',
-        
-        // Captura automática,        capture: true,
-        
-        // Modo binário para aprovação imediata,        binary_mode: true,
+        // Referência externa para correlação
 
-        // Dados de segurança,        metadata: {
+        external_reference: paymentData.external_reference || `visa2any-${Date.now()}`,
+        
+        // URL de notificação webhook
+        
+        notification_url: `${window.location.origin}/api/payments/webhook/mercadopago`,
+        
+        // Descrição na fatura do cartão
+        
+        statement_descriptor: 'VISA2ANY',
+        
+        // Captura automática
+        
+        capture: true,
+        
+        // Modo binário para aprovação imediata
+        
+        binary_mode: true,
+
+        // Dados de segurança
+
+        metadata: {
           platform: 'visa2any',
           version: '1.0',
           device_id: paymentData.deviceId,
@@ -115,7 +134,9 @@ export function useProcessPayment() {
         }
       }
 
-      // Enviar para API de pagamento,      const response = await fetch('/api/payments/process-payment', {
+      // Enviar para API de pagamento
+
+      const response = await fetch('/api/payments/process-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

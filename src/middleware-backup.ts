@@ -16,15 +16,20 @@ const protectedApiRoutes = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Pular autenticação para página de login,  if (pathname === '/admin/login') {
+  // Pular autenticação para página de login
+
+  if (pathname === '/admin/login') {
     return NextResponse.next()
   }
 
-  // Verificar se é rota protegida,  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+  // Verificar se é rota protegida
+
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   const isProtectedApiRoute = protectedApiRoutes.some(route => pathname.startsWith(route))
 
   if (isProtectedRoute || isProtectedApiRoute) {
-    // Buscar token,    const authHeader = request.headers.get('authorization')
+    // Buscar token
+    const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
     
     const token = authHeader?.replace('Bearer ', '') || cookieToken
@@ -35,13 +40,15 @@ export function middleware(request: NextRequest) {
           { status: 401 }
         )
       } else {
-        // Redirecionar para login,        const loginUrl = new URL('/admin/login', request.url)
+        // Redirecionar para login
+        const loginUrl = new URL('/admin/login', request.url)
         return NextResponse.redirect(loginUrl)
       }
     }
 
     try {
-      // Verificar token,      const jwtSecret = process.env.NEXTAUTH_SECRET
+      // Verificar token
+      const jwtSecret = process.env.NEXTAUTH_SECRET
       if (!jwtSecret) {
         console.error('NEXTAUTH_SECRET não configurado')
         if (isProtectedApiRoute) {
@@ -56,7 +63,9 @@ export function middleware(request: NextRequest) {
       
       const decoded = jwt.verify(token, jwtSecret) as any
 
-      // Adicionar dados do usuário ao header para as APIs,      if (isProtectedApiRoute) {
+      // Adicionar dados do usuário ao header para as APIs
+
+      if (isProtectedApiRoute) {
         const requestHeaders = new Headers(request.headers)
         requestHeaders.set('x-user-id', decoded.userId)
         requestHeaders.set('x-user-role', decoded.role)
@@ -74,7 +83,8 @@ export function middleware(request: NextRequest) {
           { status: 401 }
         )
       } else {
-        // Redirecionar para login,        const loginUrl = new URL('/admin/login', request.url)
+        // Redirecionar para login
+        const loginUrl = new URL('/admin/login', request.url)
         return NextResponse.redirect(loginUrl)
       }
     }

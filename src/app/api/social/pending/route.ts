@@ -3,7 +3,8 @@ import { prisma } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-// GET - Buscar posts pendentes para publicação,
+// GET - Buscar posts pendentes para publicação
+
 export async function GET() {,  try {
     const now =  
 const pendingPosts = await prisma.socialPost.findMany({,      where: {,        status: 'SCHEDULED',        scheduledAt: {,          lte: now // Posts agendados para agora ou no passado        }

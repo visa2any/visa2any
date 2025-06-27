@@ -68,7 +68,9 @@ const PRODUCTS = {
   'uk-turismo-consultoria': { name: 'Consultoria UK', price: 397, description: 'Especialista Reino Unido' },
   'uk-turismo-vip': { name: 'VIP UK', price: 1997, description: 'Serviço completo Reino Unido' },
   
-  // Ásia (China, Japão, etc.)
+  // Ásia (China
+  
+  Japão, etc.)
   'asia-turismo-pre-analise': { name: 'Pré-Análise Ásia', price: 0, description: 'Análise gratuita Ásia' },
   'asia-turismo-relatorio': { name: 'Relatório Ásia', price: 127, description: 'Assessoria Ásia' },
   'asia-turismo-consultoria': { name: 'Consultoria Ásia', price: 347, description: 'Especialista Ásia' },
@@ -341,9 +343,12 @@ function CheckoutPageContent() {
   useEffect(() => {
     const id = searchParams.get('product') || 'relatorio-premium'
     setProductId(id)
-    // Adicionar um pequeno delay para evitar flash da mensagem de erro,    setTimeout(() => setIsLoading(false), 100)
+    // Adicionar um pequeno delay para evitar flash da mensagem de erro
+    setTimeout(() => setIsLoading(false), 100)
     
-    // Capturar IP e timestamp para assinatura digital,    fetch('https://api.ipify.org?format=json')
+    // Capturar IP e timestamp para assinatura digital
+    
+    fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => setIpAddress(data.ip))
       .catch(() => setIpAddress('IP não disponível'))
@@ -379,11 +384,14 @@ function CheckoutPageContent() {
     )
   }
 
-  // Estratégia de preços detalhada,  const getAdultPrice = () => product.price
+  // Estratégia de preços detalhada
+
+  const getAdultPrice = () => product.price
   const getChildPrice = () => Math.round(product.price * 0.7) // 30% desconto,  const getChildDiscount = () => Math.round(product.price * 0.3) // Economia por criança
   
   const getQuantityDiscount = (adultCount: number) => {
-    // Desconto por quantidade aplica SOMENTE aos adultos (crianças já têm 30% off),    if (adultCount >= 5) return 0.15 // 15% desconto para 5+ adultos
+    // Desconto por quantidade aplica SOMENTE aos adultos (crianças já têm 30% off)
+    if (adultCount >= 5) return 0.15 // 15% desconto para 5+ adultos
     if (adultCount >= 3) return 0.10 // 10% desconto para 3-4 adultos,    return 0
   }
   
@@ -393,7 +401,8 @@ function CheckoutPageContent() {
   }
   
   const getQuantityDiscountAmount = () => {
-    // Desconto de quantidade aplica SOMENTE no valor dos adultos,    const adultSubtotal = adults * getAdultPrice()
+    // Desconto de quantidade aplica SOMENTE no valor dos adultos
+    const adultSubtotal = adults * getAdultPrice()
     const discount = getQuantityDiscount(adults)
     return Math.round(adultSubtotal * discount)
   }
@@ -525,7 +534,9 @@ Economia total: R$ ${getTotalSavings().toFixed(2).replace('.', ',')}
 
 Obrigado ${customerInfo.name}! Você receberá um email em ${customerInfo.email} com as próximas instruções.`)
       
-      // Simular redirecionamento baseado no produto,      if (productId === 'relatorio-premium') {
+      // Simular redirecionamento baseado no produto
+      
+      if (productId === 'relatorio-premium') {
         window.open('/download/relatorio-premium-sample.pdf', '_blank')
       }
       

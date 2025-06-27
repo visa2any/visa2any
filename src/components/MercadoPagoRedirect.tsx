@@ -26,14 +26,17 @@ export default function MercadoPagoRedirect({
   const [redirectUrl, setRedirectUrl] = useState<string>('')
 
   useEffect(() => {
-    // Buscar URL de redirect da preferência,    fetchRedirectUrl()
+    // Buscar URL de redirect da preferência
+    fetchRedirectUrl()
   }, [preferenceId])
 
   const fetchRedirectUrl = async () => {
     try {
       setLoading(true)
       
-      // Determinar URL baseada no ambiente,      const baseUrl = process.env.NODE_ENV === 'production' 
+      // Determinar URL baseada no ambiente
+      
+      const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://www.mercadopago.com.br/checkout/v1/redirect'
         : 'https://sandbox.mercadopago.com.br/checkout/v1/redirect'
       

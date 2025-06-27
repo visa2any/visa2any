@@ -2,9 +2,12 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'i'nterface NotificationData {,  id: string,  type: 'conversion' | 'payment' | 'tier_promotion' | 'bonus' | 'commission' | 'system',  title: string,  message: string,  data?: any,  read: boolean,  createdAt: string,  priority: 'low' | 'medium' | 'high' | 'urgent'
 }
 
-// Simulação de storage de notificações (em produção, usar Redis ou banco),const notificationsStore = new Map<string, NotificationData[]>()
+// Simulação de storage de notificações (em produção
 
-// GET - Buscar notificações do afiliado,
+usar Redis ou banco),const notificationsStore = new Map<string, NotificationData[]>()
+
+// GET - Buscar notificações do afiliado
+
 export async function GET(request: NextRequest) {,  try {
     const url =  
 const affiliateId = url.searchParams.get('affiliateId')
@@ -14,17 +17,27 @@ const limit = parseInt(url.searchParams.get('limit') || '50'),
       }, { status: 400 })
     }
 
-    // Buscar notificações do storage,    let notifications = notificationsStore.get(affiliateId) || []
+    // Buscar notificações do storage
 
-    // Se não há notificações, criar algumas de exemplo,    if (notifications.length === 0) {,      notifications = generateSampleNotifications(affiliateId),      notificationsStore.set(affiliateId, notifications)
+    let notifications = notificationsStore.get(affiliateId) || []
+
+    // Se não há notificações
+
+    criar algumas de exemplo,    if (notifications.length === 0) {,      notifications = generateSampleNotifications(affiliateId),      notificationsStore.set(affiliateId, notifications)
     }
 
-    // Filtrar apenas não lidas se solicitado,    if (unreadOnly) {,      notifications = notifications.filter(n => !n.read)
+    // Filtrar apenas não lidas se solicitado
+
+    if (unreadOnly) {,      notifications = notifications.filter(n => !n.read)
     }
 
-    // Limitar quantidade,    notifications = notifications.slice(0, limit)
+    // Limitar quantidade
 
-    // Contar não lidas,    const unreadCount = (notificationsStore.get(affiliateId) || [])
+    notifications = notifications.slice(0, limit)
+
+    // Contar não lidas
+
+    const unreadCount = (notificationsStore.get(affiliateId) || [])
       .filter(n => !n.read).length,
     return NextResponse.json({,      data: {,        notifications,        unreadCount,        total: notifications.length
       }
@@ -35,7 +48,8 @@ const limit = parseInt(url.searchParams.get('limit') || '50'),
   }
 }
 
-// POST - Criar nova notificação,
+// POST - Criar nova notificação
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const {,      affiliateId,      type,      title,      message,      data = {},      priority = 'medium'
@@ -46,9 +60,12 @@ const {,      affiliateId,      type,      title,      message,      data = {}, 
     const notification: NotificationData = {,      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,      type,      title,      message,      data,      read: false,      createdAt: new Date().toISOString(),      priority
     }
 
-    // Adicionar ao storage,    const existing = notificationsStore.get(affiliateId) || []
+    // Adicionar ao storage
+
+    const existing = notificationsStore.get(affiliateId) || []
     existing.unshift(notification) // Adicionar no início,    
-    // Manter apenas últimas 100 notificações,    if (existing.length > 100) {,      existing.splice(100)
+    // Manter apenas últimas 100 notificações
+    if (existing.length > 100) {,      existing.splice(100)
     },    
     notificationsStore.set(affiliateId, existing)
 
@@ -56,7 +73,8 @@ const {,      affiliateId,      type,      title,      message,      data = {}, 
  notification)
 
     // TODO: Enviar email se for urgente,    // if (priority === 'urgent') {
-    //   await sendEmailNotification(affiliateId, notification)
+    //   await sendEmailNotification(affiliateId
+    notification)
     // }
 
     return NextResponse.json({,      data: notification
@@ -67,7 +85,8 @@ const {,      affiliateId,      type,      title,      message,      data = {}, 
   }
 }
 
-// PUT - Marcar notificações como lidas,
+// PUT - Marcar notificações como lidas
+
 export async function PUT(request: NextRequest) {,  try {
     const body = await request.json()
 const { affiliateId, notificationIds, markAllAsRead = false } = body,
@@ -77,9 +96,11 @@ const { affiliateId, notificationIds, markAllAsRead = false } = body,
     const notifications = notificationsStore.get(affiliateId) || []
 
     if (markAllAsRead) {
-      // Marcar todas como lidas,      notifications.forEach(n => n.read = true)
+      // Marcar todas como lidas
+      notifications.forEach(n => n.read = true)
     } else if (notificationIds && Array.isArray(notificationIds)) {
-      // Marcar específicas como lidas,      notifications.forEach(n => {,        if (notificationIds.includes(n.id)) {,          n.read = true
+      // Marcar específicas como lidas
+      notifications.forEach(n => {,        if (notificationIds.includes(n.id)) {,          n.read = true
         }
       })
     },
@@ -122,7 +143,9 @@ const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 // Funções utilitárias para envio de notificações específicas,async function sendConversionNotification(affiliateId: string, conversionData: any) {,  const notification = {,    affiliateId,    type: 'conversion',    title: '🎉 Nova Conversão!',    message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`,    data: conversionData,    priority: 'high'
   }
 
-  // Simular envio da notificação,  return await fetch('/api/affiliates/notifications', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify(notification)
+  // Simular envio da notificação
+
+  return await fetch('/api/affiliates/notifications', {,    method: 'POST',    headers: { 'Content-Type': 'application/json' },    body: JSON.stringify(notification)
   })
 },
 async function sendPaymentNotification(affiliateId: string, paymentData: any) {,  const notification = {,    affiliateId,    type: 'payment',    title: '💰 Pagamento Processado',    message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`,    data: paymentData,    priority: 'high'

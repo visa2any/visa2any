@@ -6,11 +6,13 @@ import { z } from 'zod'
 // Schema para atualizar cliente,const updateClientSchema = z.object({,  name: z.string().min(2).optional(),  email: z.string().email().optional(),  phone: z.string().optional(),  country: z.string().optional(),  nationality: z.string().optional(),  age: z.number().min(0).max(120).optional(),  profession: z.string().optional(),  education: z.string().optional(),  targetCountry: z.string().optional(),  visaType: z.string().optional(),  status: z.enum(['LEAD', 'QUALIFIED', 'CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED', 'COMPLETED', 'INACTIVE']).optional(),  score: z.number().min(0).max(100).optional(),  notes: z.string().optional(),  source: z.string().optional(),  assignedUserId: z.string().optional()
 })
 
-// GET /api/clients/[id] - Buscar cliente específico,
+// GET /api/clients/[id] - Buscar cliente específico
+
 export async function GET(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
+    // Verificar autenticação
+    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
     },    const { id } = params,
     const client = await prisma.client.findUnique({,      where: { id },      include: {,        assignedUser: {,          select: { id: true, name: true, email: true, role: true }
         },        consultations: {,          orderBy: { createdAt: 'desc' },          include: {,            consultant: {,              select: { id: true, name: true, email: true }
@@ -36,23 +38,32 @@ export async function GET(
 
 // PATCH /api/clients/[id] - Atualizar campo específico (inline edit),export async function PATCH(,  request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
+    // Verificar autenticação
+    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
     },    const { id } = params,    const body = await request.json()
 
-    // Validar dados,    const validatedData = updateClientSchema.parse(body)
+    // Validar dados
 
-    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({,      where: { id }
+    const validatedData = updateClientSchema.parse(body)
+
+    // Verificar se cliente existe
+
+    const existingClient = await prisma.client.findUnique({,      where: { id }
     }),
     if (!existingClient) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Atualizar cliente,    const updatedClient = await prisma.client.update({,      where: { id },      data: validatedData,      include: {,        assignedUser: {,          select: { id: true, name: true, email: true }
+    // Atualizar cliente
+
+    const updatedClient = await prisma.client.update({,      where: { id },      data: validatedData,      include: {,        assignedUser: {,          select: { id: true, name: true, email: true }
         }
       }
     })
 
-    // Log da atualização,    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_UPDATED',        action: 'inline_edit',        clientId: id,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da atualização
+
+    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_UPDATED',        action: 'inline_edit',        clientId: id,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),
@@ -68,27 +79,37 @@ export async function GET(
   }
 }
 
-// PUT /api/clients/[id] - Atualizar cliente completo,
+// PUT /api/clients/[id] - Atualizar cliente completo
+
 export async function PUT(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
+    // Verificar autenticação
+    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
     },    const { id } = params,    const body = await request.json()
 
-    // Validar dados,    const validatedData = updateClientSchema.parse(body)
+    // Validar dados
 
-    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({,      where: { id }
+    const validatedData = updateClientSchema.parse(body)
+
+    // Verificar se cliente existe
+
+    const existingClient = await prisma.client.findUnique({,      where: { id }
     }),
     if (!existingClient) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Atualizar cliente,    const updatedClient = await prisma.client.update({,      where: { id },      data: validatedData,      include: {,        assignedUser: {,          select: { id: true, name: true, email: true }
+    // Atualizar cliente
+
+    const updatedClient = await prisma.client.update({,      where: { id },      data: validatedData,      include: {,        assignedUser: {,          select: { id: true, name: true, email: true }
         }
       }
     })
 
-    // Log da atualização,    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_UPDATED',        action: 'update_client',        clientId: id,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da atualização
+
+    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_UPDATED',        action: 'update_client',        clientId: id,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),
@@ -104,23 +125,31 @@ export async function PUT(
   }
 }
 
-// DELETE /api/clients/[id] - Deletar cliente,
+// DELETE /api/clients/[id] - Deletar cliente
+
 export async function DELETE(
   request: NextRequest,  { params }: { params: { id: string } }
 ) {,  try {
-    // Verificar autenticação,    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
+    // Verificar autenticação
+    const user = await verifyAuth(request),    if (!user) {,      return createAuthError('Acesso não autorizado')
     },    const { id } = params
 
-    // Verificar se cliente existe,    const existingClient = await prisma.client.findUnique({,      where: { id }
+    // Verificar se cliente existe
+
+    const existingClient = await prisma.client.findUnique({,      where: { id }
     }),
     if (!existingClient) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Deletar cliente (cascade irá deletar relacionamentos),    await prisma.client.delete({,      where: { id }
+    // Deletar cliente (cascade irá deletar relacionamentos)
+
+    await prisma.client.delete({,      where: { id }
     })
 
-    // Log da deleção,    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_DELETED',        action: 'delete_client',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da deleção
+
+    await prisma.automationLog.create({,      data: {,        type: 'CLIENT_DELETED',        action: 'delete_client',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),

@@ -94,7 +94,9 @@ export function CountryComparison() {
 
   const { notifySuccess, notifyInfo } = useSystemNotifications()
 
-  // Mock country data,  const countries: { [key: string]: CountryData } = {
+  // Mock country data
+
+  const countries: { [key: string]: CountryData } = {
     USA: {
       code: 'USA',
       name: 'Estados Unidos',

@@ -6,17 +6,24 @@ import { z } from 'zod'
 // Schema para envio de WhatsApp,const sendWhatsAppSchema = z.object({,  to: z.string().min(10, 'Número de telefone é obrigatório'),  message: z.string().min(1, 'Mensagem é obrigatória'),  clientId: z.string().optional(),  template: z.string().optional(),  variables: z.record(z.any()).optional(),  mediaUrl: z.string().url().optional()
 })
 
-// POST /api/notifications/whatsapp - Enviar WhatsApp,
+// POST /api/notifications/whatsapp - Enviar WhatsApp
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = sendWhatsAppSchema.parse(body)
 
-    // Obter serviço WhatsApp integrado,    const whatsappService = getWhatsAppService()
+    // Obter serviço WhatsApp integrado
 
-    // Enviar WhatsApp usando o serviço integrado,    const whatsAppResult = await whatsappService.sendMessage({,      to: validatedData.to,      message: validatedData.message,      clientId: validatedData.clientId,      template: validatedData.template,      variables: validatedData.variables
+    const whatsappService = getWhatsAppService()
+
+    // Enviar WhatsApp usando o serviço integrado
+
+    const whatsAppResult = await whatsappService.sendMessage({,      to: validatedData.to,      message: validatedData.message,      clientId: validatedData.clientId,      template: validatedData.template,      variables: validatedData.variables
     })
 
-    // Log do envio,    await prisma.automationLog.create({,      data: {,        type: 'WHATSAPP',        action: 'send_whatsapp',        success: whatsAppResult.success,        clientId: validatedData.clientId || null,        error: whatsAppResult.error || null,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log do envio
+
+    await prisma.automationLog.create({,      data: {,        type: 'WHATSAPP',        action: 'send_whatsapp',        success: whatsAppResult.success,        clientId: validatedData.clientId || null,        error: whatsAppResult.error || null,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),
@@ -33,7 +40,8 @@ const validatedData = sendWhatsAppSchema.parse(body)
   }
 }
 
-// GET /api/notifications/whatsapp/status - Obter status do WhatsApp,
+// GET /api/notifications/whatsapp/status - Obter status do WhatsApp
+
 export async function GET(request: NextRequest) {,  try {
     const whatsappService =  
 const status = whatsappService.getStatus(),

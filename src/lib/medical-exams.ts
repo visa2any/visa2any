@@ -310,7 +310,9 @@ class MedicalExamService {
     }
   ]
 
-  // Buscar clínicas por país e cidade,  async getApprovedClinics(country: string, city?: string, state?: string): Promise<MedicalClinic[]> {
+  // Buscar clínicas por país e cidade
+
+  async getApprovedClinics(country: string, city?: string, state?: string): Promise<MedicalClinic[]> {
     let clinics = this.approvedClinics.filter(clinic => 
       clinic.approvedFor.includes(country.toLowerCase())
     )
@@ -327,20 +329,26 @@ class MedicalExamService {
       )
     }
 
-    // Simular disponibilidade de horários,    for (const clinic of clinics) {
+    // Simular disponibilidade de horários
+
+    for (const clinic of clinics) {
       clinic.availableSlots = await this.generateAvailableSlots(clinic.id)
     }
 
     return clinics.sort((a, b) => b.rating - a.rating)
   }
 
-  // Buscar tipos de exame por país,  getRequiredExams(country: string): MedicalExam[] {
+  // Buscar tipos de exame por país
+
+  getRequiredExams(country: string): MedicalExam[] {
     return this.examTypes.filter(exam => 
       exam.requiredFor.includes(country.toLowerCase())
     )
   }
 
-  // Agendar exame médico,  async bookMedicalExam(booking: Omit<ExamBooking, 'bookingId' | 'status'>): Promise<{
+  // Agendar exame médico
+
+  async bookMedicalExam(booking: Omit<ExamBooking, 'bookingId' | 'status'>): Promise<{
     success: boolean
     bookingId?: string
     confirmationCode?: string
@@ -352,7 +360,9 @@ class MedicalExamService {
       if (!clinic) {
       }
 
-      // Verificar se a data está disponível,      const isAvailable = await this.checkSlotAvailability(
+      // Verificar se a data está disponível
+
+      const isAvailable = await this.checkSlotAvailability(
         booking.clinicId, 
         booking.appointmentDate, 
         booking.appointmentTime
@@ -361,10 +371,14 @@ class MedicalExamService {
       if (!isAvailable) {
       }
 
-      // Gerar ID do agendamento,      const bookingId = `MED-${Date.now()}-${booking.applicantId}`
+      // Gerar ID do agendamento
+
+      const bookingId = `MED-${Date.now()}-${booking.applicantId}`
       const confirmationCode = this.generateConfirmationCode()
 
-      // Simular agendamento,      await this.delay(1000)
+      // Simular agendamento
+
+      await this.delay(1000)
 
       const instructions = this.generateBookingInstructions(clinic, booking.examTypes)
 
@@ -379,15 +393,20 @@ class MedicalExamService {
     }
   }
 
-  // Verificar status do exame,  async getExamStatus(bookingId: string): Promise<{
+  // Verificar status do exame
+
+  async getExamStatus(bookingId: string): Promise<{
     success: boolean
     booking?: ExamBooking
     error?: string
   }> {
     try {
-      // Simular busca no banco,      await this.delay(500)
+      // Simular busca no banco
+      await this.delay(500)
 
-      // Mock data,      const mockBooking: ExamBooking = {
+      // Mock data
+
+      const mockBooking: ExamBooking = {
         bookingId,
         applicantId: 'user123',
         clinicId: 'usa-brazil-hcor',
@@ -409,7 +428,9 @@ class MedicalExamService {
     }
   }
 
-  // Cancelar exame,  async cancelExam(bookingId: string): Promise<{ success: boolean; message: string }> {
+  // Cancelar exame
+
+  async cancelExam(bookingId: string): Promise<{ success: boolean; message: string }> {
     try {
       await this.delay(800)
       return { 
@@ -419,7 +440,9 @@ class MedicalExamService {
     }
   }
 
-  // Reagendar exame,  async rescheduleExam(
+  // Reagendar exame
+
+  async rescheduleExam(
     bookingId: string, 
     newDate: string, 
     newTime: string
@@ -442,17 +465,22 @@ class MedicalExamService {
     const slots: string[] = []
     const today = new Date()
     
-    // Gerar slots para os próximos 30 dias,    for (let i = 1; i <= 30; i++) {
+    // Gerar slots para os próximos 30 dias
+    
+    for (let i = 1; i <= 30; i++) {
       const date = new Date(today)
       date.setDate(today.getDate() + i)
       
-      // Pular fins de semana para a maioria das clínicas,      if (date.getDay() === 0 || date.getDay() === 6) continue
+      // Pular fins de semana para a maioria das clínicas
+      
+      if (date.getDay() === 0 || date.getDay() === 6) continue
       
       const dateStr = date.toISOString().split('T')[0]
       const times = ['08:00', '09:30', '11:00', '14:00', '15:30']
       
       times.forEach(time => {
-        // Simular 70% de disponibilidade,        if (Math.random() > 0.3) {
+        // Simular 70% de disponibilidade
+        if (Math.random() > 0.3) {
           slots.push(`${dateStr}T${time}`)
         }
       })

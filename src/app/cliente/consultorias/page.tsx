@@ -45,7 +45,8 @@ export default function ConsultoriasPage() {
 
   const loadData = () => {
     try {
-      // Load customer data,      const storedCustomer = localStorage.getItem('customer')
+      // Load customer data
+      const storedCustomer = localStorage.getItem('customer')
       if (storedCustomer) {
         setCustomerData(JSON.parse(storedCustomer))
       } else {
@@ -60,7 +61,9 @@ export default function ConsultoriasPage() {
         })
       }
 
-      // Load consultations,      setConsultations([
+      // Load consultations
+
+      setConsultations([
         {
           id: '1',
           type: 'AI_ANALYSIS',

@@ -45,7 +45,9 @@ export default function ChatBot() {
     scrollToBottom()
   }, [messages])
 
-  // Escutar eventos para esconder ChatBot durante análises,  useEffect(() => {
+  // Escutar eventos para esconder ChatBot durante análises
+
+  useEffect(() => {
     const handleHideChatBot = () => setIsHidden(true)
     const handleShowChatBot = () => setIsHidden(false)
 
@@ -60,7 +62,8 @@ export default function ChatBot() {
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      // Mensagem de boas-vindas,      setTimeout(() => {
+      // Mensagem de boas-vindas
+      setTimeout(() => {
         addBotMessage(
           "👋 Olá! Sou a Sofia, assistente virtual da Visa2Any. Estou aqui para ajudar você a realizar seu sonho internacional! Como posso te ajudar hoje?",
           getWelcomeOptions()
@@ -357,7 +360,9 @@ export default function ChatBot() {
   const getIntelligentResponse = (message: string) => {
     const lowerMessage = message.toLowerCase()
     
-    // Análise de sentimento e intenção,    const keywords = {
+    // Análise de sentimento e intenção
+    
+    const keywords = {
       pricing: ['preço', 'valor', 'custo', 'quanto', 'custa', 'barato', 'caro', 'investimento', 'pagar'],
       time: ['tempo', 'prazo', 'demora', 'rapidez', 'quanto tempo', 'quando', 'urgente', 'rápido'],
       documents: ['documento', 'papel', 'certidão', 'passaporte', 'rg', 'comprovante', 'exigência'],
@@ -369,7 +374,9 @@ export default function ChatBot() {
       help: ['ajuda', 'socorro', 'não sei', 'perdido', 'confuso', 'dúvida']
     }
 
-    // Detectar intenção principal,    let intent = 'general'
+    // Detectar intenção principal
+
+    let intent = 'general'
     let confidence = 0
     
     for (const [key, words] of Object.entries(keywords)) {
@@ -381,7 +388,9 @@ export default function ChatBot() {
       }
     }
 
-    // Respostas inteligentes baseadas na intenção,    switch (intent) {
+    // Respostas inteligentes baseadas na intenção
+
+    switch (intent) {
       case 'pricing':
         return {
           text: "💰 **Nossos preços são transparentes e competitivos:**\n\n" +
@@ -582,7 +591,9 @@ export default function ChatBot() {
     addUserMessage(inputValue)
     const message = inputValue.toLowerCase()
     
-    // Processamento inteligente baseado no step atual,    if (currentStep === 'collect-name' || currentStep === 'collect-name-consultation' || currentStep === 'collect-name-analysis') {
+    // Processamento inteligente baseado no step atual
+    
+    if (currentStep === 'collect-name' || currentStep === 'collect-name-consultation' || currentStep === 'collect-name-analysis') {
       setUserData(prev => ({ ...prev, name: inputValue }))
       addBotMessage(
         `Prazer em conhecer você, ${inputValue}! Agora, qual seu melhor email?`
@@ -615,7 +626,8 @@ export default function ChatBot() {
       )
       setCurrentStep('completed')
     } else {
-      // Usar resposta inteligente,      const response = getIntelligentResponse(message)
+      // Usar resposta inteligente
+      const response = getIntelligentResponse(message)
       addBotMessage(response.text, response.options)
     }
 
@@ -637,7 +649,9 @@ export default function ChatBot() {
     { icon: Phone, text: 'Contato', action: () => handleHumanAgent() }
   ]
 
-  // Não renderizar se ChatBot estiver escondido,  if (isHidden) return null
+  // Não renderizar se ChatBot estiver escondido
+
+  if (isHidden) return null
 
   return (
     <>

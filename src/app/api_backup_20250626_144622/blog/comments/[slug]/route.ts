@@ -11,7 +11,9 @@ export async function GET(
   try {
     const { slug } = params
 
-    // Buscar comentários do post com informações do usuário,    const comments = await prisma.blogPostComment.findMany({
+    // Buscar comentários do post com informações do usuário
+
+    const comments = await prisma.blogPostComment.findMany({
       where: {
         postId: slug,
         parentId: null // Apenas comentários principais (não respostas)      },
@@ -43,7 +45,9 @@ export async function GET(
       }
     })
 
-    // Formattar os comentários para incluir informações do autor,    const formattedComments = comments.map(comment => ({
+    // Formattar os comentários para incluir informações do autor
+
+    const formattedComments = comments.map(comment => ({
       id: comment.id,
       userId: comment.userId,
       postId: comment.postId,

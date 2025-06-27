@@ -122,7 +122,9 @@ export default function MercadoPagoVisualUpgrade({
 
       const bricksBuilder = mp.bricks()
 
-      // Limpar container se necessário,      const container = document.getElementById(CONTAINER_ID)
+      // Limpar container se necessário
+
+      const container = document.getElementById(CONTAINER_ID)
       if (container) {
         container.innerHTML = ''
       }
@@ -191,7 +193,9 @@ export default function MercadoPagoVisualUpgrade({
             setLoading(false)
             isCreatingBrick = false
             
-            // Aplicar estilos premium em múltiplas tentativas para garantir sucesso,            setTimeout(() => applyPremiumStyles(), 500)
+            // Aplicar estilos premium em múltiplas tentativas para garantir sucesso
+            
+            setTimeout(() => applyPremiumStyles(), 500)
             setTimeout(() => applyPremiumStyles(), 1500)
             setTimeout(() => applyPremiumStyles(), 3000)
           },
@@ -216,7 +220,9 @@ export default function MercadoPagoVisualUpgrade({
                   setPaymentResult(result)
                   setShowPixCode(true)
                   
-                  // Enviar email automático com PIX,                  try {
+                  // Enviar email automático com PIX
+                  
+                  try {
                     await fetch('/api/communications/send', {
                       method: 'POST',
                       headers: {
@@ -275,16 +281,21 @@ export default function MercadoPagoVisualUpgrade({
   const applyPremiumStyles = () => {
     const container = document.getElementById(CONTAINER_ID)
     if (!container) {
-      // Tentar novamente em 500ms se container não existe,      setTimeout(applyPremiumStyles, 500)
+      // Tentar novamente em 500ms se container não existe
+      setTimeout(applyPremiumStyles, 500)
       return
     }
 
-    // Verificar se já aplicou estilos para evitar duplicação,    if (container.getAttribute('data-styled') === 'true') {
+    // Verificar se já aplicou estilos para evitar duplicação
+
+    if (container.getAttribute('data-styled') === 'true') {
       return
     }
     container.setAttribute('data-styled', 'true')
 
-    // Aplicar estilos container principal sem sobrescrever conteúdo,    const existingStyles = container.style.cssText
+    // Aplicar estilos container principal sem sobrescrever conteúdo
+
+    const existingStyles = container.style.cssText
     container.style.cssText = existingStyles + `
       background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
       border-radius: 20px !important;
@@ -294,7 +305,9 @@ export default function MercadoPagoVisualUpgrade({
       position: relative !important;
     `
 
-    // Adicionar borda superior colorida se não existe,    if (!container.querySelector('.premium-top-border')) {
+    // Adicionar borda superior colorida se não existe
+
+    if (!container.querySelector('.premium-top-border')) {
       const topBorder = document.createElement('div')
       topBorder.className = 'premium-top-border'
       topBorder.style.cssText = `
@@ -310,8 +323,11 @@ export default function MercadoPagoVisualUpgrade({
       container.insertBefore(topBorder, container.firstChild)
     }
 
-    // Função para aplicar estilos aos métodos de pagamento - mais robusta,    const stylePaymentMethods = () => {
-      // Selecionar métodos de pagamento com múltiplos seletores,      const selectors = [
+    // Função para aplicar estilos aos métodos de pagamento - mais robusta
+
+    const stylePaymentMethods = () => {
+      // Selecionar métodos de pagamento com múltiplos seletores
+      const selectors = [
         '[data-cy="payment-method-option"]',
         '.mp-payment-method-item',
         '.cho-payment-method', 
@@ -331,7 +347,8 @@ export default function MercadoPagoVisualUpgrade({
       })
 
       if (methods.length === 0) {
-        // Se não encontrou, tentar novamente em 1 segundo
+        // Se não encontrou
+        tentar novamente em 1 segundo
         setTimeout(stylePaymentMethods, 1000)
         return
       }
@@ -341,15 +358,21 @@ export default function MercadoPagoVisualUpgrade({
       methods.forEach((method, index) => {
         const element = method as HTMLElement
         
-        // Pular se já foi estilizado,        if (element.getAttribute('data-premium-styled') === 'true') {
+        // Pular se já foi estilizado
+        
+        if (element.getAttribute('data-premium-styled') === 'true') {
           return
         }
         element.setAttribute('data-premium-styled', 'true')
 
-        // Preservar conteúdo original,        const originalContent = element.innerHTML
+        // Preservar conteúdo original
+
+        const originalContent = element.innerHTML
         const originalText = element.textContent?.trim() || ''
         
-        // Determinar tipo de pagamento,        let icon = '💳'
+        // Determinar tipo de pagamento
+        
+        let icon = '💳'
         let color = '#3b82f6'
         let subtitle = 'Pagamento seguro'
         
@@ -372,7 +395,9 @@ export default function MercadoPagoVisualUpgrade({
           subtitle = 'Parcelamento disponível'
         }
 
-        // Aplicar estilos sem quebrar funcionalidade,        const currentStyle = element.style.cssText
+        // Aplicar estilos sem quebrar funcionalidade
+
+        const currentStyle = element.style.cssText
         element.style.cssText = currentStyle + `
           background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
           border: 2px solid rgba(59, 130, 246, 0.1) !important;
@@ -392,7 +417,9 @@ export default function MercadoPagoVisualUpgrade({
           animation: slideInUp ${0.3 + (index * 0.1)}s ease-out forwards !important;
         `
 
-        // Adicionar overlay visual sem substituir conteúdo,        if (!element.querySelector('.premium-overlay')) {
+        // Adicionar overlay visual sem substituir conteúdo
+
+        if (!element.querySelector('.premium-overlay')) {
           const overlay = document.createElement('div')
           overlay.className = 'premium-overlay'
           overlay.style.cssText = `
@@ -420,7 +447,9 @@ export default function MercadoPagoVisualUpgrade({
           element.appendChild(overlay)
         }
 
-        // Event listeners para hover sem interferir na funcionalidade,        const handleMouseEnter = () => {
+        // Event listeners para hover sem interferir na funcionalidade
+
+        const handleMouseEnter = () => {
           element.style.setProperty('border-color', color, 'important')
           element.style.setProperty('transform', 'translateY(-4px) scale(1.02)', 'important')
           element.style.setProperty('box-shadow', `0 12px 30px ${color}40`, 'important')
@@ -438,7 +467,9 @@ export default function MercadoPagoVisualUpgrade({
         element.addEventListener('mouseleave', handleMouseLeave, { passive: true })
       })
 
-      // Adicionar CSS global se não existe,      if (!document.getElementById('premium-payment-styles')) {
+      // Adicionar CSS global se não existe
+
+      if (!document.getElementById('premium-payment-styles')) {
         const style = document.createElement('style')
         style.id = 'premium-payment-styles'
         style.textContent = `
@@ -466,9 +497,13 @@ export default function MercadoPagoVisualUpgrade({
       }
     }
 
-    // Aplicar estilos após delay para garantir que DOM esteja pronto,    setTimeout(stylePaymentMethods, 1000)
+    // Aplicar estilos após delay para garantir que DOM esteja pronto
+
+    setTimeout(stylePaymentMethods, 1000)
     
-    // Observar mudanças no DOM para reagir a atualizações,    const observer = new MutationObserver((mutations) => {
+    // Observar mudanças no DOM para reagir a atualizações
+    
+    const observer = new MutationObserver((mutations) => {
       let shouldReapply = false
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
@@ -494,7 +529,9 @@ export default function MercadoPagoVisualUpgrade({
       attributes: false
     })
 
-    // Limpar observer após 30 segundos para evitar vazamentos,    setTimeout(() => observer.disconnect(), 30000)
+    // Limpar observer após 30 segundos para evitar vazamentos
+
+    setTimeout(() => observer.disconnect(), 30000)
   }
 
   const copyPixCode = async () => {
@@ -509,7 +546,9 @@ export default function MercadoPagoVisualUpgrade({
     }
   }
 
-  // Tela PIX,  if (showPixCode && paymentResult) {
+  // Tela PIX
+
+  if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -135,13 +135,17 @@ class TranslationService {
     }
   ]
 
-  // Tradução automática (não oficial),  async translateText(request: TranslationRequest): Promise<TranslationResponse> {
+  // Tradução automática (não oficial)
+
+  async translateText(request: TranslationRequest): Promise<TranslationResponse> {
     try {
       if (request.isOfficial) {
         return await this.requestOfficialTranslation(request)
       }
 
-      // Tentar diferentes provedores em ordem de preferência,      const providers = ['deepl', 'google', 'azure', 'aws']
+      // Tentar diferentes provedores em ordem de preferência
+
+      const providers = ['deepl', 'google', 'azure', 'aws']
       
       for (const provider of providers) {
         try {
@@ -167,7 +171,9 @@ class TranslationService {
     }
   }
 
-  // Tradução com provedor específico,  private async translateWithProvider(request: TranslationRequest, provider: string): Promise<TranslationResponse> {
+  // Tradução com provedor específico
+
+  private async translateWithProvider(request: TranslationRequest, provider: string): Promise<TranslationResponse> {
     const cost = this.calculateTranslationCost(request.text, provider, false)
     
     switch (provider) {
@@ -184,14 +190,19 @@ class TranslationService {
     }
   }
 
-  // DeepL - Melhor qualidade para idiomas suportados,  private async translateWithDeepL(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
-    // Simular API do DeepL,    await this.delay(1500)
+  // DeepL - Melhor qualidade para idiomas suportados
+
+  private async translateWithDeepL(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
+    // Simular API do DeepL
+    await this.delay(1500)
 
     if (!this.apiKeys.deepl) {
       throw new Error('Chave API DeepL não configurada')
     }
 
-    // Simular tradução de alta qualidade,    const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.95)
+    // Simular tradução de alta qualidade
+
+    const mockTranslation = this.generateMockTranslation(request.text, request.targetLanguage, 0.95)
 
     return {
       translatedText: mockTranslation,
@@ -203,7 +214,9 @@ class TranslationService {
     }
   }
 
-  // Google Translate,  private async translateWithGoogle(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
+  // Google Translate
+
+  private async translateWithGoogle(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
     await this.delay(1000)
 
     if (!this.apiKeys.google) {
@@ -222,7 +235,9 @@ class TranslationService {
     }
   }
 
-  // Azure Translator,  private async translateWithAzure(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
+  // Azure Translator
+
+  private async translateWithAzure(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
     await this.delay(1200)
 
     if (!this.apiKeys.azure) {
@@ -241,7 +256,9 @@ class TranslationService {
     }
   }
 
-  // AWS Translate,  private async translateWithAWS(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
+  // AWS Translate
+
+  private async translateWithAWS(request: TranslationRequest, cost: number): Promise<TranslationResponse> {
     await this.delay(1100)
 
     if (!this.apiKeys.aws) {
@@ -260,9 +277,12 @@ class TranslationService {
     }
   }
 
-  // Solicitar tradução juramentada/oficial,  private async requestOfficialTranslation(request: TranslationRequest): Promise<TranslationResponse> {
+  // Solicitar tradução juramentada/oficial
+
+  private async requestOfficialTranslation(request: TranslationRequest): Promise<TranslationResponse> {
     try {
-      // Encontrar tradutor adequado,      const availableTranslators = this.findSuitableTranslators(
+      // Encontrar tradutor adequado
+      const availableTranslators = this.findSuitableTranslators(
         request.sourceLanguage, 
         request.targetLanguage, 
         request.documentType
@@ -274,12 +294,16 @@ class TranslationService {
         }
       }
 
-      // Selecionar o melhor tradutor (por rating e disponibilidade),      const selectedTranslator = availableTranslators[0]
+      // Selecionar o melhor tradutor (por rating e disponibilidade)
+
+      const selectedTranslator = availableTranslators[0]
       
       const wordCount = request.text.split(' ').length
       const estimatedPages = Math.ceil(wordCount / 250) // ~250 palavras por página,      const cost = estimatedPages * selectedTranslator.costPerPage
 
-      // Simular envio da solicitação,      await this.delay(2000)
+      // Simular envio da solicitação
+
+      await this.delay(2000)
 
       const certificationNumber = this.generateCertificationNumber()
 
@@ -300,7 +324,9 @@ class TranslationService {
     }
   }
 
-  // Buscar tradutores adequados,  private findSuitableTranslators(
+  // Buscar tradutores adequados
+
+  private findSuitableTranslators(
     sourceLanguage: string, 
     targetLanguage: string, 
     documentType?: string
@@ -315,7 +341,9 @@ class TranslationService {
       .sort((a, b) => b.rating - a.rating)
   }
 
-  // Verificar especialização do tradutor,  private hasSpecialization(translator: OfficialTranslator, documentType: string): boolean {
+  // Verificar especialização do tradutor
+
+  private hasSpecialization(translator: OfficialTranslator, documentType: string): boolean {
     const specializationMap: Record<string, string[]> = {
       'birth_certificate': ['legal', 'civil'],
       'marriage_certificate': ['legal', 'civil'],
@@ -332,7 +360,9 @@ class TranslationService {
     )
   }
 
-  // Traduzir documento completo,  async translateDocument(document: DocumentForTranslation): Promise<{
+  // Traduzir documento completo
+
+  async translateDocument(document: DocumentForTranslation): Promise<{
     success: boolean
     translationId?: string
     estimatedCost?: number
@@ -357,7 +387,9 @@ class TranslationService {
         const selectedTranslator = translators[0]
         const cost = document.pageCount * selectedTranslator.costPerPage
 
-        // Aplicar urgência,        const urgencyMultiplier = {
+        // Aplicar urgência
+
+        const urgencyMultiplier = {
           'normal': 1.0,
           'urgent': 1.5,
           'express': 2.0
@@ -373,7 +405,8 @@ class TranslationService {
           translator: selectedTranslator.name
         }
       } else {
-        // Tradução automática para documentos não oficiais,        const baseCost = document.pageCount * 2.50 // R$ 2,50 por página para tradução automática
+        // Tradução automática para documentos não oficiais
+        const baseCost = document.pageCount * 2.50 // R$ 2,50 por página para tradução automática
         
         return {
           translationId: 'AUTO-' + Date.now(),
@@ -390,11 +423,15 @@ class TranslationService {
     }
   }
 
-  // Obter idiomas suportados,  getSupportedLanguages(): typeof this.supportedLanguages {
+  // Obter idiomas suportados
+
+  getSupportedLanguages(): typeof this.supportedLanguages {
     return this.supportedLanguages
   }
 
-  // Obter tradutores disponíveis,  getAvailableTranslators(sourceLanguage?: string, targetLanguage?: string): OfficialTranslator[] {
+  // Obter tradutores disponíveis
+
+  getAvailableTranslators(sourceLanguage?: string, targetLanguage?: string): OfficialTranslator[] {
     let translators = this.officialTranslators.filter(t => t.availability)
 
     if (sourceLanguage && targetLanguage) {
@@ -416,7 +453,9 @@ class TranslationService {
       const pageCount = Math.ceil(wordCount / 250)
       return pageCount * 45.00 // Média R$ 45 por página    }
 
-    // Preços por 1000 caracteres para tradução automática,    const rates: Record<string, number> = {
+    // Preços por 1000 caracteres para tradução automática
+
+    const rates: Record<string, number> = {
       'deepl': 0.02,    // R$ 0,02 por 1000 chars,      'google': 0.015,  // R$ 0,015 por 1000 chars
       'azure': 0.018,   // R$ 0,018 por 1000 chars,      'aws': 0.016      // R$ 0,016 por 1000 chars
     }
@@ -436,7 +475,8 @@ class TranslationService {
   }
 
   private generateMockTranslation(text: string, targetLanguage: string, confidence: number): string {
-    // Simulação simples de tradução,    const translations: Record<string, string> = {
+    // Simulação simples de tradução
+    const translations: Record<string, string> = {
       'en': text.replace(/português|brasil/gi, 'english|america'),
       'es': text.replace(/português|brasil/gi, 'español|américa'),
       'fr': text.replace(/português|brasil/gi, 'français|amérique'),

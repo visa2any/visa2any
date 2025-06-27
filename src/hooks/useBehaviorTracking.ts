@@ -24,7 +24,9 @@ export const useBehaviorTracking = (userId?: string) => {
   const scrollDepth = useRef(0)
   const exitIntentShown = useRef(false)
 
-  // Predefined automation triggers,  const triggers: AutomationTrigger[] = [
+  // Predefined automation triggers
+
+  const triggers: AutomationTrigger[] = [
     {
       id: 'exit_intent_offer',
       name: 'Oferta de Saída',
@@ -100,7 +102,9 @@ export const useBehaviorTracking = (userId?: string) => {
     }
   ]
 
-  // Track behavior events,  const trackEvent = (type: BehaviorEvent['type'], data: any = {}) => {
+  // Track behavior events
+
+  const trackEvent = (type: BehaviorEvent['type'], data: any = {}) => {
     const event: BehaviorEvent = {
       type,
       data,
@@ -108,7 +112,8 @@ export const useBehaviorTracking = (userId?: string) => {
     }
     
     setEvents(prev => [...prev.slice(-50), event]) // Keep last 50 events,    
-    // Send to backend for persistent tracking,    if (userId) {
+    // Send to backend for persistent tracking
+    if (userId) {
       fetch('/api/automation/behavioral-triggers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,16 +122,21 @@ export const useBehaviorTracking = (userId?: string) => {
     }
   }
 
-  // Check and execute triggers,  const checkTriggers = () => {
+  // Check and execute triggers
+
+  const checkTriggers = () => {
     const now = Date.now()
     
     triggers
       .filter(trigger => {
-        // Check cooldown,        if (trigger.lastTriggered && (now - trigger.lastTriggered) < trigger.cooldown * 60 * 1000) {
+        // Check cooldown
+        if (trigger.lastTriggered && (now - trigger.lastTriggered) < trigger.cooldown * 60 * 1000) {
           return false
         }
         
-        // Check if already active,        if (activeTriggers.includes(trigger.id)) {
+        // Check if already active
+        
+        if (activeTriggers.includes(trigger.id)) {
           return false
         }
         
@@ -140,19 +150,26 @@ export const useBehaviorTracking = (userId?: string) => {
         
         console.log(`🤖 Automação executada: ${trigger.name}`)
         
-        // Disparar evento customizado para integrar com upsells,        window.dispatchEvent(new CustomEvent('behaviorTrigger', {
+        // Disparar evento customizado para integrar com upsells
+        
+        window.dispatchEvent(new CustomEvent('behaviorTrigger', {
           detail: { triggerId: trigger.id, triggerName: trigger.name, userId }
         }))
       })
   }
 
-  // Setup automatic tracking,  useEffect(() => {
-    // Track page view,    trackEvent('page_view', { 
+  // Setup automatic tracking
+
+  useEffect(() => {
+    // Track page view
+    trackEvent('page_view', { 
       page: window.location.pathname,
       referrer: document.referrer 
     })
 
-    // Track scroll depth,    const handleScroll = () => {
+    // Track scroll depth
+
+    const handleScroll = () => {
       const scrollPercent = Math.round(
         (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
       )
@@ -163,13 +180,17 @@ export const useBehaviorTracking = (userId?: string) => {
       }
     }
 
-    // Track exit intent,    const handleMouseLeave = (e: MouseEvent) => {
+    // Track exit intent
+
+    const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !exitIntentShown.current) {
         trackEvent('exit_intent', { timeSpent: Date.now() - pageStartTime.current })
       }
     }
 
-    // Track time spent,    const timeTracker = setInterval(() => {
+    // Track time spent
+
+    const timeTracker = setInterval(() => {
       trackEvent('time_spent', { 
         page: window.location.pathname,
         duration: Date.now() - pageStartTime.current 
@@ -186,7 +207,9 @@ export const useBehaviorTracking = (userId?: string) => {
     }
   }, [])
 
-  // Check triggers periodically,  useEffect(() => {
+  // Check triggers periodically
+
+  useEffect(() => {
     const triggerChecker = setInterval(checkTriggers, 5000) // Every 5 seconds,    return () => clearInterval(triggerChecker)
   }, [events])
 
@@ -199,7 +222,8 @@ export const useBehaviorTracking = (userId?: string) => {
 
 // Automation actions
 const showExitIntentModal = () => {
-  // Create and show exit intent modal,  const modal = document.createElement('div')
+  // Create and show exit intent modal
+  const modal = document.createElement('div')
   modal.id = 'exit-intent-modal'
   modal.innerHTML = `
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -224,14 +248,17 @@ const showExitIntentModal = () => {
   `
   document.body.appendChild(modal)
   
-  // Auto remove after 10 seconds,  setTimeout(() => {
+  // Auto remove after 10 seconds
+  
+  setTimeout(() => {
     const existingModal = document.getElementById('exit-intent-modal')
     if (existingModal) existingModal.remove()
   }, 10000)
 }
 
 const showPricingAssistant = () => {
-  // Show pricing assistance,  const assistant = document.createElement('div')
+  // Show pricing assistance
+  const assistant = document.createElement('div')
   assistant.id = 'pricing-assistant'
   assistant.innerHTML = `
     <div class="fixed bottom-20 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-2xl shadow-xl max-w-sm z-40">
@@ -261,7 +288,8 @@ const showPricingAssistant = () => {
 }
 
 const showEngagementBooster = () => {
-  // Show engagement booster,  const booster = document.createElement('div')
+  // Show engagement booster
+  const booster = document.createElement('div')
   booster.id = 'engagement-booster'
   booster.innerHTML = `
     <div class="fixed top-20 right-6 bg-gradient-to-r from-green-500 to-blue-500 text-white p-4 rounded-2xl shadow-xl max-w-sm z-40 animate-bounce">
@@ -289,7 +317,8 @@ const showEngagementBooster = () => {
 }
 
 const showFormAssistant = () => {
-  // Show form completion assistant,  const assistant = document.createElement('div')
+  // Show form completion assistant
+  const assistant = document.createElement('div')
   assistant.id = 'form-assistant'
   assistant.innerHTML = `
     <div class="fixed bottom-20 left-6 bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-2xl shadow-xl max-w-sm z-40">
@@ -317,7 +346,8 @@ const showFormAssistant = () => {
 }
 
 const showSuccessCelebration = () => {
-  // Show success celebration,  const celebration = document.createElement('div')
+  // Show success celebration
+  const celebration = document.createElement('div')
   celebration.id = 'success-celebration'
   celebration.innerHTML = `
     <div class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">

@@ -52,21 +52,26 @@ export default function MercadoPagoInline({
   const initializationRef = useRef<boolean>(false)
 
   useEffect(() => {
-    // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick, ABORTAR
+    // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick
+    ABORTAR
     if (isCreatingBrick) {
       console.log('🛑 JÁ CRIANDO BRICK EM OUTRO LUGAR - ABORTANDO')
       setLoading(false)
       return
     }
     
-    // Verificar se já existe brick no DOM,    const container = document.getElementById(CONTAINER_ID)
+    // Verificar se já existe brick no DOM
+    
+    const container = document.getElementById(CONTAINER_ID)
     if (container && container.children.length > 0) {
       console.log('🛑 BRICK JÁ EXISTE NO DOM - REUTILIZANDO')
       setLoading(false)
       return
     }
     
-    // Verificar contador global,    if (brickCount > 0) {
+    // Verificar contador global
+    
+    if (brickCount > 0) {
       console.log('🛑 BRICK COUNT > 0 - JÁ EXISTE BRICK')
       setLoading(false)
       return
@@ -86,17 +91,22 @@ export default function MercadoPagoInline({
   }, [preferenceId])
 
   const loadMercadoPagoSDK = () => {
-    // Verificar se o SDK já está carregado,    if (window.MercadoPago) {
+    // Verificar se o SDK já está carregado
+    if (window.MercadoPago) {
       initializeMercadoPago()
       return
     }
 
-    // Timeout de segurança para carregamento do SDK (30 segundos),    const timeout = setTimeout(() => {
+    // Timeout de segurança para carregamento do SDK (30 segundos)
+
+    const timeout = setTimeout(() => {
       setError('Timeout ao carregar SDK do MercadoPago. Verifique sua conexão.')
       setLoading(false)
     }, 30000)
 
-    // Carregar SDK do MercadoPago,    const script = document.createElement('script')
+    // Carregar SDK do MercadoPago
+
+    const script = document.createElement('script')
     script.src = 'https://sdk.mercadopago.com/js/v2'
     script.async = true
     script.onload = () => {
@@ -116,7 +126,9 @@ export default function MercadoPagoInline({
     try {
       console.log('🔥 INICIANDO CRIAÇÃO DO BRICK - CONTROLE RADICAL')
       
-      // VERIFICAÇÃO FINAL: Se não estamos criando, abortar
+      // VERIFICAÇÃO FINAL: Se não estamos criando
+      
+      abortar
       if (!isCreatingBrick) {
         console.log('🛑 NÃO ESTAMOS CRIANDO BRICK - ABORTANDO')
         return
@@ -128,14 +140,18 @@ export default function MercadoPagoInline({
       
       console.log('✅ MercadoPago instância criada')
       
-      // Timeout de segurança para loading,      const loadingTimeout = setTimeout(() => {
+      // Timeout de segurança para loading
+      
+      const loadingTimeout = setTimeout(() => {
         console.warn('⚠️ Timeout do loading do MercadoPago')
         setLoading(false)
         setError('Timeout ao carregar formulário. Tente novamente.')
         isCreatingBrick = false
       }, 20000)
       
-      // Garantir que container existe com ID único,      let container = document.getElementById(CONTAINER_ID)
+      // Garantir que container existe com ID único
+      
+      let container = document.getElementById(CONTAINER_ID)
       if (!container) {
         console.log('❌ Container não encontrado com ID único')
         setError('Erro no container de pagamento')
@@ -147,7 +163,9 @@ export default function MercadoPagoInline({
       
       const bricks = mp.bricks()
       
-      // LIMPAR CONTAINER COMPLETAMENTE,      container.innerHTML = ''
+      // LIMPAR CONTAINER COMPLETAMENTE
+      
+      container.innerHTML = ''
       
       const settings = {
         initialization: {
@@ -189,7 +207,8 @@ export default function MercadoPagoInline({
             clearTimeout(loadingTimeout)
             setLoading(false)
             isCreatingBrick = false // Marcar como finalizado,            
-            // Aplicar estilos personalizados após carregamento,            setTimeout(() => {
+            // Aplicar estilos personalizados após carregamento
+            setTimeout(() => {
               applyCustomStyles()
             }, 500)
           },
@@ -224,13 +243,16 @@ export default function MercadoPagoInline({
               .then(result => {
                 console.log('🎯 Resultado completo do pagamento:', result)
                 if (result.success) {
-                  // Se for PIX, mostrar QR code na tela e enviar email
+                  // Se for PIX
+                  mostrar QR code na tela e enviar email
                   if ((selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') && result.qr_code_base64) {
                     setPaymentResult(result)
                     setShowPixCode(true)
                     setLoading(false)
                     
-                    // Enviar email com QR code do PIX,                    fetch('/api/communications/send', {
+                    // Enviar email com QR code do PIX
+                    
+                    fetch('/api/communications/send', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
@@ -272,10 +294,12 @@ export default function MercadoPagoInline({
                       })
                     }).catch(error => console.log('Erro ao enviar email PIX:', error))
                   } else if (result.ticket_url) {
-                    // Boleto - mostrar link,                    setPaymentResult(result)
+                    // Boleto - mostrar link
+                    setPaymentResult(result)
                     setLoading(false)
                   } else {
-                    // Outros pagamentos - sucesso direto,                    if (onSuccess) onSuccess(result)
+                    // Outros pagamentos - sucesso direto
+                    if (onSuccess) onSuccess(result)
                   }
                   resolve(result)
                 } else {
@@ -318,12 +342,16 @@ export default function MercadoPagoInline({
     const container = document.getElementById(CONTAINER_ID)
     if (!container) return
 
-    // Aplicar estilos por força bruta com JavaScript,    const applyGridLayout = () => {
-      // Encontrar qualquer container que contenha métodos de pagamento,      const methodContainers = container.querySelectorAll('div')
+    // Aplicar estilos por força bruta com JavaScript
+
+    const applyGridLayout = () => {
+      // Encontrar qualquer container que contenha métodos de pagamento
+      const methodContainers = container.querySelectorAll('div')
       methodContainers.forEach((div) => {
         const children = div.children
         if (children.length >= 3 && children.length <= 6) {
-          // Provavelmente é o container dos métodos,          console.log('🎯 Aplicando grid ao container:', div)
+          // Provavelmente é o container dos métodos
+          console.log('🎯 Aplicando grid ao container:', div)
           div.style.setProperty('display', 'grid', 'important')
           div.style.setProperty('grid-template-columns', 'repeat(auto-fit, minmax(160px, 1fr))', 'important')
           div.style.setProperty('gap', '12px', 'important')
@@ -332,11 +360,15 @@ export default function MercadoPagoInline({
         }
       })
 
-      // Estilizar métodos individuais com visual premium,      const paymentMethods = container.querySelectorAll('div[role="button"], div[tabindex], button, [onclick], .mp-payment-method, .cho-payment-method')
+      // Estilizar métodos individuais com visual premium
+
+      const paymentMethods = container.querySelectorAll('div[role="button"], div[tabindex], button, [onclick], .mp-payment-method, .cho-payment-method')
       paymentMethods.forEach((method, index) => {
         const text = method.textContent?.toLowerCase() || ''
         
-        // Identificar tipo de pagamento e personalizar,        let icon = '💳'
+        // Identificar tipo de pagamento e personalizar
+        
+        let icon = '💳'
         let subtitle = ''
         let isPaymentMethod = false
         
@@ -362,7 +394,9 @@ export default function MercadoPagoInline({
           console.log('🎨 Aplicando visual premium ao método:', text)
           method.classList.add('payment-method-enhanced')
           
-          // Aplicar estilos diretamente,          const styles = {
+          // Aplicar estilos diretamente
+          
+          const styles = {
             'background': 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
             'border': '2px solid transparent',
             'border-radius': '20px',
@@ -384,7 +418,9 @@ export default function MercadoPagoInline({
             method.style.setProperty(prop, value, 'important')
           })
           
-          // Adicionar ícone e subtítulo,          if (!method.querySelector('.payment-icon')) {
+          // Adicionar ícone e subtítulo
+          
+          if (!method.querySelector('.payment-icon')) {
             const originalContent = method.innerHTML
             method.innerHTML = `
               <div class="payment-icon" style="font-size: 32px; margin-bottom: 8px;">${icon}</div>
@@ -393,7 +429,9 @@ export default function MercadoPagoInline({
             `
           }
           
-          // Event listeners para interação premium,          method.addEventListener('mouseenter', () => {
+          // Event listeners para interação premium
+          
+          method.addEventListener('mouseenter', () => {
             method.style.setProperty('background', 'linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%)', 'important')
             method.style.setProperty('border', '2px solid #3b82f6', 'important')
             method.style.setProperty('transform', 'translateY(-8px) scale(1.02)', 'important')
@@ -409,14 +447,18 @@ export default function MercadoPagoInline({
             }
           })
           
-          // Observer para seleção,          const observer = new MutationObserver(() => {
+          // Observer para seleção
+          
+          const observer = new MutationObserver(() => {
             if (method.classList.contains('selected') || method.getAttribute('aria-checked') === 'true') {
               method.style.setProperty('background', 'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%)', 'important')
               method.style.setProperty('border', '2px solid #3b82f6', 'important')
               method.style.setProperty('transform', 'translateY(-4px)', 'important')
               method.style.setProperty('box-shadow', '0 12px 30px rgba(59, 130, 246, 0.3)', 'important')
               
-              // Adicionar checkmark,              if (!method.querySelector('.checkmark')) {
+              // Adicionar checkmark
+              
+              if (!method.querySelector('.checkmark')) {
                 const checkmark = document.createElement('div')
                 checkmark.className = 'checkmark'
                 checkmark.innerHTML = '✓'
@@ -438,7 +480,8 @@ export default function MercadoPagoInline({
                 method.appendChild(checkmark)
               }
             } else {
-              // Remover checkmark se desmarcado,              const checkmark = method.querySelector('.checkmark')
+              // Remover checkmark se desmarcado
+              const checkmark = method.querySelector('.checkmark')
               if (checkmark) checkmark.remove()
             }
           })
@@ -448,17 +491,22 @@ export default function MercadoPagoInline({
       })
     }
 
-    // Aplicar agora e depois de mudanças no DOM,    applyGridLayout()
+    // Aplicar agora e depois de mudanças no DOM
+
+    applyGridLayout()
     setTimeout(applyGridLayout, 1000)
     setTimeout(applyGridLayout, 2000)
 
-    // Observer para mudanças no DOM,    const observer = new MutationObserver((mutations) => {
+    // Observer para mudanças no DOM
+
+    const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element
-              // Re-aplicar estilos para novos elementos,              const newMethods = element.querySelectorAll('[data-cy="payment-method-option"], .mp-payment-method-item, .cho-payment-method')
+              // Re-aplicar estilos para novos elementos
+              const newMethods = element.querySelectorAll('[data-cy="payment-method-option"], .mp-payment-method-item, .cho-payment-method')
               newMethods.forEach((method) => {
                 method.classList.add('payment-method-enhanced')
               })
@@ -473,7 +521,9 @@ export default function MercadoPagoInline({
       subtree: true
     })
 
-    // Cleanup do observer quando componente for desmontado,    setTimeout(() => observer.disconnect(), 30000) // 30 segundos
+    // Cleanup do observer quando componente for desmontado
+
+    setTimeout(() => observer.disconnect(), 30000) // 30 segundos
   }
 
   const copyPixCode = async () => {
@@ -488,7 +538,9 @@ export default function MercadoPagoInline({
     }
   }
 
-  // Se PIX foi gerado, mostrar tela de QR code
+  // Se PIX foi gerado
+
+  mostrar tela de QR code
   if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
@@ -740,7 +792,9 @@ export default function MercadoPagoInline({
                             setLoading(true)
                             setRetryCount(prev => prev + 1)
                             
-                            // Destruir instância anterior antes de recarregar,                            if (brickInstance) {
+                            // Destruir instância anterior antes de recarregar
+                            
+                            if (brickInstance) {
                               try {
                                 brickInstance.unmount()
                                 setBrickInstance(null)
@@ -749,15 +803,21 @@ export default function MercadoPagoInline({
                               }
                             }
                             
-                            // Resetar controles globais,                            isCreatingBrick = false
+                            // Resetar controles globais
+                            
+                            isCreatingBrick = false
                             brickCount = 0
                             
-                            // Limpar container completamente,                            const container = document.getElementById(CONTAINER_ID)
+                            // Limpar container completamente
+                            
+                            const container = document.getElementById(CONTAINER_ID)
                             if (container) {
                               container.innerHTML = ''
                             }
                             
-                            // Aguardar um momento antes de recarregar,                            setTimeout(() => {
+                            // Aguardar um momento antes de recarregar
+                            
+                            setTimeout(() => {
                               initializationRef.current = false
                               loadMercadoPagoSDK()
                             }, 500)
@@ -773,7 +833,8 @@ export default function MercadoPagoInline({
                       
                       <button
                         onClick={() => {
-                          // Criar URL do MercadoPago diretamente,                          const mpUrl = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${preferenceId}`
+                          // Criar URL do MercadoPago diretamente
+                          const mpUrl = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${preferenceId}`
                           window.open(mpUrl, '_blank')
                         }}
                         className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"

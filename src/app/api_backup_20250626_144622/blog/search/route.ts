@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Se for para sugestões, retornar resultados mais rápidos
+    // Se for para sugestões
+
+    retornar resultados mais rápidos
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
@@ -27,7 +29,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Busca completa com ranking de relevância,    const results = await performAdvancedSearch(query)
+    // Busca completa com ranking de relevância
+
+    const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
       results,
@@ -49,7 +53,8 @@ async function generateSuggestions(query: string) {
   const searchTerm = query.toLowerCase().trim()
   
   try {
-    // Buscar títulos que contenham o termo,    const titleMatches = await prisma.blogPost.findMany({
+    // Buscar títulos que contenham o termo
+    const titleMatches = await prisma.blogPost.findMany({
       where: {
         published: true,
         title: {
@@ -65,7 +70,9 @@ async function generateSuggestions(query: string) {
       take: 5
     })
 
-    // Buscar países únicos que contenham o termo,    const countryMatches = await prisma.blogPost.findMany({
+    // Buscar países únicos que contenham o termo
+
+    const countryMatches = await prisma.blogPost.findMany({
       where: {
         published: true,
         country: {
@@ -81,7 +88,9 @@ async function generateSuggestions(query: string) {
       take: 3
     })
 
-    // Buscar categorias que contenham o termo,    const categoryMatches = await prisma.blogPost.findMany({
+    // Buscar categorias que contenham o termo
+
+    const categoryMatches = await prisma.blogPost.findMany({
       where: {
         published: true,
         category: {
@@ -98,7 +107,9 @@ async function generateSuggestions(query: string) {
 
     const suggestions = []
 
-    // Adicionar sugestões de títulos,    titleMatches.forEach(post => {
+    // Adicionar sugestões de títulos
+
+    titleMatches.forEach(post => {
       suggestions.push({
         type: 'post',
         text: post.title,
@@ -107,7 +118,9 @@ async function generateSuggestions(query: string) {
       })
     })
 
-    // Adicionar sugestões de países,    countryMatches.forEach(country => {
+    // Adicionar sugestões de países
+
+    countryMatches.forEach(country => {
       if (country.country) {
         suggestions.push({
           type: 'country',
@@ -118,7 +131,9 @@ async function generateSuggestions(query: string) {
       }
     })
 
-    // Adicionar sugestões de categorias,    categoryMatches.forEach(cat => {
+    // Adicionar sugestões de categorias
+
+    categoryMatches.forEach(cat => {
       suggestions.push({
         type: 'category',
         text: cat.category,
@@ -139,7 +154,8 @@ async function performAdvancedSearch(query: string) {
   const searchWords = query.toLowerCase().split(' ').filter(word => word.length > 1)
   
   try {
-    // Buscar posts com diferentes critérios de relevância,    const posts = await prisma.blogPost.findMany({
+    // Buscar posts com diferentes critérios de relevância
+    const posts = await prisma.blogPost.findMany({
       where: {
         published: true,
         OR: [
@@ -178,36 +194,50 @@ async function performAdvancedSearch(query: string) {
       }
     })
 
-    // Calcular score de relevância para cada post,    const resultsWithScore = posts.map(post => {
+    // Calcular score de relevância para cada post
+
+    const resultsWithScore = posts.map(post => {
       let score = 0
       const titleLower = post.title.toLowerCase()
       const excerptLower = post.excerpt.toLowerCase()
       const queryLower = query.toLowerCase()
 
-      // Score por match exato no título (alta relevância),      if (titleLower.includes(queryLower)) {
+      // Score por match exato no título (alta relevância)
+
+      if (titleLower.includes(queryLower)) {
         score += 100
         if (titleLower.startsWith(queryLower)) score += 50
       }
 
-      // Score por match no resumo,      if (excerptLower.includes(queryLower)) {
+      // Score por match no resumo
+
+      if (excerptLower.includes(queryLower)) {
         score += 50
       }
 
-      // Score por país,      if (post.country && post.country.toLowerCase().includes(queryLower)) {
+      // Score por país
+
+      if (post.country && post.country.toLowerCase().includes(queryLower)) {
         score += 30
       }
 
-      // Score por palavras individuais,      searchWords.forEach(word => {
+      // Score por palavras individuais
+
+      searchWords.forEach(word => {
         if (titleLower.includes(word)) score += 20
         if (excerptLower.includes(word)) score += 10
         if (post.country && post.country.toLowerCase().includes(word)) score += 15
       })
 
-      // Boost para posts especiais,      if (post.featured) score += 10
+      // Boost para posts especiais
+
+      if (post.featured) score += 10
       if (post.trending) score += 15
       if (post.urgent) score += 20
 
-      // Score por engagement,      score += Math.min(post.views / 100, 20) // Max 20 pontos por views
+      // Score por engagement
+
+      score += Math.min(post.views / 100, 20) // Max 20 pontos por views
       score += Math.min(post.likes / 10, 10) // Max 10 pontos por likes
 
       return {
@@ -218,7 +248,9 @@ async function performAdvancedSearch(query: string) {
       }
     })
 
-    // Ordenar por score e remover duplicatas,    const uniqueResults = Array.from(
+    // Ordenar por score e remover duplicatas
+
+    const uniqueResults = Array.from(
       new Map(resultsWithScore.map(post => [post.id, post])).values()
     ).sort((a, b) => b.score - a.score)
 

@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
     //       createdAt: 'asc' // Mais antigos primeiro,    //     }
     //   ],    // })
 
-    // Calcular estatísticas,    const stats = {
+    // Calcular estatísticas
+
+    const stats = {
       total: bookings.length,
       pending: bookings.filter(b => b.status === 'CONSULTANT_ASSIGNED').length,
       inProgress: bookings.filter(b => b.status === 'IN_PROGRESS').length,
@@ -86,7 +88,9 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
       updatedAt: new Date()
     }
 
-    // Se marcando como concluído, adicionar data de conclusão
+    // Se marcando como concluído
+
+    adicionar data de conclusão
     if (status === 'COMPLETED') {
       updateData.completedAt = new Date()
       
@@ -95,12 +99,16 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
       }
     }
 
-    // Se marcando como em progresso, registrar início
+    // Se marcando como em progresso
+
+    registrar início
     if (status === 'IN_PROGRESS') {
       updateData.startedAt = new Date()
     }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta
     const booking = {} // await prisma.hybridBooking.update({,    //   where: { id: bookingId }
     //   data: updateData,,    //   include: {
     //     client: {,    //       select: {
@@ -128,7 +136,8 @@ async function updateBookingStatus(bookingId: string, status: string, appointmen
 // Atribuir consultor
 async function assignConsultant(bookingId: string, consultantId: string) {
   try {
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+    vamos simular resposta
     const booking = {} // await prisma.hybridBooking.update({,    //   where: { id: bookingId }
     //   data: {,    //     assignedConsultant: consultantId,
     //     assignedAt: new Date(),    //     updatedAt: new Date()
@@ -150,7 +159,8 @@ async function assignConsultant(bookingId: string, consultantId: string) {
 // Adicionar nota ao agendamento
 async function addBookingNote(bookingId: string, note: string) {
   try {
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+    vamos simular resposta
     const booking = { notes: [] } // await prisma.hybridBooking.findUnique({,    //   where: { id: bookingId }
     // })
 
@@ -167,7 +177,9 @@ async function addBookingNote(bookingId: string, note: string) {
       createdAt: new Date().toISOString(),
       author: 'Sistema' // TODO: pegar do usuário logado    }
 
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta
     const updatedBooking = {} // await prisma.hybridBooking.update({,    //   where: { id: bookingId }
     //   data: {,    //     notes: [...currentNotes
  newNote],
@@ -190,7 +202,8 @@ async function addBookingNote(bookingId: string, note: string) {
 // Estender prazo
 async function extendDeadline(bookingId: string, hours: number) {
   try {
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+    vamos simular resposta
     const booking = { deadline: new Date() } // await prisma.hybridBooking.findUnique({,    //   where: { id: bookingId }
     // })
 
@@ -203,7 +216,9 @@ async function extendDeadline(bookingId: string, hours: number) {
     const currentDeadline = new Date(booking.deadline)
     const newDeadline = new Date(currentDeadline.getTime() + (hours * 60 * 60 * 1000))
 
-    // Como hybridBooking não existe no schema, vamos simular resposta
+    // Como hybridBooking não existe no schema
+
+    vamos simular resposta
     const updatedBooking = {} // await prisma.hybridBooking.update({,    //   where: { id: bookingId }
     //   data: {,    //     deadline: newDeadline,
     //     updatedAt: new Date(),    //   }

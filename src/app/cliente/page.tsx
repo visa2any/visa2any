@@ -80,16 +80,21 @@ function CustomerDashboardContent() {
       profilePhoto: newProfileData.profilePhoto
     } : null)
     
-    // Save to localStorage,    localStorage.setItem('customer-profile', JSON.stringify(newProfileData))
+    // Save to localStorage
     
-    // Force reload from localStorage to get updated customer data,    setTimeout(() => {
+    localStorage.setItem('customer-profile', JSON.stringify(newProfileData))
+    
+    // Force reload from localStorage to get updated customer data
+    
+    setTimeout(() => {
       fetchCustomerData()
     }, 100)
   }
 
   const handleDocumentsChange = (documents: any[]) => {
     setCustomerData(prev => prev ? { ...prev, documents } : null)
-    // Save to localStorage,    localStorage.setItem('customer-documents', JSON.stringify(documents))
+    // Save to localStorage
+    localStorage.setItem('customer-documents', JSON.stringify(documents))
   }
 
   const fetchCustomerData = async () => {
@@ -102,7 +107,9 @@ function CustomerDashboardContent() {
           customerData = JSON.parse(storedCustomer)
         }
         
-        // Also load profile data including photo,        const storedProfile = localStorage.getItem('customer-profile')
+        // Also load profile data including photo
+        
+        const storedProfile = localStorage.getItem('customer-profile')
         if (storedProfile) {
           const profileData = JSON.parse(storedProfile)
           if (customerData) {

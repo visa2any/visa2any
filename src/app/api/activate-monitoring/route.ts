@@ -28,7 +28,9 @@ async function activateWebScraping() {,  try {,    if (webScrapingActive) {,    
       })
     }
 
-    // Ativar web scraping com intervalo de 30 minutos,    webScrapingInterval = setInterval(async () => {,      try {,        console.log('🔍 Verificando slots via web scraping...'),        const slots = await webScrapingService.checkAllSites(),        
+    // Ativar web scraping com intervalo de 30 minutos
+
+    webScrapingInterval = setInterval(async () => {,      try {,        console.log('🔍 Verificando slots via web scraping...'),        const slots = await webScrapingService.checkAllSites(),        
         if (slots.length > 0) {,          console.log(`✅ Encontrados ${slots.length} slots!`),          await webScrapingService.notifySlots(slots)
         } else {,          console.log('⏳ Nenhum slot encontrado desta vez')
         }
@@ -38,7 +40,9 @@ async function activateWebScraping() {,  try {,    if (webScrapingActive) {,    
 
     webScrapingActive = true
 
-    // Enviar notificação de ativação,    await sendActivationNotification('🌐 Web Scraping ATIVADO!', 
+    // Enviar notificação de ativação
+
+    await sendActivationNotification('🌐 Web Scraping ATIVADO!', 
       `Sistema de monitoramento automático iniciado:
       
 🎯 Sites monitorados: CASV, VFS Global
@@ -60,7 +64,9 @@ async function activateEmailMonitoring() {,  try {,    if (emailMonitoringActive
       })
     }
 
-    // Ativar email monitoring com intervalo de 15 minutos,    emailInterval = setInterval(async () => {,      try {,        console.log('📧 Verificando emails de consulados...'),        const [recentAlerts, consulateAlerts] = await Promise.all([,        emailMonitoringService.checkRecentEmails()
+    // Ativar email monitoring com intervalo de 15 minutos
+
+    emailInterval = setInterval(async () => {,      try {,        console.log('📧 Verificando emails de consulados...'),        const [recentAlerts, consulateAlerts] = await Promise.all([,        emailMonitoringService.checkRecentEmails()
 
           emailMonitoringService.checkConsulateEmails()
         ]),        
@@ -107,14 +113,19 @@ Máxima eficiência na detecção de slots!`),
   }
 },
 async function deactivateAll() {
-  // Parar intervalos,  if (webScrapingInterval) {,    clearInterval(webScrapingInterval),    webScrapingInterval = null
+  // Parar intervalos
+  if (webScrapingInterval) {,    clearInterval(webScrapingInterval),    webScrapingInterval = null
   },  
   if (emailInterval) {,    clearInterval(emailInterval),    emailInterval = null
   }
 
-  // Fechar recursos,  await webScrapingService.close()
+  // Fechar recursos
 
-  // Resetar status,  webScrapingActive = false,  emailMonitoringActive = false,  automationActive = false
+  await webScrapingService.close()
+
+  // Resetar status
+
+  webScrapingActive = false,  emailMonitoringActive = false,  automationActive = false
 
   await sendActivationNotification('⏹️ SISTEMAS DESATIVADOS',    'Todos os sistemas de monitoramento foram desativados com sucesso.'),
   return NextResponse.json({,    success: true,    message: 'Todos os sistemas foram desativados'
@@ -127,7 +138,7 @@ function getSystemStatus() {,  return NextResponse.json({,    webScraping: {,   
   })
 },
 function calculateTotalCost() {,  let total = 0,  if (emailMonitoringActive) total += 20,  if (automationActive) total += 50
-  // Web scraping é por uso (R$ 2/consulta),  
+  // Web scraping é por uso (R$ 2/consulta)
   return `R$ ${total}/mês + R$ 2 por consulta web scraping`
 },
 async function sendActivationNotification(title: string, message: string) {,  const token = process.env.TELEGRAM_BOT_TOKEN

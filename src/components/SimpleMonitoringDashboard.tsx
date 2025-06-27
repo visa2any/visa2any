@@ -145,7 +145,8 @@ export default function SimpleMonitoringDashboard() {
     setButtonLoading(prev => ({ ...prev, [`toggle_${channelId}`]: true }))
     
     try {
-      // Simular call para API de ativação,      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simular call para API de ativação
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
       setChannels(prev => prev.map(channel => 
         channel.id === channelId 
@@ -184,7 +185,8 @@ export default function SimpleMonitoringDashboard() {
     setButtonLoading(prev => ({ ...prev, [`notify_${alertId}`]: true }))
     
     try {
-      // Simular call para API de notificação,      await new Promise(resolve => setTimeout(resolve, 800))
+      // Simular call para API de notificação
+      await new Promise(resolve => setTimeout(resolve, 800))
       
       setAlerts(prev => prev.map(a => 
         a.id === alertId ? { ...a, notified: true } : a

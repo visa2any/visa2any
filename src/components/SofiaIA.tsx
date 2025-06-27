@@ -154,7 +154,9 @@ Como posso ajudar você hoje?`
     
     let response: SofiaMessage
 
-    // Análise de Score,    if (lowerMessage.includes('score') || lowerMessage.includes('melhorar') || lowerMessage.includes('elegibilidade')) {
+    // Análise de Score
+
+    if (lowerMessage.includes('score') || lowerMessage.includes('melhorar') || lowerMessage.includes('elegibilidade')) {
       if (customerData.package === 'LEAD') {
         response = {
           id: Date.now().toString(),
@@ -211,7 +213,9 @@ Posso fornecer uma análise básica gratuita:
       }
     }
     
-    // Próximos Passos,    else if (lowerMessage.includes('próximos') || lowerMessage.includes('passos') || lowerMessage.includes('etapa')) {
+    // Próximos Passos
+    
+    else if (lowerMessage.includes('próximos') || lowerMessage.includes('passos') || lowerMessage.includes('etapa')) {
       response = {
         id: Date.now().toString(),
         text: `🎯 **Próximos Passos - ${customerData.destinationCountry}**
@@ -253,7 +257,9 @@ ${customerData.package === 'LEAD' ? '🔓 **Preparação detalhada disponível n
       }
     }
     
-    // Documentos,    else if (lowerMessage.includes('documento') || lowerMessage.includes('papéis')) {
+    // Documentos
+    
+    else if (lowerMessage.includes('documento') || lowerMessage.includes('papéis')) {
       const docs = customerData.destinationCountry === 'Estados Unidos' 
         ? ['Passaporte válido', 'Formulário DS-160', 'Foto 5x5cm', 'Comprovante financeiro', 'Carta do empregador']
         : ['Passaporte válido', 'Formulários consulares', 'Comprovantes financeiros', 'Seguro viagem']
@@ -293,7 +299,9 @@ ${customerData.package === 'LEAD'
       }
     }
     
-    // Custos,    else if (lowerMessage.includes('preço') || lowerMessage.includes('custo') || lowerMessage.includes('valor')) {
+    // Custos
+    
+    else if (lowerMessage.includes('preço') || lowerMessage.includes('custo') || lowerMessage.includes('valor')) {
       response = {
         id: Date.now().toString(),
         text: `💰 **Custos para ${customerData.destinationCountry}**
@@ -328,7 +336,9 @@ Quer saber sobre outros pacotes ou serviços adicionais?`,
       }
     }
     
-    // Upsells Contextuais,    else if (lowerMessage.includes('upgrade') || lowerMessage.includes('premium') || lowerMessage.includes('vip')) {
+    // Upsells Contextuais
+    
+    else if (lowerMessage.includes('upgrade') || lowerMessage.includes('premium') || lowerMessage.includes('vip')) {
       response = {
         id: Date.now().toString(),
         text: `🚀 **Planos Disponíveis para Você**
@@ -364,7 +374,9 @@ Quer saber sobre outros pacotes ou serviços adicionais?`,
       }
     }
     
-    // Resposta padrão,    else {
+    // Resposta padrão
+    
+    else {
       response = {
         id: Date.now().toString(),
         text: `🤖 Entendi! Como sua assistente IA, posso ajudar com:

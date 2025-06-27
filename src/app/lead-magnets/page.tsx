@@ -131,7 +131,8 @@ export default function LeadMagnetsPage() {
     setDownloading(true)
     
     try {
-      // Capturar lead,      await fetch('/api/leads/capture', {
+      // Capturar lead
+      await fetch('/api/leads/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,12 +146,17 @@ export default function LeadMagnetsPage() {
         })
       })
 
-      // Simular download,      const magnet = LEAD_MAGNETS.find(m => m.id === magnetId)
+      // Simular download
+
+      const magnet = LEAD_MAGNETS.find(m => m.id === magnetId)
       if (magnet) {
-        // Em produção, servir arquivo real
+        // Em produção
+        servir arquivo real
         console.log(`Downloading: ${magnet.file}`)
         
-        // Trigger email automático,        await fetch('/api/notifications/email', {
+        // Trigger email automático
+        
+        await fetch('/api/notifications/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -166,7 +172,9 @@ export default function LeadMagnetsPage() {
 
         setDownloadComplete(true)
         
-        // Reset form,        setTimeout(() => {
+        // Reset form
+        
+        setTimeout(() => {
           setSelectedMagnet(null)
           setEmail('')
           setName('')

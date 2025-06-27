@@ -6,16 +6,22 @@ import { z } from 'zod'
   }).optional()
 })
 
-// POST /api/payments/create-order - Criar pedido,
+// POST /api/payments/create-order - Criar pedido
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = createOrderSchema.parse(body)
 
-    // Criar ou encontrar cliente se informações foram fornecidas,    let clientId = null,    if (validatedData.clientInfo?.email) {,      try {
-        // Tentar encontrar cliente existente,        let client = await prisma.client.findUnique({,          where: { email: validatedData.clientInfo.email }
+    // Criar ou encontrar cliente se informações foram fornecidas
+
+    let clientId = null,    if (validatedData.clientInfo?.email) {,      try {
+        // Tentar encontrar cliente existente
+        let client = await prisma.client.findUnique({,          where: { email: validatedData.clientInfo.email }
         })
 
-        // Se não encontrar, criar novo,        if (!client) {,          client = await prisma.client.create({,            data: {,              name: validatedData.clientInfo.name || 'Cliente',              email: validatedData.clientInfo.email,              phone: validatedData.clientInfo.phone,              status: 'LEAD',              source: 'checkout'
+        // Se não encontrar
+
+        criar novo,        if (!client) {,          client = await prisma.client.create({,            data: {,              name: validatedData.clientInfo.name || 'Cliente',              email: validatedData.clientInfo.email,              phone: validatedData.clientInfo.phone,              status: 'LEAD',              source: 'checkout'
             }
           })
         },        
@@ -24,14 +30,20 @@ const validatedData = createOrderSchema.parse(body)
         // Não bloquear o pedido se houver erro com cliente      }
     }
 
-    // Criar pedido no banco,    const payment = await prisma.payment.create({,      data: {,        amount: validatedData.totalAmount,        currency: 'BRL',        status: 'PENDING',        paymentMethod: 'MERCADO_PAGO',        description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''} - Total: R$ ${validatedData.totalAmount}`,        clientId: clientId
+    // Criar pedido no banco
+
+    const payment = await prisma.payment.create({,      data: {,        amount: validatedData.totalAmount,        currency: 'BRL',        status: 'PENDING',        paymentMethod: 'MERCADO_PAGO',        description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''} - Total: R$ ${validatedData.totalAmount}`,        clientId: clientId
       }
     })
 
-    // Gerar link de pagamento do Mercado Pago,    const paymentUrl = await createMercadoPagoPayment({,      orderId: payment.id,      title: validatedData.productName,      quantity: validatedData.quantity,      unitPrice: validatedData.totalAmount, // MP recebe o valor total,      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,      clientEmail: validatedData.clientInfo?.email
+    // Gerar link de pagamento do Mercado Pago
+
+    const paymentUrl = await createMercadoPagoPayment({,      orderId: payment.id,      title: validatedData.productName,      quantity: validatedData.quantity,      unitPrice: validatedData.totalAmount, // MP recebe o valor total,      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,      clientEmail: validatedData.clientInfo?.email
     })
 
-    // Log da criação do pedido,    await prisma.automationLog.create({,      data: {,        type: 'ORDER_CREATED',        action: 'create_order',        clientId: clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da criação do pedido
+
+    await prisma.automationLog.create({,      data: {,        type: 'ORDER_CREATED',        action: 'create_order',        clientId: clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         },        success: true
       }
     }),
@@ -50,7 +62,8 @@ const validatedData = createOrderSchema.parse(body)
 
 // Função para criar pagamento no Mercado Pago,async function createMercadoPagoPayment(orderData: {,  orderId: string,  title: string,  quantity: number,  unitPrice: number,  description: string,  clientEmail?: string
 }) {,  try {
-    // Configurar dados da preferência,    const preferenceData = {,      items: [,        {
+    // Configurar dados da preferência
+    const preferenceData = {,      items: [,        {
           id: orderData.orderId,          title: orderData.title,          description: orderData.description,          quantity: 1, // Sempre 1 no MP, preço já é total,          unit_price: orderData.unitPrice,          currency_id: 'BRL'
         }
       ]
@@ -61,9 +74,13 @@ const validatedData = createOrderSchema.parse(body)
       }
     }
 
-    // Usar SDK do Mercado Pago real,    console.log('Criando preferência MP:', preferenceData)
+    // Usar SDK do Mercado Pago real
+
+    console.log('Criando preferência MP:', preferenceData)
     
-    // Importar e usar SDK do MercadoPago,    const { MercadoPagoConfig, Preference } = await import('mercadopago'),    
+    // Importar e usar SDK do MercadoPago
+    
+    const { MercadoPagoConfig, Preference } = await import('mercadopago'),    
     const client = new MercadoPagoConfig({,      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!
     }),    
     const preference =  
@@ -71,6 +88,7 @@ const result = await preference.create({ body: preferenceData }),
     return result.init_point
     
   } catch (error) {,    console.error('Erro ao criar pagamento MP:', error)
-    // Fallback para checkout interno,    return null
+    // Fallback para checkout interno
+    return null
   }
 }

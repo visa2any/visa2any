@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action')
 
     if (action === 'status') {
-      // Retornar status de todos os parceiros,      const partnersStatus = partnerIntegrationService.getPartnersStatus()
+      // Retornar status de todos os parceiros
+      const partnersStatus = partnerIntegrationService.getPartnersStatus()
       
       return NextResponse.json({
         partners: partnersStatus
@@ -19,7 +20,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (country) {
-      // Buscar parceiros para país específico,      const availablePartners = await partnerIntegrationService.getAvailablePartners(country)
+      // Buscar parceiros para país específico
+      const availablePartners = await partnerIntegrationService.getAvailablePartners(country)
       
       return NextResponse.json({
         partners: availablePartners
@@ -31,7 +33,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Buscar melhor parceiro para requisição,    const visaType = searchParams.get('visaType') || 'tourist'
+    // Buscar melhor parceiro para requisição
+
+    const visaType = searchParams.get('visaType') || 'tourist'
     const urgency = searchParams.get('urgency') || 'normal'
     
     if (!country) {
@@ -75,7 +79,9 @@ export async function POST(request: NextRequest) {
   try {
     const body: PartnerBookingRequest = await request.json()
 
-    // Validação dos campos obrigatórios,    const requiredFields = ['applicantInfo', 'visaInfo']
+    // Validação dos campos obrigatórios
+
+    const requiredFields = ['applicantInfo', 'visaInfo']
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json(
@@ -85,7 +91,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validar informações do aplicante,    const requiredApplicantFields = ['fullName', 'email', 'nationality']
+    // Validar informações do aplicante
+
+    const requiredApplicantFields = ['fullName', 'email', 'nationality']
     for (const field of requiredApplicantFields) {
       if (!body.applicantInfo[field as keyof typeof body.applicantInfo]) {
         return NextResponse.json(
@@ -95,14 +103,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validar informações do visto,    if (!body.visaInfo.country || !body.visaInfo.visaType) {
+    // Validar informações do visto
+
+    if (!body.visaInfo.country || !body.visaInfo.visaType) {
       return NextResponse.json(
         { error: 'Campos visaInfo.country e visaInfo.visaType são obrigatórios' }
         { status: 400 }
       )
     }
 
-    // Se partnerId não foi especificado, encontrar o melhor
+    // Se partnerId não foi especificado
+
+    encontrar o melhor
     if (!body.partnerId) {
       const bestPartner = await partnerIntegrationService.findBestPartner(
         body.visaInfo.country,
@@ -120,10 +132,13 @@ export async function POST(request: NextRequest) {
       body.partnerId = bestPartner.id
     }
 
-    // Fazer agendamento via parceiro,    const result = await partnerIntegrationService.bookViaPartner(body)
+    // Fazer agendamento via parceiro
+
+    const result = await partnerIntegrationService.bookViaPartner(body)
 
     if (result.success) {
-      // Calcular custo total com margem,      const totalCost = partnerIntegrationService.calculateTotalCost(
+      // Calcular custo total com margem
+      const totalCost = partnerIntegrationService.calculateTotalCost(
         result.cost || 0
         body.visaInfo.urgency
       )

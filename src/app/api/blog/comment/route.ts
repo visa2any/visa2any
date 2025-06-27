@@ -4,14 +4,18 @@ import jwt from 'jsonwebtoken'
 import { z } from 'c'onst commentSchema = z.object({,  postId: z.string().min(1, 'Post ID é obrigatório'),  content: z.string().min(1, 'Conteúdo é obrigatório').max(1000, 'Máximo 1000 caracteres'),  parentId: z.string().optional() // For replies
 })
 
-// POST /api/blog/comment - Add comment to blog post,
+// POST /api/blog/comment - Add comment to blog post
+
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication,    const authToken = request.cookies.get('auth-token')?.value,    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de autenticação é obrigatório' },        { status: 401 }
+    // Check authentication
+    const authToken = request.cookies.get('auth-token')?.value,    if (!authToken) {,      return NextResponse.json(,        { error: 'Token de autenticação é obrigatório' },        { status: 401 }
       )
     }
 
-    // Verify token,    const jwtSecret = process.env.NEXTAUTH_SECRET,    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
+    // Verify token
+
+    const jwtSecret = process.env.NEXTAUTH_SECRET,    if (!jwtSecret) {,      return NextResponse.json(,        { error: 'Erro interno do servidor' },        { status: 500 }
       )
     },
     let userId: string,    let userEmail: string,    try {,      const decoded = jwt.verify(authToken, jwtSecret) as any,      userId = decoded.userId,      userEmail = decoded.email
@@ -21,13 +25,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 const validatedData = commentSchema.parse(body)
 
-    // Get user info,    const user = await prisma.user.findUnique({,      where: { id: userId },      select: { id: true, name: true, email: true }
+    // Get user info
+
+    const user = await prisma.user.findUnique({,      where: { id: userId },      select: { id: true, name: true, email: true }
     }),
     if (!user) {,      return NextResponse.json(,        { error: 'Usuário não encontrado' },        { status: 404 }
       )
     }
 
-    // Create comment,    const comment = await prisma.blogPostComment.create({,      data: {,        userId,        postId: validatedData.postId,        content: validatedData.content,        parentId: validatedData.parentId || null
+    // Create comment
+
+    const comment = await prisma.blogPostComment.create({,      data: {,        userId,        postId: validatedData.postId,        content: validatedData.content,        parentId: validatedData.parentId || null
       },      include: {,        user: {,          select: {,            id: true,            name: true,            email: true
           }
         },        replies: {,          include: {,            user: {,              select: {,                id: true,                name: true,                email: true
@@ -49,7 +57,8 @@ const validatedData = commentSchema.parse(body)
   }
 }
 
-// GET /api/blog/comment - Get comments for a blog post,
+// GET /api/blog/comment - Get comments for a blog post
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const postId = searchParams.get('postId')
 
     if (!postId) {,      return NextResponse.json(,        { error: 'Dados inválidos' },        { status: 400 }

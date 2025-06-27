@@ -222,13 +222,19 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // Calcular score se não fornecido,    const score = responses ? calculateScoreFromResponses(responses) : 70
+    // Calcular score se não fornecido
 
-    // Criar jobs de email para cada template da sequência,    for (const template of templates) {
+    const score = responses ? calculateScoreFromResponses(responses) : 70
+
+    // Criar jobs de email para cada template da sequência
+
+    for (const template of templates) {
       const sendAt = new Date()
       sendAt.setMinutes(sendAt.getMinutes() + template.delay)
 
-      // Processar template com variáveis,      const processedSubject = processTemplate(template.subject, {
+      // Processar template com variáveis
+
+      const processedSubject = processTemplate(template.subject, {
         name,
         destinationCountry,
         score,
@@ -251,7 +257,9 @@ export async function POST(request: NextRequest) {
     ebookLink: 'https://visa2any.com/lead-magnets'
       })
 
-      // Agendar email (implementar com serviço de queue posteriormente),      await scheduleEmail({
+      // Agendar email (implementar com serviço de queue posteriormente)
+
+      await scheduleEmail({
         to: email,
         subject: processedSubject,
         body: processedBody,
@@ -287,7 +295,8 @@ function processTemplate(template: string, variables: Record<string, any>): stri
 }
 
 function calculateScoreFromResponses(responses: any): number {
-  // Lógica simplificada de cálculo de score,  let score = 50
+  // Lógica simplificada de cálculo de score
+  let score = 50
 
   if (responses.education) {
     const educationScores: Record<string, number> = {
@@ -333,8 +342,10 @@ async function scheduleEmail(emailData: {
   templateIndex: number
 }) {
   try {
-    // Em produção, usar serviço de queue como Bull/Redis
-    // Por enquanto, simular agendamento
+    // Em produção
+    usar serviço de queue como Bull/Redis
+    // Por enquanto
+    simular agendamento
     
     console.log(`Email agendado:`, {
       to: emailData.to,
@@ -344,12 +355,16 @@ async function scheduleEmail(emailData: {
       templateIndex: emailData.templateIndex
     })
 
-    // Se o delay for 0 (imediato), enviar agora
+    // Se o delay for 0 (imediato)
+
+    enviar agora
     if (emailData.sendAt <= new Date()) {
       await sendEmailNow(emailData)
     }
 
-    // Salvar na base para controle,    if (emailData.clientId) {
+    // Salvar na base para controle
+
+    if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
           clientId: emailData.clientId,
@@ -376,10 +391,13 @@ async function sendEmailNow(emailData: {
   clientId?: string
 }) {
   try {
-    // Usar serviço de email (Resend, SendGrid, etc.)
+    // Usar serviço de email (Resend
+    SendGrid, etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)
     
-    // Simular envio por enquanto,    const response = await fetch('/api/notifications/email', {
+    // Simular envio por enquanto
+    
+    const response = await fetch('/api/notifications/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -54,7 +54,8 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      // Simular dados do dashboard (em produção viria da API),      const mockBookings: BookingData[] = [
+      // Simular dados do dashboard (em produção viria da API)
+      const mockBookings: BookingData[] = [
         {
           trackingId: 'MANUAL-1703123456-abc123',
           customerName: 'Maria Silva',
@@ -101,7 +102,9 @@ export default function Dashboard() {
 
       setBookings(mockBookings)
 
-      // Calcular estatísticas,      const totalBookings = mockBookings.length
+      // Calcular estatísticas
+
+      const totalBookings = mockBookings.length
       const pendingPayments = mockBookings.filter(b => b.paymentStatus === 'pending').length
       const inProgress = mockBookings.filter(b => b.status === 'processing').length
       const completed = mockBookings.filter(b => b.status === 'completed').length
@@ -187,7 +190,8 @@ export default function Dashboard() {
       })
 
       if (response.ok) {
-        // Atualizar localmente,        setBookings(prev => prev.map(b => 
+        // Atualizar localmente
+        setBookings(prev => prev.map(b => 
           b.trackingId === trackingId 
             ? { ...b, status: newStatus as any }
             : b

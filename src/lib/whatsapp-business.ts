@@ -40,15 +40,20 @@ class WhatsAppBusinessService {
     error?: string 
   }> {
     
-    // Se não configurado, usar fallback
+    // Se não configurado
+    
+    usar fallback
     if (!this.isConfigured) {
       return this.sendWithFallback(messageData)
     }
 
     try {
-      // Formatar número para padrão internacional,      const formattedNumber = this.formatPhoneNumber(messageData.to)
+      // Formatar número para padrão internacional
+      const formattedNumber = this.formatPhoneNumber(messageData.to)
       
-      // Preparar payload para Meta API,      const payload = {
+      // Preparar payload para Meta API
+      
+      const payload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
         to: formattedNumber,
@@ -92,14 +97,18 @@ class WhatsAppBusinessService {
     }
   }
 
-  // Fallback: usar serviço de terceiros ou simulação,  private async sendWithFallback(messageData: WhatsAppMessage): Promise<{ 
+  // Fallback: usar serviço de terceiros ou simulação
+
+  private async sendWithFallback(messageData: WhatsAppMessage): Promise<{ 
     success: boolean; 
     messageId?: string; 
     queued?: boolean; 
     error?: string 
   }> {
     
-    // Opção 1: Tentar WhatsApp via webhook terceirizado,    if (process.env.WHATSAPP_WEBHOOK_URL) {
+    // Opção 1: Tentar WhatsApp via webhook terceirizado
+    
+    if (process.env.WHATSAPP_WEBHOOK_URL) {
       try {
         const response = await fetch(process.env.WHATSAPP_WEBHOOK_URL, {
           method: 'POST',
@@ -122,7 +131,9 @@ class WhatsAppBusinessService {
       }
     }
 
-    // Opção 2: Simular envio com log detalhado,    console.log('📱 SIMULANDO WHATSAPP (API não configurada):')
+    // Opção 2: Simular envio com log detalhado
+
+    console.log('📱 SIMULANDO WHATSAPP (API não configurada):')
     console.log('Para:', messageData.to)
     console.log('Mensagem:', messageData.message.substring(0, 100) + '...')
     console.log('💡 Para ativar envios reais, configure WHATSAPP_API_TOKEN')
@@ -134,7 +145,9 @@ class WhatsAppBusinessService {
     }
   }
 
-  // Templates pré-aprovados (para uso com Meta API),  public async sendTemplate(to: string, templateName: string, variables: Record<string, any> = {}): Promise<{ 
+  // Templates pré-aprovados (para uso com Meta API)
+
+  public async sendTemplate(to: string, templateName: string, variables: Record<string, any> = {}): Promise<{ 
     success: boolean; 
     messageId?: string; 
     error?: string 
@@ -189,14 +202,19 @@ class WhatsAppBusinessService {
   }
 
   private formatPhoneNumber(phone: string): string {
-    // Remove caracteres especiais,    let cleaned = phone.replace(/[^\d]/g, '')
+    // Remove caracteres especiais
+    let cleaned = phone.replace(/[^\d]/g, '')
     
-    // Se começar com 0, remove
+    // Se começar com 0
+    
+    remove
     if (cleaned.startsWith('0')) {
       cleaned = cleaned.substring(1)
     }
     
-    // Se não tem código do país, adiciona Brasil (+55)
+    // Se não tem código do país
+    
+    adiciona Brasil (+55)
     if (cleaned.length === 11 && cleaned.startsWith('11')) {
       cleaned = '55' + cleaned
     } else if (cleaned.length === 10) {

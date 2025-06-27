@@ -491,7 +491,9 @@ export default function BlogPage() {
         setSubmitMessage('✅ ' + data.message)
         setWhatsappForm({ name: '', phone: '', countries: '', terms: false })
         
-        // Fechar modal após 3 segundos,        setTimeout(() => {
+        // Fechar modal após 3 segundos
+        
+        setTimeout(() => {
           setShowWhatsAppForm(false)
           setSubmitMessage('')
         }, 3000)
@@ -505,7 +507,9 @@ export default function BlogPage() {
     }
   }
 
-  // Filter and sort posts,  const filteredPosts = blogPosts.filter(post => {
+  // Filter and sort posts
+
+  const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))

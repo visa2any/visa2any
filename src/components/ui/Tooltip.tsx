@@ -57,7 +57,9 @@ export function Tooltip({
         break
     }
 
-    // Ajustar para manter dentro da viewport,    x = Math.max(8, Math.min(x, viewport.width - tooltipRect.width - 8))
+    // Ajustar para manter dentro da viewport
+
+    x = Math.max(8, Math.min(x, viewport.width - tooltipRect.width - 8))
     y = Math.max(8, Math.min(y, viewport.height - tooltipRect.height - 8))
 
     setPosition({ x, y })

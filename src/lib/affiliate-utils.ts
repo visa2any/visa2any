@@ -25,7 +25,9 @@ export function generateAffiliateLink(
 ): AffiliateLink {
   const trackingUrl = new URL('/api/affiliates/track', baseUrl)
   
-  // Adicionar parâmetros de tracking,  trackingUrl.searchParams.set('ref', params.ref)
+  // Adicionar parâmetros de tracking
+  
+  trackingUrl.searchParams.set('ref', params.ref)
   trackingUrl.searchParams.set('url', targetPath)
   
   if (params.campaign) {
@@ -63,7 +65,9 @@ export function generateAffiliateLinks(
 ): Record<string, AffiliateLink> {
   const links: Record<string, AffiliateLink> = {}
 
-  // Links principais,  const mainPages = [
+  // Links principais
+
+  const mainPages = [
     { key: 'home', path: '/', name: 'Página Inicial' },
     { key: 'consulta', path: '/consulta', name: 'Consultoria' },
     { key: 'precos', path: '/precos', name: 'Preços' },
@@ -71,14 +75,18 @@ export function generateAffiliateLinks(
     { key: 'contato', path: '/contato', name: 'Contato' }
   ]
 
-  // Links de serviços específicos,  const services = [
+  // Links de serviços específicos
+
+  const services = [
     { key: 'eua', path: '/consulta?country=usa', name: 'Visto EUA', campaign: 'visto-eua' },
     { key: 'canada', path: '/consulta?country=canada', name: 'Visto Canadá', campaign: 'visto-canada' },
     { key: 'portugal', path: '/consulta?country=portugal', name: 'Visto Portugal', campaign: 'visto-portugal' },
     { key: 'australia', path: '/consulta?country=australia', name: 'Visto Austrália', campaign: 'visto-australia' }
   ]
 
-  // Gerar links principais,  mainPages.forEach(page => {
+  // Gerar links principais
+
+  mainPages.forEach(page => {
     links[page.key] = generateAffiliateLink(baseUrl, page.path, {
       ref: referralCode,
       source,
@@ -86,7 +94,9 @@ export function generateAffiliateLinks(
     })
   })
 
-  // Gerar links de serviços,  services.forEach(service => {
+  // Gerar links de serviços
+
+  services.forEach(service => {
     links[service.key] = generateAffiliateLink(baseUrl, service.path, {
       ref: referralCode,
       source,
@@ -198,7 +208,8 @@ export function calculateCommission(
  * Valida código de referência
  */
 export function validateReferralCode(code: string): boolean {
-  // Código deve ter entre 4 e 12 caracteres, apenas letras e números
+  // Código deve ter entre 4 e 12 caracteres
+  apenas letras e números
   const regex = /^[A-Z0-9]{4,12}$/
   return regex.test(code)
 }

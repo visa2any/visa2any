@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, phone, countries = [] } = body
     
-    // Validação básica,    if (!name || !phone) {
+    // Validação básica
+    
+    if (!name || !phone) {
       return NextResponse.json(
         {
           error: 'Nome e telefone são obrigatórios'
@@ -18,7 +20,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Limpar e validar telefone,    const cleanPhone = phone.replace(/\D/g, '')
+    // Limpar e validar telefone
+
+    const cleanPhone = phone.replace(/\D/g, '')
     
     if (cleanPhone.length < 10) {
       return NextResponse.json(
@@ -29,14 +33,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se já existe,    const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({
+    // Verificar se já existe
+
+    const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({
       where: {
         phone: cleanPhone
       }
     })
 
     if (existingSubscriber) {
-      // Atualizar dados existentes,      const updatedSubscriber = await prisma.whatsAppSubscriber.update({
+      // Atualizar dados existentes
+      const updatedSubscriber = await prisma.whatsAppSubscriber.update({
         where: {
           id: existingSubscriber.id
         },
@@ -58,7 +65,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Criar novo assinante,    const newSubscriber = await prisma.whatsAppSubscriber.create({
+    // Criar novo assinante
+
+    const newSubscriber = await prisma.whatsAppSubscriber.create({
       data: {
         name,
         phone: cleanPhone,
@@ -96,7 +105,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const active = searchParams.get('active') !== 'false'
     
-    // Estatísticas da newsletter,    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([
+    // Estatísticas da newsletter
+    
+    const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([
       prisma.whatsAppSubscriber.count(),
       prisma.whatsAppSubscriber.count({
         where: { isActive: true }
@@ -110,12 +121,16 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    // Distribuição por países de interesse,    const countryDistribution = await prisma.whatsAppSubscriber.findMany({
+    // Distribuição por países de interesse
+
+    const countryDistribution = await prisma.whatsAppSubscriber.findMany({
       where: { isActive: active },
       select: { countries: true }
     })
 
-    // Contar países,    const countryCount: Record<string, number> = {}
+    // Contar países
+
+    const countryCount: Record<string, number> = {}
     countryDistribution.forEach(sub => {
       const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
       countries.forEach(country => {
@@ -124,7 +139,9 @@ export async function GET(request: NextRequest) {
       })
     })
 
-    // Assinantes por fonte,    const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({
+    // Assinantes por fonte
+
+    const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({
       by: ['source'],
       where: { isActive: active },
       _count: {

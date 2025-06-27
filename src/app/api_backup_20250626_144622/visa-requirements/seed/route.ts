@@ -4,9 +4,12 @@ import { prisma } from '@/lib/prisma'
 // POST /api/visa-requirements/seed - Popular base de conhecimento
 export async function POST(request: NextRequest) {
   try {
-    // Limpar dados existentes,    await prisma.visaRequirement.deleteMany({})
+    // Limpar dados existentes
+    await prisma.visaRequirement.deleteMany({})
 
-    // Dados de exemplo para popular a base,    const visaRequirements = [
+    // Dados de exemplo para popular a base
+
+    const visaRequirements = [
       // CANADÁ,      {
         country: 'Canadá',
         visaType: 'Express Entry',
@@ -373,7 +376,9 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    // Inserir todos os requisitos,    const created = await Promise.all(
+    // Inserir todos os requisitos
+
+    const created = await Promise.all(
       visaRequirements.map(requirement => 
         prisma.visaRequirement.create({
           data: {
@@ -385,7 +390,9 @@ export async function POST(request: NextRequest) {
       )
     )
 
-    // Log da população,    await prisma.automationLog.create({
+    // Log da população
+
+    await prisma.automationLog.create({
       data: {
         type: 'VISA_REQUIREMENTS_SEEDED',
         action: 'seed_visa_requirements',

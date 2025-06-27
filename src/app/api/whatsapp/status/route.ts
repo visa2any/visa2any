@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getWhatsAppServiceSimple } from '@/lib/whatsapp-simple'
 
-// GET /api/whatsapp/status - Verificar status do WhatsApp,
+// GET /api/whatsapp/status - Verificar status do WhatsApp
+
 export async function GET(request: NextRequest) {,  try {
     const whatsappService =  
 const status = whatsappService.getStatus(),
@@ -17,10 +18,12 @@ const status = whatsappService.getStatus(),
   }
 }
 
-// POST /api/whatsapp/status - Reconectar WhatsApp,
+// POST /api/whatsapp/status - Reconectar WhatsApp
+
 export async function POST(request: NextRequest) {
   try {
-    // Reconectar forçadamente,    const whatsappService = getWhatsAppServiceSimple(),    
+    // Reconectar forçadamente
+    const whatsappService = getWhatsAppServiceSimple(),    
     return NextResponse.json({,      message: 'Reconexão iniciada. Verifique o console para o QR Code.',      timestamp: new Date().toISOString()
     })
 

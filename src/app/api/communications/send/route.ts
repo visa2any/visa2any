@@ -8,17 +8,22 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
     )
     }
 
-    // Get client information,    let client,    try {,      client = await prisma.client.findUnique({,        where: { id: clientId },        select: { id: true, name: true, email: true, phone: true }
+    // Get client information
+
+    let client,    try {,      client = await prisma.client.findUnique({,        where: { id: clientId },        select: { id: true, name: true, email: true, phone: true }
       })
     } catch (error) {
-      // If client not found in database, use mock data,      client = {,        id: clientId,        name: 'Cliente',        email: 'cliente@email.com',        phone: '+5511999999999'
+      // If client not found in database
+      use mock data,      client = {,        id: clientId,        name: 'Cliente',        email: 'cliente@email.com',        phone: '+5511999999999'
       }
     },
     if (!client) {,      return NextResponse.json(,        { status: 404 }
       )
     }
 
-    // Process template if provided,    let processedContent = content,    if (template && client) {,      processedContent = content
+    // Process template if provided
+
+    let processedContent = content,    if (template && client) {,      processedContent = content
         .replace(/{nome}/g, client.name)
         .replace(/{email}/g, client.email)
         .replace(/{data}/g, new Date().toLocaleDateString('pt-BR'))
@@ -34,7 +39,9 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
     )
     }
 
-    // Create communication record,    const communicationRecord = {,      id: deliveryResult.messageId,      clientId,      client,      type,      direction: 'outbound' as const,      content: processedContent,      subject,      status: deliveryResult.status,      timestamp: new Date().toISOString(),      assignedTo: 'Current User',      tags: template ? [template] : []
+    // Create communication record
+
+    const communicationRecord = {,      id: deliveryResult.messageId,      clientId,      client,      type,      direction: 'outbound' as const,      content: processedContent,      subject,      status: deliveryResult.status,      timestamp: new Date().toISOString(),      assignedTo: 'Current User',      tags: template ? [template] : []
       priority,      attachments: [],      metadata: {,        templateUsed: template,        sentAt: new Date().toISOString(),        channel: type
       }
     }
@@ -50,17 +57,20 @@ const { type, content, clientId, template, subject, priority = 'medium' } = body
 }
 
 // Simulated communication functions,async function sendWhatsApp(phone: string, message: string) {
-  // Simulate WhatsApp API call,  await new Promise(resolve => setTimeout(resolve, 1000)),  
+  // Simulate WhatsApp API call
+  await new Promise(resolve => setTimeout(resolve, 1000)),  
   return {,    messageId: `wa_${Date.now()}`,    status: 'sent'
   }
 },
 async function sendEmail(email: string, subject: string, content: string) {
-  // Simulate Email API call,  await new Promise(resolve => setTimeout(resolve, 800)),  
+  // Simulate Email API call
+  await new Promise(resolve => setTimeout(resolve, 800)),  
   return {,    messageId: `email_${Date.now()}`,    status: 'sent'
   }
 },
 async function sendSMS(phone: string, message: string) {
-  // Simulate SMS API call,  await new Promise(resolve => setTimeout(resolve, 500)),  
+  // Simulate SMS API call
+  await new Promise(resolve => setTimeout(resolve, 500)),  
   return {,    messageId: `sms_${Date.now()}`,    status: 'sent'
   }
 }

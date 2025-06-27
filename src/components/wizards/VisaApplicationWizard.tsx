@@ -152,7 +152,9 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
       }
     ]
 
-    // Customize steps based on country and visa type,    if (country === 'USA') {
+    // Customize steps based on country and visa type
+
+    if (country === 'USA') {
       baseSteps[4].component = USAVisaForm
     } else if (country === 'CAN') {
       baseSteps[4].component = CanadaVisaForm

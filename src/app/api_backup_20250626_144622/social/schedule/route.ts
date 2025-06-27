@@ -13,14 +13,18 @@ export async function POST(request: NextRequest) {
       scheduledAt
     } = body
 
-    // Validar dados obrigatórios,    if (!blogPostId || !platform || !content) {
+    // Validar dados obrigatórios
+
+    if (!blogPostId || !platform || !content) {
       return NextResponse.json(
         { error: 'blogPostId, platform e content são obrigatórios' }
         { status: 400 }
       )
     }
 
-    // Converter platform string para enum,    const platformEnum = platform.toUpperCase()
+    // Converter platform string para enum
+
+    const platformEnum = platform.toUpperCase()
     if (!['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].includes(platformEnum)) {
       return NextResponse.json(
         { error: 'Plataforma inválida' }
@@ -28,7 +32,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar post agendado,    const socialPost = await prisma.socialPost.create({
+    // Criar post agendado
+
+    const socialPost = await prisma.socialPost.create({
       data: {
         blogPostId
         platform: platformEnum as any,

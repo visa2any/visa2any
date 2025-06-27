@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { costEffectiveSolutions, ManualBookingRequest } from '@/lib/cost-effective-solutions'
 
-// POST - Agendamento manual assistido (gratuito),
+// POST - Agendamento manual assistido (gratuito)
+
 export async function POST(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const action =  
 const body = await request.json(),
     switch (action) {,      case 'manual_booking':
-        // Agendamento manual assistido,        const bookingRequest: ManualBookingRequest = body,        
+        // Agendamento manual assistido
+        const bookingRequest: ManualBookingRequest = body,        
         if (!bookingRequest.applicantInfo?.fullName || !bookingRequest.consularInfo?.country) {,          return NextResponse.json(,            { error: 'Campos applicantInfo.fullName e consularInfo.country são obrigatórios' },            { status: 400 }
           )
         },
@@ -15,7 +17,8 @@ const body = await request.json(),
           ]
         }),
       case 'setup_monitoring':
-        // Configurar monitoramento gratuito,        const { countries } = body,        
+        // Configurar monitoramento gratuito
+        const { countries } = body,        
         if (!Array.isArray(countries) || countries.length === 0) {,          return NextResponse.json(,            { error: 'Campo countries deve ser um array não vazio' },            { status: 400 }
           )
         },
@@ -23,7 +26,8 @@ const body = await request.json(),
         return NextResponse.json({,          success: monitoring.success,          monitoringId: monitoring.monitoringId,          targets: monitoring.targets,          message: `Monitoramento configurado para ${countries.length} países`,          cost: 'GRATUITO',          instructions: 'Sistema monitora automaticamente e notifica quando encontrar vagas'
         }),
       case 'optimized_workflow':
-        // Workflow manual otimizado,        const workflowRequest: ManualBookingRequest = body,        
+        // Workflow manual otimizado
+        const workflowRequest: ManualBookingRequest = body,        
         const workflow = await costEffectiveSolutions.optimizedManualWorkflow(workflowRequest),        
         return NextResponse.json({,          success: workflow.success,          workflow: workflow.workflow,          totalTime: workflow.totalTime,          cost: `R$ ${workflow.cost}`,          efficiency: 'Processo otimizado para máxima eficiência'
         }),
@@ -36,18 +40,21 @@ const body = await request.json(),
   }
 }
 
-// GET - Listar métodos econômicos e calcular ROI,
+// GET - Listar métodos econômicos e calcular ROI
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url),    const action = searchParams.get('action') || 'methods'
 
     switch (action) {,      case 'methods':
-        // Listar todos os métodos econômicos,        const methods = costEffectiveSolutions.getCostEffectiveMethods(),        
+        // Listar todos os métodos econômicos
+        const methods = costEffectiveSolutions.getCostEffectiveMethods(),        
         return NextResponse.json({,          success: true,          methods: methods.map(method => ({
             ...method,            costDescription: `Setup: R$ ${method.cost.setup} | Mensal: R$ ${method.cost.monthly} | Por transação: R$ ${method.cost.perTransaction}`
           })),          recommendation: 'Para começar imediatamente, use "Agendamento Manual Assistido"',          bestOption: {,            immediate: 'manual_assisted',            scalable: 'api_monitoring',            cheapest: 'telegram_bots'
           }
         }),
       case 'roi':
-        // Calcular ROI de um método específico,        const method =  
+        // Calcular ROI de um método específico
+        const method =  
 const monthlyVolume = parseInt(searchParams.get('volume') || '10')
         const revenuePerBooking = parseInt(searchParams.get('revenue') || '100'),        
         if (!method) {,          return NextResponse.json(,            { error: 'Parâmetro method é obrigatório' },            { status: 400 }
@@ -61,12 +68,14 @@ const monthlyVolume = parseInt(searchParams.get('volume') || '10')
           )
         },
       case 'telegram_setup':
-        // Configurar alertas Telegram gratuitos,        const telegramSetup = await costEffectiveSolutions.setupTelegramAlerts(),        
+        // Configurar alertas Telegram gratuitos
+        const telegramSetup = await costEffectiveSolutions.setupTelegramAlerts(),        
         return NextResponse.json({,          success: telegramSetup.success,          setup: telegramSetup.botInfo,          instructions: telegramSetup.instructions,          cost: 'GRATUITO',          reliability: '70%',          benefits: [,            'Notificações instantâneas',            'Múltiplos canais monitorados',            'Comandos personalizados',            'Zero custo operacional'
           ]
         }),
       case 'email_setup':
-        // Configurar monitoramento por email,        const emailSetup = await costEffectiveSolutions.setupEmailMonitoring(),        
+        // Configurar monitoramento por email
+        const emailSetup = await costEffectiveSolutions.setupEmailMonitoring(),        
         return NextResponse.json({,          success: emailSetup.success,          config: emailSetup.emailConfig,          instructions: emailSetup.instructions,          cost: 'R$ 20/mês',          roi: 'Altíssimo (quase gratuito)',          providers: emailSetup.emailConfig.providers
         }),
       default:,        return NextResponse.json(,          { error: 'Action deve ser: methods, roi, telegram_setup, ou email_setup' },          { status: 400 }

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// POST /api/visa-requirements/seed - Popular base de conhecimento,
+// POST /api/visa-requirements/seed - Popular base de conhecimento
+
 export async function POST(request: NextRequest) {
   try {
-    // Limpar dados existentes,    await prisma.visaRequirement.deleteMany({})
+    // Limpar dados existentes
+    await prisma.visaRequirement.deleteMany({})
 
-    // Dados de exemplo para popular a base,    const visaRequirements = [
+    // Dados de exemplo para popular a base
+
+    const visaRequirements = [
       // CANADÁ,      {,        country: 'Canadá',        visaType: 'Express Entry',        visaSubtype: 'Federal Skilled Worker',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte válido',            required: true,            description: 'Passaporte com validade mínima de 6 meses',            validityMonths: 6
           },          {
@@ -142,14 +146,18 @@ export async function POST(request: NextRequest) {
       }
     ]
 
-    // Inserir todos os requisitos,    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({,          data: {
+    // Inserir todos os requisitos
+
+    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({,          data: {
             ...requirement,            lastUpdated: new Date(),            isActive: true
           }
         })
       )
     )
 
-    // Log da população,    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    // Log da população
+
+    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),

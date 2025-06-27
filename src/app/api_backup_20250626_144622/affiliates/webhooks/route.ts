@@ -22,7 +22,9 @@ interface WebhookEndpoint {
   affiliateId?: string
 }
 
-// Simulação de storage de webhooks (em produção, usar Redis ou banco)
+// Simulação de storage de webhooks (em produção
+
+usar Redis ou banco)
 const webhookEndpoints = new Map<string, WebhookEndpoint[]>()
 
 // GET - Listar webhooks configurados
@@ -65,7 +67,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validar URL,    try {
+    // Validar URL
+
+    try {
       new URL(webhookUrl)
     } catch {
       return NextResponse.json({
@@ -73,7 +77,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validar eventos,    const validEvents = [
+    // Validar eventos
+
+    const validEvents = [
       'conversion.created',
       'commission.approved',
       'payment.completed',
@@ -98,11 +104,15 @@ export async function POST(request: NextRequest) {
       affiliateId
     }
 
-    // Adicionar ao storage,    const existing = webhookEndpoints.get(affiliateId) || []
+    // Adicionar ao storage
+
+    const existing = webhookEndpoints.get(affiliateId) || []
     existing.push(endpoint)
     webhookEndpoints.set(affiliateId, existing)
 
-    // Testar webhook,    const testResult = await testWebhook(endpoint)
+    // Testar webhook
+
+    const testResult = await testWebhook(endpoint)
 
     return NextResponse.json({
       data: {
@@ -140,7 +150,9 @@ export async function PUT(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // Atualizar endpoint,    endpoints[index] = { ...endpoints[index], ...updateData }
+    // Atualizar endpoint
+
+    endpoints[index] = { ...endpoints[index], ...updateData }
     webhookEndpoints.set(affiliateId, endpoints)
 
     return NextResponse.json({
@@ -276,7 +288,9 @@ async function sendWebhookEvent(
       timestamp: new Date().toISOString()
     }
 
-    // Enviar para todos os endpoints relevantes,    const promises = relevantEndpoints.map(async (endpoint) => {
+    // Enviar para todos os endpoints relevantes
+
+    const promises = relevantEndpoints.map(async (endpoint) => {
       try {
         const payload = JSON.stringify(webhookEvent)
         const signature = generateSignature(payload, endpoint.secret)

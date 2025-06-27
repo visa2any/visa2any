@@ -56,9 +56,12 @@ export async function POST(request: NextRequest) {
     const { type, ...data } = body
 
     if (type === 'text') {
-      // Tradução de texto,      const translationRequest: TranslationRequest = data
+      // Tradução de texto
+      const translationRequest: TranslationRequest = data
       
-      // Validação,      if (!translationRequest.text || !translationRequest.sourceLanguage || !translationRequest.targetLanguage) {
+      // Validação
+      
+      if (!translationRequest.text || !translationRequest.sourceLanguage || !translationRequest.targetLanguage) {
         return NextResponse.json(
           { error: 'Campos text, sourceLanguage e targetLanguage são obrigatórios' }
           { status: 400 }
@@ -93,9 +96,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === 'document') {
-      // Tradução de documento,      const documentRequest: DocumentForTranslation = data
+      // Tradução de documento
+      const documentRequest: DocumentForTranslation = data
       
-      // Validação,      const requiredFields = ['fileName', 'sourceLanguage', 'targetLanguage', 'documentType', 'pageCount']
+      // Validação
+      
+      const requiredFields = ['fileName', 'sourceLanguage', 'targetLanguage', 'documentType', 'pageCount']
       for (const field of requiredFields) {
         if (!documentRequest[field as keyof DocumentForTranslation]) {
           return NextResponse.json(

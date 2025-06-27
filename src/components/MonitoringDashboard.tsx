@@ -44,7 +44,8 @@ export default function MonitoringDashboard() {
 
   const loadMonitoringData = async () => {
     try {
-      // Dados simulados dos canais de monitoramento,      const mockChannels: MonitoringChannel[] = [
+      // Dados simulados dos canais de monitoramento
+      const mockChannels: MonitoringChannel[] = [
         {
           id: 'vaga_express',
           name: 'Vaga Express',
@@ -165,7 +166,8 @@ export default function MonitoringDashboard() {
 
   const toggleChannel = async (channelId: string, enabled: boolean) => {
     try {
-      // Simular API call para ativar/desativar canal,      setChannels(prev => prev.map(channel => 
+      // Simular API call para ativar/desativar canal
+      setChannels(prev => prev.map(channel => 
         channel.id === channelId 
           ? { ...channel, status: enabled ? 'active' : 'inactive' }
           : channel
@@ -196,7 +198,9 @@ export default function MonitoringDashboard() {
       const alert = alerts.find(a => a.id === alertId)
       if (!alert) return
 
-      // Simular notificação ao cliente,      const response = await fetch('/api/notifications', {
+      // Simular notificação ao cliente
+
+      const response = await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

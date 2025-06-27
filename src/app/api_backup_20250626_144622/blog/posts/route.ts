@@ -8,7 +8,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     
-    // Parâmetros de busca e filtros,    const searchTerm = searchParams.get('search') || ''
+    // Parâmetros de busca e filtros
+    
+    const searchTerm = searchParams.get('search') || ''
     const category = searchParams.get('category') || 'Todos'
     const difficulty = searchParams.get('difficulty') || 'Todos'
     const type = searchParams.get('type') || 'Todos'
@@ -19,11 +21,15 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    // Construir filtros do Prisma,    const where: any = {
+    // Construir filtros do Prisma
+
+    const where: any = {
       published: true
     }
 
-    // Filtro de busca por texto melhorado,    if (searchTerm) {
+    // Filtro de busca por texto melhorado
+
+    if (searchTerm) {
       const searchWords = searchTerm.toLowerCase().split(' ').filter(word => word.length > 2)
       
       if (searchWords.length > 0) {
@@ -35,7 +41,9 @@ export async function GET(request: NextRequest) {
           // Busca no autor,          { author: { contains: searchTerm, mode: 'insensitive' } }
         ]
         
-        // Adicionar busca individual por palavra para melhor matching,        for (const word of searchWords) {
+        // Adicionar busca individual por palavra para melhor matching
+        
+        for (const word of searchWords) {
           where.OR.push(
             { title: { contains: word, mode: 'insensitive' } },
             { excerpt: { contains: word, mode: 'insensitive' } },
@@ -45,7 +53,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filtros específicos,    if (category !== 'Todos') {
+    // Filtros específicos
+
+    if (category !== 'Todos') {
       where.category = category
     }
 
@@ -69,7 +79,9 @@ export async function GET(request: NextRequest) {
       where.urgent = true
     }
 
-    // Ordenação,    let orderBy: any = { publishDate: 'desc' }
+    // Ordenação
+
+    let orderBy: any = { publishDate: 'desc' }
     
     switch (sortBy) {
       case 'newest':
@@ -86,16 +98,22 @@ export async function GET(request: NextRequest) {
         break
     }
 
-    // Buscar posts,    const posts = await prisma.blogPost.findMany({
+    // Buscar posts
+
+    const posts = await prisma.blogPost.findMany({
       where,
       orderBy,
       take: limit,
       skip: offset
     })
 
-    // Buscar total para paginação,    const total = await prisma.blogPost.count({ where })
+    // Buscar total para paginação
 
-    // Converter tags JSON para array,    const postsWithTags = posts.map(post => ({
+    const total = await prisma.blogPost.count({ where })
+
+    // Converter tags JSON para array
+
+    const postsWithTags = posts.map(post => ({
       ...post,
       tags: Array.isArray(post.tags) ? post.tags : []
     }))
@@ -115,7 +133,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Erro ao buscar posts:', error)
     
-    // Retornar dados de fallback em caso de erro de banco,    return NextResponse.json({
+    // Retornar dados de fallback em caso de erro de banco
+    
+    return NextResponse.json({
       posts: [],
       total: 0,
       hasMore: false,
@@ -133,7 +153,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validação básica,    const { title, excerpt, content, category, author, readTime, tags, difficulty, type } = body
+    // Validação básica
+    
+    const { title, excerpt, content, category, author, readTime, tags, difficulty, type } = body
     
     if (!title || !excerpt || !content || !category || !author) {
       return NextResponse.json(
@@ -144,7 +166,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar post,    const post = await prisma.blogPost.create({
+    // Criar post
+
+    const post = await prisma.blogPost.create({
       data: {
         title,
         excerpt,

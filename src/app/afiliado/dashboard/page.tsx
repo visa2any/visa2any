@@ -66,7 +66,8 @@ export default function AffiliateDashboard() {
   const loadDashboardData = async () => {
     setLoading(true)
     try {
-      // Dados mockados para demonstração,      setData({
+      // Dados mockados para demonstração
+      setData({
         affiliate: {
           id: '1',
           name: 'João Silva',

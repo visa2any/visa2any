@@ -17,7 +17,9 @@ interface BreadcrumbProps {
 export default function Breadcrumb({ items, className = '' }: BreadcrumbProps) {
   const pathname = usePathname()
   
-  // Auto-generate breadcrumbs if not provided,  const generateBreadcrumbs = (): BreadcrumbItem[] => {
+  // Auto-generate breadcrumbs if not provided
+  
+  const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const paths = pathname.split('/').filter(Boolean)
     const breadcrumbs: BreadcrumbItem[] = [
       { label: 'Início', href: '/' }
@@ -27,7 +29,9 @@ export default function Breadcrumb({ items, className = '' }: BreadcrumbProps) {
     paths.forEach((path, index) => {
       currentPath += `/${path}`
       
-      // Custom labels for common paths,      const labels: Record<string, string> = {
+      // Custom labels for common paths
+      
+      const labels: Record<string, string> = {
         'precos': 'Preços',
         'consultoria-ia': 'Consultoria IA',
         'checkout': 'Finalizar Compra',

@@ -9,7 +9,8 @@ import {
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
 
 interface USAFormData {
-  // Personal Information,  personalInfo: {
+  // Personal Information
+  personalInfo: {
     fullName: string
     birthDate: string
     birthPlace: string
@@ -21,7 +22,9 @@ interface USAFormData {
     maritalStatus: string
   }
   
-  // Contact Information,  contactInfo: {
+  // Contact Information
+  
+  contactInfo: {
     homeAddress: string
     city: string
     state: string
@@ -31,7 +34,9 @@ interface USAFormData {
     email: string
   }
   
-  // Travel Information,  travelInfo: {
+  // Travel Information
+  
+  travelInfo: {
     visaType: string
     purposeOfTrip: string
     intendedArrival: string
@@ -42,7 +47,9 @@ interface USAFormData {
     refusalReason?: string
   }
   
-  // Employment/Education,  backgroundInfo: {
+  // Employment/Education
+  
+  backgroundInfo: {
     currentOccupation: string
     employer: string
     employerAddress: string
@@ -51,7 +58,9 @@ interface USAFormData {
     languageProficiency: string
   }
   
-  // Security Questions,  securityInfo: {
+  // Security Questions
+  
+  securityInfo: {
     criminalHistory: boolean
     drugViolations: boolean
     terrorism: boolean
@@ -60,7 +69,9 @@ interface USAFormData {
     communicableDisease: boolean
   }
   
-  // Supporting Documents,  documents: {
+  // Supporting Documents
+  
+  documents: {
     passport: boolean
     photo: boolean
     bankStatements: boolean
@@ -190,7 +201,8 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
 
   const handleSubmit = async () => {
     try {
-      // Validate required fields,      const requiredFields = [
+      // Validate required fields
+      const requiredFields = [
         formData.personalInfo.fullName,
         formData.personalInfo.birthDate,
         formData.personalInfo.nationality,

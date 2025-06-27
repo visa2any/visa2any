@@ -26,14 +26,17 @@ export function rateLimit(
   const key = `${ip}-${request.nextUrl.pathname}`
   const now = Date.now()
   
-  // Limpar entradas expiradas periodicamente,  if (Math.random() < 0.01) {
+  // Limpar entradas expiradas periodicamente
+  
+  if (Math.random() < 0.01) {
     cleanupExpiredEntries()
   }
   
   const entry = rateStore.get(key)
   
   if (!entry || now > entry.resetTime) {
-    // Nova janela de tempo,    const newEntry: RateLimitEntry = {
+    // Nova janela de tempo
+    const newEntry: RateLimitEntry = {
       count: 1,
       resetTime: now + config.windowMs
     }
@@ -46,13 +49,16 @@ export function rateLimit(
   }
   
   if (entry.count >= config.maxRequests) {
-    // Limite excedido,    return {
+    // Limite excedido
+    return {
       remaining: 0,
       resetTime: entry.resetTime
     }
   }
   
-  // Incrementar contador,  entry.count++
+  // Incrementar contador
+  
+  entry.count++
   rateStore.set(key, entry)
   
   return {

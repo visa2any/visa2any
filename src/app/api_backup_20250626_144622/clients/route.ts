@@ -22,7 +22,8 @@ const createClientSchema = z.object({
 // GET /api/clients - Listar clientes
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
@@ -34,7 +35,9 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Construir filtros,    const where: any = {}
+    // Construir filtros
+
+    const where: any = {}
     
     if (status && status !== 'ALL') {
       where.status = status
@@ -48,7 +51,9 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Buscar clientes com paginação,    const [clients, total] = await Promise.all([
+    // Buscar clientes com paginação
+
+    const [clients, total] = await Promise.all([
       prisma.client.findMany({
         where,
         skip,
@@ -90,7 +95,9 @@ export async function GET(request: NextRequest) {
       prisma.client.count({ where })
     ])
 
-    // Calcular métricas,    const totalPages = Math.ceil(total / limit)
+    // Calcular métricas
+
+    const totalPages = Math.ceil(total / limit)
     const hasMore = page < totalPages
 
     return NextResponse.json({
@@ -118,15 +125,20 @@ export async function GET(request: NextRequest) {
 // POST /api/clients - Criar novo cliente
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autenticação,    const user = await verifyAuth(request)
+    // Verificar autenticação
+    const user = await verifyAuth(request)
     if (!user) {
       return createAuthError('Acesso não autorizado')
     }
     const body = await request.json()
     
-    // Validar dados,    const validatedData = createClientSchema.parse(body)
+    // Validar dados
+    
+    const validatedData = createClientSchema.parse(body)
 
-    // Verificar se email já existe,    const existingClient = await prisma.client.findUnique({
+    // Verificar se email já existe
+
+    const existingClient = await prisma.client.findUnique({
       where: { email: validatedData.email }
     })
 
@@ -137,7 +149,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criar cliente,    const client = await prisma.client.create({
+    // Criar cliente
+
+    const client = await prisma.client.create({
       data: {
         ...validatedData,
         status: 'LEAD'
@@ -149,7 +163,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({
+    // Log da criação
+
+    await prisma.automationLog.create({
       data: {
         type: 'CLIENT_CREATED',
         action: 'create_client',

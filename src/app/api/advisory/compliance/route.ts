@@ -23,23 +23,32 @@ import { z } from 'zod'
   ])
 })
 
-// POST /api/advisory/compliance - Verificar compliance,
+// POST /api/advisory/compliance - Verificar compliance
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
     const validatedData = complianceCheckSchema.parse(body)
 
-    // Obter requisitos específicos do país/visto,    const requirements = await getComplianceRequirements(,      validatedData.country
+    // Obter requisitos específicos do país/visto
+
+    const requirements = await getComplianceRequirements(,      validatedData.country
 
       validatedData.visaType
     )
 
-    // Realizar verificação de compliance,    const complianceResult = await performComplianceCheck(,      validatedData.documents,      requirements,      validatedData.checkType
+    // Realizar verificação de compliance
+
+    const complianceResult = await performComplianceCheck(,      validatedData.documents,      requirements,      validatedData.checkType
     )
 
-    // Gerar relatório detalhado,    const detailedReport = await generateComplianceReport(,      complianceResult,      requirements,      validatedData.country,      validatedData.visaType
+    // Gerar relatório detalhado
+
+    const detailedReport = await generateComplianceReport(,      complianceResult,      requirements,      validatedData.country,      validatedData.visaType
     )
 
-    // Salvar resultado da verificação,    await prisma.automationLog.create({,      data: {,        type: 'COMPLIANCE_CHECK',        action: `compliance_${validatedData.checkType}`,        clientId: validatedData.clientId,        success: true,        details: {,          checkType: validatedData.checkType,          complianceScore: complianceResult.overallScore,          complianceLevel: complianceResult.complianceLevel,          issuesCount: complianceResult.issues.length,          passedCount: complianceResult.passed.length
+    // Salvar resultado da verificação
+
+    await prisma.automationLog.create({,      data: {,        type: 'COMPLIANCE_CHECK',        action: `compliance_${validatedData.checkType}`,        clientId: validatedData.clientId,        success: true,        details: {,          checkType: validatedData.checkType,          complianceScore: complianceResult.overallScore,          complianceLevel: complianceResult.complianceLevel,          issuesCount: complianceResult.issues.length,          passedCount: complianceResult.passed.length
         }
       }
     }),
@@ -56,7 +65,8 @@ export async function POST(request: NextRequest) {,  try {
   }
 }
 
-// GET /api/advisory/compliance/requirements - Obter requisitos por país/visto,
+// GET /api/advisory/compliance/requirements - Obter requisitos por país/visto
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const country = countryVar
     const visaType = searchParams.get('visaType')
@@ -75,7 +85,8 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 }
 
 // Obter requisitos de compliance por país/visto,async function getComplianceRequirements(country: string, visaType: string, detailed = false) {
-  // Base de dados de requisitos por país/visto,  const requirementsDatabase: Record<string, any> = {,    'Canada': {,      'SKILLED': {,        mandatory: [,          {
+  // Base de dados de requisitos por país/visto
+  const requirementsDatabase: Record<string, any> = {,    'Canada': {,      'SKILLED': {,        mandatory: [,          {
             type: 'passport',            name: 'Passaporte válido',            validity: '6 months beyond intended stay',            pages: 'At least 2 blank pages',            specifications: {,              format: 'PDF scan',              resolution: '300 DPI minimum',              color: 'Color scan required',              pages: 'All pages including blank ones'
             }
           },          {
@@ -160,20 +171,25 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     }
   }
 
-  // Verificar documentos obrigatórios,  if (requirements.mandatory) {,    result.breakdown.mandatory.total = requirements.mandatory.length,    
+  // Verificar documentos obrigatórios
+
+  if (requirements.mandatory) {,    result.breakdown.mandatory.total = requirements.mandatory.length,    
     for (const req of requirements.mandatory) {,      const matchingDocs = documents.filter(doc => ,        doc.type === req.type || ,        doc.type.includes(req.type) ||,        req.type.includes(doc.type)
       ),      
       if (matchingDocs.length === 0) {,        result.missing.push({,          type: req.type,          name: req.name,          severity: 'critical',          description: `Required document missing: ${req.name}`
         }),        result.issues.push({,          type: 'missing_document',          severity: 'critical',          document: req.name,          message: `Missing required document: ${req.name}`
         })
       } else {
-        // Verificar cada documento correspondente,        for (const doc of matchingDocs) {,          const docCheck = await checkDocumentCompliance(doc, req),          
+        // Verificar cada documento correspondente
+        for (const doc of matchingDocs) {,          const docCheck = await checkDocumentCompliance(doc, req),          
           if (docCheck.compliant) {,            result.passed.push({,              type: doc.type,              name: req.name,              status: 'compliant'
             }),            result.breakdown.mandatory.completed++
           } else {,            result.issues.push(...docCheck.issues)
           }
           
-          // Verificar validade,          if (doc.expiryDate) {,            const expiryDate = expiryDateVar
+          // Verificar validade
+          
+          if (doc.expiryDate) {,            const expiryDate = expiryDateVar
     const now = new Date()
             const sixMonthsFromNow = new Date(now.getTime() + 6 * 30 * 24 * 60 * 60 * 1000),            
             if (expiryDate < now) {,              result.issues.push({,                type: 'expired_document',                severity: 'critical',                document: doc.fileName,                message: `Document expired on ${expiryDate.toLocaleDateString()}`
@@ -188,7 +204,9 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     result.breakdown.mandatory.score = (result.breakdown.mandatory.completed / result.breakdown.mandatory.total) * 100
   }
 
-  // Verificar documentos opcionais,  if (requirements.optional) {,    result.breakdown.optional.total = requirements.optional.length,    
+  // Verificar documentos opcionais
+
+  if (requirements.optional) {,    result.breakdown.optional.total = requirements.optional.length,    
     for (const req of requirements.optional) {,      const matchingDocs = documents.filter(doc => doc.type === req.type),      
       if (matchingDocs.length > 0) {,        result.breakdown.optional.completed++,        result.passed.push({,          type: req.type,          name: req.name,          status: 'bonus',          benefit: req.points || req.benefit
         })
@@ -198,14 +216,18 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     }
   }
 
-  // Calcular score geral,  const mandatoryWeight = mandatoryWeightVar
+  // Calcular score geral
+
+  const mandatoryWeight = mandatoryWeightVar
     const optionalWeight = 0.2,  
   result.overallScore = (
     (result.breakdown.mandatory.score * mandatoryWeight) +
     (result.breakdown.optional.score * optionalWeight)
   )
 
-  // Determinar nível de compliance,  if (result.overallScore >= 90 && result.missing.length === 0) {,    result.complianceLevel = 'compliant'
+  // Determinar nível de compliance
+
+  if (result.overallScore >= 90 && result.missing.length === 0) {,    result.complianceLevel = 'compliant'
   } else if (result.overallScore >= 70 && result.issues.filter(i => i.severity === 'critical').length === 0) {,    result.complianceLevel = 'partial'
   } else {,    result.complianceLevel = 'non_compliant'
   },
@@ -216,13 +238,19 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     warnings: [] as any[]
   }
 
-  // Verificar especificações técnicas,  if (requirement.specifications) {,    const specs = requirement.specifications
+  // Verificar especificações técnicas
+
+  if (requirement.specifications) {,    const specs = requirement.specifications
     
-    // Verificar formato,    if (specs.format && !document.fileName.toLowerCase().endsWith('.pdf')) {,      check.issues.push({,        type: 'format_issue',        severity: 'medium',        document: document.fileName,        message: `Document should be in ${specs.format} format`
+    // Verificar formato
+    
+    if (specs.format && !document.fileName.toLowerCase().endsWith('.pdf')) {,      check.issues.push({,        type: 'format_issue',        severity: 'medium',        document: document.fileName,        message: `Document should be in ${specs.format} format`
       }),      check.compliant = false
     }
     
-    // Verificar resolução (se disponível nos metadados),    if (specs.resolution && document.metadata?.resolution) {,      const requiredDPI = requiredDPIVar
+    // Verificar resolução (se disponível nos metadados)
+    
+    if (specs.resolution && document.metadata?.resolution) {,      const requiredDPI = requiredDPIVar
     const docDPI = parseInt(document.metadata.resolution),      
       if (docDPI < requiredDPI) {,        check.issues.push({,          type: 'quality_issue',          severity: 'medium',          document: document.fileName,          message: `Resolution ${docDPI} DPI is below required ${requiredDPI} DPI`
         }),        check.compliant = false
@@ -248,15 +276,21 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
 
 // Gerar recomendações de compliance,function generateComplianceRecommendations(result: any) {,  const recommendations = []
   
-  // Recomendações para documentos faltando,  if (result.missing.length > 0) {,    recommendations.push({,      priority: 'critical',      category: 'missing_documents',      action: `Provide ${result.missing.length} missing required documents`,      timeline: 'Before submission',      documents: result.missing.map((m: any) => m.name)
+  // Recomendações para documentos faltando
+  
+  if (result.missing.length > 0) {,    recommendations.push({,      priority: 'critical',      category: 'missing_documents',      action: `Provide ${result.missing.length} missing required documents`,      timeline: 'Before submission',      documents: result.missing.map((m: any) => m.name)
     })
   }
   
-  // Recomendações para documentos expirando,  if (result.expiring.length > 0) {,    recommendations.push({,      priority: 'high',      category: 'expiring_documents', ,      action: `Renew ${result.expiring.length} documents expiring soon`,      timeline: 'Within 30 days',      documents: result.expiring.map((e: any) => `${e.name} (expires ${e.expiryDate})`)
+  // Recomendações para documentos expirando
+  
+  if (result.expiring.length > 0) {,    recommendations.push({,      priority: 'high',      category: 'expiring_documents', ,      action: `Renew ${result.expiring.length} documents expiring soon`,      timeline: 'Within 30 days',      documents: result.expiring.map((e: any) => `${e.name} (expires ${e.expiryDate})`)
     })
   }
   
-  // Recomendações para problemas de qualidade,  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue'),  if (qualityIssues.length > 0) {,    recommendations.push({,      priority: 'medium',      category: 'document_quality',      action: 'Improve document quality (resolution, format)',      timeline: 'Before submission',      details: 'Ensure all scans meet embassy requirements'
+  // Recomendações para problemas de qualidade
+  
+  const qualityIssues = result.issues.filter((i: any) => i.type === 'quality_issue'),  if (qualityIssues.length > 0) {,    recommendations.push({,      priority: 'medium',      category: 'document_quality',      action: 'Improve document quality (resolution, format)',      timeline: 'Before submission',      details: 'Ensure all scans meet embassy requirements'
     })
   },  
   return recommendations
@@ -266,15 +300,21 @@ export async function GET(request: NextRequest) {,  try {,    const { searchPara
     longTerm: [] as any[],    optional: [] as any[]
   }
   
-  // Ações imediatas para problemas críticos,  const criticalIssues = result.issues.filter((i: any) => i.severity === 'critical'),  criticalIssues.forEach((issue: any) => {,    recommendations.immediate.push({,      action: `Resolve: ${issue.message}`,      document: issue.document,      timeline: '1-3 days'
+  // Ações imediatas para problemas críticos
+  
+  const criticalIssues = result.issues.filter((i: any) => i.severity === 'critical'),  criticalIssues.forEach((issue: any) => {,    recommendations.immediate.push({,      action: `Resolve: ${issue.message}`,      document: issue.document,      timeline: '1-3 days'
     })
   })
   
-  // Ações de curto prazo,  if (result.expiring.length > 0) {,    recommendations.shortTerm.push({,      action: 'Renew expiring documents',      documents: result.expiring.map((e: any) => e.name),      timeline: '2-4 weeks'
+  // Ações de curto prazo
+  
+  if (result.expiring.length > 0) {,    recommendations.shortTerm.push({,      action: 'Renew expiring documents',      documents: result.expiring.map((e: any) => e.name),      timeline: '2-4 weeks'
     })
   }
   
-  // Melhorias opcionais,  if (requirements.optional && result.breakdown.optional.completed < result.breakdown.optional.total) {,    recommendations.optional.push({,      action: 'Consider providing optional documents for additional points',      benefit: 'Improved application strength',      timeline: 'Before submission'
+  // Melhorias opcionais
+  
+  if (requirements.optional && result.breakdown.optional.completed < result.breakdown.optional.total) {,    recommendations.optional.push({,      action: 'Consider providing optional documents for additional points',      benefit: 'Improved application strength',      timeline: 'Before submission'
     })
   },  
   return recommendations

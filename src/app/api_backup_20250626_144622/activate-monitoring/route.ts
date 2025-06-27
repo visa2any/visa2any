@@ -51,7 +51,9 @@ async function activateWebScraping() {
       })
     }
 
-    // Ativar web scraping com intervalo de 30 minutos,    webScrapingInterval = setInterval(async () => {
+    // Ativar web scraping com intervalo de 30 minutos
+
+    webScrapingInterval = setInterval(async () => {
       try {
         console.log('🔍 Verificando slots via web scraping...')
         const slots = await webScrapingService.checkAllSites()
@@ -69,7 +71,9 @@ async function activateWebScraping() {
 
     webScrapingActive = true
 
-    // Enviar notificação de ativação,    await sendActivationNotification('🌐 Web Scraping ATIVADO!', 
+    // Enviar notificação de ativação
+
+    await sendActivationNotification('🌐 Web Scraping ATIVADO!', 
       `Sistema de monitoramento automático iniciado:
       
 🎯 Sites monitorados: CASV, VFS Global
@@ -101,7 +105,9 @@ async function activateEmailMonitoring() {
       })
     }
 
-    // Ativar email monitoring com intervalo de 15 minutos,    emailInterval = setInterval(async () => {
+    // Ativar email monitoring com intervalo de 15 minutos
+
+    emailInterval = setInterval(async () => {
       try {
         console.log('📧 Verificando emails de consulados...')
         const [recentAlerts, consulateAlerts] = await Promise.all([
@@ -176,7 +182,8 @@ Máxima eficiência na detecção de slots!`)
 }
 
 async function deactivateAll() {
-  // Parar intervalos,  if (webScrapingInterval) {
+  // Parar intervalos
+  if (webScrapingInterval) {
     clearInterval(webScrapingInterval)
     webScrapingInterval = null
   }
@@ -186,9 +193,13 @@ async function deactivateAll() {
     emailInterval = null
   }
 
-  // Fechar recursos,  await webScrapingService.close()
+  // Fechar recursos
 
-  // Resetar status,  webScrapingActive = false
+  await webScrapingService.close()
+
+  // Resetar status
+
+  webScrapingActive = false
   emailMonitoringActive = false
   automationActive = false
 
@@ -226,7 +237,7 @@ function calculateTotalCost() {
   let total = 0
   if (emailMonitoringActive) total += 20
   if (automationActive) total += 50
-  // Web scraping é por uso (R$ 2/consulta),  
+  // Web scraping é por uso (R$ 2/consulta)
   return `R$ ${total}/mês + R$ 2 por consulta web scraping`
 }
 

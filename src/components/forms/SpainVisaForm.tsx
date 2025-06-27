@@ -246,7 +246,9 @@ export function SpainVisaForm({ onSubmit, initialData }: SpainVisaFormProps) {
     }
   }
 
-  // Calculadora para visto não-lucrativo,  const calculateNonLucrativeRequirements = () => {
+  // Calculadora para visto não-lucrativo
+
+  const calculateNonLucrativeRequirements = () => {
     const minMonthlyIncome = 2400 // IPREM 2024 x 4,    const additionalFamilyMember = 600 // IPREM por familiar adicional
     
     const requiredIncome = minMonthlyIncome + (formData.personalInfo.children * additionalFamilyMember)

@@ -88,7 +88,8 @@ function CheckoutContent() {
       features={product.features}
       variant={product.variant}
       onSuccess={() => {
-        // Redirect para página de sucesso ou dashboard,        window.location.href = '/success?product=' + productId
+        // Redirect para página de sucesso ou dashboard
+        window.location.href = '/success?product=' + productId
       }}
     />
   )

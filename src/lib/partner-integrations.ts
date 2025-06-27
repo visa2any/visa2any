@@ -1,5 +1,6 @@
 // Integrações com APIs de Parceiros - Ativação Imediata
-// VisaHQ, iVisa, TravelVisa e outros provedores
+// VisaHQ
+iVisa, TravelVisa e outros provedores
 
 interface PartnerAPI {
   id: string
@@ -128,7 +129,9 @@ class PartnerIntegrationService {
     }
   ]
 
-  // Buscar melhor parceiro para requisição específica,  async findBestPartner(country: string, visaType: string, urgency: string = 'normal'): Promise<PartnerAPI | null> {
+  // Buscar melhor parceiro para requisição específica
+
+  async findBestPartner(country: string, visaType: string, urgency: string = 'normal'): Promise<PartnerAPI | null> {
     const availablePartners = this.partners.filter(partner => 
       partner.supportedCountries.includes(country) &&
       partner.apiKey !== ''
@@ -138,19 +141,29 @@ class PartnerIntegrationService {
       return null
     }
 
-    // Calcular score baseado em confiabilidade, velocidade e custo
+    // Calcular score baseado em confiabilidade
+
+    velocidade e custo
     const scoredPartners = availablePartners.map(partner => {
       let score = 0
       
-      // Confiabilidade (40% do score),      score += partner.reliability * 0.4
+      // Confiabilidade (40% do score)
       
-      // Velocidade (30% do score) - menor tempo = maior score,      const speedScore = Math.max(0, 1 - (partner.speed / 5000))
+      score += partner.reliability * 0.4
+      
+      // Velocidade (30% do score) - menor tempo = maior score
+      
+      const speedScore = Math.max(0, 1 - (partner.speed / 5000))
       score += speedScore * 0.3
       
-      // Custo (20% do score) - menor custo = maior score,      const costScore = Math.max(0, 1 - (partner.pricing.perTransaction / 30))
+      // Custo (20% do score) - menor custo = maior score
+      
+      const costScore = Math.max(0, 1 - (partner.pricing.perTransaction / 30))
       score += costScore * 0.2
       
-      // Features específicas (10% do score),      let featureScore = 0
+      // Features específicas (10% do score)
+      
+      let featureScore = 0
       if (urgency === 'urgent' && partner.features.includes('urgent_processing')) featureScore += 0.5
       if (urgency === 'express' && partner.features.includes('rush_service')) featureScore += 0.5
       if (visaType.includes('online') && partner.features.includes('online_visas')) featureScore += 0.5
@@ -159,11 +172,15 @@ class PartnerIntegrationService {
       return { partner, score }
     })
 
-    // Retornar parceiro com maior score,    scoredPartners.sort((a, b) => b.score - a.score)
+    // Retornar parceiro com maior score
+
+    scoredPartners.sort((a, b) => b.score - a.score)
     return scoredPartners[0].partner
   }
 
-  // Fazer agendamento via parceiro,  async bookViaPartner(request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+  // Fazer agendamento via parceiro
+
+  async bookViaPartner(request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
     try {
       const partner = this.partners.find(p => p.id === request.partnerId)
       if (!partner) {
@@ -180,7 +197,9 @@ class PartnerIntegrationService {
         }
       }
 
-      // Implementação específica por parceiro,      switch (partner.id) {
+      // Implementação específica por parceiro
+
+      switch (partner.id) {
         case 'visahq':
           return await this.bookVisaHQ(partner, request)
         case 'ivisa':
@@ -207,7 +226,9 @@ class PartnerIntegrationService {
     }
   }
 
-  // VisaHQ Integration,  private async bookVisaHQ(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+  // VisaHQ Integration
+
+  private async bookVisaHQ(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
     const response = await fetch(`${partner.baseUrl}/appointments`, {
       method: 'POST',
       headers: {
@@ -257,7 +278,9 @@ class PartnerIntegrationService {
     }
   }
 
-  // iVisa Integration  ,  private async bookiVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+  // iVisa Integration  
+
+  private async bookiVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
     const response = await fetch(`${partner.baseUrl}/orders`, {
       method: 'POST',
       headers: {
@@ -297,7 +320,9 @@ class PartnerIntegrationService {
     }
   }
 
-  // TravelVisa Integration,  private async bookTravelVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+  // TravelVisa Integration
+
+  private async bookTravelVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
     const response = await fetch(`${partner.baseUrl}/visa-applications`, {
       method: 'POST',
       headers: {
@@ -338,8 +363,11 @@ class PartnerIntegrationService {
     }
   }
 
-  // Visa Central Integration,  private async bookVisaCentral(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
-    // Simulação para Visa Central (API mais complexa),    await this.delay(2000)
+  // Visa Central Integration
+
+  private async bookVisaCentral(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+    // Simulação para Visa Central (API mais complexa)
+    await this.delay(2000)
     
     return {
       partnerId: partner.id,
@@ -350,7 +378,9 @@ class PartnerIntegrationService {
     }
   }
 
-  // OnlineVisa Integration (para vistos eletrônicos),  private async bookOnlineVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
+  // OnlineVisa Integration (para vistos eletrônicos)
+
+  private async bookOnlineVisa(partner: PartnerAPI, request: PartnerBookingRequest): Promise<PartnerBookingResponse> {
     await this.delay(800)
     
     return {
@@ -362,14 +392,18 @@ class PartnerIntegrationService {
     }
   }
 
-  // Buscar parceiros disponíveis por país,  async getAvailablePartners(country: string): Promise<PartnerAPI[]> {
+  // Buscar parceiros disponíveis por país
+
+  async getAvailablePartners(country: string): Promise<PartnerAPI[]> {
     return this.partners.filter(partner => 
       partner.supportedCountries.includes(country) &&
       partner.apiKey !== ''
     )
   }
 
-  // Verificar status de aplicação via parceiro,  async checkStatus(partnerId: string, reference: string): Promise<{
+  // Verificar status de aplicação via parceiro
+
+  async checkStatus(partnerId: string, reference: string): Promise<{
     status: string
     details: string
     nextSteps?: string
@@ -379,7 +413,9 @@ class PartnerIntegrationService {
       return { status: 'error', details: 'Parceiro não encontrado' }
     }
 
-    // Implementar verificação de status específica por parceiro,    await this.delay(1000)
+    // Implementar verificação de status específica por parceiro
+
+    await this.delay(1000)
     
     const statuses = ['submitted', 'processing', 'ready', 'completed', 'rejected']
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
@@ -391,13 +427,17 @@ class PartnerIntegrationService {
     }
   }
 
-  // Calcular custo total incluindo margens,  calculateTotalCost(partnerCost: number, urgency: string = 'normal'): number {
+  // Calcular custo total incluindo margens
+
+  calculateTotalCost(partnerCost: number, urgency: string = 'normal'): number {
     const margin = 0.25 // 25% de margem,    const urgencyFee = urgency === 'urgent' ? 30 : urgency === 'express' ? 60 : 0
     
     return Math.round((partnerCost * (1 + margin)) + urgencyFee)
   }
 
-  // Métodos auxiliares,  private getCountryCode(country: string): string {
+  // Métodos auxiliares
+
+  private getCountryCode(country: string): string {
     const codes: Record<string, string> = {
       'brasileira': 'BR',
       'brasil': 'BR',
@@ -419,7 +459,9 @@ class PartnerIntegrationService {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  // Listar todos os parceiros com status,  getPartnersStatus(): Array<{
+  // Listar todos os parceiros com status
+
+  getPartnersStatus(): Array<{
     id: string
     name: string
     configured: boolean

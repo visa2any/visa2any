@@ -7,12 +7,15 @@ import { z } from 'zod'
   })).optional()
 })
 
-// POST /api/automation/nurturing - Iniciar sequência de nurturing,
+// POST /api/automation/nurturing - Iniciar sequência de nurturing
+
 export async function POST(request: NextRequest) {,  try {
     const body = await request.json()
 const validatedData = nurturingSchema.parse(body)
 
-    // Verificar se cliente existe,    const client = await prisma.client.findUnique({,      where: { id: validatedData.clientId },      include: {,        interactions: {,          orderBy: { createdAt: 'desc' },          take: 5
+    // Verificar se cliente existe
+
+    const client = await prisma.client.findUnique({,      where: { id: validatedData.clientId },      include: {,        interactions: {,          orderBy: { createdAt: 'desc' },          take: 5
         }
       }
     }),
@@ -20,7 +23,9 @@ const validatedData = nurturingSchema.parse(body)
       )
     }
 
-    // Verificar se já existe sequência ativa,    const existingSequence = await prisma.automationLog.findFirst({,      where: {,        clientId: validatedData.clientId,        type: 'NURTURING_SEQUENCE',        executedAt: {,          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
+    // Verificar se já existe sequência ativa
+
+    const existingSequence = await prisma.automationLog.findFirst({,      where: {,        clientId: validatedData.clientId,        type: 'NURTURING_SEQUENCE',        executedAt: {,          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
         }
       }
     }),
@@ -28,14 +33,22 @@ const validatedData = nurturingSchema.parse(body)
       }, { status: 400 })
     }
 
-    // Obter configuração da sequência,    const sequenceConfig = getNurturingSequence(validatedData.sequenceType, client)
-    
-    // Personalizar sequência baseada no perfil do cliente,    const personalizedSequence = personalizeSequence(sequenceConfig, client, validatedData.triggerData)
+    // Obter configuração da sequência
 
-    // Agendar envios da sequência,    const scheduledEmails = await scheduleNurturingEmails(,      validatedData.clientId,      personalizedSequence,      validatedData.customSchedule
+    const sequenceConfig = getNurturingSequence(validatedData.sequenceType, client)
+    
+    // Personalizar sequência baseada no perfil do cliente
+    
+    const personalizedSequence = personalizeSequence(sequenceConfig, client, validatedData.triggerData)
+
+    // Agendar envios da sequência
+
+    const scheduledEmails = await scheduleNurturingEmails(,      validatedData.clientId,      personalizedSequence,      validatedData.customSchedule
     )
 
-    // Log do início da sequência,    await prisma.automationLog.create({,      data: {,        type: 'NURTURING_SEQUENCE',        action: 'start_sequence',        clientId: validatedData.clientId,        success: true,        details: {,          sequenceType: validatedData.sequenceType,          emailsScheduled: scheduledEmails.length,          duration: personalizedSequence.duration,          clientName: client.name
+    // Log do início da sequência
+
+    await prisma.automationLog.create({,      data: {,        type: 'NURTURING_SEQUENCE',        action: 'start_sequence',        clientId: validatedData.clientId,        success: true,        details: {,          sequenceType: validatedData.sequenceType,          emailsScheduled: scheduledEmails.length,          duration: personalizedSequence.duration,          clientName: client.name
         }
       }
     }),
@@ -52,7 +65,8 @@ const validatedData = nurturingSchema.parse(body)
   }
 }
 
-// GET /api/automation/nurturing/sequences - Listar sequências ativas,
+// GET /api/automation/nurturing/sequences - Listar sequências ativas
+
 export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
     const clientId = params.id
 const sequences = await prisma.automationLog.findMany({,      where: {,        type: 'NURTURING_SEQUENCE'
@@ -96,20 +110,28 @@ const sequences = await prisma.automationLog.findMany({,      where: {,        t
 
 // Personalizar sequência baseada no perfil do cliente,function personalizeSequence(sequence: any, client: any, triggerData?: any) {,  const personalized = { ...sequence }
 
-  // Personalizar baseado no país de interesse,  if (client.targetCountry) {,    personalized.emails = personalized.emails.map((email: any) => ({
+  // Personalizar baseado no país de interesse
+
+  if (client.targetCountry) {,    personalized.emails = personalized.emails.map((email: any) => ({
       ...email,      variables: {
         ...email.variables,        target_country: client.targetCountry,        country_specific: getCountrySpecificContent(client.targetCountry)
       }
     }))
   }
 
-  // Personalizar baseado no lead score,  const leadScore = calculateClientScore(client),  if (leadScore >= 70) {
-    // Lead quente: acelerar sequência,    personalized.emails = personalized.emails.map((email: any) => ({
+  // Personalizar baseado no lead score
+
+  const leadScore = calculateClientScore(client),  if (leadScore >= 70) {
+    // Lead quente: acelerar sequência
+    personalized.emails = personalized.emails.map((email: any) => ({
       ...email,      day: Math.floor(email.day / 2) // Reduzir delay pela metade    }))
   }
 
-  // Personalizar baseado em interações anteriores,  const hasHighEngagement = client.interactions?.length > 3,  if (hasHighEngagement) {
-    // Adicionar emails mais avançados,    personalized.emails.push({,      day: personalized.duration + 3,      hour: 14,      template: 'advanced_strategies',      subject: 'Estratégias avançadas para seu perfil'
+  // Personalizar baseado em interações anteriores
+
+  const hasHighEngagement = client.interactions?.length > 3,  if (hasHighEngagement) {
+    // Adicionar emails mais avançados
+    personalized.emails.push({,      day: personalized.duration + 3,      hour: 14,      template: 'advanced_strategies',      subject: 'Estratégias avançadas para seu perfil'
     })
   },
   return personalized
@@ -119,12 +141,16 @@ const sequences = await prisma.automationLog.findMany({,      where: {,        t
 
   for (const email of sequence.emails) {,    const sendAt = new Date(),    sendAt.setDate(sendAt.getDate() + email.day),    sendAt.setHours(email.hour || 10, 0, 0, 0)
 
-    // Em produção, usar sistema de filas (Redis/Bull) para agendar,    console.log(`📅 Agendando email: ${email.template} para ${sendAt.toISOString()}`)
+    // Em produção
+
+    usar sistema de filas (Redis/Bull) para agendar,    console.log(`📅 Agendando email: ${email.template} para ${sendAt.toISOString()}`)
 
     scheduledEmails.push({,      clientId,      template: email.template,      subject: email.subject,      sendAt: sendAt,      sequenceType: sequence.name,      day: email.day
     })
 
-    // Simular agendamento (em produção usar scheduler real),    setTimeout(async () => {,      await sendScheduledEmail(clientId, email.template, email.subject, email.variables)
+    // Simular agendamento (em produção usar scheduler real)
+
+    setTimeout(async () => {,      await sendScheduledEmail(clientId, email.template, email.subject, email.variables)
     }, (email.day * 24 * 60 * 60 * 1000) + (email.hour * 60 * 60 * 1000))
   },
   return scheduledEmails
@@ -135,7 +161,9 @@ const sequences = await prisma.automationLog.findMany({,      where: {,        t
     }),
     const result = await response.json()
 
-    // Log do envio,    await prisma.automationLog.create({,      data: {,        type: 'AUTOMATED_EMAIL',        action: 'send_scheduled_email',        clientId: clientId,        success: true,        details: {,          template: template,          subject: subject,          emailSent: true,          timestamp: new Date().toISOString()
+    // Log do envio
+
+    await prisma.automationLog.create({,      data: {,        type: 'AUTOMATED_EMAIL',        action: 'send_scheduled_email',        clientId: clientId,        success: true,        details: {,          template: template,          subject: subject,          emailSent: true,          timestamp: new Date().toISOString()
         }
       }
     }),
@@ -152,9 +180,13 @@ const sequences = await prisma.automationLog.findMany({,      where: {,        t
 
 // Calcular score do cliente,function calculateClientScore(client: any): number {,  let score = 0
 
-  // Score baseado em interações,  if (client.interactions?.length > 0) score += 20,  if (client.interactions?.length > 3) score += 20,  if (client.interactions?.length > 5) score += 20
+  // Score baseado em interações
 
-  // Score baseado em dados completos,  if (client.phone) score += 15,  if (client.targetCountry) score += 15,  if (client.visaType) score += 10
+  if (client.interactions?.length > 0) score += 20,  if (client.interactions?.length > 3) score += 20,  if (client.interactions?.length > 5) score += 20
+
+  // Score baseado em dados completos
+
+  if (client.phone) score += 15,  if (client.targetCountry) score += 15,  if (client.visaType) score += 10
 
   return Math.min(score, 100)
 }

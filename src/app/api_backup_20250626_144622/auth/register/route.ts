@@ -16,9 +16,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validar dados,    const validatedData = registerSchema.parse(body)
+    // Validar dados
+    
+    const validatedData = registerSchema.parse(body)
 
-    // Verificar se email já existe,    const existingUser = await prisma.user.findUnique({
+    // Verificar se email já existe
+
+    const existingUser = await prisma.user.findUnique({
       where: { email: validatedData.email }
     })
 
@@ -29,9 +33,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Hash da senha,    const hashedPassword = await bcrypt.hash(validatedData.password, 12)
+    // Hash da senha
 
-    // Criar usuário,    const user = await prisma.user.create({
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12)
+
+    // Criar usuário
+
+    const user = await prisma.user.create({
       data: {
         name: validatedData.name,
         email: validatedData.email,
@@ -48,7 +56,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Log da criação,    await prisma.automationLog.create({
+    // Log da criação
+
+    await prisma.automationLog.create({
       data: {
         type: 'USER_CREATED',
         action: 'register_user',
