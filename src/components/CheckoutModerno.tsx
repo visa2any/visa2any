@@ -318,8 +318,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   
   // Total final calculado
   const calculateCurrentTotal = () => {
-    // Se não suporta quantidade
-    usar preço base
+    // Se não suporta quantidade usar preço base
     if (!supportsQuantity) {
       return price
     }

@@ -124,7 +124,7 @@ export default function HybridSettingsPage() {
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
       officialPaymentUrl: 'https://uk.tlscontact.com/br/sao/payment',
-    isActive: true
+      isActive: true
     },
     {
       country: 'FRANCA',
@@ -135,7 +135,7 @@ export default function HybridSettingsPage() {
       currency: 'BRL',
       paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
       officialPaymentUrl: 'https://france-visas.gouv.fr/payment',
-    isActive: true
+      isActive: true
     }
   ]
 

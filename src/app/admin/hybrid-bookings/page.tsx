@@ -88,7 +88,8 @@ export default function HybridBookingsPage() {
       })
 
       if (response.ok) {
-        fetchBookings() // Recarregar lista      }
+        fetchBookings() // Recarregar lista
+      }
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
     }
