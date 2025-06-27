@@ -479,9 +479,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         return
       }
       
-      // Se for produto Vaga Express
-      
-      processar com integração
+      // Se for produto Vaga Express processar com integração
       if (currentProduct.id.includes('vaga-express')) {
         console.log('Processando pedido Vaga Express:', orderData)
 
