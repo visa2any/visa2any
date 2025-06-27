@@ -270,7 +270,8 @@ export function ToastNotification({ notification, onClose }: ToastNotificationPr
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false)
-      setTimeout(onClose, 300) // Wait for fade out animation    }, 5000)
+      setTimeout(onClose, 300) // Wait for fade out animation
+    }, 5000)
 
     return () => clearTimeout(timer)
   }, [onClose])
@@ -353,7 +354,8 @@ export function ToastContainer() {
     const newNotifications = notifications.filter(n => 
       !n.read && 
       !toasts.find(t => t.id === n.id) &&
-      (Date.now() - n.timestamp.getTime()) < 1000 // Only show for very recent notifications    )
+      (Date.now() - n.timestamp.getTime()) < 1000 // Only show for very recent notifications
+    )
 
     if (newNotifications.length > 0) {
       setToasts(prev => [...prev, ...newNotifications])

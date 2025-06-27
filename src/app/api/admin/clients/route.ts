@@ -62,11 +62,12 @@ const page = parseInt(searchParams.get('page') || '1')
         }),
         prisma.client.count({ where })
       ])
-    } catch (dbError) {,      console.error('Erro na consulta do banco:', dbError)
+    } catch (dbError) {
+      console.error('Erro na consulta do banco:', dbError)
       // Retornar dados simulados em caso de erro
       clients = []
       total = 0
-    },
+    }
     return NextResponse.json({,      data: {,        clients,
         pagination: {,          current: page,          total: Math.ceil(total / limit),          hasNext: offset + clients.length < total,          hasPrev: page > 1,          totalItems: total
         }

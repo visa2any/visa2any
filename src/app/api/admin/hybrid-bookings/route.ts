@@ -5,8 +5,7 @@ import { prisma } from 'next/server'
 export async function GET(request: NextRequest) {
 try {
     // Buscar todos os agendamentos híbridos com informações relacionadas
-    // Como hybridBooking não existe no schema
-    vamos simular dados por enquanto
+    // Como hybridBooking não existe no schema, vamos simular dados por enquanto
     const bookings: any[] = []
     
     // const bookings = await prisma.hybridBooking.findMany({
