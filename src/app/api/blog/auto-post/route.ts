@@ -1,86 +1,195 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from 'next/server'
-
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
-try {
-const body = await request.json()
-const {,      title,      excerpt,      content,      category,      author,      tags,      country,      flag,      difficulty,      type,      sourceUrl,      urgent,      trending
+  try {
+    const body = await request.json()
+    const {
+      title,
+      excerpt,
+      content,
+      category,
+      author,
+      tags,
+      country,
+      flag,
+      difficulty,
+      type,
+      sourceUrl,
+      urgent,
+      trending
     } = body
 
     // Validação básica
-
-    if (!title || !excerpt || !content || !category) {,      return NextResponse.json(,        { error: 'Campos obrigatórios: title, excerpt, content, category' },        { status: 400 }
+    if (!title || !excerpt || !content || !category) {
+      return NextResponse.json(
+        { error: 'Campos obrigatórios: title, excerpt, content, category' },
+        { status: 400 }
       )
     }
 
     // Verificar se já existe um post com o mesmo título
+    const existingPost = await prisma.blogPost.findFirst({
+      where: { title }
+    })
 
-    const existingPost = await prisma.blogPost.findFirst({,      where: { title }
-    }),
-    if (existingPost) {,      return NextResponse.json(,        { error: 'Post com este título já existe' },        { status: 409 }
+    if (existingPost) {
+      return NextResponse.json(
+        { error: 'Post com este título já existe' },
+        { status: 409 }
       )
     }
 
     // Criar novo post no banco
-
-    const newPost = await prisma.blogPost.create({,      data: {,        title,        excerpt,        content,        category,        author: author || 'Visa2Any Auto',        tags: tags || []
-        country: country || 'Global',        flag: flag || '🌍',        difficulty: difficulty || 'Intermediário',        type: type || 'Notícia',        sourceUrl,        urgent: urgent || false,        trending: trending || false,        publishDate: new Date(),        readTime: calculateReadTime(content),        views: 0,        likes: 0,        comments: 0,        featured: urgent || trending || false
+    const newPost = await prisma.blogPost.create({
+      data: {
+        title,
+        excerpt,
+        content,
+        category,
+        author: author || 'Visa2Any Auto',
+        tags: tags || [],
+        country: country || 'Global',
+        flag: flag || '🌍',
+        difficulty: difficulty || 'Intermediário',
+        type: type || 'Notícia',
+        sourceUrl,
+        urgent: urgent || false,
+        trending: trending || false,
+        published: true,
+        publishDate: new Date(),
+        readTime: calculateReadTime(content),
+        views: 0,
+        likes: 0,
+        comments: 0,
+        featured: urgent || trending || false
       }
     })
 
-    // Log da atividade
-
-    console.log(`[AUTO-POST] Novo artigo criado: ${title}`)
-
-    return NextResponse.json({,      success: true,      post: newPost,      message: 'Artigo criado automaticamente com sucesso'
+    // Log da criação automática
+    await prisma.automationLog.create({
+      data: {
+        type: 'BLOG_AUTO_POST',
+        action: 'create_post',
+        success: true,
+        details: {
+          postId: newPost.id,
+          title: newPost.title,
+          category: newPost.category,
+          urgent: newPost.urgent,
+          trending: newPost.trending,
+          autoCreatedAt: new Date().toISOString()
+        }
+      }
     })
 
-  } catch (error) {,    console.error('[AUTO-POST] Erro:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+    // Se for urgente ou trending, criar notificação
+    if (urgent || trending) {
+      await createPostNotification(newPost)
+    }
+
+    return NextResponse.json({
+      data: {
+        id: newPost.id,
+        title: newPost.title,
+        slug: newPost.slug,
+        published: newPost.published,
+        urgent: newPost.urgent,
+        trending: newPost.trending,
+        readTime: newPost.readTime
+      },
+      message: 'Post criado automaticamente com sucesso!'
+    })
+
+  } catch (error) {
+    console.error('Erro ao criar post automático:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
     )
   }
 }
 
-// Endpoint para verificar status do sistema
+// Função para calcular tempo de leitura
+function calculateReadTime(content: string): number {
+  const wordsPerMinute = 200
+  const wordCount = content.split(/\s+/).length
+  return Math.ceil(wordCount / wordsPerMinute)
+}
 
-export async function GET() {
-try {
-const recentPosts = await prisma.blogPost.findMany({,      orderBy: { publishDate: 'desc' },      take: 5,      select: {,        id: true,        title: true,        publishDate: true,        author: true,        urgent: true
-        trending: true
-      }
-    }),
-    return NextResponse.json({,      status: 'active',      message: 'Sistema de auto-posting funcionando',      recentPosts,      timestamp: new Date().toISOString()
-    })
+// Função para criar notificação de post
+async function createPostNotification(post: any) {
+  try {
+    const notificationType = post.urgent ? 'URGENT_POST' : 'TRENDING_POST'
+    const message = post.urgent 
+      ? `🚨 POST URGENTE: ${post.title}`
+      : `🔥 POST EM ALTA: ${post.title}`
 
-  } catch (error) {,    console.error('[AUTO-POST] Erro na verificação:', error),    return NextResponse.json(,      { error: 'Erro ao verificar status' },      { status: 500 }
-    )
+    // Simular notificação (implementar com serviço real)
+    console.log(`Notificação criada: ${message}`)
+
+    // Em produção, enviar para:
+    // - WhatsApp Business API
+    // - Email para assinantes
+    // - Push notifications
+    // - Slack/Discord webhooks
+
+  } catch (error) {
+    console.error('Erro ao criar notificação:', error)
   }
 }
 
-// Função auxiliar para calcular tempo de leitura
-function calculateReadTime(content: string): string {
-const wordsPerMinute =  
-const words = content.split(' ').length
-  const minutes = Math.ceil(words / wordsPerMinute),  return `${minutes} min`
-}
+// GET - Listar posts automáticos
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const offset = parseInt(searchParams.get('offset') || '0')
 
-// Endpoint para atualizar posts existentes
-
-export async function PUT(request: NextRequest) {
-try {
-    const body = await request.json()
-const { id, ...updateData } = body,
-    if (!id) {,      return NextResponse.json(,        { error: 'ID do post é obrigatório' },        { status: 400 }
-      )
-    },
-    const updatedPost = await prisma.blogPost.update({,      where: { id },      data: {
-        ...updateData,        updatedAt: new Date()
+    const posts = await prisma.blogPost.findMany({
+      where: {
+        author: 'Visa2Any Auto'
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        category: true,
+        country: true,
+        flag: true,
+        urgent: true,
+        trending: true,
+        published: true,
+        views: true,
+        createdAt: true,
+        publishDate: true
       }
-    }),
-    return NextResponse.json({,      success: true,      post: updatedPost,      message: 'Post atualizado com sucesso'
     })
 
-  } catch (error) {,    console.error('[AUTO-POST] Erro na atualização:', error),    return NextResponse.json(,      { error: 'Erro ao atualizar post' },      { status: 500 }
+    const total = await prisma.blogPost.count({
+      where: {
+        author: 'Visa2Any Auto'
+      }
+    })
+
+    return NextResponse.json({
+      data: {
+        posts,
+        total,
+        limit,
+        offset,
+        hasMore: offset + limit < total
+      }
+    })
+
+  } catch (error) {
+    console.error('Erro ao listar posts automáticos:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
     )
   }
 }
