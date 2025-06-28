@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createCustomerAccount } from '@/lib/customer-management'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,34 +17,62 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await createCustomerAccount({
-      name,
-      email,
-      phone,
-      country,
-      nationality,
-      targetCountry,
-      source,
-      product,
-      amount
+    // Verificar se cliente já existe
+    const existingClient = await prisma.client.findUnique({
+      where: { email }
     })
 
-    if (!result.success) {
+    if (existingClient) {
       return NextResponse.json(
-        { error: result.error || 'Erro ao criar conta' },
+        { error: 'Email já cadastrado' },
         { status: 400 }
       )
     }
 
+    // Criar cliente
+    const client = await prisma.client.create({
+      data: {
+        name,
+        email,
+        phone,
+        country,
+        nationality,
+        targetCountry,
+        source: source || 'direct',
+        status: 'LEAD'
+      }
+    })
+
+    // Gerar token JWT
+    const jwtSecret = process.env.NEXTAUTH_SECRET
+    if (!jwtSecret) {
+      throw new Error('JWT secret não configurado')
+    }
+
+    const token = jwt.sign(
+      {
+        userId: client.id,
+        email: client.email,
+        type: 'client'
+      },
+      jwtSecret,
+      { expiresIn: '7d' }
+    )
+
     // Criar cookie de autenticação automática
     const response = NextResponse.json({
-      user: result.user,
-      token: result.token,
+      user: {
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        type: 'client'
+      },
+      token,
       message: 'Conta criada e login automático realizado'
     })
 
     // Configurar cookie httpOnly
-    response.cookies.set('auth-token', result.token!, {
+    response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
