@@ -17,9 +17,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Salvar dados temporariamente (poderia ser Redis
-
-    DB, etc.)
+    // Salvar dados temporariamente (poderia ser Redis, DB, etc.)
     // Por agora, apenas logar para debug
     console.log('🥇 Vaga Express preparado:', {
       purchaseId: body.purchaseId,
