@@ -3,13 +3,19 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 // Schema para análise de lead scoring
-const leadScoringSchema = z.object({,  clientId: z.string().optional(),  profile: z.object({
+const leadScoringSchema = z.object({
+  clientId: z.string().optional(),
+  profile: z.object({
     // Dados demográficos
-    age: z.number().optional(),    education: z.string().optional(),    income: z.string().optional(),    maritalStatus: z.string().optional()
+    age: z.number().optional(),
+    education: z.string().optional(),
+    income: z.string().optional(),
+    maritalStatus: z.string().optional(),
     
     // Dados de interesse
-    
-    targetCountry: z.string().optional(),    visaType: z.string().optional(),    timeframe: z.string().optional()
+    targetCountry: z.string().optional(),
+    visaType: z.string().optional(),
+    timeframe: z.string().optional(),
     
     // Dados comportamentais
     

@@ -1,28 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 
-export async function POST(request: NextRequest) {,  try {,    const body = await request.json()
-const {,      blogPostId,      platform,      content,      imageUrl,      hashtags,      scheduledAt
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const {
+      blogPostId,
+      platform,
+      content,
+      imageUrl,
+      hashtags,
+      scheduledAt
     } = body
 
     // Validar dados obrigatórios
-
-    if (!blogPostId || !platform || !content) {,      return NextResponse.json(,        { error: 'blogPostId, platform e content são obrigatórios' },        { status: 400 }
+    if (!blogPostId || !platform || !content) {
+      return NextResponse.json(
+        { error: 'blogPostId, platform e content são obrigatórios' },
+        { status: 400 }
       )
     }
 
     // Converter platform string para enum
-
-    const platformEnum = platform.toUpperCase(),    if (!['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].includes(platformEnum)) {,      return NextResponse.json(,        { error: 'Plataforma inválida' },        { status: 400 }
+    const platformEnum = platform.toUpperCase()
+    if (!['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].includes(platformEnum)) {
+      return NextResponse.json(
+        { error: 'Plataforma inválida' },
+        { status: 400 }
       )
     }
 
     // Criar post agendado
-
-    const socialPost = await prisma.socialPost.create({,      data: {,        blogPostId,        platform: platformEnum as any,        content,        imageUrl,        hashtags: hashtags || [],        scheduledAt: new Date(scheduledAt || Date.now()),        status: 'SCHEDULED'
+    const socialPost = await prisma.socialPost.create({
+      data: {
+        blogPostId,
+        platform: platformEnum as any,
+        content,
+        imageUrl,
+        hashtags: hashtags || [],
+        scheduledAt: new Date(scheduledAt || Date.now()),
+        status: 'SCHEDULED'
       }
-    }),
+    })
     return NextResponse.json({,      success: true,      message: 'Post agendado com sucesso',      socialPost: {,        id: socialPost.id,        platform: socialPost.platform,        scheduledAt: socialPost.scheduledAt,        status: socialPost.status
       }
     })

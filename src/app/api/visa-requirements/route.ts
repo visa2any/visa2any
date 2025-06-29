@@ -2,31 +2,65 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para criar/atualizar requisitos de visto,const visaRequirementSchema = z.object({,  country: z.string().min(1, 'País é obrigatório'),  visaType: z.string().min(1, 'Tipo de visto é obrigatório'),  visaSubtype: z.string().optional(),  requiredDocuments: z.array(z.object({,    type: z.string(),    name: z.string(),    required: z.boolean(),    description: z.string().optional(),    validityMonths: z.number().optional()
-  })),  processingTime: z.string(),  fees: z.object({,    government: z.number(),    service: z.number().optional(),    currency: z.string().default('USD')
-  }),  eligibilityCriteria: z.array(z.object({,    criterion: z.string(),    description: z.string(),    required: z.boolean()
-  })),  commonPitfalls: z.array(z.string()),  successTips: z.array(z.string()),  governmentLinks: z.array(z.object({,    name: z.string(),    url: z.string()
+// Schema para criar/atualizar requisitos de visto
+const visaRequirementSchema = z.object({
+  country: z.string().min(1, 'País é obrigatório'),
+  visaType: z.string().min(1, 'Tipo de visto é obrigatório'),
+  visaSubtype: z.string().optional(),
+  requiredDocuments: z.array(z.object({
+    type: z.string(),
+    name: z.string(),
+    required: z.boolean(),
+    description: z.string().optional(),
+    validityMonths: z.number().optional()
+  })),
+  processingTime: z.string(),
+  fees: z.object({
+    government: z.number(),
+    service: z.number().optional(),
+    currency: z.string().default('USD')
+  }),
+  eligibilityCriteria: z.array(z.object({
+    criterion: z.string(),
+    description: z.string(),
+    required: z.boolean()
+  })),
+  commonPitfalls: z.array(z.string()),
+  successTips: z.array(z.string()),
+  governmentLinks: z.array(z.object({
+    name: z.string(),
+    url: z.string()
   }))
 })
 
 // GET /api/visa-requirements - Listar requisitos de visto
 
-export async function GET(request: NextRequest) {,  try {,    const { searchParams } = new URL(request.url)
-    const country =  
-const visaType = searchParams.get('visaType')
-    const search =  
-const page = parseInt(searchParams.get('page') || '1')
-    const limit =  
-const skip = (page - 1) * limit
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const country = searchParams.get('country')
+    const visaType = searchParams.get('visaType')
+    const search = searchParams.get('search')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const skip = (page - 1) * limit
 
     // Construir filtros
-
-    const where: any = { isActive: true },    
-    if (country) {,      where.country = { contains: country }
-    },    
-    if (visaType) {,      where.visaType = { contains: visaType }
-    },    
-    if (search) {,      where.OR = [,        { country: { contains: search } },        { visaType: { contains: search } },        { visaSubtype: { contains: search } }
+    const where: any = { isActive: true }
+    
+    if (country) {
+      where.country = { contains: country, mode: 'insensitive' }
+    }
+    
+    if (visaType) {
+      where.visaType = { contains: visaType, mode: 'insensitive' }
+    }
+    
+    if (search) {
+      where.OR = [
+        { country: { contains: search, mode: 'insensitive' } },
+        { visaType: { contains: search, mode: 'insensitive' } },
+        { visaSubtype: { contains: search, mode: 'insensitive' } }
       ]
     }
 
