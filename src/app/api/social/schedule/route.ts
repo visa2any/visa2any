@@ -43,33 +43,73 @@ export async function POST(request: NextRequest) {
         status: 'SCHEDULED'
       }
     })
-    return NextResponse.json({      success: true,      message: 'Post agendado com sucesso',      socialPost: {        id: socialPost.id,        platform: socialPost.platform,        scheduledAt: socialPost.scheduledAt,        status: socialPost.status
+    return NextResponse.json({
+      success: true,
+      message: 'Post agendado com sucesso',
+      socialPost: {
+        id: socialPost.id,
+        platform: socialPost.platform,
+        scheduledAt: socialPost.scheduledAt,
+        status: socialPost.status
       }
     })
 
-  } catch (error) {    console.error('[SOCIAL SCHEDULE] Erro:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+  } catch (error) {
+    console.error('[SOCIAL SCHEDULE] Erro:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
     )
   }
 }
 
 // GET - Listar posts agendados
 
-export async function GET(request: NextRequest) {  try {    const { searchParams } = new URL(request.url)
-    const status =  
-const platform = searchParams.get('platform')
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const platform = searchParams.get('platform')
 
-    const where: any = {},    if (status) where.status = status.toUpperCase(),    if (platform) where.platform = platform.toUpperCase(),
-    const socialPosts = await prisma.socialPost.findMany({      where,      orderBy: { scheduledAt: 'asc' },      take: 100
-    }),
-    const stats = {      total: socialPosts.length,      byStatus: socialPosts.reduce((acc, post) => {        acc[post.status] = (acc[post.status] || 0) + 1,        return acc
-      }, {} as Record<string, number>),      byPlatform: socialPosts.reduce((acc, post) => {        acc[post.platform] = (acc[post.platform] || 0) + 1,        return acc
+    const where: any = {}
+    if (status) where.status = status.toUpperCase()
+    if (platform) where.platform = platform.toUpperCase()
+    const socialPosts = await prisma.socialPost.findMany({
+      where,
+      orderBy: { scheduledAt: 'asc' },
+      take: 100
+    })
+    const stats = {
+      total: socialPosts.length,
+      byStatus: socialPosts.reduce((acc, post) => {
+        acc[post.status] = (acc[post.status] || 0) + 1
+        return acc
+      }, {} as Record<string, number>),
+      byPlatform: socialPosts.reduce((acc, post) => {
+        acc[post.platform] = (acc[post.platform] || 0) + 1
+        return acc
       }, {} as Record<string, number>)
-    },
-    return NextResponse.json({      success: true,      stats,      socialPosts: socialPosts.map(post => ({        id: post.id,        blogPostId: post.blogPostId,        platform: post.platform,        content: post.content.substring(0, 200) + '...',        scheduledAt: post.scheduledAt,        publishedAt: post.publishedAt,        status: post.status,        createdAt: post.createdAt
+    }
+    return NextResponse.json({
+      success: true,
+      stats,
+      socialPosts: socialPosts.map(post => ({
+        id: post.id,
+        blogPostId: post.blogPostId,
+        platform: post.platform,
+        content: post.content.substring(0, 200) + '...',
+        scheduledAt: post.scheduledAt,
+        publishedAt: post.publishedAt,
+        status: post.status,
+        createdAt: post.createdAt
       }))
     })
 
-  } catch (error) {    console.error('[SOCIAL SCHEDULE] Erro ao listar:', error),    return NextResponse.json(,      { error: 'Erro ao listar posts agendados' },      { status: 500 }
+  } catch (error) {
+    console.error('[SOCIAL SCHEDULE] Erro ao listar:', error)
+    return NextResponse.json(
+      { error: 'Erro ao listar posts agendados' },
+      { status: 500 }
     )
   }
 }
