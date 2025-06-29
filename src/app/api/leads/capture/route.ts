@@ -3,73 +3,136 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 // Schema para captura de leads
-const leadCaptureSchema = z.object({,  name: z.string().min(1, 'Nome é obrigatório'),  email: z.string().email('Email inválido'),  phone: z.string().optional(),  source: z.string().default('website'),  leadMagnet: z.string().optional(),  utmSource: z.string().optional(),  utmMedium: z.string().optional(),  utmCampaign: z.string().optional(),  utmContent: z.string().optional(),  referrer: z.string().optional(),  userAgent: z.string().optional(),  ip: z.string().optional(),  interests: z.array(z.string()).optional(),  notes: z.string().optional()
+const leadCaptureSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().email('Email inválido'),
+  phone: z.string().optional(),
+  source: z.string().default('website'),
+  leadMagnet: z.string().optional(),
+  utmSource: z.string().optional(),
+  utmMedium: z.string().optional(),
+  utmCampaign: z.string().optional(),
+  utmContent: z.string().optional(),
+  referrer: z.string().optional(),
+  userAgent: z.string().optional(),
+  ip: z.string().optional(),
+  interests: z.array(z.string()).optional(),
+  notes: z.string().optional()
 })
 
 // POST /api/leads/capture - Capturar lead
 
 export async function POST(request: NextRequest) {
-try {
+  try {
     const body = await request.json()
-const validatedData = leadCaptureSchema.parse(body)
+    const validatedData = leadCaptureSchema.parse(body)
 
     // Obter IP do cliente
-
-    const forwarded =  
-const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
+    const forwarded = request.headers.get('x-forwarded-for')
+    const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
 
     // Verificar se lead já existe
-
-    let existingClient = await prisma.client.findUnique({,      where: { email: validatedData.email }
-    }),
+    let existingClient = await prisma.client.findUnique({
+      where: { email: validatedData.email }
+    })
+    
     let client
-    let isNewLead = false,
+    let isNewLead = false
+    
     if (existingClient) {
       // Atualizar lead existente
-      client = await prisma.client.update({,        where: { id: existingClient.id },        data: {,          name: validatedData.name,          phone: validatedData.phone || existingClient.phone,          lastActivityAt: new Date()
+      client = await prisma.client.update({
+        where: { id: existingClient.id },
+        data: {
+          name: validatedData.name,
+          phone: validatedData.phone || existingClient.phone,
+          lastActivityAt: new Date()
         }
       })
     } else {
       // Criar novo lead
-      client = await prisma.client.create({,        data: {,          name: validatedData.name,          email: validatedData.email,          phone: validatedData.phone,          status: 'LEAD',          source: validatedData.source,          utmSource: validatedData.utmSource,          utmMedium: validatedData.utmMedium,          utmCampaign: validatedData.utmCampaign,          utmContent: validatedData.utmContent,          lastActivityAt: new Date()
+      client = await prisma.client.create({
+        data: {
+          name: validatedData.name,
+          email: validatedData.email,
+          phone: validatedData.phone,
+          status: 'LEAD',
+          source: validatedData.source,
+          utmSource: validatedData.utmSource,
+          utmMedium: validatedData.utmMedium,
+          utmCampaign: validatedData.utmCampaign,
+          utmContent: validatedData.utmContent,
+          lastActivityAt: new Date()
         }
-      }),      isNewLead = true
+      })
+      isNewLead = true
     }
 
     // Calcular lead score baseado em dados disponíveis
-
-    const leadScore = calculateLeadScore({,      source: validatedData.source,      leadMagnet: validatedData.leadMagnet,      hasPhone: !!validatedData.phone,      utmSource: validatedData.utmSource,      utmMedium: validatedData.utmMedium
+    const leadScore = calculateLeadScore({
+      source: validatedData.source,
+      leadMagnet: validatedData.leadMagnet,
+      hasPhone: !!validatedData.phone,
+      utmSource: validatedData.utmSource,
+      utmMedium: validatedData.utmMedium
     })
 
     // Salvar interação de captura
-
-    await prisma.interaction.create({,      data: {,        type: 'LEAD_CAPTURE',        channel: getChannelFromSource(validatedData.source),        direction: 'inbound',        content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,        response: {,          userAgent: request.headers.get('user-agent'),          ip: ip,          referrer: validatedData.referrer,          leadScore: leadScore
-        },        clientId: client.id,        completedAt: new Date()
+    await prisma.interaction.create({
+      data: {
+        type: 'LEAD_CAPTURE',
+        channel: getChannelFromSource(validatedData.source),
+        direction: 'inbound',
+        content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
+        response: {
+          userAgent: request.headers.get('user-agent'),
+          ip: ip,
+          referrer: validatedData.referrer,
+          leadScore: leadScore
+        },
+        clientId: client.id,
+        completedAt: new Date()
       }
     })
 
     // Log da captura
-
-    await prisma.automationLog.create({,      data: {,        type: 'LEAD_CAPTURED',        action: 'capture_lead',        clientId: client.id,        success: true,        details: {,          source: validatedData.source,          leadMagnet: validatedData.leadMagnet,          leadScore: leadScore,          country: validatedData.country
+    await prisma.automationLog.create({
+      data: {
+        type: 'LEAD_CAPTURED',
+        action: 'capture_lead',
+        clientId: client.id,
+        success: true,
+        details: {
+          source: validatedData.source,
+          leadMagnet: validatedData.leadMagnet,
+          leadScore: leadScore,
+          country: validatedData.country
         }
       }
     })
 
     // Disparar automações baseadas no lead score
-
-    if (isNewLead) {,      await triggerWelcomeSequence(client.id, validatedData.leadMagnet)
-    },
-    if (leadScore >= 70) {,      await triggerHighPriorityActions(client.id, leadScore)
+    if (isNewLead) {
+      await triggerWelcomeSequence(client.id, validatedData.leadMagnet)
+    }
+    
+    if (leadScore >= 70) {
+      await triggerHighPriorityActions(client.id, leadScore)
     }
 
     // Resposta baseada no lead score
-
-    let responseMessage =  
-let recommendations = [],
-    if (leadScore >= 80) {,      responseMessage = 'Lead de alta qualidade capturado',      recommendations = ['priority_contact', 'premium_offer']
-    } else if (leadScore >= 60) {,      responseMessage = 'Lead qualificado capturado',      recommendations = ['nurture_sequence', 'assessment_offer']
-    } else {,      recommendations = ['basic_nurture', 'educational_content']
-    },
+    let responseMessage = 'Lead capturado com sucesso'
+    let recommendations = []
+    
+    if (leadScore >= 80) {
+      responseMessage = 'Lead de alta qualidade capturado'
+      recommendations = ['priority_contact', 'premium_offer']
+    } else if (leadScore >= 60) {
+      responseMessage = 'Lead qualificado capturado'
+      recommendations = ['nurture_sequence', 'assessment_offer']
+    } else {
+      recommendations = ['basic_nurture', 'educational_content']
+    }
     return NextResponse.json({,      data: {,        leadId: client.id,        leadScore: leadScore,        isNewLead: isNewLead,        recommendations: recommendations
       },      message: responseMessage
     })

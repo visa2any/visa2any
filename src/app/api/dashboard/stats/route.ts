@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAuth, isAdmin } from 'next/server'
+import { verifyAuth, isAdmin } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
