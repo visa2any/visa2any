@@ -83,13 +83,13 @@ export async function POST(request: NextRequest) {
 async function sendWelcomeMessage(phone: string, name: string) {
 const message = `🎉 Olá ${name}!
 
-Bem-vindo(a) à Newsletter WhatsApp da *Visa2Any*!,
+Bem-vindo(a) à Newsletter WhatsApp da *Visa2Any*!
 Você agora receberá:
 📱 Notificações instantâneas sobre mudanças em leis de imigração
 🚨 Alertas urgentes em tempo real
 📊 Resumos semanais personalizados
 💬 Acesso direto aos nossos especialistas
-🎁 Conteúdo exclusivo para assinantes,
+🎁 Conteúdo exclusivo para assinantes
 Para acessar nosso blog completo: https://visa2any.com/blog
 
 📞 *Precisa de ajuda imediata?*
@@ -126,15 +126,33 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       take: 100
     })
-    const stats = {      total: subscribers.length,      byCountry: subscribers.reduce((acc, sub) => {        sub.countries.forEach(country => {          acc[country] = (acc[country] || 0) + 1
-        }),        return acc
-      }, {} as Record<string, number>),      recent: subscribers.slice(0, 10)
-    },
-    return NextResponse.json({      success: true,      stats,      subscribers: subscribers.map(sub => ({        id: sub.id,        name: sub.name,        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),        countries: sub.countries,        createdAt: sub.createdAt
+    const stats = {
+      total: subscribers.length,
+      byCountry: subscribers.reduce((acc, sub) => {
+        sub.countries.forEach(country => {
+          acc[country] = (acc[country] || 0) + 1
+        })
+        return acc
+      }, {} as Record<string, number>),
+      recent: subscribers.slice(0, 10)
+    }
+    return NextResponse.json({
+      success: true,
+      stats,
+      subscribers: subscribers.map(sub => ({
+        id: sub.id,
+        name: sub.name,
+        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),
+        countries: sub.countries,
+        createdAt: sub.createdAt
       }))
     })
 
-  } catch (error) {    console.error('[WHATSAPP NEWSLETTER] Erro ao listar:', error),    return NextResponse.json(,      { error: 'Erro ao listar assinantes' },      { status: 500 }
+  } catch (error) {
+    console.error('[WHATSAPP NEWSLETTER] Erro ao listar:', error)
+    return NextResponse.json(
+      { error: 'Erro ao listar assinantes' },
+      { status: 500 }
     )
   }
 }
