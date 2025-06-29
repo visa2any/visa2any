@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
 try {
 const { searchParams } = new URL(request.url)
-const period =  
-const periodDate = new Date(),    periodDate.setDate(periodDate.getDate() - period)
+    const period = parseInt(searchParams.get('period') || '30')
+    const periodDate = new Date()
+    periodDate.setDate(periodDate.getDate() - period)
 
     // Overview Stats
 

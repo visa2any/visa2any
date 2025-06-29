@@ -2,7 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Schema para criar pedido,const createOrderSchema = z.object({  productId: z.string().min(1, 'ID do produto é obrigatório'),  productName: z.string().min(1, 'Nome do produto é obrigatório'),  quantity: z.number().min(1, 'Quantidade deve ser pelo menos 1'),  adults: z.number().min(1, 'Número de adultos deve ser pelo menos 1'),  children: z.number().min(0, 'Número de crianças não pode ser negativo'),  unitPrice: z.number().min(0, 'Preço unitário não pode ser negativo'),  totalAmount: z.number().min(0, 'Valor total não pode ser negativo'),  discountAmount: z.number().min(0, 'Valor do desconto não pode ser negativo').optional(),  clientInfo: z.object({    name: z.string().optional(),    email: z.string().email().optional(),    phone: z.string().optional()
+// Schema para criar pedido
+const createOrderSchema = z.object({
+  productId: z.string().min(1, 'ID do produto é obrigatório'),
+  productName: z.string().min(1, 'Nome do produto é obrigatório'),
+  quantity: z.number().min(1, 'Quantidade deve ser pelo menos 1'),
+  adults: z.number().min(1, 'Número de adultos deve ser pelo menos 1'),
+  children: z.number().min(0, 'Número de crianças não pode ser negativo'),
+  unitPrice: z.number().min(0, 'Preço unitário não pode ser negativo'),
+  totalAmount: z.number().min(0, 'Valor total não pode ser negativo'),
+  discountAmount: z.number().min(0, 'Valor do desconto não pode ser negativo').optional(),
+  clientInfo: z.object({
+    name: z.string().optional(),
+    email: z.string().email().optional(),
+    phone: z.string().optional()
   }).optional()
 })
 
