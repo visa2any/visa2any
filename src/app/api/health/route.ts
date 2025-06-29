@@ -1,16 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 
 export async function GET(request: NextRequest) {
-const health = {,    timestamp: new Date().toISOString(),    environment: process.env.NODE_ENV,    status: 'healthy',    services: {} as any,    configuration: {} as any,    database: {} as any
-  },
+  const health = {
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    status: 'healthy',
+    services: {} as any,
+    configuration: {} as any,
+    database: {} as any
+  }
   try {
     // Verificar banco de dados
-    const dbStart = Date.now(),    await prisma.$queryRaw`SELECT 1`,    health.database = {,      status: 'connected',      responseTime: Date.now() - dbStart,      url: process.env.DATABASE_URL ? 'configured' : 'missing'
+    const dbStart = Date.now()
+    await prisma.$queryRaw`SELECT 1`
+    health.database = {
+      status: 'connected',
+      responseTime: Date.now() - dbStart,
+      url: process.env.DATABASE_URL ? 'configured' : 'missing'
     }
-  } catch (error) {,    health.database = {,      status: 'error',      error: error instanceof Error ? error.message : 'Unknown error'
-    },    health.status = 'unhealthy'
+  } catch (error) {
+    health.database = {
+      status: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
+    health.status = 'unhealthy'
   }
 
   // Verificar Telegram
@@ -106,7 +121,9 @@ const activeServices = Object.values(health.services).filter((s: any) => s.statu
 
   // Retornar status HTTP baseado na saúde
 
-  const statusCode = health.status === 'healthy' ? 200 : ,                     health.status === 'degraded' ? 200 : ,                     health.status === 'minimal' ? 200 : 503
+  const statusCode = health.status === 'healthy' ? 200 :
+                     health.status === 'degraded' ? 200 :
+                     health.status === 'minimal' ? 200 : 503
 
   return NextResponse.json(health, { status: statusCode })
 }
