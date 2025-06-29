@@ -58,8 +58,13 @@ export async function POST(request: NextRequest) {
       message: 'Mensagem enviada com sucesso (simulação)'
     })
 
-  } catch (error) {    return NextResponse.json(,      { ,        error: 'Erro no teste de envio',        details: error instanceof Error ? error.message : 'Erro desconhecido'
-      },      { status: 500 }
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: 'Erro no teste de envio',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      },
+      { status: 500 }
     )
   }
 }
