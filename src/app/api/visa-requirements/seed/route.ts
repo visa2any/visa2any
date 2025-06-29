@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     // Dados de exemplo para popular a base
 
     const visaRequirements = [
-      // CANADÁ,      {,        country: 'Canadá',        visaType: 'Express Entry',        visaSubtype: 'Federal Skilled Worker',        requiredDocuments: [,          {
+      // CANADÁ,      {        country: 'Canadá',        visaType: 'Express Entry',        visaSubtype: 'Federal Skilled Worker',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte válido',            required: true,            description: 'Passaporte com validade mínima de 6 meses',            validityMonths: 6
           },          {
             type: 'DIPLOMA',            name: 'Diploma universitário',            required: true,            description: 'Diploma reconhecido de ensino superior',            validityMonths: null
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
             type: 'POLICE_CLEARANCE',            name: 'Antecedentes criminais',            required: true,            description: 'De todos os países onde viveu',            validityMonths: 12
           }
         ]
-        processingTime: '6-8 meses',        fees: {,          government: 1365,          service: 2500,          currency: 'CAD'
+        processingTime: '6-8 meses',        fees: {          government: 1365,          service: 2500,          currency: 'CAD'
         },        eligibilityCriteria: [,          {
             criterion: 'Idade',            description: 'Idade entre 18-45 anos (pontuação máxima aos 20-29)',            required: true
           },          {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // AUSTRÁLIA,      {,        country: 'Austrália',        visaType: 'Skilled Independent',        visaSubtype: 'Subclass 189',        requiredDocuments: [,          {
+      // AUSTRÁLIA,      {        country: 'Austrália',        visaType: 'Skilled Independent',        visaSubtype: 'Subclass 189',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte válido',            required: true,            description: 'Passaporte com validade mínima de 6 meses',            validityMonths: 6
           },          {
             type: 'DIPLOMA',            name: 'Qualificações educacionais',            required: true,            description: 'Diploma reconhecido pelo governo australiano',            validityMonths: null
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
             type: 'POLICE_CLEARANCE',            name: 'Character assessment',            required: true,            description: 'Police certificates from all countries',            validityMonths: 12
           }
         ]
-        processingTime: '8-12 meses',        fees: {,          government: 4640,          service: 3000,          currency: 'AUD'
+        processingTime: '8-12 meses',        fees: {          government: 4640,          service: 3000,          currency: 'AUD'
         },        eligibilityCriteria: [,          {
             criterion: 'Idade',            description: 'Menos de 45 anos',            required: true
           },          {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // PORTUGAL,      {,        country: 'Portugal',        visaType: 'D7 Visa',        visaSubtype: 'Rendimento Próprio',        requiredDocuments: [,          {
+      // PORTUGAL,      {        country: 'Portugal',        visaType: 'D7 Visa',        visaSubtype: 'Rendimento Próprio',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passaporte',            required: true,            description: 'Passaporte válido por mais de 3 meses',            validityMonths: 3
           },          {
             type: 'BANK_STATEMENT',            name: 'Comprovativo de rendimentos',            required: true,            description: 'Rendimento mínimo de €760/mês',            validityMonths: 3
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
             type: 'OTHER',            name: 'Comprovativo de alojamento',            required: true,            description: 'Contrato de arrendamento ou propriedade',            validityMonths: null
           }
         ]
-        processingTime: '2-4 meses',        fees: {,          government: 320,          service: 1500,          currency: 'EUR'
+        processingTime: '2-4 meses',        fees: {          government: 320,          service: 1500,          currency: 'EUR'
         },        eligibilityCriteria: [,          {
             criterion: 'Rendimento',            description: 'Rendimento mínimo de €760 mensais',            required: true
           },          {
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         ]
       }
 
-      // ESTADOS UNIDOS,      {,        country: 'Estados Unidos',        visaType: 'EB-1A',        visaSubtype: 'Extraordinary Ability',        requiredDocuments: [,          {
+      // ESTADOS UNIDOS,      {        country: 'Estados Unidos',        visaType: 'EB-1A',        visaSubtype: 'Extraordinary Ability',        requiredDocuments: [,          {
             type: 'PASSPORT',            name: 'Passport',            required: true,            description: 'Valid passport for 6+ months',            validityMonths: 6
           },          {
             type: 'WORK_CERTIFICATE',            name: 'Evidence of extraordinary ability',            required: true,            description: 'Awards, publications, media coverage',            validityMonths: null
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             type: 'OTHER',            name: 'Form I-140',            required: true,            description: 'Petition for immigrant worker',            validityMonths: null
           }
         ]
-        processingTime: '12-18 meses',        fees: {,          government: 1435,          service: 8000,          currency: 'USD'
+        processingTime: '12-18 meses',        fees: {          government: 1435,          service: 8000,          currency: 'USD'
         },        eligibilityCriteria: [,          {
             criterion: 'Extraordinary ability',            description: '3 of 10 criteria must be met',            required: true
           },          {
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     // Inserir todos os requisitos
 
-    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({,          data: {
+    const created = await Promise.all(,      visaRequirements.map(requirement => ,        prisma.visaRequirement.create({          data: {
             ...requirement,            lastUpdated: new Date(),            isActive: true
           }
         })
@@ -157,15 +157,15 @@ export async function POST(request: NextRequest) {
 
     // Log da população
 
-    await prisma.automationLog.create({,      data: {,        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
+    await prisma.automationLog.create({      data: {        type: 'VISA_REQUIREMENTS_SEEDED',        action: 'seed_visa_requirements',        success: true,        details: {          timestamp: new Date().toISOString(),          action: 'automated_action'
         }
       }
     }),
-    return NextResponse.json({,      data: {,        created: created.length,        requirements: created
+    return NextResponse.json({      data: {        created: created.length,        requirements: created
       },      message: `${created.length} requisitos de visto criados com sucesso`
     })
 
-  } catch (error) {,    console.error('Erro ao popular base de conhecimento:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+  } catch (error) {    console.error('Erro ao popular base de conhecimento:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
     )
   }
 }

@@ -127,15 +127,15 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       take: 100
     })
-    const stats = {,      total: subscribers.length,      byCountry: subscribers.reduce((acc, sub) => {,        sub.countries.forEach(country => {,          acc[country] = (acc[country] || 0) + 1
+    const stats = {      total: subscribers.length,      byCountry: subscribers.reduce((acc, sub) => {        sub.countries.forEach(country => {          acc[country] = (acc[country] || 0) + 1
         }),        return acc
       }, {} as Record<string, number>),      recent: subscribers.slice(0, 10)
     },
-    return NextResponse.json({,      success: true,      stats,      subscribers: subscribers.map(sub => ({,        id: sub.id,        name: sub.name,        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),        countries: sub.countries,        createdAt: sub.createdAt
+    return NextResponse.json({      success: true,      stats,      subscribers: subscribers.map(sub => ({        id: sub.id,        name: sub.name,        phone: sub.phone.replace(/(\+\d{2})(\d{2})(\d{4,5})(\d{4})/, '$1 $2 $3-$4'),        countries: sub.countries,        createdAt: sub.createdAt
       }))
     })
 
-  } catch (error) {,    console.error('[WHATSAPP NEWSLETTER] Erro ao listar:', error),    return NextResponse.json(,      { error: 'Erro ao listar assinantes' },      { status: 500 }
+  } catch (error) {    console.error('[WHATSAPP NEWSLETTER] Erro ao listar:', error),    return NextResponse.json(,      { error: 'Erro ao listar assinantes' },      { status: 500 }
     )
   }
 }

@@ -133,16 +133,30 @@ export async function POST(request: NextRequest) {
     } else {
       recommendations = ['basic_nurture', 'educational_content']
     }
-    return NextResponse.json({,      data: {,        leadId: client.id,        leadScore: leadScore,        isNewLead: isNewLead,        recommendations: recommendations
-      },      message: responseMessage
+    return NextResponse.json({
+      data: {
+        leadId: client.id,
+        leadScore: leadScore,
+        isNewLead: isNewLead,
+        recommendations: recommendations
+      },
+      message: responseMessage
     })
 
   } catch (error) {
-  if (error instanceof z.ZodError) {,      return NextResponse.json(,        { ,          error: 'Dados inválidos',          details: error.errors
-        },        { status: 400 }
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Dados inválidos',
+          details: error.errors
+        },
+        { status: 400 }
       )
-    },
-    console.error('Erro ao capturar lead:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+    }
+    console.error('Erro ao capturar lead:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
     )
   }
 }
@@ -152,63 +166,107 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
 try {
 const { searchParams } = new URL(request.url)
-    const period =  
-const days = parseInt(period)
+    const period = searchParams.get('period') || '30'
+    const days = parseInt(period)
     
-    const startDate = new Date(),    startDate.setDate(startDate.getDate() - days)
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
 
     // Buscar estatísticas
 
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
       // Total de leads
-      prisma.client.count({,        where: { status: 'LEAD' }
-      })
+      prisma.client.count({
+        where: { status: 'LEAD' }
+      }),
       
       // Novos leads no período
-      
-      prisma.client.count({,        where: {,          status: 'LEAD',          createdAt: { gte: startDate }
+      prisma.client.count({
+        where: {
+          status: 'LEAD',
+          createdAt: { gte: startDate }
         }
-      })
+      }),
       
       // Leads por fonte
-      
-      prisma.client.groupBy({,        by: ['source'],        where: {,          status: 'LEAD',          createdAt: { gte: startDate }
-        },        _count: { id: true }
-      })
+      prisma.client.groupBy({
+        by: ['source'],
+        where: {
+          status: 'LEAD',
+          createdAt: { gte: startDate }
+        },
+        _count: { id: true }
+      }),
       
       // Leads por lead magnet
-      
-      prisma.interaction.groupBy({,        by: ['details'],        where: {,          type: 'LEAD_CAPTURE',          createdAt: { gte: startDate }
-        },        _count: { id: true }
+      prisma.interaction.groupBy({
+        by: ['details'],
+        where: {
+          type: 'LEAD_CAPTURE',
+          createdAt: { gte: startDate }
+        },
+        _count: { id: true }
       })
-    ]),
-    return NextResponse.json({,      data: {,        overview: {,          totalLeads,          newLeads,          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
-        },        leadsBySource: leadsBySource.map(item => ({,          source: item.source,          count: item._count.id
-        })),        leadsByMagnet: leadsByMagnet.slice(0, 10)
-        // Top 10
+    ])
+    return NextResponse.json({
+      data: {
+        overview: {
+          totalLeads,
+          newLeads,
+          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
+        },
+        leadsBySource: leadsBySource.map(item => ({
+          source: item.source,
+          count: item._count.id
+        })),
+        leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
         period: `${days} dias`
       }
     })
 
-  } catch (error) {,    console.error('Erro ao buscar estatísticas de leads:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas de leads:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
     )
   }
 }
 
 // Calcular score do lead baseado em fatores
-function calculateLeadScore(factors: {,  source?: string,  leadMagnet?: string,  hasPhone: boolean,  utmSource?: string,  utmMedium?: string
+function calculateLeadScore(factors: {
+  source?: string
+  leadMagnet?: string
+  hasPhone: boolean
+  utmSource?: string
+  utmMedium?: string
 }) {
-let score = 0
+  let score = 0
 
   // Score por fonte
-
-  const sourceScores: Record<string, number> = {,    'lead_magnet': 30,    'assessment': 40,    'pricing_page': 50,    'consultation_page': 60,    'referral': 70,    'organic': 20,    'paid': 35,    'social': 25,    'email': 45
-  },  score += sourceScores[factors.source || ''] || 10
+  const sourceScores: Record<string, number> = {
+    'lead_magnet': 30,
+    'assessment': 40,
+    'pricing_page': 50,
+    'consultation_page': 60,
+    'referral': 70,
+    'organic': 20,
+    'paid': 35,
+    'social': 25,
+    'email': 45
+  }
+  score += sourceScores[factors.source || ''] || 10
 
   // Score por lead magnet (interesse específico)
-
-  const magnetScores: Record<string, number> = {,    'ebook-50-erros': 25,    'checklist-documentos': 20,    'calculadora-tempo': 35,    'guia-entrevista': 30,    'planilha-financeira': 40,    'kit-emergencia': 50
-  },  score += magnetScores[factors.leadMagnet || ''] || 0
+  const magnetScores: Record<string, number> = {
+    'ebook-50-erros': 25,
+    'checklist-documentos': 20,
+    'calculadora-tempo': 35,
+    'guia-entrevista': 30,
+    'planilha-financeira': 40,
+    'kit-emergencia': 50
+  }
+  score += magnetScores[factors.leadMagnet || ''] || 0
 
   // Score por ter telefone (mais engajado)
 
@@ -227,41 +285,66 @@ let score = 0
 
 // Determinar canal baseado na fonte
 function getChannelFromSource(source: string): string {
-const channelMap: Record<string, string> = {,    'lead_magnet': 'website',    'assessment': 'website',    'pricing_page': 'website',    'consultation_page': 'website',    'referral': 'referral',    'organic': 'organic',    'paid': 'paid_ads',    'social': 'social_media',    'email': 'email'
-  },  return channelMap[source] || 'website'
+  const channelMap: Record<string, string> = {
+    'lead_magnet': 'website',
+    'assessment': 'website',
+    'pricing_page': 'website',
+    'consultation_page': 'website',
+    'referral': 'referral',
+    'organic': 'organic',
+    'paid': 'paid_ads',
+    'social': 'social_media',
+    'email': 'email'
+  }
+  return channelMap[source] || 'website'
 }
 
 // Disparar sequência de boas-vindas
 async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
-try {
+  try {
     // Enviar email de boas-vindas imediato
-    await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {,      method: 'POST',      headers: { 'Content-Type': 'application/json' },      body: JSON.stringify({,        template: 'welcome_lead',        clientId: clientId,        variables: {,          lead_magnet: leadMagnet || 'website'
+    await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        template: 'welcome_lead',
+        clientId: clientId,
+        variables: {
+          lead_magnet: leadMagnet || 'website'
         }
       })
     })
 
     // Agendar emails de nurturing
-    // Em produção
-    usar queue/scheduler
+    // Em produção: usar queue/scheduler
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
-  } catch (error) {,    console.error('Erro ao disparar sequência de boas-vindas:', error)
+  } catch (error) {
+    console.error('Erro ao disparar sequência de boas-vindas:', error)
   }
 }
 
 // Disparar ações para leads de alta prioridade
 async function triggerHighPriorityActions(clientId: string, leadScore: number) {
-try {
+  try {
     // Notificar equipe de vendas
-    await prisma.automationLog.create({,      data: {,        type: 'HIGH_PRIORITY_LEAD',        action: 'notify_sales_team',        clientId: clientId,        details: {,          timestamp: new Date().toISOString(),          action: 'automated_action'
-        },        success: true
+    await prisma.automationLog.create({
+      data: {
+        type: 'HIGH_PRIORITY_LEAD',
+        action: 'notify_sales_team',
+        clientId: clientId,
+        details: {
+          timestamp: new Date().toISOString(),
+          action: 'automated_action'
+        },
+        success: true
       }
     })
 
     // Em produção: enviar notificação Slack/Teams para vendas
-
     console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
     
-  } catch (error) {,    console.error('Erro ao processar lead de alta prioridade:', error)
+  } catch (error) {
+    console.error('Erro ao processar lead de alta prioridade:', error)
   }
 }

@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
-export const dynamic = 'force-dynamic',
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
 try {
@@ -12,13 +12,13 @@ const periodDate = new Date(),    periodDate.setDate(periodDate.getDate() - peri
     // Overview Stats
 
     const totalClients =  
-const newClientsThisPeriod = await prisma.client.count({,      where: { createdAt: { gte: periodDate } }
+const newClientsThisPeriod = await prisma.client.count({      where: { createdAt: { gte: periodDate } }
     }),    
     const clientsGrowth = totalClients > 0 ? ,      Math.round(((newClientsThisPeriod / totalClients) * 100)) : 0,
-    const activeConsultations = await prisma.consultation.count({,      where: { ,        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
+    const activeConsultations = await prisma.consultation.count({      where: { ,        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
       }
     }),
-    const completedConsultations = await prisma.consultation.count({,      where: { ,        status: 'COMPLETED',        createdAt: { gte: periodDate }
+    const completedConsultations = await prisma.consultation.count({      where: { ,        status: 'COMPLETED',        createdAt: { gte: periodDate }
       }
     })
 
@@ -31,11 +31,11 @@ const averageTicket = 2500
 
     // Client stats
 
-    const clientsThisWeek = await prisma.client.count({,      where: { ,        createdAt: { ,          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
+    const clientsThisWeek = await prisma.client.count({      where: { ,        createdAt: { ,          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
         }
       }
     }),
-    const clientsThisMonth = await prisma.client.count({,      where: { ,        createdAt: { ,          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) 
+    const clientsThisMonth = await prisma.client.count({      where: { ,        createdAt: { ,          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) 
         }
       }
     })
@@ -47,16 +47,16 @@ const urgentTasks = 5
 
     // Conversion rate calculation
 
-    const totalLeads = await prisma.client.count({,      where: { status: 'LEAD' }
+    const totalLeads = await prisma.client.count({      where: { status: 'LEAD' }
     })
     const convertedClients =  
 const conversionRate = totalClients > 0 ? ,      Math.round((convertedClients / totalClients) * 100) : 0
 
     // Clients by status
 
-    const clientsByStatus = await prisma.client.groupBy({,      by: ['status'],      _count: { status: true }
+    const clientsByStatus = await prisma.client.groupBy({      by: ['status'],      _count: { status: true }
     }),
-    const statusCounts = clientsByStatus.map(item => ({,      status: item.status,      count: item._count.status,      growth: Math.floor(Math.random() * 20) - 10 // Mock growth data    }))
+    const statusCounts = clientsByStatus.map(item => ({      status: item.status,      count: item._count.status,      growth: Math.floor(Math.random() * 20) - 10 // Mock growth data    }))
 
     // Consultations by type (mock data)
 
@@ -90,15 +90,15 @@ const conversionRate = totalClients > 0 ? ,      Math.round((convertedClients / 
 
     // Communication stats (mock data)
 
-    const communicationStats = {,      whatsappToday: 45,      emailsToday: 23,      callsToday: 12,      responseTime: 2.3,      pendingMessages: 8,      unreadMessages: 15
+    const communicationStats = {      whatsappToday: 45,      emailsToday: 23,      callsToday: 12,      responseTime: 2.3,      pendingMessages: 8,      unreadMessages: 15
     },
-    const dashboardStats = {,      overview: {,        totalClients,        newClientsThisPeriod,        clientsGrowth,        activeConsultations,        completedConsultations,        conversionRate,        totalRevenue,        revenueThisPeriod,        revenueGrowth,        averageTicket,        clientsThisWeek,        clientsThisMonth,        pendingTasks,        urgentTasks
+    const dashboardStats = {      overview: {        totalClients,        newClientsThisPeriod,        clientsGrowth,        activeConsultations,        completedConsultations,        conversionRate,        totalRevenue,        revenueThisPeriod,        revenueGrowth,        averageTicket,        clientsThisWeek,        clientsThisMonth,        pendingTasks,        urgentTasks
       },      clientsByStatus: statusCounts,      consultationsByType,      recentActivity,      topPerformers,      urgentTasks: urgentTasksList,      communicationStats
     },
-    return NextResponse.json({,      data: dashboardStats
+    return NextResponse.json({      data: dashboardStats
     })
 
-  } catch (error) {,    console.error('Dashboard stats error:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
+  } catch (error) {    console.error('Dashboard stats error:', error),    return NextResponse.json(,      { error: 'Erro interno do servidor' },      { status: 500 }
     )
   }
 }
