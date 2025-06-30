@@ -275,10 +275,13 @@ export default function AIConsultation() {
 
     if (profile.country === 'Portugal') {
       if (profile.nationality === 'Brasileira') {
-        score += 20 // Facilidades CPLP para brasileiros,        if (profile.visaType === 'Cidadania por descendência') score += 15
+        score += 20 // Facilidades CPLP para brasileiros
+        if (profile.visaType === 'Cidadania por descendência') score += 15
       } else if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(profile.nationality)) {
-        score += 25 // Outros países CPLP têm ainda mais facilidades      } else {
-        score += 5 // Outros têm menos facilidades      }
+        score += 25 // Outros países CPLP têm ainda mais facilidades
+      } else {
+        score += 5 // Outros têm menos facilidades
+      }
     }
     
     if (profile.country === 'Canadá') {
@@ -297,16 +300,20 @@ export default function AIConsultation() {
     }
     
     if (profile.country === 'Alemanha') {
-      score += 10 // Chancenkarte facilitando entrada,      if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
+      score += 10 // Chancenkarte facilitando entrada
+      if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
     }
     
     if (profile.country === 'Estados Unidos') {
       // Diferenciações por nacionalidade
       if (profile.nationality === 'Brasileira') {
-        score += 5 // Brasil tem boas relações com EUA,        if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
-          score += 15 // EB-2 NIW facilitado para brasileiros qualificados        }
+        score += 5 // Brasil tem boas relações com EUA
+        if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
+          score += 15 // EB-2 NIW facilitado para brasileiros qualificados
+        }
       } else if (['Mexicana', 'Centro-americana'].includes(profile.nationality)) {
-        score -= 10 // Processos mais rigorosos,        warnings.push('Nacionalidade requer análise mais cuidadosa')
+        score -= 10 // Processos mais rigorosos
+        warnings.push('Nacionalidade requer análise mais cuidadosa')
       }
       warnings.push('Processos mais rigorosos em 2025 - varia por nacionalidade')
     }

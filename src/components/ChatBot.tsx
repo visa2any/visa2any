@@ -35,7 +35,8 @@ export default function ChatBot() {
   const [currentStep, setCurrentStep] = useState('welcome')
   const [userData, setUserData] = useState<UserData>({})
   const [showQuickActions, setShowQuickActions] = useState(true)
-  const [isHidden, setIsHidden] = useState(false) // Esconder durante análises,  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [isHidden, setIsHidden] = useState(false) // Esconder durante análises
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

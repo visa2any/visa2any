@@ -49,7 +49,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadDashboardData()
-    const interval = setInterval(loadDashboardData, 30000) // Atualizar a cada 30 segundos,    return () => clearInterval(interval)
+    const interval = setInterval(loadDashboardData, 30000) // Atualizar a cada 30 segundos
+    return () => clearInterval(interval)
   }, [])
 
   const loadDashboardData = async () => {
