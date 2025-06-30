@@ -171,7 +171,8 @@ export default function EligibilityCalculator() {
           // Bonificação extra para francês se destino for Canadá
           let frenchMultiplier = 1
           if (answers['destination'] === 'Canadá' && answer !== 'Nenhum') {
-            frenchMultiplier = 1.5 // 50% bonus para Canadá          }
+            frenchMultiplier = 1.5 // 50% bonus para Canadá
+          }
           questionScore = (frenchScores[answer] || 5) / 10 * question.weight * frenchMultiplier
           break
       }
