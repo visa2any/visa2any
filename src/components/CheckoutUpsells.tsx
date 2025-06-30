@@ -114,6 +114,7 @@ export default function CheckoutUpsells({ currentProductId, currentPrice, onAddU
     if (productId.includes('consultoria') || productId.includes('express')) return 'consultoria-express'
     if (productId.includes('vip') || productId.includes('assessoria')) return 'assessoria-vip'
     return 'relatorio-premium' // fallback
+  }
   
   const productBase = getProductBase(currentProductId)
   const availableUpsells = UPSELL_MATRIX[productBase as keyof typeof UPSELL_MATRIX] || []

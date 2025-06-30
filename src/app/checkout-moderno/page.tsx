@@ -101,7 +101,8 @@ const PRODUCTS: Record<string, any> = {
     supportsQuantity: false
   },
 
-  // Produtos de Países (padrão base),  'usa-free': {
+  // Produtos de Países (padrão base)
+  'usa-free': {
     name: '🇺🇸 EUA - Análise Gratuita',
     price: 0,
     description: 'Análise inicial gratuita para EUA',
