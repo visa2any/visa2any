@@ -57,9 +57,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Durante o build
-
-  apenas retornar URLs estáticas
+  // apenas retornar URLs estáticas
   // Em runtime
-  um sitemap dinâmico pode ser gerado via API route
+  // um sitemap dinâmico pode ser gerado via API route
   return staticUrls
 }

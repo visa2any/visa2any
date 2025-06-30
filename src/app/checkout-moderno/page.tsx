@@ -58,7 +58,8 @@ const PRODUCTS: Record<string, any> = {
     supportsQuantity: true
   },
   
-  // Produtos da Página Principal,  'pre-analise': {
+  // Produtos da Página Principal
+  'pre-analise': {
     name: '🆓 Análise Gratuita',
     price: 0,
     description: 'Perfeita para começar',
