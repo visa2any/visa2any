@@ -631,7 +631,8 @@ function CustomerDashboardContent() {
         onClose={() => setShowSofiaChat(false)}
         customerData={{
           ...customerData,
-          package: 'PREMIUM' // Definir baseado no plano real do cliente        }}
+          package: 'PREMIUM' // Definir baseado no plano real do cliente
+        }}
       />
 
       <ProfileEditor

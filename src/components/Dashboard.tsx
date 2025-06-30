@@ -533,7 +533,8 @@ export default function Dashboard() {
                                 })
                                 if (response.ok) {
                                   alert('Cliente notificado!')
-                                  loadDashboardData() // Recarregar                                }
+                                  loadDashboardData() // Recarregar
+                                }
                               }}
                             >
                               📨 Notificar

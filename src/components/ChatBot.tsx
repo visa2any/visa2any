@@ -641,7 +641,8 @@ export default function ChatBot() {
       "📚 Perfeito! Estou enviando o **'Guia Completo de Vistos 2024'** para seu email. " +
       "Você receberá em alguns minutos com tudo que precisa saber!"
     )
-    // Aqui integraria com sistema de email marketing  }
+    // Aqui integraria com sistema de email marketing
+  }
 
   const quickActions = [
     { icon: Globe, text: 'Vistos', action: () => handleVisaInquiry() },
