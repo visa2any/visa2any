@@ -13,7 +13,7 @@ function PendingContent() {
 
   const copyPixCode = () => {
     // Em uma implementação real
-    este código PIX viria da API
+    // este código PIX viria da API
     const pixCode = '00020126580014br.gov.bcb.pix013636401234-1234-1234-1234-123456789abc5204000053039865802BR5913VISA2ANY LTDA6009SAO PAULO62070503***6304ABCD'
     navigator.clipboard.writeText(pixCode)
     setCopied(true)

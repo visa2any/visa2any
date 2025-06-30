@@ -7,7 +7,8 @@ import { Loader2, Sparkles } from 'lucide-react'
 
 // Dados dos produtos expandidos
 const PRODUCTS: Record<string, any> = {
-  // Vaga Express,  'vaga-express-basic': {
+  // Vaga Express
+  'vaga-express-basic': {
     name: '🥉 Vaga Express Basic',
     price: 297,
     description: 'Monitoramento inteligente por 30 dias - Perfeito para 1 consulado',
