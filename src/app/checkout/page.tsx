@@ -13,71 +13,27 @@ import Footer from '@/components/Footer'
 
 // Definir produtos disponíveis
 const PRODUCTS = {
-  // EUA - B1/B2 Turismo/Negócios
-  'usa-b1b2-pre-analise': { name: 'Pré-Análise B1/B2', price: 0, description: 'Análise gratuita turismo EUA' },
-  'usa-b1b2-relatorio': { name: 'Relatório B1/B2', price: 147, description: 'Assessoria completa turismo EUA' },
-  'usa-b1b2-consultoria': { name: 'Consultoria B1/B2', price: 397, description: 'Especialista 1:1 turismo EUA' },
-  'usa-b1b2-vip': { name: 'VIP B1/B2', price: 1997, description: 'Serviço completo turismo EUA' },
+  // EUA - B1/B2 Turismo/Negócios (REMOVIDO - duplicata)
   
-  // EUA - F1 Estudante
-  'usa-f1-pre-analise': { name: 'Pré-Análise F1', price: 0, description: 'Análise gratuita estudante EUA' },
-  'usa-f1-relatorio': { name: 'Relatório F1', price: 247, description: 'Assessoria estudante EUA' },
-  'usa-f1-consultoria': { name: 'Consultoria F1', price: 597, description: 'Especialista estudante EUA' },
-  'usa-f1-vip': { name: 'VIP F1', price: 2497, description: 'Serviço completo estudante EUA' },
+  // EUA - F1 Estudante (REMOVIDO - duplicata)
   
-  // EUA - H1B Trabalho
-  'usa-h1b-pre-analise': { name: 'Pré-Análise H1B', price: 97, description: 'Análise trabalho EUA' },
-  'usa-h1b-relatorio': { name: 'Relatório H1B', price: 497, description: 'Assessoria trabalho EUA' },
-  'usa-h1b-consultoria': { name: 'Consultoria H1B', price: 997, description: 'Especialista trabalho EUA' },
-  'usa-h1b-vip': { name: 'VIP H1B', price: 3997, description: 'Serviço completo trabalho EUA' },
+  // EUA - H1B Trabalho (REMOVIDO - duplicata)
   
-  // EUA - O1 Habilidade Extraordinária
-  'usa-o1-pre-analise': { name: 'Pré-Análise O1', price: 197, description: 'Análise extraordinário EUA' },
-  'usa-o1-relatorio': { name: 'Relatório O1', price: 797, description: 'Assessoria O1 EUA' },
-  'usa-o1-consultoria': { name: 'Consultoria O1', price: 1497, description: 'Especialista O1 EUA' },
-  'usa-o1-vip': { name: 'VIP O1', price: 4997, description: 'Serviço completo O1 EUA' },
+  // EUA - O1 Habilidade Extraordinária (REMOVIDO - duplicata)
   
-  // Canadá - Turismo
-  'canada-turismo-pre-analise': { name: 'Pré-Análise Turismo CAN', price: 0, description: 'Análise gratuita turismo Canadá' },
-  'canada-turismo-relatorio': { name: 'Relatório Turismo CAN', price: 127, description: 'Assessoria turismo Canadá' },
-  'canada-turismo-consultoria': { name: 'Consultoria Turismo CAN', price: 297, description: 'Especialista turismo Canadá' },
-  'canada-turismo-vip': { name: 'VIP Turismo CAN', price: 1497, description: 'Serviço completo turismo Canadá' },
+  // Canadá - Turismo (REMOVIDO - duplicata)
   
-  // Canadá - Estudo
-  'canada-estudo-pre-analise': { name: 'Pré-Análise Estudo CAN', price: 0, description: 'Análise gratuita estudo Canadá' },
-  'canada-estudo-relatorio': { name: 'Relatório Estudo CAN', price: 197, description: 'Assessoria estudo Canadá' },
-  'canada-estudo-consultoria': { name: 'Consultoria Estudo CAN', price: 497, description: 'Especialista estudo Canadá' },
-  'canada-estudo-vip': { name: 'VIP Estudo CAN', price: 2497, description: 'Serviço completo estudo Canadá' },
+  // Canadá - Estudo (REMOVIDO - duplicata)
   
-  // Canadá - Trabalho
-  'canada-trabalho-pre-analise': { name: 'Pré-Análise Trabalho CAN', price: 97, description: 'Análise trabalho Canadá' },
-  'canada-trabalho-relatorio': { name: 'Relatório Trabalho CAN', price: 297, description: 'Assessoria trabalho Canadá' },
-  'canada-trabalho-consultoria': { name: 'Consultoria Trabalho CAN', price: 697, description: 'Especialista trabalho Canadá' },
-  'canada-trabalho-vip': { name: 'VIP Trabalho CAN', price: 3497, description: 'Serviço completo trabalho Canadá' },
+  // Canadá - Trabalho (REMOVIDO - duplicata)
   
-  // Austrália - Turismo
-  'australia-turismo-pre-analise': { name: 'Pré-Análise Turismo AUS', price: 0, description: 'Análise gratuita turismo Austrália' },
-  'australia-turismo-relatorio': { name: 'Relatório Turismo AUS', price: 147, description: 'Assessoria turismo Austrália' },
-  'australia-turismo-consultoria': { name: 'Consultoria Turismo AUS', price: 397, description: 'Especialista turismo Austrália' },
-  'australia-turismo-vip': { name: 'VIP Turismo AUS', price: 1997, description: 'Serviço completo turismo Austrália' },
+  // Austrália - Turismo (REMOVIDO - duplicata)
   
-  // Austrália - Estudante
-  'australia-estudante-pre-analise': { name: 'Pré-Análise Estudante AUS', price: 97, description: 'Análise estudante Austrália' },
-  'australia-estudante-relatorio': { name: 'Relatório Estudante AUS', price: 397, description: 'Assessoria estudante Austrália' },
-  'australia-estudante-consultoria': { name: 'Consultoria Estudante AUS', price: 797, description: 'Especialista estudante Austrália' },
-  'australia-estudante-vip': { name: 'VIP Estudante AUS', price: 3997, description: 'Serviço completo estudante Austrália' },
+  // Austrália - Estudante (REMOVIDO - duplicata)
   
-  // Tier 3 - Europa (Portugal/Espanha)
-  'europa-turismo-pre-analise': { name: 'Pré-Análise Europa', price: 0, description: 'Análise gratuita Europa' },
-  'europa-turismo-relatorio': { name: 'Relatório Europa', price: 97, description: 'Assessoria Europa' },
-  'europa-turismo-consultoria': { name: 'Consultoria Europa', price: 297, description: 'Especialista Europa' },
-  'europa-turismo-vip': { name: 'VIP Europa', price: 1497, description: 'Serviço completo Europa' },
+  // Tier 3 - Europa (REMOVIDO - duplicata)
   
-  // Reino Unido
-  'uk-turismo-pre-analise': { name: 'Pré-Análise UK', price: 0, description: 'Análise gratuita Reino Unido' },
-  'uk-turismo-relatorio': { name: 'Relatório UK', price: 147, description: 'Assessoria Reino Unido' },
-  'uk-turismo-consultoria': { name: 'Consultoria UK', price: 397, description: 'Especialista Reino Unido' },
-  'uk-turismo-vip': { name: 'VIP UK', price: 1997, description: 'Serviço completo Reino Unido' },
+  // Reino Unido (REMOVIDO - duplicata)
   
   // Ásia (China, Japão, etc.)
   'asia-turismo-pre-analise': { name: 'Pré-Análise Ásia', price: 0, description: 'Análise gratuita Ásia' },
@@ -405,15 +361,17 @@ function CheckoutPageContent() {
   // Estratégia de preços detalhada
 
   const getAdultPrice = () => product.price
-  const getChildPrice = () => Math.round(product.price * 0.7) // 30% desconto,  const getChildDiscount = () => Math.round(product.price * 0.3) // Economia por criança
+  const getChildPrice = () => Math.round(product.price * 0.7) // 30% desconto
+  const getChildDiscount = () => Math.round(product.price * 0.3) // Economia por criança
   
   const getQuantityDiscount = (adultCount: number) => {
     // Desconto por quantidade aplica SOMENTE aos adultos (crianças já têm 30% off)
     if (adultCount >= 5) return 0.15 // 15% desconto para 5+ adultos
-    if (adultCount >= 3) return 0.10 // 10% desconto para 3-4 adultos,    return 0
+    if (adultCount >= 3) return 0.10 // 10% desconto para 3-4 adultos
+    return 0
   }
   
-  const getPIXDiscount = () => paymentMethod === 'pix' ? 0.05 : 0 // 5% desconto PIX,  
+  const getPIXDiscount = () => paymentMethod === 'pix' ? 0.05 : 0 // 5% desconto PIX  
   const calculateSubtotal = () => {
     return (adults * getAdultPrice()) + (children * getChildPrice())
   }
