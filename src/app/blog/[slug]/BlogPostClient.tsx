@@ -147,8 +147,10 @@ export default function BlogPostClient({ slug }: Props) {
         setRelatedPosts(data.relatedPosts || [])
         setLocalLikes(data.post.likes)
         
-        // Agendar posts automáticos se for um post novo,        // if (data.post.featured) {
-        //   await scheduleAutomaticPosts(data.post),        // }
+        // Agendar posts automáticos se for um post novo
+        // if (data.post.featured) {
+        //   await scheduleAutomaticPosts(data.post)
+        // }
       } else {
         setError(data.error || 'Post não encontrado')
       }
@@ -275,7 +277,8 @@ export default function BlogPostClient({ slug }: Props) {
       
       if (data.success) {
         setNewComment('')
-        loadComments() // Recarregar comentários      }
+        loadComments() // Recarregar comentários
+      }
     } catch (err) {
       console.error('Erro ao comentar:', err)
     }
@@ -309,7 +312,8 @@ export default function BlogPostClient({ slug }: Props) {
       if (data.success) {
         setReplyContent('')
         setReplyingTo(null)
-        loadComments() // Recarregar comentários      }
+        loadComments() // Recarregar comentários
+      }
     } catch (err) {
       console.error('Erro ao responder:', err)
     }
@@ -327,7 +331,7 @@ export default function BlogPostClient({ slug }: Props) {
         break
       case 'instagram':
         // Instagram não permite compartilhamento direto via URL
-        então copiamos o link
+        // então copiamos o link
         navigator.clipboard.writeText(shareUrl)
         alert('Link copiado! Cole no Instagram Stories.')
         return
