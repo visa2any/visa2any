@@ -47,9 +47,7 @@ class AppointmentBookingService {
       statusUrl: '/apex/status'
     },
     
-    // VFS Global - Reino Unido
-    
-    Canadá, Alemanha, França
+    // VFS Global - Reino Unido, Canadá, Alemanha, França
     vfs: {
       baseUrl: 'https://visa.vfsglobal.com',
     countriesUrl: '/countries',

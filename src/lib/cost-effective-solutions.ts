@@ -99,8 +99,10 @@ class CostEffectiveSolutions {
       // Calcular custo baseado no nível de serviço
       
       const serviceCosts = {
-        basic: 25,    // R$ 25 - agendamento básico,        premium: 45,  // R$ 45 - agendamento + acompanhamento
-        express: 75   // R$ 75 - agendamento urgente (24h)      }
+        basic: 25,    // R$ 25 - agendamento básico
+        premium: 45,  // R$ 45 - agendamento + acompanhamento
+        express: 75   // R$ 75 - agendamento urgente (24h)
+      }
       
       const cost = serviceCosts[request.serviceLevel]
       const estimatedTime = {
@@ -160,7 +162,8 @@ class CostEffectiveSolutions {
     const targets = countries.map(country => ({
       country,
       url: this.getConsulateURL(country),
-      checkInterval: this.getOptimalInterval(country), // em minutos,      lastCheck: undefined
+      checkInterval: this.getOptimalInterval(country), // em minutos
+      lastCheck: undefined
     }))
 
     // Iniciar monitoramento em background
@@ -170,6 +173,7 @@ class CostEffectiveSolutions {
     }
 
     return {
+      success: true,
       monitoringId,
       targets
     }
@@ -191,6 +195,7 @@ class CostEffectiveSolutions {
     // Always return mock data for now to avoid playwright compilation issues
     console.log('Using mock automation for development')
     return {
+      success: true,
       slots: await this.getMockSlots(country),
       method: 'playwright_automation_mock',
       cost: 2
@@ -279,7 +284,8 @@ Confiabilidade: 70%
       emailConfig: {
         providers,
         keywords,
-        cost: 20 // R$ 20/mês      },
+        cost: 20 // R$ 20/mês
+      },
       instructions: `
 📧 Sistema de Email Monitoring
 
@@ -362,9 +368,12 @@ ROI: Altíssimo (quase gratuito)
     // Salvar task no banco ou sistema de gestão
     console.log('Task manual criada:', task)
     
-    // Aqui poderia integrar com:,    // - Trello API (gratuito)
-    // - Notion API (gratuito),    // - Google Sheets (gratuito)
-    // - Sistema próprio de tasks  }
+    // Aqui poderia integrar com:
+    // - Trello API (gratuito)
+    // - Notion API (gratuito)
+    // - Google Sheets (gratuito)
+    // - Sistema próprio de tasks
+  }
 
   private generateClientInstructions(request: ManualBookingRequest, trackingId: string): string {
     return `
@@ -415,9 +424,12 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
   private getOptimalInterval(country: string): number {
     // Intervalos otimizados para não sobrecarregar
     const intervals: Record<string, number> = {
-      'usa': 30,      // 30 minutos,      'canada': 20,   // 20 minutos  
-      'uk': 25,       // 25 minutos,      'germany': 45,  // 45 minutos
-      'france': 35    // 35 minutos    }
+      'usa': 30,      // 30 minutos
+      'canada': 20,   // 20 minutos
+      'uk': 25,       // 25 minutos
+      'germany': 45,  // 45 minutos
+      'france': 35    // 35 minutos
+    }
     return intervals[country] || 30
   }
 
@@ -443,8 +455,7 @@ Seu agendamento para ${request.consularInfo.country} está sendo processado.
   }
 
   private async notifyInterestedClients(country: string, slots: any[]): Promise<void> {
-    // Notificar via WhatsApp
-    email, etc.
+    // Notificar via WhatsApp, email, etc.
     console.log(`Vagas encontradas para ${country}:`, slots.length)
   }
 
