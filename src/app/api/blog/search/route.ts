@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateSuggestions(query: string) {
+async function generateSuggestions(query: string): Promise<any[]> {
   const searchTerm = query.toLowerCase().trim()
   
   try {
@@ -52,8 +52,7 @@ async function generateSuggestions(query: string) {
       where: {
         published: true,
         title: {
-          contains: searchTerm,
-          mode: 'insensitive'
+          contains: searchTerm
         }
       },
       select: {
@@ -69,8 +68,7 @@ async function generateSuggestions(query: string) {
       where: {
         published: true,
         country: {
-          contains: searchTerm,
-          mode: 'insensitive'
+          contains: searchTerm
         }
       },
       select: {
@@ -86,8 +84,7 @@ async function generateSuggestions(query: string) {
       where: {
         published: true,
         category: {
-          contains: searchTerm,
-          mode: 'insensitive'
+          contains: searchTerm
         }
       },
       select: {
@@ -97,7 +94,7 @@ async function generateSuggestions(query: string) {
       take: 3
     })
     
-    const suggestions = []
+    const suggestions: any[] = []
 
     // Adicionar sugestões de títulos
     titleMatches.forEach(post => {
@@ -149,20 +146,20 @@ async function performAdvancedSearch(query: string) {
         published: true,
         OR: [
           // Busca exata no título (maior relevância)
-          { title: { contains: query, mode: 'insensitive' } },
+          { title: { contains: query } },
           // Busca exata no resumo
-          { excerpt: { contains: query, mode: 'insensitive' } },
+          { excerpt: { contains: query } },
           // Busca no conteúdo
-          { content: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query } },
           // Busca no país
-          { country: { contains: query, mode: 'insensitive' } },
+          { country: { contains: query } },
           // Busca no autor
-          { author: { contains: query, mode: 'insensitive' } },
+          { author: { contains: query } },
           // Busca individual por palavras
           ...searchWords.flatMap(word => [
-            { title: { contains: word, mode: 'insensitive' } },
-            { excerpt: { contains: word, mode: 'insensitive' } },
-            { country: { contains: word, mode: 'insensitive' } }
+            { title: { contains: word } },
+            { excerpt: { contains: word } },
+            { country: { contains: word } }
           ])
         ]
       },

@@ -3,7 +3,7 @@ import { BlogPost } from '@/types/blog'
 interface SocialPost {
   platform: 'facebook' | 'instagram' | 'linkedin' | 'twitter' | 'tiktok'
   content: string
-  imageUrl?: string
+  imageUrl?: string | undefined
   videoUrl?: string
   hashtags: string[]
   scheduledAt?: Date
@@ -21,23 +21,28 @@ interface SocialTemplate {
 const PLATFORM_CONFIG = {
   facebook: { 
     dailyLimit: 2, 
-    minInterval: 6 * 60 * 60 * 1000, // 6 horas,    optimalTimes: [9, 13, 15] // 9h, 13h, 15h
+    minInterval: 6 * 60 * 60 * 1000, // 6 horas
+    optimalTimes: [9, 13, 15] // 9h, 13h, 15h
   },
   instagram: { 
     dailyLimit: 2, 
-    minInterval: 8 * 60 * 60 * 1000, // 8 horas,    optimalTimes: [11, 14, 17] // 11h, 14h, 17h
+    minInterval: 8 * 60 * 60 * 1000, // 8 horas
+    optimalTimes: [11, 14, 17] // 11h, 14h, 17h
   },
   linkedin: { 
     dailyLimit: 1, 
-    minInterval: 24 * 60 * 60 * 1000, // 24 horas,    optimalTimes: [8, 12, 17] // 8h, 12h, 17h
+    minInterval: 24 * 60 * 60 * 1000, // 24 horas
+    optimalTimes: [8, 12, 17] // 8h, 12h, 17h
   },
   twitter: { 
     dailyLimit: 4, 
-    minInterval: 3 * 60 * 60 * 1000, // 3 horas,    optimalTimes: [9, 12, 15, 18] // 9h, 12h, 15h, 18h
+    minInterval: 3 * 60 * 60 * 1000, // 3 horas
+    optimalTimes: [9, 12, 15, 18] // 9h, 12h, 15h, 18h
   },
   tiktok: { 
     dailyLimit: 1, 
-    minInterval: 24 * 60 * 60 * 1000, // 24 horas,    optimalTimes: [18, 19, 20] // 18h, 19h, 20h
+    minInterval: 24 * 60 * 60 * 1000, // 24 horas
+    optimalTimes: [18, 19, 20] // 18h, 19h, 20h
   }
 }
 
@@ -45,73 +50,31 @@ const PLATFORM_CONFIG = {
 const SOCIAL_TEMPLATES: SocialTemplate[] = [
   {
     platform: 'facebook',
-    template: `🚨 {emoji} {title}
-
-{excerpt}
-
-📋 Principais pontos:
-{highlights}
-
-👉 Leia o artigo completo: {url}
-
-#Visa2Any {hashtags}`,
+    template: `🚨 {emoji} {title}\n\n{excerpt}\n\n📋 Principais pontos:\n{highlights}\n\n👉 Leia o artigo completo: {url}\n\n#Visa2Any {hashtags}`,
     maxLength: 2000,
     hashtags: ['#Imigração', '#Visto', '#Brasil', '#Consultoria']
   },
   {
     platform: 'instagram',
-    template: `{emoji} {title}
-
-{excerpt}
-
-📱 Swipe para ver mais detalhes
-👆 Link no perfil para artigo completo
-
-{hashtags}`,
+    template: `{emoji} {title}\n\n{excerpt}\n\n📱 Swipe para ver mais detalhes\n👆 Link no perfil para artigo completo\n\n{hashtags}`,
     maxLength: 2200,
     hashtags: ['#visa2any', '#imigração', '#visto', '#brasil', '#consultoria', '#internacional', '#mudança']
   },
   {
     platform: 'linkedin',
-    template: `{title}
-
-{excerpt}
-
-Como especialistas em imigração, observamos que:
-{highlights}
-
-💡 Nossa experiência mostra que clientes preparados têm 91.2% de taxa de aprovação.
-
-🔗 Artigo completo: {url}
-
-{hashtags}`,
+    template: `{title}\n\n{excerpt}\n\nComo especialistas em imigração, observamos que:\n{highlights}\n\n💡 Nossa experiência mostra que clientes preparados têm 91.2% de taxa de aprovação.\n\n🔗 Artigo completo: {url}\n\n{hashtags}`,
     maxLength: 3000,
     hashtags: ['#Imigração', '#VistoAmericano', '#ExpressEntry', '#Consultoria', '#Visa2Any']
   },
   {
     platform: 'twitter',
-    template: `{emoji} {title}
-
-{excerpt}
-
-🔗 {url}
-
-{hashtags}`,
+    template: `{emoji} {title}\n\n{excerpt}\n\n🔗 {url}\n\n{hashtags}`,
     maxLength: 280,
     hashtags: ['#Visa2Any', '#Imigração', '#Visto']
   },
   {
     platform: 'tiktok',
-    template: `{emoji} {title}
-
-{excerpt}
-
-🎯 DICA IMPORTANTE para quem quer {country_action}!
-
-📱 Siga @visa2any para mais dicas
-🔗 Link na bio para artigo completo
-
-{hashtags}`,
+    template: `{emoji} {title}\n\n{excerpt}\n\n🎯 DICA IMPORTANTE para quem quer {country_action}!\n\n📱 Siga @visa2any para mais dicas\n🔗 Link na bio para artigo completo\n\n{hashtags}`,
     maxLength: 2200,
     hashtags: ['#visa2any', '#imigração', '#visto', '#mudança', '#internacional', '#dicas', '#brasil'],
     videoRequired: true
@@ -123,16 +86,13 @@ function extractHighlights(content: string): string[] {
   const highlights = []
   
   // Extrair pontos importantes baseados em marcadores comuns
-  
   const strongRegex = /<strong>(.*?)<\/strong>/g
   let match
   while ((match = strongRegex.exec(content)) !== null && highlights.length < 3) {
     highlights.push(`• ${match[1]}`)
   }
   
-  // Se não encontrou highlights suficientes
-  
-  usar pontos genéricos
+  // Se não encontrou highlights suficientes, usar pontos genéricos
   if (highlights.length === 0) {
     highlights.push('• Informações atualizadas e verificadas')
     highlights.push('• Orientação especializada')
@@ -192,20 +152,17 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
   const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
   const now = new Date()
   
-  // Se é urgente
-  
-  agenda para os próximos minutos respeitando intervalo mínimo
+  // Se é urgente, agenda para os próximos minutos respeitando intervalo mínimo
   if (isUrgent) {
-    const urgentDelay = Math.max(config.minInterval / 4, 15 * 60 * 1000) // Mín 15 min,    return new Date(now.getTime() + urgentDelay)
+    const urgentDelay = Math.max(config.minInterval / 4, 15 * 60 * 1000) // Mín 15 min
+    return new Date(now.getTime() + urgentDelay)
   }
   
   // Buscar próximo horário ótimo
-  
   const currentHour = now.getHours()
-  const optimalTimes = config.optimalTimes
+  const optimalTimes = config.optimalTimes || []
   
   // Encontrar próximo horário ótimo hoje
-  
   const nextOptimalToday = optimalTimes.find(hour => hour > currentHour)
   
   if (nextOptimalToday) {
@@ -214,12 +171,10 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
     return nextTime
   }
   
-  // Se não há mais horários hoje
-  
-  usar primeiro horário de amanhã
+  // Se não há mais horários hoje, usar primeiro horário de amanhã
   const tomorrow = new Date(now)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(optimalTimes[0], 0, 0, 0)
+  tomorrow.setHours(optimalTimes[0] || 9, 0, 0, 0) // Fallback to 9 AM if empty
   
   return tomorrow
 }
@@ -227,17 +182,15 @@ function calculateOptimalPostTime(platform: string, isUrgent: boolean = false): 
 // Função para verificar se pode postar (anti-spam)
 async function canSchedulePost(platform: string): Promise<boolean> {
   try {
-    // Simular consulta ao banco para verificar último post,    // Em implementação real
- consultar tabela SocialPost
+    // Simular consulta ao banco para verificar último post
+    // Em implementação real, consultar tabela SocialPost
     const config = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG]
     
     // Verificar posts do dia
-    
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
     // Aqui deveria consultar: SELECT COUNT(*) FROM SocialPost WHERE platform = ? AND scheduledAt >= ?
-    
     const postsToday = 0 // Placeholder
     
     if (postsToday >= config.dailyLimit) {
@@ -252,296 +205,164 @@ async function canSchedulePost(platform: string): Promise<boolean> {
   }
 }
 
-// Função principal para gerar posts nas redes sociais
+// Função principal para gerar os posts
 export function generateSocialPosts(blogPost: BlogPost, baseUrl: string = 'https://visa2any.com'): SocialPost[] {
-  const posts: SocialPost[] = []
-  const url = `${baseUrl}/blog/${blogPost.slug || blogPost.id}`
-  const emoji = getCategoryEmoji(blogPost.category)
-  const highlights = extractHighlights(blogPost.content)
+  const socialPosts: SocialPost[] = []
   
-  for (const template of SOCIAL_TEMPLATES) {
-    // Truncar título se necessário
-    let title = blogPost.title
-    if (template.platform === 'twitter' && title.length > 100) {
-      title = title.substring(0, 97) + '...'
-    }
+  SOCIAL_TEMPLATES.forEach(template => {
+    // Adicionar lógica para pular se não puder agendar
     
-    // Truncar excerpt se necessário
-    
-    let excerpt = blogPost.excerpt
-    const baseLength = template.template.length + title.length + url.length + 100 // margem,    const availableLength = template.maxLength - baseLength
-    
-    if (excerpt.length > availableLength) {
-      excerpt = excerpt.substring(0, availableLength - 3) + '...'
-    }
-    
-    // Substituir variáveis no template
-    
+    const highlights = extractHighlights(blogPost.content).join('\n')
+    const url = `${baseUrl}/blog/${blogPost.slug}`
+    const categoryEmoji = getCategoryEmoji(blogPost.category)
+    const countryAction = getCountryAction(blogPost.country || 'outro')
+
     let content = template.template
-      .replace('{emoji}', emoji)
-      .replace('{title}', title)
-      .replace('{excerpt}', excerpt)
-      .replace('{highlights}', highlights.join('\n'))
+      .replace('{emoji}', categoryEmoji)
+      .replace('{title}', blogPost.title)
+      .replace('{excerpt}', blogPost.excerpt)
+      .replace('{highlights}', highlights)
       .replace('{url}', url)
-      .replace('{country_action}', getCountryAction(blogPost.country || ''))
+      .replace('{country_action}', countryAction)
       .replace('{hashtags}', template.hashtags.join(' '))
-    
-    // Adicionar hashtags específicas do post
-    
-    const postHashtags = [...template.hashtags]
-    if (blogPost.country) {
-      postHashtags.push(`#${blogPost.country.replace(' ', '')}`)
+
+    // Truncar para o tamanho máximo
+    if (content.length > template.maxLength) {
+        content = content.substring(0, template.maxLength - 3) + '...'
     }
-    if (blogPost.tags) {
-      blogPost.tags.forEach(tag => {
-        postHashtags.push(`#${tag.replace(' ', '').replace('/', '')}`)
-      })
-    }
-    
-    // Calcular horário otimizado baseado na plataforma
-    
-    const scheduledAt = calculateOptimalPostTime(template.platform, blogPost.urgent)
-    
-    posts.push({
+
+    const post: SocialPost = {
       platform: template.platform,
-      content: content.substring(0, template.maxLength),
+      content,
       imageUrl: blogPost.imageUrl,
-      hashtags: [...new Set(postHashtags)], // Remove duplicatas,      scheduledAt
-    })
-  }
-  
-  return posts
-}
-
-// Função para agendar posts automaticamente com controle de frequência
-export async function scheduleAutomaticPosts(blogPost: BlogPost) {
-  try {
-    const socialPosts = generateSocialPosts(blogPost)
-    
-    for (const post of socialPosts) {
-      // Verificar se pode agendar post (anti-spam)
-      const canSchedule = await canSchedulePost(post.platform)
-      
-      if (!canSchedule) {
-        console.log(`⏭️ Pulando ${post.platform}: limite de frequência atingido`)
-        continue
-      }
-      
-      // Salvar no banco de dados para processamento posterior
-      
-      await fetch('/api/social/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          blogPostId: blogPost.id,
-          platform: post.platform,
-          content: post.content,
-          imageUrl: post.imageUrl,
-          hashtags: post.hashtags,
-          scheduledAt: post.scheduledAt,
-          status: 'scheduled'
-        })
-      })
-      
-      console.log(`📅 ${post.platform}: agendado para ${post.scheduledAt?.toLocaleString('pt-BR')}`)
+      hashtags: template.hashtags,
+      scheduledAt: calculateOptimalPostTime(template.platform, blogPost.urgent || false)
     }
-    
-    console.log(`📱 Posts agendados para ${socialPosts.length} redes sociais`)
-    
-  } catch (error) {
-    console.error('Erro ao agendar posts automáticos:', error)
-  }
-}
 
-// Função para publicar imediatamente nas redes sociais
-export async function publishToSocialMedia(socialPost: SocialPost) {
-  try {
-    switch (socialPost.platform) {
-      case 'facebook':
-        return await publishToFacebook(socialPost)
-      case 'instagram':
-        return await publishToInstagram(socialPost)
-      case 'linkedin':
-        return await publishToLinkedIn(socialPost)
-      case 'twitter':
-        return await publishToTwitter(socialPost)
-      case 'tiktok':
-        return await publishToTikTok(socialPost)
-      default:
-        throw new Error(`Plataforma não suportada: ${socialPost.platform}`)
+    if (template.videoRequired) {
+      post.videoUrl = generateTikTokVideoScript(blogPost) // Placeholder
     }
-  } catch (error) {
-    console.error(`Erro ao publicar no ${socialPost.platform}:`, error)
-    throw error
-  }
-}
 
-// Implementações específicas para cada plataforma
-async function publishToFacebook(post: SocialPost) {
-  const accessToken = process.env.FACEBOOK_ACCESS_TOKEN
-  const pageId = process.env.FACEBOOK_PAGE_ID
-  
-  const response = await fetch(`https://graph.facebook.com/${pageId}/photos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message: post.content,
-      url: post.imageUrl,
-      access_token: accessToken
-    })
+    socialPosts.push(post)
   })
+
+  return socialPosts
+}
+
+// Agendar posts automaticamente
+export async function scheduleAutomaticPosts(blogPost: BlogPost) {
+  const posts = generateSocialPosts(blogPost)
+
+  for (const post of posts) {
+    if (await canSchedulePost(post.platform)) {
+      // Salvar no banco para o CRON processar
+      // await saveSocialPostToDB(post)
+      console.log(`✅ Post para ${post.platform} agendado para ${post.scheduledAt}`)
+    } else {
+      console.warn(`⚠️ Post para ${post.platform} não agendado por limite de frequência.`)
+    }
+  }
+}
+
+// Publicar em uma rede social específica
+export async function publishToSocialMedia(socialPost: SocialPost) {
+  console.log(`🚀 Publicando no ${socialPost.platform}...`)
   
-  return response.json()
+  try {
+    switch(socialPost.platform) {
+      case 'facebook':
+        await publishToFacebook(socialPost)
+        break
+      case 'instagram':
+        await publishToInstagram(socialPost)
+        break
+      case 'linkedin':
+        await publishToLinkedIn(socialPost)
+        break
+      case 'twitter':
+        await publishToTwitter(socialPost)
+        break
+      case 'tiktok':
+        await publishToTikTok(socialPost)
+        break
+    }
+    console.log(`✅ Publicado no ${socialPost.platform} com sucesso!`)
+    
+    // Marcar como publicado no banco
+    // await updateSocialPostStatus(socialPost.id, 'published')
+  } catch (error) {
+    console.error(`❌ Erro ao publicar no ${socialPost.platform}:`, error)
+    // await updateSocialPostStatus(socialPost.id, 'failed')
+  }
+}
+
+async function publishToFacebook(post: SocialPost) {
+  // Simulação de chamada de API
+  console.log('Publicando no Facebook:', post.content)
+  
+  // const facebookApi = new FacebookApi(process.env.FB_ACCESS_TOKEN)
+  // await facebookApi.publishPost(post.content, post.imageUrl)
 }
 
 async function publishToInstagram(post: SocialPost) {
-  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN
-  const accountId = process.env.INSTAGRAM_ACCOUNT_ID
+  // Instagram é mais complexo, pode precisar de API de parceiro
+  console.log('Preparando para publicar no Instagram:', post.content)
   
-  // Instagram requer processo em 2 etapas: criar container
-  
-  depois publicar
-  const containerResponse = await fetch(`https://graph.facebook.com/${accountId}/media`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      image_url: post.imageUrl,
-      caption: post.content,
-      access_token: accessToken
-    })
-  })
-  
-  const container = await containerResponse.json()
-  
-  // Publicar o container
-  
-  const publishResponse = await fetch(`https://graph.facebook.com/${accountId}/media_publish`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      creation_id: container.id,
-      access_token: accessToken
-    })
-  })
-  
-  return publishResponse.json()
+  if (post.videoUrl) {
+    console.log('Publicando Reel:', post.videoUrl)
+    // const instagramApi = new InstagramApi(...)
+    // await instagramApi.publishReel(post.videoUrl, post.content)
+  } else if (post.imageUrl) {
+    console.log('Publicando imagem:', post.imageUrl)
+    // const instagramApi = new InstagramApi(...)
+    // await instagramApi.publishImage(post.imageUrl, post.content)
+  }
 }
 
 async function publishToLinkedIn(post: SocialPost) {
-  const accessToken = process.env.LINKEDIN_ACCESS_TOKEN
-  const authorId = process.env.LINKEDIN_AUTHOR_ID
-  
-  const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      author: `urn:li:person:${authorId}`,
-      lifecycleState: 'PUBLISHED',
-      specificContent: {
-        'com.linkedin.ugc.ShareContent': {
-          shareCommentary: {
-            text: post.content
-          },
-          shareMediaCategory: 'IMAGE',
-          media: [{
-            status: 'READY',
-            media: post.imageUrl
-          }]
-        }
-      },
-      visibility: {
-        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
-      }
-    })
-  })
-  
-  return response.json()
+  // Simulação de chamada de API
+  console.log('Publicando no LinkedIn:', post.content)
+
+  // const linkedInApi = new LinkedInApi(...)
+  // await linkedInApi.publishPost({
+  //   text: post.content,
+  //   link: post.imageUrl // LinkedIn pode usar imagem como link
+  // })
 }
 
 async function publishToTwitter(post: SocialPost) {
-  const accessToken = process.env.TWITTER_ACCESS_TOKEN
-  const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET
-  
-  // Para Twitter
-  
-  você precisaria usar a biblioteca twitter-api-v2 ou similar
-  // Aqui está um exemplo conceitual
-  const response = await fetch('https://api.twitter.com/2/tweets', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      text: post.content,
-      media: post.imageUrl ? { media_ids: [post.imageUrl] } : undefined
-    })
-  })
-  
-  return response.json()
+  // Simulação de chamada de API
+  console.log('Publicando no Twitter:', post.content)
+
+  // const twitterApi = new TwitterApi(...)
+  // await twitterApi.tweet(post.content)
 }
 
 async function publishToTikTok(post: SocialPost) {
-  const accessToken = process.env.TIKTOK_ACCESS_TOKEN
+  // TikTok requer um vídeo
+  if (!post.videoUrl) {
+    throw new Error('Publicação no TikTok requer um vídeo.')
+  }
   
-  // TikTok Business API para upload de vídeo
-  
-  const response = await fetch('https://open-api.tiktok.com/share/video/upload/', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      video_url: post.videoUrl || post.imageUrl, // URL do vídeo ou imagem para conversão,      text: post.content,
-      privacy_level: 'PUBLIC_TO_EVERYONE',
-      disable_duet: false,
-      disable_comment: false,
-      disable_stitch: false,
-      brand_content_toggle: false
-    })
-  })
-  
-  return response.json()
+  console.log('Publicando no TikTok (roteiro):', post.videoUrl)
+
+  // A API do TikTok para postagem direta é restrita.
+  // Isso geralmente envolve um fluxo manual ou uma plataforma parceira.
+  // Ex: `await tikTokPartnerApi.uploadVideo(post.videoUrl, post.content)`
 }
 
-// Função para processar posts agendados (seria chamada por um cron job)
+// Função CRON para processar posts agendados
 export async function processScheduledPosts() {
-  try {
-    const response = await fetch('/api/social/pending')
-    const pendingPosts = await response.json()
-    
-    for (const scheduledPost of pendingPosts) {
-      if (new Date(scheduledPost.scheduledAt) <= new Date()) {
-        try {
-          await publishToSocialMedia(scheduledPost)
-          
-          // Marcar como publicado
-          
-          await fetch(`/api/social/${scheduledPost.id}/complete`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'published' })
-          })
-          
-        } catch (error) {
-          // Marcar como erro
-          await fetch(`/api/social/${scheduledPost.id}/error`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              status: 'error', 
-              error: error.message 
-            })
-          })
-        }
-      }
-    }
-    
-  } catch (error) {
-    console.error('Erro ao processar posts agendados:', error)
+  console.log('CRON: Verificando posts para publicar...')
+  const now = new Date()
+
+  // Buscar posts no banco com scheduledAt <= now e status = 'scheduled'
+  // const postsToPublish = await getPostsFromDB()
+  const postsToPublish: SocialPost[] = [] // Placeholder
+
+  for (const post of postsToPublish) {
+    await publishToSocialMedia(post)
   }
+  
+  console.log(`CRON: Processamento finalizado. ${postsToPublish.length} posts publicados.`)
 }

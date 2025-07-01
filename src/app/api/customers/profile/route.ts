@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
       name: doc.fileName || 'Documento',
       status: doc.status?.toLowerCase() || 'pending',
       uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR'),
-      comments: doc.notes
+      comments: doc.validationNotes
     }))
 
     // Adicionar documentos simulados se não houver nenhum
@@ -220,10 +220,10 @@ export async function GET(request: NextRequest) {
       name: customer.name,
       email: customer.email,
       phone: customer.phone,
-      destinationCountry: customer.destinationCountry || 'A definir',
+      destinationCountry: customer.targetCountry || 'A definir',
       visaType: customer.visaType || 'A definir',
       status: customer.status,
-      eligibilityScore: customer.eligibilityScore || 0,
+      eligibilityScore: customer.score || 0,
       currentStage: customer.status,
       progress,
       consultant,

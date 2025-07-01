@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
+import { PrismaClient, ClientStatus } from '@prisma/client'
 
 // Schema de validação para criar cliente
 const createClientSchema = z.object({
@@ -146,12 +147,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Montar objeto de criação com tipos corretos
+    const dataToCreate = {
+      name: validatedData.name,
+      email: validatedData.email,
+      phone: validatedData.phone ?? null,
+      country: validatedData.country ?? null,
+      nationality: validatedData.nationality ?? null,
+      age: validatedData.age ?? null,
+      profession: validatedData.profession ?? null,
+      education: validatedData.education ?? null,
+      targetCountry: validatedData.targetCountry ?? null,
+      visaType: validatedData.visaType ?? null,
+      source: validatedData.source ?? null,
+      notes: validatedData.notes ?? null,
+      status: ClientStatus.LEAD
+    };
+
     // Criar cliente
     const client = await prisma.client.create({
-      data: {
-        ...validatedData,
-        status: 'LEAD'
-      },
+      data: dataToCreate,
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true }

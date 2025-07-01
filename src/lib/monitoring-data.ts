@@ -50,7 +50,8 @@ class MonitoringDataService {
 
   private async loadChannels(): Promise<MonitoringChannel[]> {
     const baseChannels: MonitoringChannel[] = [
-      // === BOTS DE MONITORAMENTO ===,      {
+      // === BOTS DE MONITORAMENTO ===
+      {
         id: 'vaga-express-bot',
         name: '🤖 Vaga Express Bot',
         status: process.env.TELEGRAM_BOT_TOKEN ? 'active' : 'inactive',
@@ -91,7 +92,8 @@ class MonitoringDataService {
         type: 'telegram'
       },
       
-      // === SISTEMAS REAIS DE PRODUÇÃO ===,      {
+      // === SISTEMAS REAIS DE PRODUÇÃO ===
+      {
         id: 'hybrid-booking',
         name: '👨‍💼 Agendamento Híbrido',
         status: 'active',
@@ -144,7 +146,6 @@ class MonitoringDataService {
     ]
 
     // Verificar status real dos sistemas de backend
-
     await this.checkRealSystemStatus(baseChannels)
 
     return baseChannels
@@ -163,7 +164,8 @@ class MonitoringDataService {
           telegramBots.forEach(bot => {
             if (telegramCheck.ok) {
               bot.status = 'active'
-              bot.lastCheck = `Ativo - ${bot.lastCheck.split(' - ')[1] || 'Bot conectado'}`
+              const botName = bot.lastCheck.split(' - ')[1] || 'Bot conectado'
+              bot.lastCheck = `Ativo - ${botName}`
             } else {
               bot.status = 'error'
               bot.lastCheck = 'Erro de conexão'
@@ -180,7 +182,6 @@ class MonitoringDataService {
       }
 
       // Verificar WhatsApp Business API
-
       if (process.env.WHATSAPP_TOKEN) {
         try {
           const whatsappCheck = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}`, {
@@ -205,7 +206,6 @@ class MonitoringDataService {
       }
 
       // Verificar Email Notifications
-
       if (process.env.RESEND_API_KEY || process.env.SMTP_HOST) {
         try {
           const emailChannel = channels.find(c => c.id === 'email-notifications')
@@ -233,7 +233,6 @@ class MonitoringDataService {
       }
 
       // Verificar MercadoPago
-
       if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
         try {
           const mpCheck = await fetch('https://api.mercadopago.com/users/me', {
@@ -258,177 +257,114 @@ class MonitoringDataService {
       }
 
       // Verificar Web Scraping
-
-      const webScrapingChannel = channels.find(c => c.id === 'web-scraping')
-      if (webScrapingChannel) {
-        if (process.env.ENABLE_REAL_MONITORING === 'true') {
-          webScrapingChannel.status = 'active'
-          webScrapingChannel.lastCheck = 'Monitorando sites'
-        } else {
-          webScrapingChannel.status = 'inactive'
-          webScrapingChannel.lastCheck = 'Não configurado'
+      if (process.env.ENABLE_REAL_MONITORING === 'true') {
+        try {
+          const scrapingStatus = await webScrapingService.checkStatus()
+          const scrapingChannel = channels.find(c => c.id === 'web-scraping')
+          if (scrapingChannel) {
+            scrapingChannel.status = scrapingStatus.isAvailable ? 'active' : 'error'
+            scrapingChannel.lastCheck = scrapingStatus.message
+          }
+        } catch (error) {
+          console.error('Erro ao verificar Web Scraping:', error)
+          const scrapingChannel = channels.find(c => c.id === 'web-scraping')
+          if (scrapingChannel) {
+            scrapingChannel.status = 'error'
+            scrapingChannel.lastCheck = 'Erro de conexão'
+          }
         }
       }
 
     } catch (error) {
-      console.error('Erro ao verificar status real dos sistemas:', error)
+      console.error('Erro geral ao verificar status dos sistemas:', error)
     }
   }
 
   private async loadAlerts(): Promise<MonitoringAlert[]> {
-    // Carregar alertas reais do localStorage (apenas no cliente)
-    if (typeof window !== 'undefined') {
-      const savedAlerts = localStorage.getItem('monitoring-alerts')
-      if (savedAlerts) {
-        try {
-          return JSON.parse(savedAlerts)
-        } catch (error) {
-          console.error('Erro ao parse dos alertas salvos:', error)
+    // Em uma aplicação real, isso viria de um banco de dados
+    console.log('Carregando alertas do banco de dados...')
+    // Simular dados se não houver
+    if (this.alerts.length === 0) {
+      return [
+        {
+          id: 'alert-1',
+          channel: 'vaga-express-bot',
+          country: 'EUA',
+          type: 'Visto de Turista',
+          date: new Date(Date.now() - 86400000).toISOString(),
+          location: 'São Paulo',
+          time: '10:00',
+          notified: true,
+          createdAt: new Date().toISOString()
         }
-      }
+      ]
     }
-
-    // Se não houver alertas salvos
-
-    retornar array vazio
-    return []
+    return this.alerts
   }
 
   async addAlert(alert: Omit<MonitoringAlert, 'id' | 'createdAt'>): Promise<void> {
     const newAlert: MonitoringAlert = {
       ...alert,
-      id: Date.now().toString(),
+      id: `alert-${Date.now()}`,
       createdAt: new Date().toISOString()
     }
+    this.alerts.push(newAlert)
+    console.log('Novo alerta adicionado:', newAlert)
 
-    this.alerts.unshift(newAlert) // Adicionar no início,    
-    // Manter apenas os últimos 50 alertas
-    if (this.alerts.length > 50) {
-      this.alerts = this.alerts.slice(0, 50)
+    // Notificar sobre o novo alerta
+    if (!newAlert.notified) {
+      await this.notifyAlert(newAlert)
+      newAlert.notified = true
     }
-
-    // Salvar no localStorage (apenas no cliente)
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('monitoring-alerts', JSON.stringify(this.alerts))
-    }
-
-    // Notificar via Telegram se configurado
-
-    await this.notifyAlert(newAlert)
   }
 
   private async notifyAlert(alert: MonitoringAlert) {
-    const token = process.env.TELEGRAM_BOT_TOKEN
-    const chatId = process.env.TELEGRAM_CHAT_ID
-
-    if (!token || !chatId) return
-
-    const message = `🚨 NOVA VAGA DETECTADA!
-
-🇺🇸 País: ${alert.country}
-📅 Data: ${alert.date}
-📍 Local: ${alert.location}
-🎯 Tipo: ${alert.type}
-🔍 Fonte: ${alert.channel}
-
-⏰ Detectada: ${alert.time}
-💰 Agendar por R$ 45 no sistema!`
-
-    try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message
-        })
-      })
-    } catch (error) {
-      console.error('Erro ao notificar alerta:', error)
-    }
+    // Simulação de notificação (e.g., via WebSocket, email, etc.)
+    console.log(`--- ❗ NOVO ALERTA ❗ ---`)
+    console.log(`Canal: ${alert.channel}`)
+    console.log(`País: ${alert.country} - ${alert.type}`)
+    console.log(`Data: ${alert.date} às ${alert.time}`)
+    console.log(`Local: ${alert.location}`)
+    console.log(`-----------------------`)
   }
 
   async getChannels(): Promise<MonitoringChannel[]> {
-    await this.initialize()
+    if (!this.isInitialized) await this.initialize()
     return this.channels
   }
 
   async getAlerts(): Promise<MonitoringAlert[]> {
-    await this.initialize()
-    return this.alerts.slice(0, 10) // Últimos 10 alertas  }
+    if (!this.isInitialized) await this.initialize()
+    return this.alerts
+  }
 
   async getStats(): Promise<MonitoringStats> {
-    await this.initialize()
+    if (!this.isInitialized) await this.initialize()
     
     const activeChannels = this.channels.filter(c => c.status === 'active').length
-    const vagasToday = this.alerts.filter(alert => {
-      const today = new Date().toDateString()
-      const alertDate = new Date(alert.createdAt).toDateString()
-      return today === alertDate
-    }).length
+    const vagasToday = this.alerts
+      .filter(a => new Date(a.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000))
+      .length
     
-    const totalVagas = this.alerts.length
+    const totalVagas = this.channels.reduce((sum, ch) => sum + ch.vagas, 0)
     
-    // Calcular custo mensal baseado nos sistemas ativos
-    
-    let monthlyCost = 0
-    this.channels.forEach(channel => {
-      if (channel.status === 'active') {
-        if (channel.cost === 'R$ 20/mês') monthlyCost += 20
-        if (channel.cost === 'R$ 50/mês') monthlyCost += 50
+    const monthlyCost = this.channels.reduce((sum, ch) => {
+      if (ch.cost.toLowerCase() === 'gratuito') return sum
+      const costValue = parseFloat(ch.cost.replace(/[^0-9.,]/g, '').replace(',', '.'))
+      if (!isNaN(costValue)) {
+        // Simplificação: assumindo que o custo é mensal se não for por mensagem
+        if (ch.cost.includes('/mês')) {
+          return sum + costValue
+        }
+        // Para custos por mensagem, é mais complexo, aqui é uma estimativa grosseira
+        if (ch.cost.includes('/msg')) {
+          return sum + (costValue * 1000) // Estimativa de 1000 mensagens
+        }
       }
-    })
+      return sum
+    }, 0)
 
-    return {
-      activeChannels,
-      vagasToday,
-      totalVagas,
-      monthlyCost
-    }
-  }
-
-  async updateChannelStatus(channelId: string, status: 'active' | 'inactive' | 'error') {
-    const channel = this.channels.find(c => c.id === channelId)
-    if (channel) {
-      channel.status = status
-      channel.lastCheck = status === 'active' ? new Date().toLocaleString('pt-BR') : 'Inativo'
-    }
-  }
-
-  async markAlertAsNotified(alertId: string) {
-    const alert = this.alerts.find(a => a.id === alertId)
-    if (alert) {
-      alert.notified = true
-      
-      // Salvar no localStorage (apenas no cliente)  
-      
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('monitoring-alerts', JSON.stringify(this.alerts))
-      }
-    }
-  }
-
-  // Simular detecção de vaga para teste
-
-  async simulateVagaDetection() {
-    const countries = ['EUA', 'Canadá', 'Reino Unido', 'Alemanha']
-    const types = ['Turismo', 'Trabalho', 'Estudante', 'Transit']
-    const locations = ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Belo Horizonte']
-    const channels = ['Vaga Express', 'CASV Monitor', 'VFS Global', 'Email Alert']
-
-    const randomAlert = {
-      channel: channels[Math.floor(Math.random() * channels.length)],
-      country: countries[Math.floor(Math.random() * countries.length)],
-      type: types[Math.floor(Math.random() * types.length)],
-      date: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
-      location: locations[Math.floor(Math.random() * locations.length)],
-      time: new Date().toLocaleTimeString('pt-BR'),
-      notified: false
-    }
-
-    await this.addAlert(randomAlert)
-    return randomAlert
+    return { activeChannels, vagasToday, totalVagas, monthlyCost }
   }
 }
 

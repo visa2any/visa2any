@@ -127,18 +127,15 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    // 4. Criar registro de cobrança híbrida
-    const payment = await prisma.hybridPayment.create({
+    // 4. Criar registro de pagamento
+    const payment = await prisma.payment.create({
       data: {
         clientId: data.clientId,
-        country: data.country,
-        consulate: data.consulate,
-        availableDates: data.availableDates,
-        plan: data.plan,
-        urgency: data.urgency,
-        costs: costs,
+        amount: costs.total.withoutDiscount,
+        currency: 'BRL',
         status: 'PENDING',
-        expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+        description: `Agendamento de visto - ${data.country} - ${data.consulate}`,
+        dueDate: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
         createdAt: new Date()
       }
     })
@@ -173,7 +170,7 @@ export async function POST(request: NextRequest) {
         id: payment.id,
         costs: costs,
         paymentLinks: paymentLinks,
-        expiresAt: payment.expiresAt,
+        expiresAt: payment.dueDate,
         officialPaymentUrl: countryFees.officialPaymentUrl
       },
       client: {
@@ -201,7 +198,7 @@ export async function GET(request: NextRequest) {
     
     if (paymentId) {
       // Buscar pagamento específico
-      const payment = await prisma.hybridPayment.findUnique({
+      const payment = await prisma.payment.findUnique({
         where: { id: paymentId },
         include: {
           client: {
@@ -227,7 +224,7 @@ export async function GET(request: NextRequest) {
     
     if (clientId) {
       // Buscar pagamentos do cliente
-      const payments = await prisma.hybridPayment.findMany({
+      const payments = await prisma.payment.findMany({
         where: { clientId },
         orderBy: { createdAt: 'desc' },
         take: 10,
@@ -355,7 +352,16 @@ async function createMercadoPagoPreference(options: any) {
 }
 
 // Notificar consultor via Telegram
-async function notifyConsultant(data: any) {
+async function notifyConsultant(data: {
+  paymentId: string;
+  client: { name: string; email: string; phone: string | null };
+  country: string;
+  consulate: string;
+  plan: 'BASIC' | 'PREMIUM' | 'VIP';
+  urgency: 'NORMAL' | 'URGENT' | 'EMERGENCY';
+  costs: any;
+  availableDates: string[];
+}) {
   const urgencyEmoji = {
     'NORMAL': '⏰',
     'URGENT': '🚨',
@@ -368,11 +374,11 @@ async function notifyConsultant(data: any) {
     'VIP': '🥇'
   }
   
-  const message = `${urgencyEmoji[data.urgency]} COBRANÇA HÍBRIDA GERADA
+  const message = `${urgencyEmoji[data.urgency as keyof typeof urgencyEmoji]} COBRANÇA HÍBRIDA GERADA
 
-${planEmoji[data.plan]} Cliente: ${data.client.name}
+${planEmoji[data.plan as keyof typeof planEmoji]} Cliente: ${data.client.name}
 📧 Email: ${data.client.email}
-📱 WhatsApp: ${data.client.phone}
+📱 WhatsApp: ${data.client.phone || 'Não informado'}
 🎯 Plano: ${data.plan}
 
 🏛️ Destino: ${data.consulate} - ${data.country}

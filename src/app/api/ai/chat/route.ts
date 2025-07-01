@@ -433,67 +433,43 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
 async function getDocumentsResponse(country: string, clientName: string) {
   const countryLower = country.toLowerCase()
   
-  // Buscar requisitos na base de conhecimento
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
-      country: { contains: country },
+      country: { contains: countryLower },
       isActive: true
     }
   })
   
-  if (requirements) {
-    const docs = requirements.documents as any[]
-    const docList = docs.map(doc => `- ${doc.name} (${doc.required ? 'Obrigatório' : 'Opcional'})`).join('\n')
-    
+  if (requirements && requirements.requiredDocuments) {
+    const docs = requirements.requiredDocuments as any[];
+    const docList = docs.map(doc => `- ${doc.name} (${doc.required ? 'Obrigatório' : 'Opcional'})`).join('\n');
+
     return {
-      message: `Perfeito ${clientName}! Aqui estão os documentos para ${country}:
-
-📄 **Documentos Necessários:**
-${docList}
-
-⏱️ **Tempo de Processamento:** ${requirements.processingTime}
-💰 **Taxa Governamental:** ${(requirements.fees as any).government} ${(requirements.fees as any).currency}
-
-💡 **Dica:** Nosso serviço inclui:
-- ✅ Revisão de todos os documentos
-- ✅ Checklist personalizado  
-- ✅ Dicas para aumentar aprovação
-
-Quer uma análise completa do seu perfil?`,
+      message: `Olá ${clientName}! Para o visto de ${country}, os documentos essenciais são:\n\n${docList}\n\nLembre-se que esta é uma lista geral. Dependendo do seu perfil, outros documentos podem ser necessários.\n\nQuer que eu verifique se você já enviou algum desses?`,
       suggestions: [
-        'Fazer análise completa',
-        'Ver dicas de aprovação',
-        'Agendar consultoria',
-        'Outro país'
+        'Verificar meus documentos',
+        'O que é uma "prova de fundos"?',
+        'Preciso de tradução juramentada?',
+        'Falar com um consultor'
       ],
       actions: [{
-        type: 'start_analysis',
-        label: 'Iniciar Análise Completa'
+        type: 'check_my_documents',
+        label: 'Verificar Meus Documentos'
       }]
     }
   }
-  
-  // Resposta genérica se não tem dados específicos
-  const genericDocs = getGenericDocuments(countryLower)
-  
+
+  const genericDocs = getGenericDocuments(country)
   return {
-    message: `${clientName}, aqui estão os documentos típicos para ${country}:
-
-📄 **Documentos Comuns:**
-${genericDocs}
-
-⚠️ **Importante:** Os requisitos podem variar por tipo de visto e situação específica.
-
-💡 **Recomendação:** Faça nossa análise IA gratuita para ter uma lista personalizada dos documentos exatos que você precisa!`,
+    message: `Olá ${clientName}! Não encontrei uma lista de documentos específica para ${country} no momento.\n\nNo entanto, aqui estão os documentos geralmente necessários para processos de visto:\n\n${genericDocs}\n\nRecomendo fortemente falar com um de nossos consultores para obter a lista exata para o seu caso.`,
     suggestions: [
-      'Análise IA gratuita',
-      'Falar com especialista',
-      'Ver outros países',
-      'Mais informações'
+      'Agendar com consultor',
+      'Quais são os custos?',
+      'Quanto tempo demora?'
     ],
     actions: [{
-      type: 'start_analysis',
-      label: 'Análise Gratuita Agora'
+      type: 'schedule_consultation',
+      label: 'Agendar com Consultor'
     }]
   }
 }

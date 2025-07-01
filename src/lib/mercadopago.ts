@@ -160,8 +160,7 @@ export function mapPaymentStatus(mpStatus: string) {
 
 // Gerar código PIX (simulado para desenvolvimento)
 export function generatePixCode(amount: number, description: string) {
-  // Em produção
-  usar a API real do MercadoPago para PIX
+  // Em produção, usar a API real do MercadoPago para PIX
   const pixCode = `00020101021243650016COM.MERCADOLIVRE02013063204398735204000053039865802BR5925Visa2Any Assessoria Inter6009SAO PAULO62070503***6304${Math.random().toString(36).substr(2, 4).toUpperCase()}`
   
   return {

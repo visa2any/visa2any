@@ -62,7 +62,9 @@ export async function GET(
 
   } catch (error) {
     console.error('❌ Erro ao buscar post:', error)
-    console.error('Slug solicitado:', slug)
+    // slug pode não estar definido se o erro ocorrer antes da desestruturação
+    const slugInfo = (typeof params !== 'undefined' && params.slug) ? params.slug : undefined;
+    console.error('Slug solicitado:', slugInfo)
     return NextResponse.json(
       {
         error: 'Erro interno do servidor'

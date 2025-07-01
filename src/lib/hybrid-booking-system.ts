@@ -1,6 +1,5 @@
 // Sistema Híbrido de Agendamento
-// Combina parceiros
-scraping e APIs oficiais com fallback inteligente
+// Combina parceiros de scraping e APIs oficiais com fallback inteligente
 
 import { appointmentBookingService, BookingRequest, BookingResponse } from './appointment-booking'
 import { partnerIntegrationService, PartnerBookingRequest } from './partner-integrations'
@@ -14,27 +13,29 @@ interface HybridBookingOptions {
   budgetLimit?: number
 }
 
+interface AttemptResult {
+  method: string
+  provider: string
+  success: boolean
+  error?: string
+  cost?: number
+}
+
 interface HybridBookingResult {
   success: boolean
   method: string
   provider: string
   appointmentDetails?: {
-    id: string
-    confirmationCode: string
-    date: string
-    time: string
-    location: string
+    id?: string
+    confirmationCode?: string
+    date?: string
+    time?: string
+    location?: string
   }
   cost: number
   processingTime: string
   instructions: string
-  attempts: Array<{
-    method: string
-    provider: string
-    success: boolean
-    error?: string
-    cost?: number
-  }>
+  attempts: AttemptResult[]
   warnings?: string[]
   error?: string
 }
@@ -43,17 +44,16 @@ class HybridBookingSystem {
   private readonly methodPriority = {
     'official': 1,    // APIs oficiais (CASV, VFS)
     'partner': 2,     // Parceiros (VisaHQ, iVisa)
-    'scraping': 3     // Web scraping (último recurso)  }
+    'scraping': 3     // Web scraping (último recurso)
+  }
 
   // Método principal de agendamento híbrido
-
   async bookAppointment(
     request: BookingRequest, 
     options: HybridBookingOptions
   ): Promise<HybridBookingResult> {
-    const attempts: Array<any> = []
+    const attempts: AttemptResult[] = []
     const warnings: string[] = []
-    let finalResult: HybridBookingResult
 
     try {
       // Determinar ordem de tentativas baseada na preferência
@@ -83,16 +83,15 @@ class HybridBookingSystem {
           attempts.push({
             method,
             provider: result.provider || method,
-            success: result.success,
+            success: result.success || false,
             error: result.error,
             cost: result.cost
           })
 
           // Se teve sucesso
-
-          retornar resultado
           if (result.success) {
             return {
+              success: true,
               method,
               provider: result.provider || method,
               appointmentDetails: result.appointmentDetails,
@@ -104,9 +103,7 @@ class HybridBookingSystem {
             }
           }
 
-          // Se fallback está desabilitado
-
-          parar na primeira falha
+          // Se fallback está desabilitado, parar na primeira falha
           if (!options.fallbackEnabled) {
             break
           }
@@ -116,15 +113,15 @@ class HybridBookingSystem {
           attempts.push({
             method,
             provider: method,
-            error: `Erro técnico: ${error}`
+            success: false,
+            error: `Erro técnico: ${error instanceof Error ? error.message : String(error)}`
           })
         }
       }
 
-      // Se chegou aqui
-
-      todas as tentativas falharam
+      // Se chegou aqui, todas as tentativas falharam
       return {
+        success: false,
         method: 'none',
         provider: 'none',
         cost: 0,
@@ -137,19 +134,19 @@ class HybridBookingSystem {
 
     } catch (error) {
       return {
+        success: false,
         method: 'error',
         provider: 'error',
         cost: 0,
         processingTime: '',
         instructions: '',
         attempts,
-        error: `Erro crítico no sistema híbrido: ${error}`
+        error: `Erro crítico no sistema híbrido: ${error instanceof Error ? error.message : String(error)}`
       }
     }
   }
 
   // Tentar API oficial (CASV/VFS)
-
   private async tryOfficialAPI(request: BookingRequest): Promise<any> {
     try {
       const result = await appointmentBookingService.bookAppointment(request)
@@ -164,26 +161,27 @@ class HybridBookingSystem {
           time: result.time,
           location: result.location
         } : undefined,
-        cost: 0, // APIs oficiais geralmente não cobram taxa adicional,        processingTime: 'Imediato',
+        cost: 0, // APIs oficiais geralmente não cobram taxa adicional
+        processingTime: 'Imediato',
         instructions: result.instructions,
         error: result.error
       }
     } catch (error) {
       return {
+        success: false,
         provider: 'official_api',
-        error: `Erro na API oficial: ${error}`
+        error: `Erro na API oficial: ${error instanceof Error ? error.message : String(error)}`
       }
     }
   }
 
-  // Tentar parceiros (VisaHQ
-
-  iVisa)
+  // Tentar parceiros (VisaHQ, iVisa)
   private async tryPartnerAPI(request: BookingRequest, options: HybridBookingOptions): Promise<any> {
     try {
       // Converter formato de request
       const partnerRequest: PartnerBookingRequest = {
-        partnerId: '', // Será determinado automaticamente,        applicantInfo: request.applicantInfo,
+        partnerId: '', // Será determinado automaticamente
+        applicantInfo: request.applicantInfo,
         visaInfo: {
           country: this.extractCountryFromConsulate(request.consulate),
           visaType: request.visaType,
@@ -192,7 +190,6 @@ class HybridBookingSystem {
       }
 
       // Encontrar melhor parceiro
-
       const bestPartner = await partnerIntegrationService.findBestPartner(
         partnerRequest.visaInfo.country,
         partnerRequest.visaInfo.visaType,
@@ -201,15 +198,16 @@ class HybridBookingSystem {
 
       if (!bestPartner) {
         return {
+          success: false,
           provider: 'no_partner',
           error: 'Nenhum parceiro disponível'
         }
       }
 
       // Verificar limite de orçamento
-
       if (options.budgetLimit && bestPartner.pricing.perTransaction > options.budgetLimit) {
         return {
+          success: false,
           provider: bestPartner.name,
           error: `Custo (${bestPartner.pricing.perTransaction}) excede limite (${options.budgetLimit})`
         }
@@ -239,197 +237,90 @@ class HybridBookingSystem {
 
     } catch (error) {
       return {
+        success: false,
         provider: 'partner_api',
-        error: `Erro na API de parceiro: ${error}`
+        error: `Erro na API de parceiro: ${error instanceof Error ? error.message : String(error)}`
       }
     }
   }
 
   // Tentar web scraping (último recurso)
-
   private async tryWebScraping(request: BookingRequest, warnings: string[]): Promise<any> {
     try {
-      warnings.push('⚠️ Usando web scraping - pode violar ToS dos sites')
-      warnings.push('⚠️ Dados podem estar desatualizados')
-      warnings.push('⚠️ Método instável - use apenas como último recurso')
+      warnings.push('O Web Scraping é instável e pode não funcionar como esperado.')
+      const result = await webScrapingService.findAndBookSlot(
+        request.consulate,
+        request.visaType,
+        request.preferredDates
+      )
 
-      // Determinar target de scraping baseado no consulado
-
-      const targetId = this.getScrapingTarget(request.consulate)
-      
-      if (!targetId) {
-        return {
-          provider: 'scraping',
-          error: 'Target de scraping não disponível para este consulado'
-        }
-      }
-
-      // Buscar vagas via scraping
-
-      const result = await webScrapingService.scrapeAvailableSlots(targetId)
-      
-      if (!result.success || result.slots.length === 0) {
-        return {
-          provider: 'scraping',
-          error: result.error || 'Nenhuma vaga encontrada via scraping'
-        }
-      }
-
-      // Para web scraping
-
-      apenas retornamos as vagas encontradas
-      // NÃO fazemos agendamento real (muito arriscado)
-      const firstSlot = result.slots[0]
-      
       return {
-        provider: 'Web Scraping',
-        appointmentDetails: {
-          id: 'SCRAPING-' + Date.now(),
-          confirmationCode: 'MANUAL-BOOKING-REQUIRED',
-          date: firstSlot.date,
-          time: firstSlot.time,
-          location: firstSlot.location
-        },
-        cost: 0,
-        processingTime: 'Agendamento manual necessário',
-        instructions: `Vaga encontrada via scraping: ${firstSlot.date} às ${firstSlot.time}. ATENÇÃO: Você deve fazer o agendamento manualmente no site do consulado.`,
-        error: undefined
+        success: result.success,
+        provider: 'web_scraper',
+        appointmentDetails: result.success ? {
+          id: result.bookingReference,
+          confirmationCode: result.bookingReference,
+          date: result.bookedSlot?.date || 'A confirmar',
+          time: result.bookedSlot?.time || 'A confirmar',
+          location: result.bookedSlot?.location || 'A confirmar'
+        } : undefined,
+        cost: 25, // Custo simbólico do scraping
+        processingTime: '~5 minutos',
+        instructions: result.instructions || 'Confirmação pendente. Verifique seu email.',
+        error: result.error
       }
-
     } catch (error) {
       return {
-        provider: 'scraping',
-        error: `Erro no web scraping: ${error}`
+        success: false,
+        provider: 'web_scraper',
+        error: `Erro no Web Scraping: ${error instanceof Error ? error.message : String(error)}`
       }
     }
   }
+  
+  private determineMethodOrder(preference: HybridBookingOptions['preferredMethod']): string[] {
+    const priorityOrder = Object.keys(this.methodPriority).sort((a, b) => 
+      this.methodPriority[a as keyof typeof this.methodPriority] - 
+      this.methodPriority[b as keyof typeof this.methodPriority]
+    );
 
-  // Buscar vagas disponíveis em todos os métodos
-
-  async findAvailableSlots(country: string, visaType: string): Promise<{
-    official: any[]
-    partners: any[]
-    scraping: any[]
-    consolidated: any[]
-  }> {
-    const results = {
-      official: [],
-      partners: [],
-      scraping: [],
-      consolidated: []
+    if (preference === 'auto') {
+      return priorityOrder;
     }
-
-    try {
-      // Buscar via API oficial
-      try {
-        const officialSlots = await appointmentBookingService.getAvailableSlots(
-          this.getConsulateFromCountry(country), 
-          visaType
-        )
-        results.official = officialSlots
-      } catch (error) {
-        console.error('Erro ao buscar via API oficial:', error)
-      }
-
-      // Buscar via parceiros
-
-      try {
-        const partners = await partnerIntegrationService.getAvailablePartners(country)
-        for (const partner of partners.slice(0, 2)) { // Limitar a 2 parceiros,          // Simular busca de vagas (partners geralmente não expõem slots específicos)
-          results.partners.push({
-            provider: partner.name,
-            available: true,
-            processingTime: '1-5 business days',
-            cost: partner.pricing.perTransaction
-          })
-        }
-      } catch (error) {
-        console.error('Erro ao buscar via parceiros:', error)
-      }
-
-      // Buscar via scraping
-
-      try {
-        const targetId = this.getScrapingTarget(this.getConsulateFromCountry(country))
-        if (targetId) {
-          const scrapingResult = await webScrapingService.scrapeAvailableSlots(targetId)
-          if (scrapingResult.success) {
-            results.scraping = scrapingResult.slots
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar via scraping:', error)
-      }
-
-      // Consolidar resultados
-
-      results.consolidated = [
-        ...results.official.map(slot => ({ ...slot, source: 'official' })),
-        ...results.partners.map(slot => ({ ...slot, source: 'partner' })),
-        ...results.scraping.map(slot => ({ ...slot, source: 'scraping' }))
-      ]
-
-      return results
-
-    } catch (error) {
-      console.error('Erro na busca consolidada:', error)
-      return results
-    }
-  }
-
-  // Métodos auxiliares
-
-  private determineMethodOrder(preference: string): string[] {
-    switch (preference) {
-      case 'official':
-        return ['official', 'partner', 'scraping']
-      case 'partner':
-        return ['partner', 'official', 'scraping']
-      case 'scraping':
-        return ['scraping', 'partner', 'official']
-      case 'auto':
-      default:
-        return ['official', 'partner', 'scraping']
-    }
+    
+    // Coloca o método preferido no início, mantendo a ordem de prioridade para os outros
+    return [
+      preference,
+      ...priorityOrder.filter(p => p !== preference)
+    ];
   }
 
   private getOfficialProvider(consulate: string): string {
-    const providers: Record<string, string> = {
-      'usa': 'CASV (CGI Federal)',
-      'uk': 'VFS Global UK',
-      'canada': 'VFS Global Canada',
-      'germany': 'German Consulate',
-      'france': 'TLS Contact France'
+    if (consulate.includes('usa') || consulate.includes('american')) {
+      return 'CASV'
     }
-    return providers[consulate] || 'Official Consulate'
+    if (consulate.includes('uk') || consulate.includes('canada') || consulate.includes('germany')) {
+      return 'VFS Global'
+    }
+    if (consulate.includes('france')) {
+      return 'TLS Contact'
+    }
+    return 'Consulado Direto'
   }
 
   private extractCountryFromConsulate(consulate: string): string {
-    // Extrair país do identificador do consulado
-    if (consulate.includes('usa')) return 'usa'
-    if (consulate.includes('uk')) return 'uk'
-    if (consulate.includes('canada')) return 'canada'
-    if (consulate.includes('germany')) return 'germany'
-    if (consulate.includes('france')) return 'france'
-    return consulate
-  }
-
-  private getConsulateFromCountry(country: string): string {
-    return country // Simplificado para este exemplo  }
-
-  private getScrapingTarget(consulate: string): string | null {
-    const targets: Record<string, string> = {
-      'usa': 'casv_brazil',
-      'uk': 'vfs_sao_paulo',
-      'canada': 'consulado_canadense',
-      'germany': 'consulado_alemao',
-      'france': 'consulado_frances'
-    }
-    return targets[consulate] || null
+    const lowerConsulate = consulate.toLowerCase()
+    if (lowerConsulate.includes('usa') || lowerConsulate.includes('american')) return 'USA'
+    if (lowerConsulate.includes('uk') || lowerConsulate.includes('reino unido')) return 'United Kingdom'
+    if (lowerConsulate.includes('canada')) return 'Canada'
+    if (lowerConsulate.includes('germany') || lowerConsulate.includes('alemanha')) return 'Germany'
+    if (lowerConsulate.includes('france') || lowerConsulate.includes('frança')) return 'France'
+    if (lowerConsulate.includes('italy') || lowerConsulate.includes('itália')) return 'Italy'
+    if (lowerConsulate.includes('spain') || lowerConsulate.includes('espanha')) return 'Spain'
+    return 'Unknown'
   }
 }
 
-// Export singleton instance
 export const hybridBookingSystem = new HybridBookingSystem()
 
 // Types export

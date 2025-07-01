@@ -55,12 +55,24 @@ export async function POST(request: NextRequest) {
     
     switch (type) {
       case 'whatsapp':
+        if (!client.phone) {
+          return NextResponse.json(
+            { error: 'Telefone do cliente não disponível' },
+            { status: 400 }
+          )
+        }
         deliveryResult = await sendWhatsApp(client.phone, processedContent)
         break
       case 'email':
         deliveryResult = await sendEmail(client.email, subject || 'Mensagem da Visa2Any', processedContent)
         break
       case 'sms':
+        if (!client.phone) {
+          return NextResponse.json(
+            { error: 'Telefone do cliente não disponível' },
+            { status: 400 }
+          )
+        }
         deliveryResult = await sendSMS(client.phone, processedContent)
         break
       default:

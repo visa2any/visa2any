@@ -131,7 +131,7 @@ async function startNurturingSequence(params: {
   sequenceType: string
   sequence: any[]
   triggerData?: any
-  customSchedule?: any[]
+  customSchedule?: any[] | undefined
 }) {
   const { client, sequenceType, sequence, triggerData, customSchedule } = params
 

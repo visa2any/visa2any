@@ -42,7 +42,7 @@ class AppointmentBookingService {
     // CASV - EUA (Computer-generated Application Support Service)
     casv: {
       baseUrl: 'https://cgifederal.secure.force.com',
-    loginUrl: '/apex/login',
+      loginUrl: '/apex/login',
       appointmentUrl: '/apex/appointment',
       statusUrl: '/apex/status'
     },
@@ -50,63 +50,58 @@ class AppointmentBookingService {
     // VFS Global - Reino Unido, Canadá, Alemanha, França
     vfs: {
       baseUrl: 'https://visa.vfsglobal.com',
-    countriesUrl: '/countries',
+      countriesUrl: '/countries',
       appointmentUrl: '/appointment',
       scheduleUrl: '/schedule'
     },
     
     // TLS Contact - França
-    
-    Alemanha
     tls: {
       baseUrl: 'https://appointment.tlscontact.com',
-    appointmentUrl: '/appointment',
+      appointmentUrl: '/appointment',
       availabilityUrl: '/availability'
     },
     
     // Consulados diretos
-    
     direct: {
       germany: 'https://service2.diplo.de/rktermin/extern/choose_realmList.do',
-    france: 'https://france-visas.gouv.fr/en/web/france-visas',
-    italy: 'https://vistoperitalia.esteri.it',
-    spain: 'https://www.exteriores.gob.es/Consulados'
+      france: 'https://france-visas.gouv.fr/en/web/france-visas',
+      italy: 'https://vistoperitalia.esteri.it',
+      spain: 'https://www.exteriores.gob.es/Consulados'
     }
   }
 
   // CASV - Sistema dos EUA
-
   async bookUSAAppointment(request: BookingRequest): Promise<BookingResponse> {
     try {
       // Simulação da integração real com CASV
       console.log('Conectando ao CASV para agendamento EUA...')
       
       // 1. Login no sistema CASV
-      
       const loginResponse = await this.casvLogin()
       if (!loginResponse.success) {
+        return { success: false, error: 'Falha no login do CASV' }
       }
 
       // 2. Buscar vagas disponíveis
-
       const availableSlots = await this.getCASVAvailableSlots(request.consulate, request.visaType)
       
       // 3. Tentar reservar a melhor vaga
-      
       const selectedSlot = this.selectBestSlot(availableSlots, request.preferredDates)
       
       if (!selectedSlot) {
         return { 
+          success: false,
           error: 'Nenhuma vaga disponível nas datas preferidas. Próximas vagas: ' + 
                  availableSlots.slice(0, 3).map(s => s.date).join(', ')
         }
       }
 
       // 4. Confirmar agendamento
-
       const booking = await this.confirmCASVBooking(selectedSlot, request.applicantInfo)
       
       return {
+        success: true,
         appointmentId: booking.appointmentId,
         confirmationCode: booking.confirmationCode,
         date: selectedSlot.date,
@@ -118,35 +113,36 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento CASV:', error)
       return { 
+        success: false,
         error: 'Erro técnico no sistema CASV. Tente novamente em alguns minutos.' 
       }
     }
   }
 
   // VFS Global - Reino Unido
-
-  Canadá, Alemanha
   async bookVFSAppointment(request: BookingRequest): Promise<BookingResponse> {
     try {
       console.log('Conectando ao VFS Global...')
       
       // 1. Autenticação VFS
-      
-      const auth = await this.vfsAuthentication()
+      await this.vfsAuthentication()
       
       // 2. Buscar centros VFS disponíveis
-      
       const centers = await this.getVFSCenters(request.consulate)
       
       // 3. Verificar disponibilidade
-      
       const availability = await this.checkVFSAvailability(centers[0].id, request.visaType)
       
       // 4. Fazer reserva
+      const bestSlot = this.selectBestSlot(availability, request.preferredDates)
+      if (!bestSlot) {
+        return { success: false, error: 'Nenhuma vaga encontrada no VFS' }
+      }
       
-      const booking = await this.makeVFSBooking(availability[0], request.applicantInfo)
+      const booking = await this.makeVFSBooking(bestSlot, request.applicantInfo)
       
       return {
+        success: true,
         appointmentId: booking.reference,
         confirmationCode: booking.confirmationCode,
         date: booking.date,
@@ -158,14 +154,13 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento VFS:', error)
       return { 
+        success: false,
         error: 'Erro no sistema VFS Global. Verificando alternativas...' 
       }
     }
   }
 
   // TLS Contact - França
-
-  Alemanha
   async bookTLSAppointment(request: BookingRequest): Promise<BookingResponse> {
     try {
       console.log('Conectando ao TLS Contact...')
@@ -173,6 +168,7 @@ class AppointmentBookingService {
       const booking = await this.makeTLSBooking(request)
       
       return {
+        success: true,
         appointmentId: booking.id,
         confirmationCode: booking.reference,
         date: booking.date,
@@ -184,52 +180,48 @@ class AppointmentBookingService {
     } catch (error) {
       console.error('Erro no agendamento TLS:', error)
       return { 
+        success: false,
         error: 'Erro no sistema TLS Contact.' 
       }
     }
   }
 
   // Método principal que decide qual sistema usar
-
   async bookAppointment(request: BookingRequest): Promise<BookingResponse> {
     const { consulate, visaType } = request
 
     // Roteamento por país/consulado
-
     if (consulate.includes('usa') || consulate.includes('american')) {
-      return await this.bookUSAAppointment(request)
+      return this.bookUSAAppointment(request)
     }
     
     if (consulate.includes('uk') || consulate.includes('canada') || 
-        consulate.includes('germany') && visaType.includes('schengen')) {
-      return await this.bookVFSAppointment(request)
+        (consulate.includes('germany') && visaType.includes('schengen'))) {
+      return this.bookVFSAppointment(request)
     }
     
     if (consulate.includes('france') || 
         (consulate.includes('germany') && !visaType.includes('schengen'))) {
-      return await this.bookTLSAppointment(request)
+      return this.bookTLSAppointment(request)
     }
 
     // Sistema direto para outros consulados
-
-    return await this.bookDirectConsulate(request)
+    return this.bookDirectConsulate(request)
   }
 
   // Buscar vagas disponíveis sem fazer reserva
-
   async getAvailableSlots(consulate: string, visaType: string, nextDays: number = 60): Promise<AppointmentSlot[]> {
     try {
       if (consulate.includes('usa')) {
-        return await this.getCASVAvailableSlots(consulate, visaType)
+        return this.getCASVAvailableSlots(consulate, visaType)
       }
       
       if (consulate.includes('vfs')) {
         const centers = await this.getVFSCenters(consulate)
-        return await this.checkVFSAvailability(centers[0].id, visaType)
+        return this.checkVFSAvailability(centers[0].id, visaType)
       }
 
       // Simulação de vagas disponíveis
-
       return this.generateMockSlots(consulate, visaType, nextDays)
       
     } catch (error) {
@@ -239,7 +231,6 @@ class AppointmentBookingService {
   }
 
   // Cancelar agendamento
-
   async cancelAppointment(appointmentId: string, consulate: string): Promise<{ success: boolean; message: string }> {
     try {
       if (consulate.includes('usa')) {
@@ -249,13 +240,14 @@ class AppointmentBookingService {
       } else if (consulate.includes('tls')) {
         await this.cancelTLSAppointment(appointmentId)
       }
-
+      return { success: true, message: 'Agendamento cancelado com sucesso' }
     } catch (error) {
+      console.error(`Erro ao cancelar agendamento ${appointmentId}:`, error)
+      return { success: false, message: 'Falha ao cancelar agendamento' }
     }
   }
 
   // Reagendar
-
   async rescheduleAppointment(
     appointmentId: string, 
     newDate: string, 
@@ -267,7 +259,6 @@ class AppointmentBookingService {
       await this.cancelAppointment(appointmentId, consulate)
       
       // Criar novo agendamento
-      
       const mockRequest: BookingRequest = {
         applicantId: 'reschedule',
         consulate,
@@ -284,11 +275,11 @@ class AppointmentBookingService {
       
       return await this.bookAppointment(mockRequest)
     } catch (error) {
+      return { success: false, error: 'Erro ao reagendar' }
     }
   }
 
   // Métodos privados de implementação
-
   private async casvLogin(): Promise<{ success: boolean }> {
     // Implementação real conectaria com CASV
     await this.delay(1000) // Simula tempo de resposta
@@ -336,10 +327,11 @@ class AppointmentBookingService {
 
   private async makeTLSBooking(request: BookingRequest): Promise<any> {
     await this.delay(1800)
+    const preferredDate = request.preferredDates[0] || new Date().toISOString().split('T')[0]
     return {
       id: 'TLS-' + Date.now(),
       reference: 'TLS' + Math.random().toString(36).substr(2, 8).toUpperCase(),
-      date: request.preferredDates[0],
+      date: preferredDate,
       time: '09:00',
       location: 'TLS Contact São Paulo'
     }
@@ -347,10 +339,15 @@ class AppointmentBookingService {
 
   private async bookDirectConsulate(request: BookingRequest): Promise<BookingResponse> {
     await this.delay(2500)
+    const preferredDate = request.preferredDates[0]
+    if (!preferredDate) {
+      return { success: false, error: 'Nenhuma data preferida foi fornecida.' }
+    }
     return {
+      success: true,
       appointmentId: 'DIRECT-' + Date.now(),
       confirmationCode: 'DIR' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-      date: request.preferredDates[0],
+      date: preferredDate,
       time: '10:00',
       location: 'Consulado ' + request.consulate,
       instructions: 'Agendamento confirmado diretamente com o consulado.'
@@ -377,7 +374,6 @@ class AppointmentBookingService {
     }
     
     // Retorna primeira vaga disponível
-    
     return slots.find(s => s.available) || null
   }
 
@@ -385,10 +381,11 @@ class AppointmentBookingService {
     const slots: AppointmentSlot[] = []
     const today = new Date()
     
-    for (let i = 7; i < days; i++) { // Começa em 7 dias (tempo mínimo),      const date = new Date(today)
-      date.setDate(today.getDate() + i)
+    for (let i = 7; i < days; i++) { // Começa em 7 dias (tempo mínimo)
+      const currentDate = new Date(today)
+      currentDate.setDate(today.getDate() + i)
       
-      const dateStr = date.toISOString().split('T')[0]
+      const dateStr = currentDate.toISOString().split('T')[0]
       const times = ['09:00', '10:30', '14:00', '15:30']
       
       times.forEach((time, index) => {
@@ -408,7 +405,8 @@ class AppointmentBookingService {
       })
     }
     
-    return slots.filter(s => s.available).slice(0, 20) // Retorna até 20 vagas  }
+    return slots.filter(s => s.available).slice(0, 20) // Retorna até 20 vagas
+  }
 
   private getLocationByConsulate(consulate: string): string {
     const locations: Record<string, string> = {

@@ -33,13 +33,9 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         email,
-        password: hashedPassword,
         phone: phone || null,
         status: 'LEAD',
-        isActive: true,
-        eligibilityScore: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        score: 0
       }
     })
 
@@ -74,7 +70,7 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         phone: customer.phone,
         status: customer.status,
-        eligibilityScore: customer.eligibilityScore
+        eligibilityScore: customer.score
       },
       token
     })

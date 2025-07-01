@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         trending: trending || false,
         published: true,
         publishDate: new Date(),
-        readTime: calculateReadTime(content),
+        readTime: calculateReadTime(content).toString(),
         views: 0,
         likes: 0,
         comments: 0,
@@ -92,7 +92,6 @@ export async function POST(request: NextRequest) {
       data: {
         id: newPost.id,
         title: newPost.title,
-        slug: newPost.slug,
         published: newPost.published,
         urgent: newPost.urgent,
         trending: newPost.trending,

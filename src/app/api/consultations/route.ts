@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth, createAuthError } from '@/lib/auth'
 import { z } from 'zod'
+import { PrismaClient, ConsultationStatus } from '@prisma/client'
 
 // Schema para criar consultoria
 const createConsultationSchema = z.object({
@@ -136,14 +137,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Converter campos opcionais undefined para null
+    const dataToCreate = {
+      clientId: validatedData.clientId,
+      type: validatedData.type,
+      scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
+      duration: validatedData.duration || 60, // Default 1 hora
+      status: validatedData.scheduledAt ? ConsultationStatus.SCHEDULED : ConsultationStatus.IN_PROGRESS,
+      notes: validatedData.notes ?? null,
+      consultantId: validatedData.consultantId ?? null
+    };
+
     // Criar consultoria
     const consultation = await prisma.consultation.create({
-      data: {
-        ...validatedData,
-        scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : null,
-        duration: validatedData.duration || 60, // Default 1 hora
-        status: validatedData.scheduledAt ? 'SCHEDULED' : 'IN_PROGRESS'
-      },
+      data: dataToCreate,
       include: {
         client: {
           select: { 

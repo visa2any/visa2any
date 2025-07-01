@@ -21,6 +21,7 @@ function decodeJWTUnsafe(token: string) {
     if (parts.length !== 3) return null
     
     const payload = parts[1]
+    if(!payload) return null;
     const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
     return decoded
   } catch {
@@ -32,17 +33,14 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 🚀 Inicializar serviços automaticamente na primeira requisição
-
   initializeServicesAsync()
 
   // ✅ Log apenas em desenvolvimento
-
   if (process.env.NODE_ENV === 'development') {
     console.log('🛡️ Middleware verificando:', pathname)
   }
 
   // Redirecionamentos para páginas duplicadas/depreciadas
-
   const redirects: Record<string, string> = {
     '/page-simple': '/',
     '/page-original': '/',
@@ -59,14 +57,16 @@ export function middleware(request: NextRequest) {
   }
 
   // Pular verificação para rotas que não precisam de auth
+  const isPublicRoute =
+    pathname.includes('/login') ||
+    pathname.includes('/unauthorized') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api/auth/login') ||
+    pathname.startsWith('/api/auth/register') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/api/dashboard')
 
-  if (pathname.includes('/login') || 
-      pathname.includes('/unauthorized') ||
-      pathname.startsWith('/_next') ||
-      pathname.startsWith('/api/auth/login') ||
-      pathname.startsWith('/api/auth/register') ||
-      pathname.startsWith('/favicon') ||
-      pathname.startsWith('/api/dashboard')) {
+  if (isPublicRoute) {
     if (process.env.NODE_ENV === 'development') {
       console.log('✅ Rota liberada sem auth:', pathname)
     }
@@ -74,7 +74,6 @@ export function middleware(request: NextRequest) {
   }
 
   // Apenas proteger rotas admin específicas
-
   if (pathname.startsWith('/admin')) {
     if (process.env.NODE_ENV === 'development') {
       console.log('🔒 Verificando auth para rota admin:', pathname)
@@ -94,11 +93,11 @@ export function middleware(request: NextRequest) {
     const token = authHeader?.replace('Bearer ', '') || cookieToken || backupToken
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('🍪 Auth header presente:', authHeader ? 'SIM' : 'NÃO')
-      console.log('🍪 Cookie token presente:', cookieToken ? 'SIM' : 'NÃO')
-      console.log('🍪 Backup token presente:', backupToken ? 'SIM' : 'NÃO')
-      console.log('🍪 Token final encontrado:', token ? 'SIM' : 'NÃO')
-      // Removido log de cookies por segurança    }
+      console.log('🍪 Auth header presente:', !!authHeader)
+      console.log('🍪 Cookie token presente:', !!cookieToken)
+      console.log('🍪 Backup token presente:', !!backupToken)
+      console.log('🍪 Token final encontrado:', !!token)
+    }
 
     if (!token) {
       if (process.env.NODE_ENV === 'development') {
@@ -141,10 +140,11 @@ export function middleware(request: NextRequest) {
       return addSecurityHeaders(NextResponse.next())
 
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       if (process.env.NODE_ENV === 'development') {
-        console.log('❌ Erro ao processar token:', error.message)
+        console.log('❌ Erro ao processar token:', errorMessage)
       } else {
-        console.error('Auth middleware error:', error.message)
+        console.error('Auth middleware error:', errorMessage)
       }
       const loginUrl = new URL('/admin/login', request.url)
       return NextResponse.redirect(loginUrl)

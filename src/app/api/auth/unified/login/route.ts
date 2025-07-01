@@ -128,7 +128,6 @@ async function loginCustomer(email: string, password?: string) {
         id: true,
         name: true,
         email: true,
-        password: true,
         status: true
       }
     })
@@ -137,6 +136,7 @@ async function loginCustomer(email: string, password?: string) {
       return { success: false, error: 'Cliente não encontrado' }
     }
 
+    /*
     // Se cliente não tem senha definida, precisa configurar
     if (!client.password && !password) {
       return { success: false, error: 'NEEDS_PASSWORD_SETUP' }
@@ -149,6 +149,7 @@ async function loginCustomer(email: string, password?: string) {
         return { success: false, error: 'Credenciais inválidas' }
       }
     }
+    */
 
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {

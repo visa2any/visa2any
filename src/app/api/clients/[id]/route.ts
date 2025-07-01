@@ -107,6 +107,11 @@ export async function PATCH(
     // Validar dados
     const validatedData = updateClientSchema.parse(body)
 
+    // Remover assignedUserId se não for uma string válida
+    if (typeof validatedData.assignedUserId !== 'string') {
+      delete validatedData.assignedUserId;
+    }
+
     // Verificar se cliente existe
     const existingClient = await prisma.client.findUnique({
       where: { id }
@@ -119,10 +124,15 @@ export async function PATCH(
       )
     }
 
+    // Filtrar campos undefined
+    const dataToUpdate = Object.fromEntries(
+      Object.entries(validatedData).filter(([_, v]) => v !== undefined)
+    );
+
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
       where: { id },
-      data: validatedData,
+      data: dataToUpdate,
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true }
@@ -186,6 +196,11 @@ export async function PUT(
     // Validar dados
     const validatedData = updateClientSchema.parse(body)
 
+    // Remover assignedUserId se não for uma string válida
+    if (typeof validatedData.assignedUserId !== 'string') {
+      delete validatedData.assignedUserId;
+    }
+
     // Verificar se cliente existe
     const existingClient = await prisma.client.findUnique({
       where: { id }
@@ -198,10 +213,15 @@ export async function PUT(
       )
     }
 
+    // Filtrar campos undefined
+    const dataToUpdate = Object.fromEntries(
+      Object.entries(validatedData).filter(([_, v]) => v !== undefined)
+    );
+
     // Atualizar cliente
     const updatedClient = await prisma.client.update({
       where: { id },
-      data: validatedData,
+      data: dataToUpdate,
       include: {
         assignedUser: {
           select: { id: true, name: true, email: true }

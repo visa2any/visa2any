@@ -178,10 +178,7 @@ async function performAdvancedDocumentAnalysis(document: any) {
     const analysisResult = await analyzeByDocumentType(document, ocrResult)
     
     // Validação cruzada com requisitos do país
-    const countryValidation = await validateAgainstCountryRequirements(
-      document, 
-      analysisResult
-    )
+    const countryValidation = await validateAgainstCountryRequirements(document, analysisResult)
     
     // Detecção de fraudes/problemas
     const fraudDetection = await detectPotentialIssues(document, ocrResult, analysisResult)
@@ -505,66 +502,78 @@ async function analyzeGenericDocument(document: any, ocrResult: any) {
 
 // Validar contra requisitos do país
 async function validateAgainstCountryRequirements(document: any, analysisResult: any) {
-  if (!document.client?.targetCountry) {
-    return {
-      isValid: true,
-      needsReview: true,
-      confidence: 0.7,
-      countrySpecificIssues: ['País de destino não especificado']
+  try {
+    if (!document.client?.targetCountry || !document.client?.visaType) {
+      return {
+        isValid: true, // Cannot validate, so assume it's valid for now
+        needsReview: true,
+        confidence: 0.7,
+        notes: ['País de destino ou tipo de visto não definido no perfil do cliente.']
+      }
     }
-  }
-  
-  // Buscar requisitos específicos
-  const requirements = await prisma.visaRequirement.findFirst({
-    where: {
-      country: { contains: document.client.targetCountry },
-      isActive: true
+
+    const requirements = await prisma.visaRequirement.findFirst({
+      where: {
+        country: { contains: document.client.targetCountry },
+        visaType: { contains: document.client.visaType },
+        isActive: true
+      }
+    })
+
+    if (!requirements) {
+      return {
+        isValid: true,
+        needsReview: true,
+        confidence: 0.6,
+        notes: [`Nenhum requisito de visto encontrado para ${document.client.targetCountry} - ${document.client.visaType}.`]
+      }
     }
-  })
-  
-  if (!requirements) {
-    return {
-      isValid: true,
-      needsReview: true,
-      confidence: 0.7,
-      countrySpecificIssues: ['Requisitos específicos não encontrados']
+
+    const requiredDocs = requirements.requiredDocuments as any[]
+    const relevantDoc = requiredDocs.find(doc => doc.type === document.type)
+
+    if (!relevantDoc) {
+      return {
+        isValid: true, // Not a required doc, so it's "valid" in this context
+        needsReview: false,
+        confidence: 1.0,
+        notes: [`Este documento (${document.type}) não parece ser um requisito padrão.`]
+      }
     }
-  }
-  
-  const requiredDocs = requirements.documents as any[]
-  const relevantDoc = requiredDocs.find(doc => doc.type === document.type)
-  
-  if (!relevantDoc) {
+
+    // Comparar dados extraídos com os requisitos
+    // Exemplo: Validade do passaporte
+    if (document.type === 'PASSPORT' && analysisResult.extractedData.expiryDate) {
+      const expiryDate = new Date(analysisResult.extractedData.expiryDate)
+      const minValidityMonths = relevantDoc.minValidityMonths || 6
+      const minExpiryDate = new Date()
+      minExpiryDate.setMonth(minExpiryDate.getMonth() + minValidityMonths)
+
+      if (expiryDate < minExpiryDate) {
+        return {
+          isValid: false,
+          needsReview: true,
+          confidence: 0.9,
+          notes: [`Passaporte expira em menos de ${minValidityMonths} meses. Validade: ${expiryDate.toLocaleDateString()}`]
+        }
+      }
+    }
+
     return {
       isValid: true,
       needsReview: false,
-      confidence: 0.8,
-      countrySpecificIssues: []
+      confidence: 0.95,
+      notes: ['Documento parece estar de acordo com os requisitos do país.']
     }
-  }
-  
-  const issues: string[] = []
-  
-  // Verificar validade específica
-  if (relevantDoc.validityMonths && document.type === 'PASSPORT') {
-    const extractedData = analysisResult.extractedData
-    if (extractedData.expiryDate) {
-      const expiryDate = new Date(extractedData.expiryDate.split('/').reverse().join('-'))
-      const requiredValidUntil = new Date()
-      requiredValidUntil.setMonth(requiredValidUntil.getMonth() + relevantDoc.validityMonths)
-      
-      if (expiryDate < requiredValidUntil) {
-        issues.push(`Passaporte deve ser válido por pelo menos ${relevantDoc.validityMonths} meses`)
-      }
+
+  } catch (error) {
+    console.error('Erro na validação contra requisitos:', error)
+    return {
+      isValid: false,
+      needsReview: true,
+      confidence: 0,
+      notes: ['Erro ao validar documento contra requisitos do país.']
     }
-  }
-  
-  return {
-    isValid: issues.length === 0,
-    needsReview: issues.length > 0,
-    confidence: issues.length === 0 ? 0.9 : 0.6,
-    countrySpecificIssues: issues,
-    requirement: relevantDoc
   }
 }
 
@@ -622,8 +631,8 @@ function generateRecommendations(analysisResult: any, countryValidation: any, fr
   }
   
   // Adicionar recomendações de validação do país
-  if (countryValidation.countrySpecificIssues?.length > 0) {
-    recommendations.push('Verificar requisitos específicos do país de destino')
+  if (countryValidation.notes?.length > 0) {
+    recommendations.push(...countryValidation.notes)
   }
   
   // Adicionar recomendações de segurança
@@ -646,8 +655,8 @@ function generateValidationNotes(analysisResult: any, countryValidation: any, fr
     notes.push(`Análise técnica: ${analysisResult.issues.join(', ')}`)
   }
   
-  if (countryValidation.countrySpecificIssues?.length > 0) {
-    notes.push(`Requisitos do país: ${countryValidation.countrySpecificIssues.join(', ')}`)
+  if (countryValidation.notes?.length > 0) {
+    notes.push(...countryValidation.notes)
   }
   
   if (fraudDetection.warnings?.length > 0) {
