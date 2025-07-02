@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       where: { id: validatedData.clientId },
       include: {
         documents: {
-          where: { status: { in: ['UPLOADED', 'PROCESSED', 'VERIFIED'] } }
+          where: { status: { in: ['VALID', 'NEEDS_REVIEW'] } }
         },
         consultations: {
           orderBy: { createdAt: 'desc' },
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
     
     const assessments = await prisma.automationLog.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { executedAt: 'desc' },
       take: 20
     })
 
@@ -164,21 +164,28 @@ export async function GET(request: NextRequest) {
 
     const trends = analyzeQualityTrends(assessments)
 
+    // Calcular scores para média
+    const scores = assessments.map(a =>
+      typeof a.details === 'object' && a.details !== null && !Array.isArray(a.details)
+        ? Number(a.details.overallScore) || 0
+        : 0
+    );
+    const averageScore = scores.length ? scores.reduce((sum, n) => sum + n, 0) / scores.length : 0;
+
     return NextResponse.json({
       data: {
         assessments: assessments.map(a => ({
           id: a.id,
           type: a.action?.replace('quality_', ''),
-          overallScore: a.details?.overallScore || 0,
-          readinessLevel: a.details?.readinessLevel,
-          criticalIssues: a.details?.criticalIssues || 0,
-          createdAt: a.createdAt
-        })),
+          overallScore: typeof a.details === 'object' && a.details !== null && !Array.isArray(a.details) ? a.details.overallScore || 0 : 0,
+          readinessLevel: typeof a.details === 'object' && a.details !== null && !Array.isArray(a.details) ? a.details.readinessLevel : undefined,
+          criticalIssues: typeof a.details === 'object' && a.details !== null && !Array.isArray(a.details) ? a.details.criticalIssues || 0 : 0,
+          createdAt: a.executedAt})),
         trends: trends,
         summary: {
           totalAssessments: assessments.length,
-          averageScore: assessments.reduce((sum, a) => sum + (a.details?.overallScore || 0), 0) / assessments.length || 0,
-          latestReadinessLevel: assessments[0]?.details?.readinessLevel || 'unknown'
+          averageScore,
+          latestReadinessLevel: typeof assessments[0]?.details === 'object' && assessments[0]?.details !== null && !Array.isArray(assessments[0]?.details) ? assessments[0]?.details.readinessLevel : 'unknown'
         }
       }
     })
@@ -408,6 +415,7 @@ async function assessDocumentQuality(documents: any[], criteria: any) {
       message: 'Documents meet high quality standards'
     })
   }
+  
   return assessment
 }
 
@@ -499,6 +507,7 @@ function assessClientProfile(client: any) {
       message: 'Profile is comprehensive and complete'
     })
   }
+  
   return assessment
 }
 
@@ -529,7 +538,7 @@ async function assessCompliance(client: any, criteria: any) {
       return totalResults > 0 ? (validResults / totalResults) * 100 : 100
     })
     
-    assessment.metrics.documentCompliance = validationScores.reduce((sum, score) => sum + score, 0) / validationScores.length
+    assessment.metrics.documentCompliance = validationScores.reduce((sum: number, score: number) => sum + score, 0) / validationScores.length
   } else {
     assessment.metrics.documentCompliance = 50 // Penalizar falta de validação
   }
@@ -554,6 +563,7 @@ async function assessCompliance(client: any, criteria: any) {
   else if (assessment.score < 80) assessment.metrics.riskLevel = 'medium'
   else assessment.metrics.riskLevel = 'low'
 
+  
   return assessment
 }
 
@@ -577,6 +587,7 @@ function assessApplicationStrategy(client: any) {
   assessment.metrics.timelineRealism = 70
   assessment.metrics.preparationLevel = 75
 
+  
   return assessment
 }
 
@@ -599,8 +610,7 @@ async function generateQualityReport(assessment: any, client: any, assessmentTyp
       readinessLevel: assessment.readinessLevel,
       totalIssues: assessment.issues.length,
       criticalIssues: assessment.issues.filter((i: any) => i.severity === 'critical').length,
-      recommendations: assessment.recommendations.length
-    },
+      recommendations: assessment.recommendations.length},
     breakdown: assessment.breakdown,
     issues: groupIssuesBySeverity(assessment.issues),
     strengths: assessment.strengths,
@@ -622,7 +632,7 @@ function groupIssuesBySeverity(issues: any[]) {
 
 // Outras funções auxiliares
 function generateActionChecklist(assessment: any, assessmentType: string) {
-  const checklist = []
+  const checklist: any[] = []
   
   // Ações críticas
   const criticalIssues = assessment.issues.filter((i: any) => i.severity === 'critical')
@@ -648,6 +658,7 @@ function generateActionChecklist(assessment: any, assessmentType: string) {
     })
   })
   
+  
   return checklist
 }
 function calculateReadinessScore(assessment: any) {
@@ -657,6 +668,7 @@ function calculateReadinessScore(assessment: any) {
     'needs_work': 60,
     'not_ready': 30
   }
+  
   
   return readinessLevels[assessment.readinessLevel as keyof typeof readinessLevels] || 0
 }
@@ -696,6 +708,7 @@ function generateQualityTimeline(assessment: any) {
     description: 'Final quality check and submission preparation'
   })
   
+  
   return timeline
 }
 function generateQualityNextSteps(assessment: any, assessmentType: string) {
@@ -718,6 +731,7 @@ function generateQualityNextSteps(assessment: any, assessmentType: string) {
     steps.push('🛑 Submission not recommended at this time')
     steps.push('🤝 Urgent consultation required')
   }
+  
   
   return steps
 }
