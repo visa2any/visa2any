@@ -11,8 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Get client information
 
@@ -20,24 +19,19 @@ export async function POST(request: NextRequest) {
     try {
       client = await prisma.client.findUnique({
         where: { id: clientId },
-        select: { id: true, name: true, email: true, phone: true }
-      })
-    } catch (error) {
+        select: { id: true, name: true, email: true, phone: true }})} catch (error) {
       // If client not found in database, use mock data
       client = {
         id: clientId,
         name: 'Cliente',
         email: 'cliente@email.com',
-        phone: '+5511999999999'
-      }
-    }
+        phone: '+5511999999999'}
     
     if (!client) {
       return NextResponse.json(
         { error: 'Cliente não encontrado' },
         { status: 404 }
-      )
-    }
+      )}
 
     // Process template if provided
 
@@ -47,8 +41,7 @@ export async function POST(request: NextRequest) {
         .replace(/{nome}/g, client.name)
         .replace(/{email}/g, client.email)
         .replace(/{data}/g, new Date().toLocaleDateString('pt-BR'))
-        .replace(/{hora}/g, new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-    }
+        .replace(/{hora}/g, new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))}
 
     // Simulate different communication channels
     let deliveryResult: any
@@ -59,8 +52,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Telefone do cliente não disponível' },
             { status: 400 }
-          )
-        }
+          )}
         deliveryResult = await sendWhatsApp(client.phone, processedContent)
         break
       case 'email':
@@ -71,23 +63,20 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Telefone do cliente não disponível' },
             { status: 400 }
-          )
-        }
+          )}
         deliveryResult = await sendSMS(client.phone, processedContent)
         break
       default:
         return NextResponse.json(
           { error: 'Tipo de comunicação inválido' },
           { status: 400 }
-        )
-    }
+        )}
     
     if (!deliveryResult.success) {
       return NextResponse.json(
         { error: 'Falha no envio da mensagem' },
         { status: 500 }
-      )
-    }
+      )}
 
     // Create communication record
 
@@ -108,9 +97,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         templateUsed: template,
         sentAt: new Date().toISOString(),
-        channel: type
-      }
-    }
+        channel: type}
 
     // Here you would save to database
     // await saveCommunicationRecord(communicationRecord)
@@ -118,17 +105,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       messageId: deliveryResult.messageId,
       status: deliveryResult.status,
-      communication: communicationRecord
-    })
+      communication: communicationRecord})
 
   } catch (error) {
     console.error('Send message error:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Simulated communication functions
 async function sendWhatsApp(phone: string, message: string) {
@@ -137,9 +121,7 @@ async function sendWhatsApp(phone: string, message: string) {
   return {
     messageId: `wa_${Date.now()}`,
     status: 'sent',
-    success: true
-  }
-}
+    success: true}
 
 async function sendEmail(email: string, subject: string, content: string) {
   // Simulate Email API call
@@ -147,9 +129,7 @@ async function sendEmail(email: string, subject: string, content: string) {
   return {
     messageId: `email_${Date.now()}`,
     status: 'sent',
-    success: true
-  }
-}
+    success: true}
 
 async function sendSMS(phone: string, message: string) {
   // Simulate SMS API call
@@ -157,6 +137,4 @@ async function sendSMS(phone: string, message: string) {
   return {
     messageId: `sms_${Date.now()}`,
     status: 'sent',
-    success: true
-  }
-}
+    success: true}
