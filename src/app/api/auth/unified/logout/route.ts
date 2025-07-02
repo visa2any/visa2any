@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.json({
-      message: 'Logout realizado com sucesso'})
+      message: 'Logout realizado com sucesso'
+    })
 
     // Remover cookie de autenticação
     response.cookies.set('auth-token', '', {
@@ -11,7 +12,8 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 0,
-      path: '/'})
+      path: '/'
+    })
 
     return response
 
@@ -20,4 +22,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
