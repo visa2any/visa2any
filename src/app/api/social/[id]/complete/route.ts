@@ -8,13 +8,13 @@ export async function PATCH(
   try {
     const { id } = params
     const body = await request.json()
-const { status, engagement } = body
+    const { status, engagement } = body
 
     const socialPost = await prisma.socialPost.update({
       where: { id },
       data: {
         status: status === 'published' ? 'PUBLISHED' : status.toUpperCase(),
-        publishedAt: status === 'published' ? new Date() : undefined,
+        publishedAt: status === 'published' ? new Date() : null,
         engagement: engagement || undefined,
         updatedAt: new Date()
       }

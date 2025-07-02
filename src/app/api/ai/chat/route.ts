@@ -10,9 +10,7 @@ const chatMessageSchema = z.object({
   context: z.object({
     targetCountry: z.string().optional(),
     visaType: z.string().optional(),
-    currentStep: z.string().optional()
-  }).optional()
-})
+    currentStep: z.string().optional()}).optional()})
 
 // POST /api/ai/chat - Conversar com Sofia IA
 export async function POST(request: NextRequest) {
@@ -28,14 +26,9 @@ export async function POST(request: NextRequest) {
         include: {
           consultations: {
             orderBy: { createdAt: 'desc' },
-            take: 1
-          },
+            take: 1},
           documents: {
-            select: { type: true, status: true }
-          }
-        }
-      })
-    }
+            select: { type: true, status: true }}}})}
 
     // Processar mensagem com Sofia IA
     const sofiaResponse = await processSofiaMessage(
@@ -54,10 +47,7 @@ export async function POST(request: NextRequest) {
           content: validatedData.message,
           response: sofiaResponse.message,
           clientId: validatedData.clientId,
-          completedAt: new Date()
-        }
-      })
-    }
+          completedAt: new Date()}})}
 
     // Log da conversa
     await prisma.automationLog.create({
@@ -69,10 +59,7 @@ export async function POST(request: NextRequest) {
         details: {
           message: validatedData.message,
           intent: sofiaResponse.intent,
-          confidence: sofiaResponse.confidence
-        }
-      }
-    })
+          confidence: sofiaResponse.confidence}}})
 
     return NextResponse.json({
       data: {
@@ -81,28 +68,22 @@ export async function POST(request: NextRequest) {
         confidence: sofiaResponse.confidence,
         suggestions: sofiaResponse.suggestions,
         actions: sofiaResponse.actions,
-        conversationId: sofiaResponse.conversationId
-      }
-    })
+        conversationId: sofiaResponse.conversationId}})
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
 
     console.error('Erro no chat com Sofia:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // GET /api/ai/chat/intents - Listar intenções disponíveis
 export async function GET(request: NextRequest) {
@@ -110,17 +91,14 @@ export async function GET(request: NextRequest) {
     const intents = getSofiaIntents()
 
     return NextResponse.json({
-      data: { intents }
-    })
+      data: { intents }})
 
   } catch (error) {
     console.error('Erro ao buscar intenções:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função principal da Sofia IA
 async function processSofiaMessage(message: string, clientContext: any, context: any) {
@@ -136,9 +114,7 @@ async function processSofiaMessage(message: string, clientContext: any, context:
     confidence: intent.confidence,
     suggestions: response.suggestions,
     actions: response.actions,
-    conversationId: generateConversationId()
-  }
-}
+    conversationId: generateConversationId()}
 
 // Detectar intenção da mensagem
 function detectIntent(message: string) {
@@ -155,17 +131,13 @@ function detectIntent(message: string) {
     for (const keyword of intentData.keywords) {
       if (lowercaseMessage.includes(keyword.toLowerCase())) {
         score += 1
-        matchedKeywords.push(keyword)
-      }
-    }
+        matchedKeywords.push(keyword)}
     
     // Verificar patterns
     for (const pattern of intentData.patterns) {
       const regex = new RegExp(pattern, 'i')
       if (regex.test(lowercaseMessage)) {
-        score += 2
-      }
-    }
+        score += 2}
     
     // Calcular confiança
     const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
@@ -174,13 +146,9 @@ function detectIntent(message: string) {
       bestMatch = {
         name: intentName,
         confidence,
-        keywords: matchedKeywords
-      }
-    }
-  }
+        keywords: matchedKeywords}}
   
-  return bestMatch
-}
+  return bestMatch}
 
 // Gerar resposta da Sofia
 async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {
@@ -197,8 +165,7 @@ async function generateSofiaResponse(intent: any, message: string, clientContext
           'Quanto custa o processo?',
           'Quanto tempo demora?'
         ],
-        actions: []
-      }
+        actions: []}
     
     case 'eligibility_question':
       if (clientContext) {
@@ -227,11 +194,7 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
             actions: [{
               type: 'start_analysis',
               label: 'Iniciar Análise Completa',
-              clientId: clientContext.id
-            }]
-          }
-        }
-      }
+              clientId: clientContext.id}]}}
       
       return {
         message: `Claro! Para analisar sua elegibilidade, preciso conhecer melhor seu perfil.
@@ -250,14 +213,12 @@ Essas informações me ajudam a dar uma análise mais precisa!`,
           'Portugal',
           'Estados Unidos'
         ],
-        actions: []
-      }
+        actions: []}
     
     case 'documents_question':
       const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)
       if (country) {
-        return await getDocumentsResponse(country, clientName)
-      }
+        return await getDocumentsResponse(country, clientName)}
       
       return {
         message: `Para te ajudar com os documentos, preciso saber para qual país você está aplicando.
@@ -271,8 +232,7 @@ Os documentos variam significativamente entre países:
 
 Para qual país você está interessado?`,
         suggestions: ['Canadá', 'Austrália', 'Portugal', 'Estados Unidos'],
-        actions: []
-      }
+        actions: []}
     
     case 'cost_question':
       return {
@@ -309,9 +269,7 @@ Qual pacote faz mais sentido para você?`,
         ],
         actions: [{
           type: 'show_pricing',
-          label: 'Ver Detalhes dos Pacotes'
-        }]
-      }
+          label: 'Ver Detalhes dos Pacotes'}]}
     
     case 'timeline_question':
       return {
@@ -340,8 +298,7 @@ Para qual país você está pensando?`,
           'Austrália - quero detalhes',
           'Estados Unidos'
         ],
-        actions: []
-      }
+        actions: []}
     
     case 'contact_human':
       return {
@@ -371,9 +328,7 @@ Qual opção prefere?`,
         ],
         actions: [{
           type: 'contact_specialist',
-          label: 'Falar com Especialista Agora'
-        }]
-      }
+          label: 'Falar com Especialista Agora'}]}
     
     case 'complaint':
       return {
@@ -400,9 +355,7 @@ Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução
         ],
         actions: [{
           type: 'escalate_complaint',
-          label: 'Falar com Gerente Agora'
-        }]
-      }
+          label: 'Falar com Gerente Agora'}]}
     
     default:
       return {
@@ -424,10 +377,7 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
           'Consultar custos',
           'Falar com especialista'
         ],
-        actions: []
-      }
-  }
-}
+        actions: []}}
 
 // Obter resposta sobre documentos por país
 async function getDocumentsResponse(country: string, clientName: string) {
@@ -436,9 +386,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: countryLower },
-      isActive: true
-    }
-  })
+      isActive: true}})
   
   if (requirements && requirements.requiredDocuments) {
     const docs = requirements.requiredDocuments as any[];
@@ -454,10 +402,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
       ],
       actions: [{
         type: 'check_my_documents',
-        label: 'Verificar Meus Documentos'
-      }]
-    }
-  }
+        label: 'Verificar Meus Documentos'}]}
 
   const genericDocs = getGenericDocuments(country)
   return {
@@ -469,10 +414,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
     ],
     actions: [{
       type: 'schedule_consultation',
-      label: 'Agendar com Consultor'
-    }]
-  }
-}
+      label: 'Agendar com Consultor'}]}
 
 // Documentos genéricos por país
 function getGenericDocuments(country: string): string {
@@ -504,15 +446,13 @@ function getGenericDocuments(country: string): string {
 - Formulários específicos (I-140, etc)
 - Evidências de habilidade extraordinária
 - Cartas de recomendação
-- Histórico profissional detalhado`
-  }
+- Histórico profissional detalhado`}
   
   return genericDocs[country] || `- Passaporte válido
 - Documentos educacionais
 - Experiência profissional
 - Antecedentes criminais
-- Comprovante financeiro`
-}
+- Comprovante financeiro`}
 
 // Extrair país da mensagem
 function extractCountryFromMessage(message: string): string | null {
@@ -524,12 +464,9 @@ function extractCountryFromMessage(message: string): string | null {
       return country === 'canada' ? 'canadá' : 
              country === 'australia' ? 'austrália' :
              country === 'eua' || country === 'usa' ? 'estados unidos' : 
-             country
-    }
-  }
+             country}
   
-  return null
-}
+  return null}
 
 // Mapear status para label
 function getStatusLabel(status: string): string {
@@ -541,53 +478,41 @@ function getStatusLabel(status: string): string {
     'DOCUMENTS_PENDING': 'Docs Pendentes',
     'SUBMITTED': 'Submetido',
     'APPROVED': 'Aprovado',
-    'COMPLETED': 'Concluído'
-  }
+    'COMPLETED': 'Concluído'}
   
-  return labels[status] || status
-}
+  return labels[status] || status}
 
 // Gerar ID de conversa
 function generateConversationId(): string {
-  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
+  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`}
 
 // Intenções da Sofia IA
 function getSofiaIntents() {
   return {
     greeting: {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
-      patterns: ['^(olá|oi|hello|hi)']
-    },
+      patterns: ['^(olá|oi|hello|hi)']},
     
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
-      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']
-    },
+      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']},
     
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
-      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']
-    },
+      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']},
     
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
-      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']
-    },
+      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']},
     
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
-      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']
-    },
+      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']},
     
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
-      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']
-    },
+      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']},
     
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
-      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']
-    }
-  }
-}
+      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']}}

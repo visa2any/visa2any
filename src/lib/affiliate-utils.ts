@@ -209,7 +209,7 @@ export function calculateCommission(
  */
 export function validateReferralCode(code: string): boolean {
   // Código deve ter entre 4 e 12 caracteres
-  apenas letras e números
+  // apenas letras e números
   const regex = /^[A-Z0-9]{4,12}$/
   return regex.test(code)
 }

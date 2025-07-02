@@ -708,7 +708,6 @@ async function checkAndTriggerNextSteps(clientId: string, documentType: string) 
         // (implementar call para API de email/whatsapp)
       }
     }
-    
   } catch (error) {
     console.error('Erro ao verificar próximos passos:', error)
   }

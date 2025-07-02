@@ -9,8 +9,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    }
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })}
 
     // Buscar todos os clientes
     const clients = await prisma.client.findMany({
@@ -30,20 +29,13 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         assignedUser: {
           select: {
-            name: true
-          }
-        },
+            name: true}},
         _count: {
           select: {
             consultations: true,
-            payments: true
-          }
-        }
-      },
+            payments: true}}},
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: 'desc'}})
 
     // Gerar CSV
     const csvRows = [
@@ -97,12 +89,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse(finalCsv, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`
-      }
-    })
+        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`}})
 
   } catch (error) {
     console.error('Erro no export de clientes:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
-  }
-}
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })}

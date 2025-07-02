@@ -13,24 +13,19 @@ export async function GET(request: NextRequest) {
     // Overview Stats
     const totalClients = await prisma.client.count()
     const newClientsThisPeriod = await prisma.client.count({
-      where: { createdAt: { gte: periodDate } }
-    })
+      where: { createdAt: { gte: periodDate } }})
     
     const clientsGrowth = totalClients > 0 ? 
       Math.round(((newClientsThisPeriod / totalClients) * 100)) : 0
     
     const activeConsultations = await prisma.consultation.count({
       where: {
-        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
-      }
-    })
+        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }}})
     
     const completedConsultations = await prisma.consultation.count({
       where: {
         status: 'COMPLETED',
-        createdAt: { gte: periodDate }
-      }
-    })
+        createdAt: { gte: periodDate }}})
 
     // Revenue calculations (mock data for now)
     const totalRevenue = 125000
@@ -42,18 +37,12 @@ export async function GET(request: NextRequest) {
     const clientsThisWeek = await prisma.client.count({
       where: {
         createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
-        }
-      }
-    })
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }}})
     
     const clientsThisMonth = await prisma.client.count({
       where: {
         createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) 
-        }
-      }
-    })
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }}})
 
     // Tasks (mock data)
     const pendingTasks = 12
@@ -61,8 +50,7 @@ export async function GET(request: NextRequest) {
 
     // Conversion rate calculation
     const totalLeads = await prisma.client.count({
-      where: { status: 'LEAD' }
-    })
+      where: { status: 'LEAD' }})
     const convertedClients = totalClients - totalLeads
     const conversionRate = totalClients > 0 ? 
       Math.round((convertedClients / totalClients) * 100) : 0
@@ -70,8 +58,7 @@ export async function GET(request: NextRequest) {
     // Clients by status
     const clientsByStatus = await prisma.client.groupBy({
       by: ['status'],
-      _count: { status: true }
-    })
+      _count: { status: true }})
     
     const statusCounts = clientsByStatus.map(item => ({
       status: item.status,
@@ -95,24 +82,21 @@ export async function GET(request: NextRequest) {
         action: 'Novo cliente cadastrado',
         client: { id: '1', name: 'João Silva', email: 'joao@email.com' },
         executedAt: new Date().toISOString(),
-        priority: 'medium' as const
-      },
+        priority: 'medium' as const},
       {
         id: '2',
         type: 'consultation_completed',
         action: 'Consulta finalizada',
         client: { id: '2', name: 'Maria Santos', email: 'maria@email.com' },
         executedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        priority: 'high' as const
-      },
+        priority: 'high' as const},
       {
         id: '3',
         type: 'document_uploaded',
         action: 'Documento enviado',
         client: { id: '3', name: 'Pedro Costa', email: 'pedro@email.com' },
         executedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        priority: 'low' as const
-      }
+        priority: 'low' as const}
     ]
 
     // Top performers (mock data)
@@ -130,16 +114,14 @@ export async function GET(request: NextRequest) {
         client: { id: '1', name: 'João Silva' },
         dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'high' as const,
-        type: 'document_review'
-      },
+        type: 'document_review'},
       {
         id: '2',
         title: 'Consulta de acompanhamento - Maria Santos',
         client: { id: '2', name: 'Maria Santos' },
         dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'high' as const,
-        type: 'consultation'
-      }
+        type: 'consultation'}
     ]
 
     // Communication stats (mock data)
@@ -149,8 +131,7 @@ export async function GET(request: NextRequest) {
       callsToday: 12,
       responseTime: 2.3,
       pendingMessages: 8,
-      unreadMessages: 15
-    }
+      unreadMessages: 15}
     
     const dashboardStats = {
       overview: {
@@ -167,25 +148,20 @@ export async function GET(request: NextRequest) {
         clientsThisWeek,
         clientsThisMonth,
         pendingTasks,
-        urgentTasks
-      },
+        urgentTasks},
       clientsByStatus: statusCounts,
       consultationsByType,
       recentActivity,
       topPerformers,
       urgentTasks: urgentTasksList,
-      communicationStats
-    }
+      communicationStats}
     
     return NextResponse.json({
-      data: dashboardStats
-    })
+      data: dashboardStats})
 
   } catch (error) {
     console.error('Dashboard stats error:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

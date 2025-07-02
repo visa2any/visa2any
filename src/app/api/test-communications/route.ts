@@ -8,12 +8,11 @@ export async function GET(request: NextRequest) {
 
   const results = {
     timestamp: new Date().toISOString(),
-    tests: [],
+    tests: [] as { type: string; status: string; message: any; details?: any }[],
     summary: {
       email: { configured: false, working: false },
       whatsapp: { configured: false, working: false }
     }
-  }
 
   // 1. Testar configuração de email
 
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
             transaction_id: 'TEST_' + Date.now()
           }
         })
-      })      
+      })
       const emailResult = await emailResponse.json()
       results.summary.email.working = emailResult.success      
       results.tests.push({
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
         message: 'Email não configurado - usando simulação',
         details: 'Configure SENDGRID_API_KEY ou RESEND_API_KEY'
       })
-    }
+    }}
 
     // 2. Testar configuração de WhatsApp
 
@@ -78,7 +77,7 @@ export async function GET(request: NextRequest) {
         to: phone,
         message: `🧪 TESTE VISA2ANY\n\nSistema de comunicações funcionando!\n\nData: ${new Date().toLocaleString('pt-BR')}\nTipo: WhatsApp Business API\n\n✅ Teste realizado com sucesso!`
       })
-    })    
+    })
     const whatsappResult = await whatsappResponse.json()
     results.summary.whatsapp.working = whatsappResult.success    
     results.tests.push({
@@ -102,7 +101,6 @@ export async function GET(request: NextRequest) {
           email: email,
           phone: phone
         }
-      }
 
       // Simular automações de pagamento aprovado
 
@@ -120,8 +118,7 @@ export async function GET(request: NextRequest) {
         type: 'webhook_simulation',
         status: 'error',
         message: 'Erro ao simular webhook'
-      })
-    }
+      })}
 
     // 4. Retornar resultados
 

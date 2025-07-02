@@ -59,7 +59,6 @@ export default function MercadoPagoSimple({
   const loadMercadoPago = async () => {
     try {
       // Se SDK já existe
-      inicializar diretamente
       if (window.MercadoPago) {
         await initializeBrick()
         return

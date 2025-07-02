@@ -10,11 +10,9 @@ export async function POST(request: NextRequest) {
     if (!name || !phone) {
       return NextResponse.json(
         {
-          error: 'Nome e telefone são obrigatórios'
-        },
+          error: 'Nome e telefone são obrigatórios'},
         { status: 400 }
-      )
-    }
+      )}
 
     // Limpar e validar telefone
     const cleanPhone = phone.replace(/\D/g, '')
@@ -22,42 +20,32 @@ export async function POST(request: NextRequest) {
     if (cleanPhone.length < 10) {
       return NextResponse.json(
         {
-          error: 'Telefone inválido'
-        },
+          error: 'Telefone inválido'},
         { status: 400 }
-      )
-    }
+      )}
 
     // Verificar se já existe
     const existingSubscriber = await prisma.whatsAppSubscriber.findFirst({
       where: {
-        phone: cleanPhone
-      }
-    })
+        phone: cleanPhone}})
     
     if (existingSubscriber) {
       // Atualizar dados existentes
       const updatedSubscriber = await prisma.whatsAppSubscriber.update({
         where: {
-          id: existingSubscriber.id
-        },
+          id: existingSubscriber.id},
         data: {
           name,
           countries: countries.length > 0 ? countries : ['Global'],
           isActive: true,
-          source: 'blog_newsletter'
-        }
-      })
+          source: 'blog_newsletter'}})
       
       return NextResponse.json({
         message: 'Dados atualizados com sucesso!',
         subscriber: {
           id: updatedSubscriber.id,
           name: updatedSubscriber.name,
-          isActive: updatedSubscriber.isActive
-        }
-      })
-    }
+          isActive: updatedSubscriber.isActive}})}
 
     // Criar novo assinante
     const newSubscriber = await prisma.whatsAppSubscriber.create({
@@ -66,9 +54,7 @@ export async function POST(request: NextRequest) {
         phone: cleanPhone,
         countries: countries.length > 0 ? countries : ['Global'],
         isActive: true,
-        source: 'blog_newsletter'
-      }
-    })
+        source: 'blog_newsletter'}})
 
     // Aqui você pode integrar com API do WhatsApp para enviar mensagem de boas-vindas
     await sendWelcomeMessage(cleanPhone, name)
@@ -78,20 +64,15 @@ export async function POST(request: NextRequest) {
       subscriber: {
         id: newSubscriber.id,
         name: newSubscriber.name,
-        isActive: newSubscriber.isActive
-      }
-    })
+        isActive: newSubscriber.isActive}})
 
   } catch (error) {
     console.error('❌ Erro ao cadastrar newsletter:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
-      },
+        error: 'Erro interno do servidor'},
       { status: 500 }
-    )
-  }
-}
+    )}
 
 export async function GET(request: NextRequest) {
   try {
@@ -102,23 +83,19 @@ export async function GET(request: NextRequest) {
     const [totalSubscribers, activeSubscribers, recentSubscribers] = await Promise.all([
       prisma.whatsAppSubscriber.count(),
       prisma.whatsAppSubscriber.count({
-        where: { isActive: true }
-      }),
+        where: { isActive: true }}),
       prisma.whatsAppSubscriber.count({
         where: {
           isActive: true,
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
-          }
-        }
-      })
+          }}})
     ])
 
     // Distribuição por países de interesse
     const countryDistribution = await prisma.whatsAppSubscriber.findMany({
       where: { isActive: active },
-      select: { countries: true }
-    })
+      select: { countries: true }})
 
     // Contar países
     const countryCount: Record<string, number> = {}
@@ -126,18 +103,14 @@ export async function GET(request: NextRequest) {
       const countries = Array.isArray(sub.countries) ? sub.countries : ['Global']
       countries.forEach(country => {
         const countryKey = String(country)
-        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1
-      })
-    })
+        countryCount[countryKey] = (countryCount[countryKey] || 0) + 1})})
 
     // Assinantes por fonte
     const sourceDistribution = await prisma.whatsAppSubscriber.groupBy({
       by: ['source'],
       where: { isActive: active },
       _count: {
-        source: true
-      }
-    })
+        source: true}})
     
     return NextResponse.json({
       stats: {
@@ -151,22 +124,15 @@ export async function GET(request: NextRequest) {
             .sort((a, b) => b.count - a.count),
           sources: sourceDistribution.map(item => ({
             source: item.source,
-            count: item._count.source
-          }))
-        }
-      }
-    })
+            count: item._count.source}))}}})
 
   } catch (error) {
     console.error('❌ Erro ao buscar estatísticas:', error)
     return NextResponse.json(
       {
-        error: 'Erro interno do servidor'
-      },
+        error: 'Erro interno do servidor'},
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função para enviar mensagem de boas-vindas (placeholder)
 async function sendWelcomeMessage(phone: string, name: string) {

@@ -38,9 +38,6 @@ export async function GET(
             createdAt: 'asc'
           }
         }
-      },
-      orderBy: {
-        createdAt: 'desc'
       }
     })
 

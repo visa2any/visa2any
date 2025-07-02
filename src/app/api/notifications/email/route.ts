@@ -9,8 +9,7 @@ const sendEmailSchema = z.object({
   message: z.string().min(1, 'Mensagem é obrigatória').optional(),
   template: z.string().optional(),
   clientId: z.string().optional(),
-  variables: z.record(z.any()).optional()
-})
+  variables: z.record(z.any()).optional()})
 
 // Templates de email prontos
 const EMAIL_TEMPLATES = {
@@ -47,8 +46,7 @@ const EMAIL_TEMPLATES = {
           </p>
         </div>
       </div>
-    `
-  },
+    `},
   booking_confirmation: {
     subject: '📅 Agendamento Confirmado - Visa2Any',
     html: `
@@ -75,9 +73,7 @@ const EMAIL_TEMPLATES = {
           </p>
         </div>
       </div>
-    `
-  }
-}
+    `}
 
 // POST /api/notifications/email - Enviar email
 
@@ -88,12 +84,11 @@ export async function POST(request: NextRequest) {
 
     let emailContent = {
       subject: validatedData.subject || 'Mensagem da Visa2Any',
-      html: validatedData.message || ''
-    }
+      html: validatedData.message || ''}
 
     // Se usar template - carregar template e processar variáveis
-    if (validatedData.template && EMAIL_TEMPLATES[validatedData.template]) {
-      const template = EMAIL_TEMPLATES[validatedData.template]
+    if (validatedData.template && validatedData.template in EMAIL_TEMPLATES) {
+      const template = EMAIL_TEMPLATES[validatedData.template as keyof typeof EMAIL_TEMPLATES]
       emailContent.subject = template.subject
       emailContent.html = template.html
 
@@ -107,17 +102,13 @@ export async function POST(request: NextRequest) {
           emailContent.subject = emailContent.subject.replace(
             new RegExp(`{${key}}`, 'g'),
             String(value)
-          )
-        })
-      }
-    }
+          )})}
 
     // Enviar email usando o provedor configurado
     const emailResult = await sendEmailWithProvider({
       to: validatedData.to,
       subject: emailContent.subject,
-      html: emailContent.html
-    })
+      html: emailContent.html})
 
     // Log do envio
     await prisma.automationLog.create({
@@ -126,42 +117,32 @@ export async function POST(request: NextRequest) {
         action: 'send_email',
         success: emailResult.success,
         clientId: validatedData.clientId || null,
-        error: emailResult.error || null,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
-        }
-      }
-    })
+          action: 'automated_action'}}})
     
     return NextResponse.json({
       data: {
         messageId: emailResult.messageId,
         sent: emailResult.success,
         provider: emailResult.provider,
-        to: validatedData.to
-      },
-      message: 'Email enviado com sucesso'
-    })
+        to: validatedData.to},
+      message: 'Email enviado com sucesso'})
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
     
     console.error('Erro ao enviar email:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função para enviar email usando SMTP Hostinger configurado
 async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
@@ -175,28 +156,21 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      })
+          pass: process.env.SMTP_PASS}})
       
       const result = await transporter.sendMail({
         from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`,
         to: to,
         subject: subject,
-        html: html
-      })
+        html: html})
       
       console.log('✅ Email enviado via Hostinger:', result.messageId)
       
       return {
         success: true,
         messageId: result.messageId,
-        provider: 'hostinger_smtp'
-      }
-    } catch (error) {
-      console.error('❌ Erro SMTP Hostinger:', error)
-    }
-  }
+        provider: 'hostinger_smtp'}} catch (error) {
+      console.error('❌ Erro SMTP Hostinger:', error)}
 
   // Fallback: Tentar SendGrid se configurado
   if (process.env.SENDGRID_API_KEY) {
@@ -205,35 +179,24 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
           personalizations: [{
             to: [{ email: to }],
-            subject: subject
-          }],
+            subject: subject}],
           from: {
             email: process.env.FROM_EMAIL || 'info@visa2any.com',
-            name: process.env.FROM_NAME || 'Visa2Any'
-          },
+            name: process.env.FROM_NAME || 'Visa2Any'},
           content: [{
             type: 'text/html',
-            value: html
-          }]
-        })
-      })
+            value: html}]})})
       
       if (response.ok) {
         return {
           success: true,
           messageId: `sg_${Date.now()}`,
-          provider: 'sendgrid'
-        }
-      }
-    } catch (error) {
-      console.error('SendGrid falhou:', error)
-    }
-  }
+          provider: 'sendgrid'}}} catch (error) {
+      console.error('SendGrid falhou:', error)}
 
   // Se nada funcionou - simular envio
   console.log('📧 SIMULANDO ENVIO DE EMAIL (SMTP não configurado):')
@@ -245,6 +208,4 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   return {
     success: true,
     messageId: `sim_${Date.now()}`,
-    provider: 'simulation'
-  }
-}
+    provider: 'simulation'}

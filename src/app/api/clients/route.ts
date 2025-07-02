@@ -17,8 +17,7 @@ const createClientSchema = z.object({
   targetCountry: z.string().optional(),
   visaType: z.string().optional(),
   source: z.string().optional(),
-  notes: z.string().optional()
-})
+  notes: z.string().optional()})
 
 // GET /api/clients - Listar clientes
 export async function GET(request: NextRequest) {
@@ -26,8 +25,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
-    }
+      return createAuthError('Acesso não autorizado')}
 
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -41,16 +39,14 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'ALL') {
-      where.status = status
-    }
+      where.status = status}
     
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } }
-      ]
-    }
+      ]}
 
     // Buscar clientes com paginação
     const [clients, total] = await Promise.all([
@@ -61,37 +57,28 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: 'desc' },
         include: {
           assignedUser: {
-            select: { id: true, name: true, email: true }
-          },
+            select: { id: true, name: true, email: true }},
           consultations: {
             select: { 
               id: true,
               type: true,
               status: true,
               scheduledAt: true,
-              score: true
-            },
+              score: true},
             orderBy: { createdAt: 'desc' },
-            take: 1
-          },
+            take: 1},
           payments: {
             select: { 
               id: true,
               amount: true,
               status: true,
-              createdAt: true
-            },
-            orderBy: { createdAt: 'desc' }
-          },
+              createdAt: true},
+            orderBy: { createdAt: 'desc' }},
           _count: {
             select: {
               consultations: true,
               documents: true,
-              interactions: true
-            }
-          }
-        }
-      }),
+              interactions: true}}}}),
       prisma.client.count({ where })
     ])
 
@@ -107,19 +94,14 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore
-        }
-      }
-    })
+          hasMore}}})
 
   } catch (error) {
     console.error('Erro ao buscar clientes:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // POST /api/clients - Criar novo cliente
 export async function POST(request: NextRequest) {
@@ -127,8 +109,7 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')
-    }
+      return createAuthError('Acesso não autorizado')}
 
     const body = await request.json()
     
@@ -137,15 +118,13 @@ export async function POST(request: NextRequest) {
 
     // Verificar se email já existe
     const existingClient = await prisma.client.findUnique({
-      where: { email: validatedData.email }
-    })
+      where: { email: validatedData.email }})
 
     if (existingClient) {
       return NextResponse.json(
         { error: 'Email já cadastrado' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Montar objeto de criação com tipos corretos
     const dataToCreate = {
@@ -161,18 +140,14 @@ export async function POST(request: NextRequest) {
       visaType: validatedData.visaType ?? null,
       source: validatedData.source ?? null,
       notes: validatedData.notes ?? null,
-      status: ClientStatus.LEAD
-    };
+      status: ClientStatus.LEAD};
 
     // Criar cliente
     const client = await prisma.client.create({
       data: dataToCreate,
       include: {
         assignedUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
-    })
+          select: { id: true, name: true, email: true }}}})
 
     // Log da criação
     await prisma.automationLog.create({
@@ -182,31 +157,23 @@ export async function POST(request: NextRequest) {
         clientId: client.id,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
-        },
-        success: true
-      }
-    })
+          action: 'automated_action'},
+        success: true}})
 
     return NextResponse.json({
-      data: client
-    }, { status: 201 })
+      data: client}, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
 
     console.error('Erro ao criar cliente:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

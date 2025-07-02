@@ -12,8 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
-      )
-    }
+      )}
 
     // Verify token
     const jwtSecret = process.env.NEXTAUTH_SECRET
@@ -21,19 +20,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
         { status: 500 }
-      )
-    }
+      )}
     
     let userId: string
     try {
       const decoded = jwt.verify(authToken, jwtSecret) as any
-      userId = decoded.userId
-    } catch {
+      userId = decoded.userId} catch {
       return NextResponse.json(
         { error: 'Token inválido' },
         { status: 401 }
-      )
-    }
+      )}
     
     const body = await request.json()
     const { postId, action } = body
@@ -41,8 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )
-    }
+      )}
     
     if (action === 'add') {
       // Check if already bookmarked
@@ -50,37 +45,24 @@ export async function POST(request: NextRequest) {
         where: {
           userId_postId: {
             userId,
-            postId
-          }
-        }
-      })
+            postId}}})
       if (!existingBookmark) {
         await prisma.blogPostBookmark.create({
           data: {
             userId,
-            postId
-          }
-        })
-      }
-    } else if (action === 'remove') {
+            postId}})}} else if (action === 'remove') {
       await prisma.blogPostBookmark.deleteMany({
         where: {
           userId,
-          postId
-        }
-      })
-    }
+          postId}})}
     
     return NextResponse.json({
       success: true,
-      action
-    })
+      action})
 
   } catch (error) {
     console.error('Error handling blog bookmark:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

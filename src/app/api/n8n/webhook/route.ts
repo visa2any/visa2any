@@ -12,8 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
-      )
-    }
+      )}
 
     // Log incoming webhook
     console.log('N8N Webhook received:', { type, source, timestamp: new Date() })
@@ -40,8 +39,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Unknown webhook type:', type)
-    }
+        console.log('Unknown webhook type:', type)}
 
     return NextResponse.json({ success: true })
 
@@ -50,9 +48,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 async function handleLegalChange(data: any) {
   const { country, changeType, description, affectedVisaTypes, sourceUrl, priority } = data
@@ -61,15 +57,12 @@ async function handleLegalChange(data: any) {
   await prisma.automationLog.create({
     data: {
       type: 'LEGAL_CHANGE_DETECTED',
-      status: 'SUCCESS',
+      action: 'legal_change',
       executedAt: new Date(),
       details: {
         timestamp: new Date().toISOString(),
-        action: 'automated_action'
-      },
-      success: true
-    }
-  })
+        action: 'automated_action'},
+      success: true}})
 
   // Find affected clients
   if (affectedVisaTypes?.length > 0) {
@@ -77,32 +70,19 @@ async function handleLegalChange(data: any) {
       where: {
         targetCountry: country,
         visaType: { in: affectedVisaTypes },
-        status: { in: ['ACTIVE', 'IN_PROGRESS', 'DOCUMENTS_PENDING'] }
-      },
-      select: { id: true, name: true, email: true, phone: true }
-    })
+        status: { in: ['IN_PROCESS', 'DOCUMENTS_PENDING'] }},
+      select: { id: true, name: true, email: true, phone: true }})
 
     // Create notifications for affected clients
     for (const client of affectedClients) {
       await prisma.interaction.create({
         data: {
           clientId: client.id,
-          type: 'SYSTEM_ALERT',
+          type: 'AUTOMATED_EMAIL',
           channel: 'EMAIL',
           content: `Nova atualização legal para ${country}: ${description}`,
-          metadata: {
-            legalChangeId: data.id,
-            priority,
-            sourceUrl,
-            requiresAction: priority === 'HIGH'
-          },
           scheduledAt: new Date(),
-          status: 'PENDING'
-        }
-      })
-    }
-  }
-}
+          direction: 'outbound'}})}}
 
 async function handleConsularSlot(data: any) {
   const { country, consulate, city, availableSlots, visaType, earliestDate } = data
@@ -111,59 +91,41 @@ async function handleConsularSlot(data: any) {
   await prisma.automationLog.create({
     data: {
       type: 'CONSULAR_SLOT_DETECTED',
-      status: 'SUCCESS',
+      action: 'consular_slot',
       executedAt: new Date(),
       details: {
         timestamp: new Date().toISOString(),
-        action: 'automated_action'
-      },
-      success: true
-    }
-  })
+        action: 'automated_action'},
+      success: true}})
 
   // Find clients waiting for appointments
   const waitingClients = await prisma.client.findMany({
     where: {
       targetCountry: country,
       visaType,
-      status: { in: ['DOCUMENTS_READY', 'APPOINTMENT_PENDING'] },
-      city: city // Assuming client has preferred city
-    },
-    select: { id: true, name: true, email: true, phone: true }
-  })
+      status: { in: ['IN_PROCESS', 'DOCUMENTS_PENDING'] }},
+    select: { id: true, name: true, email: true, phone: true }})
 
   // Notify eligible clients immediately
   for (const client of waitingClients) {
     await prisma.interaction.create({
       data: {
         clientId: client.id,
-        type: 'URGENT_NOTIFICATION',
+        type: 'AUTOMATED_WHATSAPP',
         channel: 'WHATSAPP',
         content: `🚨 VAGA DISPONÍVEL! Nova vaga para ${visaType} em ${consulate}, ${city}. Data mais cedo: ${earliestDate}. Responda RAPIDAMENTE!`,
-        metadata: {
-          slotData: data,
-          priority: 'URGENT',
-          expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 minutes
-        },
         scheduledAt: new Date(),
-        status: 'PENDING'
-      }
-    })
+        direction: 'outbound'}})
 
     // Also send SMS backup
     await prisma.interaction.create({
       data: {
         clientId: client.id,
-        type: 'URGENT_NOTIFICATION',
+        type: 'SMS',
         channel: 'SMS',
         content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,
-        metadata: { slotData: data, priority: 'URGENT' },
         scheduledAt: new Date(Date.now() + 2 * 60 * 1000), // 2 min delay
-        status: 'PENDING'
-      }
-    })
-  }
-}
+        direction: 'outbound'}})}
 
 async function handleDocumentValidation(data: any) {
   const { clientId, documentId, validationResult, issues, recommendations } = data
@@ -173,17 +135,7 @@ async function handleDocumentValidation(data: any) {
     await prisma.document.update({
       where: { id: documentId },
       data: {
-        status: validationResult.isValid ? 'APPROVED' : 'REJECTED',
-        metadata: {
-          ...validationResult,
-          issues,
-          recommendations,
-          validatedAt: new Date(),
-          validatedBy: 'N8N_AUTOMATION'
-        }
-      }
-    })
-  }
+        status: validationResult.isValid ? 'VALID' : 'INVALID'}})}
 
   // Log validation
   await prisma.automationLog.create({
@@ -194,17 +146,13 @@ async function handleDocumentValidation(data: any) {
       success: true,
       details: {
         timestamp: new Date().toISOString(),
-        action: 'automated_action'
-      }
-    }
-  })
+        action: 'automated_action'}}})
 
   // Create client notification
   if (clientId) {
     const client = await prisma.client.findUnique({
       where: { id: clientId },
-      select: { name: true, email: true }
-    })
+      select: { name: true, email: true }})
     
     if (client) {
       const message = validationResult.isValid 
@@ -214,22 +162,11 @@ async function handleDocumentValidation(data: any) {
       await prisma.interaction.create({
         data: {
           clientId,
-          type: 'DOCUMENT_UPDATE',
+          type: 'AUTOMATED_EMAIL',
           channel: 'EMAIL',
           content: message,
-          metadata: {
-            documentId,
-            validationResult,
-            issues,
-            recommendations
-          },
           scheduledAt: new Date(),
-          status: 'PENDING'
-        }
-      })
-    }
-  }
-}
+          direction: 'outbound'}})}}
 
 async function handleClientRiskAlert(data: any) {
   const { clientId, riskType, riskScore, factors, recommendations } = data
@@ -245,47 +182,28 @@ async function handleClientRiskAlert(data: any) {
         riskType,
         riskScore,
         factors,
-        timestamp: new Date().toISOString()
-      }
-    }
-  })
+        timestamp: new Date().toISOString()}}})
 
   // Create internal alert for team
   await prisma.interaction.create({
     data: {
       clientId,
-      type: 'INTERNAL_ALERT',
+      type: 'FOLLOW_UP',
       channel: 'SYSTEM',
       content: `⚠️ Cliente em risco: ${riskType} (Score: ${riskScore}). Fatores: ${factors?.join(', ')}`,
-      metadata: {
-        riskType,
-        riskScore,
-        factors,
-        recommendations,
-        requiresIntervention: riskScore > 70
-      },
-      scheduledAt: new Date(),
-      status: 'PENDING'
-    }
-  })
+      scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
+      direction: 'outbound'}})
 
   // If high risk, schedule immediate consultant contact
   if (riskScore > 80) {
     await prisma.consultation.create({
       data: {
         clientId,
-        type: 'EMERGENCY',
+        type: 'HUMAN_CONSULTATION',
         status: 'SCHEDULED',
         notes: `Consulta de emergência - Cliente em alto risco: ${riskType}`,
         scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        metadata: {
-          triggerType: 'RISK_ALERT',
-          riskData: data
-        }
-      }
-    })
-  }
-}
+      }})}
 
 async function handleAutomationCompleted(data: any) {
   const { workflowId, workflowName, clientId, result, metrics } = data
@@ -302,19 +220,11 @@ async function handleAutomationCompleted(data: any) {
         workflowName,
         result,
         metrics,
-        timestamp: new Date().toISOString()
-      }
-    }
-  })
+        timestamp: new Date().toISOString()}}})
 
   // Update client status if applicable
   if (clientId && result.newStatus) {
     await prisma.client.update({
       where: { id: clientId },
       data: {
-        status: result.newStatus,
-        lastContactAt: new Date()
-      }
-    })
-  }
-}
+        status: result.newStatus}})}

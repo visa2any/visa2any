@@ -12,8 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Token de acesso requerido' },
         { status: 401 }
-      )
-    }
+      )}
 
     // Verify token
     const jwtSecret = process.env.NEXTAUTH_SECRET
@@ -21,19 +20,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
         { status: 500 }
-      )
-    }
+      )}
     
     let userId: string
     try {
       const decoded = jwt.verify(authToken, jwtSecret) as any
-      userId = decoded.userId
-    } catch {
+      userId = decoded.userId} catch {
       return NextResponse.json(
         { error: 'Token inválido' },
         { status: 401 }
-      )
-    }
+      )}
     
     const body = await request.json()
     const { postId, action } = body
@@ -41,8 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )
-    }
+      )}
     
     if (action === 'like') {
       // Check if already liked
@@ -50,43 +45,29 @@ export async function POST(request: NextRequest) {
         where: {
           userId_postId: {
             userId,
-            postId
-          }
-        }
-      })
+            postId}}})
       if (!existingLike) {
         await prisma.blogPostLike.create({
           data: {
             userId,
-            postId
-          }
-        })
-      }
-    } else if (action === 'unlike') {
+            postId}})}} else if (action === 'unlike') {
       await prisma.blogPostLike.deleteMany({
         where: {
           userId,
-          postId
-        }
-      })
-    }
+          postId}})}
 
     // Get updated like count
     const likeCount = await prisma.blogPostLike.count({
-      where: { postId }
-    })
+      where: { postId }})
     
     return NextResponse.json({
       success: true,
       likeCount,
-      action
-    })
+      action})
 
   } catch (error) {
     console.error('Error handling blog like:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

@@ -107,11 +107,13 @@ export async function getPayment(paymentId: string) {
   try {
     const response = await payment.get({ id: paymentId })
     return {
+      success: true,
       payment: response
     }
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return {
+      success: false,
       error: error.message
     }
   }
@@ -124,18 +126,21 @@ export function processWebhook(body: any) {
 
     if (type === 'payment') {
       return {
+        success: true,
         type: 'payment',
         payment_id: data.id
       }
     }
 
     return {
+      success: true,
       type: type,
       data: data
     }
   } catch (error) {
     console.error('Erro ao processar webhook:', error)
     return {
+      success: false,
       error: error.message
     }
   }

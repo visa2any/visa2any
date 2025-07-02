@@ -35,7 +35,7 @@
     "restart:services": "node restart-all-services.js"
   },
   "dependencies": {
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.11.0",
     "@sendgrid/mail": "^8.1.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.9",
@@ -73,6 +73,6 @@
     "eslint": "^9.29.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "prisma": "^6.9.0"
+    "prisma": "^6.11.0"
   }
 }

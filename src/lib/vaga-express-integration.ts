@@ -260,8 +260,7 @@ export class VagaExpressIntegration {
       await fetch('/api/telegram-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      });
+        body: JSON.stringify({ message })});
     } catch(e) {
       console.error(e);
     }

@@ -1,0 +1,719 @@
+{
+  "name": "Payment & Billing Automation - Corrected",
+  "description": "Automated payment processing and billing for MercadoPago and internal payment systems",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payment-webhook",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "id": "payment-webhook",
+      "name": "Payment Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "payment-webhook",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process payment webhook data\nconst body = $json.body;\nconst headers = $json.headers;\n\n// Validate MercadoPago webhook\nif (headers['x-signature'] && body.data) {\n  // MercadoPago webhook validation logic here\n  const paymentData = {\n    source: 'MERCADO_PAGO',\n    paymentId: body.data.id,\n    status: body.action, // payment.created, payment.updated\n    type: body.type, // payment\n    webhookId: body.id,\n    dateCreated: body.date_created,\n    rawData: body\n  };\n  \n  return [{ json: paymentData }];\n}\n\n// Validate internal payment system\nif (headers['x-webhook-secret'] === 'visa2any_webhook_secret_2024') {\n  const paymentData = {\n    source: 'INTERNAL',\n    clientId: body.clientId,\n    paymentId: body.paymentId,\n    status: body.status, // PENDING, COMPLETED, FAILED, REFUNDED\n    amount: body.amount,\n    currency: body.currency || 'BRL',\n    method: body.method, // CREDIT_CARD, PIX, BOLETO, BANK_TRANSFER\n    installments: body.installments || 1,\n    transactionId: body.transactionId,\n    clientData: body.clientData || {},\n    serviceData: body.serviceData || {},\n    createdAt: body.createdAt || new Date().toISOString(),\n    rawData: body\n  };\n  \n  return [{ json: paymentData }];\n}\n\nthrow new Error('Invalid webhook source or signature');"
+      },
+      "id": "process-payment-webhook",
+      "name": "Process Payment Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.source }}",
+              "operation": "equal",
+              "value2": "MERCADO_PAGO"
+            }
+          ]
+        }
+      },
+      "id": "payment-source-router",
+      "name": "Payment Source Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://api.mercadopago.com/v1/payments/{{ $json.paymentId }}",
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.MERCADO_PAGO_ACCESS_TOKEN }}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "id": "fetch-mercadopago-details",
+      "name": "Fetch MercadoPago Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process MercadoPago payment details\nconst webhookData = $('process-payment-webhook').item.json;\nconst paymentDetails = $json;\n\nconst processedPayment = {\n  source: 'MERCADO_PAGO',\n  paymentId: paymentDetails.id,\n  status: paymentDetails.status, // pending, approved, authorized, in_process, in_mediation, rejected, cancelled, refunded, charged_back\n  statusDetail: paymentDetails.status_detail,\n  amount: paymentDetails.transaction_amount,\n  currency: paymentDetails.currency_id,\n  method: paymentDetails.payment_method_id,\n  installments: paymentDetails.installments,\n  transactionId: paymentDetails.id,\n  externalReference: paymentDetails.external_reference, // Our internal ID\n  payer: {\n    email: paymentDetails.payer.email,\n    firstName: paymentDetails.payer.first_name,\n    lastName: paymentDetails.payer.last_name,\n    phone: paymentDetails.payer.phone?.area_code + paymentDetails.payer.phone?.number,\n    identification: paymentDetails.payer.identification\n  },\n  dates: {\n    created: paymentDetails.date_created,\n    approved: paymentDetails.date_approved,\n    lastUpdated: paymentDetails.date_last_updated\n  },\n  fees: paymentDetails.fee_details || [],\n  rawData: paymentDetails\n};\n\n// Try to extract client ID from external reference\nif (processedPayment.externalReference) {\n  const clientIdMatch = processedPayment.externalReference.match(/CLIENT_(\\d+)/);\n  if (clientIdMatch) {\n    processedPayment.clientId = clientIdMatch[1];\n  }\n}\n\nreturn [{ json: processedPayment }];"
+      },
+      "id": "process-mercadopago-payment",
+      "name": "Process MercadoPago Payment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'find_client_and_payment',\n  data: {\n    clientId: $json.clientId || '',\n    email: $json.payer?.email || $json.clientData?.email || '',\n    query: 'SELECT c.*, p.* FROM clients c LEFT JOIN payments p ON c.id = p.client_id WHERE c.id = ? OR c.email = ? ORDER BY p.created_at DESC LIMIT 1'\n  }\n}) }}"
+      },
+      "id": "find-client-and-payment",
+      "name": "Find Client and Payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "equal",
+              "value2": "approved"
+            }
+          ]
+        }
+      },
+      "id": "payment-status-router",
+      "name": "Payment Status Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process successful payment\nconst paymentData = $('process-mercadopago-payment').item?.json || $('process-payment-webhook').item.json;\nconst clientData = $('find-client-and-payment').item.json;\n\nconst successData = {\n  clientId: clientData.id,\n  clientName: clientData.name,\n  clientEmail: clientData.email,\n  clientPhone: clientData.phone,\n  paymentId: paymentData.paymentId,\n  amount: paymentData.amount,\n  currency: paymentData.currency,\n  method: paymentData.method,\n  installments: paymentData.installments,\n  transactionId: paymentData.transactionId,\n  approvedAt: paymentData.dates?.approved || new Date().toISOString(),\n  serviceType: clientData.visa_type || 'UNKNOWN',\n  targetCountry: clientData.target_country || 'UNKNOWN',\n  totalAmountPaid: (clientData.total_paid || 0) + paymentData.amount,\n  processedAt: new Date().toISOString()\n};\n\n// Determine next steps based on service type and amount\nlet nextSteps = [];\nlet priority = 'HIGH';\nlet autoTriggers = [];\n\nif (successData.amount >= 3000) {\n  nextSteps.push('Ativar atendimento VIP');\n  nextSteps.push('Agendar consultoria prioritária');\n  nextSteps.push('Enviar boas-vindas premium');\n  autoTriggers.push('VIP_ONBOARDING');\n  priority = 'URGENT';\n} else if (successData.amount >= 1500) {\n  nextSteps.push('Ativar sequência premium');\n  nextSteps.push('Enviar guia completo');\n  nextSteps.push('Agendar consultoria');\n  autoTriggers.push('PREMIUM_ONBOARDING');\n} else {\n  nextSteps.push('Ativar sequência padrão');\n  nextSteps.push('Enviar boas-vindas');\n  nextSteps.push('Disponibilizar materiais');\n  autoTriggers.push('STANDARD_ONBOARDING');\n}\n\n// Check if this completes the full payment\nconst expectedAmount = clientData.service_price || paymentData.amount;\nconst isFullPayment = successData.totalAmountPaid >= expectedAmount;\n\nif (isFullPayment) {\n  nextSteps.push('Iniciar processo de documentação');\n  nextSteps.push('Atribuir especialista');\n  autoTriggers.push('FULL_PAYMENT_PROCESS_START');\n}\n\nreturn [{\n  json: {\n    ...successData,\n    nextSteps,\n    priority,\n    autoTriggers,\n    isFullPayment,\n    paymentSequence: clientData.payment_sequence || 1\n  }\n}];"
+      },
+      "id": "process-successful-payment",
+      "name": "Process Successful Payment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'update_client_status',\n  data: {\n    clientId: $json.clientId,\n    status: $json.isFullPayment ? 'PAYMENT_COMPLETE' : 'PARTIAL_PAYMENT',\n    totalPaid: $json.totalAmountPaid,\n    paymentStatus: $json.isFullPayment ? 'PAID' : 'PARTIAL',\n    lastPaymentAt: $json.approvedAt,\n    paymentMethod: $json.method\n  }\n}) }}"
+      },
+      "id": "update-client-status",
+      "name": "Update Client Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'log_payment_event',\n  data: {\n    clientId: $json.clientId,\n    paymentId: $json.paymentId,\n    eventType: 'PAYMENT_APPROVED',\n    amount: $json.amount,\n    currency: $json.currency,\n    method: $json.method,\n    status: 'APPROVED',\n    transactionData: JSON.stringify($json),\n    createdAt: $json.approvedAt\n  }\n}) }}"
+      },
+      "id": "log-payment-event",
+      "name": "Log Payment Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1800,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare success notifications\nconst data = $json;\n\nconst whatsappMessage = `🎉 PAGAMENTO APROVADO! 🎉\\n\\n` +\n  `Olá ${data.clientName}!\\n\\n` +\n  `✅ Seu pagamento de ${data.currency} ${data.amount.toLocaleString('pt-BR')} foi aprovado!\\n\\n` +\n  `${data.installments > 1 ? `💳 Parcelado em ${data.installments}x\\n` : ''}` +\n  `🏛️ Método: ${getPaymentMethodName(data.method)}\\n\\n` +\n  `${data.isFullPayment ? \n    '🚀 Processo iniciado! Nossa equipe entrará em contato em até 2 horas\\n\\n📋 Próximos passos enviados por email' :\n    '💰 Pagamento parcial recebido! Aguardando complemento para iniciar processo'\\n\\n}` +\n  `📞 Dúvidas? Responda esta mensagem!\\n\\n` +\n  `🌟 Obrigado por confiar na Visa2Any!`;\n\nconst emailSubject = `🎉 Pagamento Aprovado - ${data.serviceType} para ${data.targetCountry}`;\n\nconst teamAlert = `💰 *PAGAMENTO APROVADO* 💰\\n\\n` +\n  `👤 *Cliente:* ${data.clientName}\\n` +\n  `💵 *Valor:* ${data.currency} ${data.amount.toLocaleString('pt-BR')}\\n` +\n  `💳 *Método:* ${getPaymentMethodName(data.method)}\\n` +\n  `🔢 *Parcelas:* ${data.installments}x\\n` +\n  `🌍 *Serviço:* ${data.serviceType} - ${data.targetCountry}\\n` +\n  `📊 *Status:* ${data.isFullPayment ? 'PAGAMENTO COMPLETO ✅' : 'PAGAMENTO PARCIAL ⏳'}\\n\\n` +\n  `🎯 *Próximas ações:*\\n${data.nextSteps.map(step => `• ${step}`).join('\\n')}\\n\\n` +\n  `⚡ *Prioridade:* ${data.priority}\\n` +\n  `🆔 *ID Pagamento:* ${data.paymentId}`;\n\nfunction getPaymentMethodName(method) {\n  const methods = {\n    'credit_card': 'Cartão de Crédito',\n    'debit_card': 'Cartão de Débito',\n    'pix': 'PIX',\n    'bolbradesco': 'Boleto',\n    'bank_transfer': 'Transferência Bancária'\n  };\n  return methods[method] || method;\n}\n\nreturn [{\n  json: {\n    ...data,\n    notifications: {\n      whatsappMessage,\n      emailSubject,\n      teamAlert\n    }\n  }\n}];"
+      },
+      "id": "prepare-success-notifications",
+      "name": "Prepare Success Notifications",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/whatsapp/send",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Webhook-Secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.notifications.whatsappMessage }}",
+            "priority": "{{ $json.priority }}",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "PAYMENT_SUCCESS"
+          }
+        }
+      },
+      "id": "send-success-whatsapp",
+      "name": "Send Success WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2200,
+        -150
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "{{ $json.notifications.emailSubject }}",
+            "template": "payment-success",
+            "priority": "{{ $json.priority }}",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "amount": "{{ $json.amount }}",
+              "currency": "{{ $json.currency }}",
+              "method": "{{ $json.method }}",
+              "installments": "{{ $json.installments }}",
+              "serviceType": "{{ $json.serviceType }}",
+              "targetCountry": "{{ $json.targetCountry }}",
+              "isFullPayment": "{{ $json.isFullPayment }}",
+              "nextSteps": "{{ $json.nextSteps }}",
+              "paymentId": "{{ $json.paymentId }}"
+            }
+          }
+        }
+      },
+      "id": "send-success-email",
+      "name": "Send Success Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2200,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Trigger auto-sequences based on payment success\nconst data = $json;\nconst triggers = data.autoTriggers || [];\n\nconst automationTriggers = triggers.map(trigger => ({\n  json: {\n    type: 'automation_trigger',\n    trigger: trigger,\n    clientId: data.clientId,\n    clientData: {\n      name: data.clientName,\n      email: data.clientEmail,\n      phone: data.clientPhone,\n      serviceType: data.serviceType,\n      targetCountry: data.targetCountry,\n      paymentAmount: data.amount,\n      isFullPayment: data.isFullPayment,\n      priority: data.priority\n    },\n    context: {\n      paymentId: data.paymentId,\n      approvedAt: data.approvedAt,\n      paymentMethod: data.method\n    },\n    scheduledFor: new Date(Date.now() + 5 * 60 * 1000).toISOString() // 5 minutes delay\n  }\n}));\n\nreturn automationTriggers;"
+      },
+      "id": "trigger-automation-sequences",
+      "name": "Trigger Automation Sequences",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/automation/trigger",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": "{{ $json }}"
+        }
+      },
+      "id": "execute-automation-trigger",
+      "name": "Execute Automation Trigger",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2800,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process failed/rejected payment\nconst paymentData = $('process-mercadopago-payment').item?.json || $('process-payment-webhook').item.json;\nconst clientData = $('find-client-and-payment').item.json;\n\nconst failureData = {\n  clientId: clientData.id,\n  clientName: clientData.name,\n  clientEmail: clientData.email,\n  clientPhone: clientData.phone,\n  paymentId: paymentData.paymentId,\n  amount: paymentData.amount,\n  currency: paymentData.currency,\n  method: paymentData.method,\n  status: paymentData.status,\n  statusDetail: paymentData.statusDetail,\n  rejectionReason: getRejectReason(paymentData.statusDetail),\n  suggestion: getSuggestion(paymentData.statusDetail),\n  retryPossible: isRetryPossible(paymentData.statusDetail),\n  processedAt: new Date().toISOString()\n};\n\nfunction getRejectReason(detail) {\n  const reasons = {\n    'cc_rejected_insufficient_amount': 'Saldo insuficiente no cartão',\n    'cc_rejected_bad_filled_card_number': 'Número do cartão incorreto',\n    'cc_rejected_bad_filled_date': 'Data de validade incorreta',\n    'cc_rejected_bad_filled_security_code': 'Código de segurança incorreto',\n    'cc_rejected_bad_filled_other': 'Dados do cartão incorretos',\n    'cc_rejected_blacklist': 'Cartão bloqueado',\n    'cc_rejected_expired': 'Cartão vencido',\n    'cc_rejected_high_risk': 'Transação considerada de alto risco'\n  };\n  return reasons[detail] || 'Falha no processamento';\n}\n\nfunction getSuggestion(detail) {\n  const suggestions = {\n    'cc_rejected_insufficient_amount': 'Verifique o saldo ou use outro cartão',\n    'cc_rejected_bad_filled_card_number': 'Confira o número do cartão',\n    'cc_rejected_bad_filled_date': 'Verifique a data de validade',\n    'cc_rejected_bad_filled_security_code': 'Confira o CVV do cartão',\n    'cc_rejected_bad_filled_other': 'Revise todos os dados do cartão',\n    'cc_rejected_blacklist': 'Entre em contato com seu banco',\n    'cc_rejected_expired': 'Use um cartão válido',\n    'cc_rejected_high_risk': 'Tente novamente ou use outro método'\n  };\n  return suggestions[detail] || 'Tente novamente ou use outro método de pagamento';\n}\n\nfunction isRetryPossible(detail) {\n  const retryable = [\n    'cc_rejected_bad_filled_card_number',\n    'cc_rejected_bad_filled_date', \n    'cc_rejected_bad_filled_security_code',\n    'cc_rejected_bad_filled_other',\n    'cc_rejected_high_risk'\n  ];\n  return retryable.includes(detail);\n}\n\nreturn [{ json: failureData }];"
+      },
+      "id": "process-failed-payment",
+      "name": "Process Failed Payment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'log_failed_payment',\n  data: {\n    clientId: $json.clientId,\n    paymentId: $json.paymentId,\n    eventType: 'PAYMENT_FAILED',\n    amount: $json.amount,\n    currency: $json.currency,\n    method: $json.method,\n    status: $json.status,\n    failureReason: $json.rejectionReason,\n    transactionData: JSON.stringify($json),\n    createdAt: $json.processedAt\n  }\n}) }}"
+      },
+      "id": "log-failed-payment",
+      "name": "Log Failed Payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare failure recovery notifications\nconst data = $json;\n\nconst whatsappMessage = `😔 Oops! Tivemos um problema com seu pagamento\\n\\n` +\n  `Olá ${data.clientName},\\n\\n` +\n  `❌ Pagamento de ${data.currency} ${data.amount.toLocaleString('pt-BR')} não foi aprovado\\n\\n` +\n  `🔍 *Motivo:* ${data.rejectionReason}\\n` +\n  `💡 *Solução:* ${data.suggestion}\\n\\n` +\n  `${data.retryPossible ? \n    '🔄 Você pode tentar novamente clicando aqui: visa2any.com/payment\\n\\n💳 Ou experimente outro método de pagamento' :\n    '📞 Entre em contato conosco para resolver: (11) 99999-9999'\\n\\n}` +\n  `🤝 Estamos aqui para ajudar!`;\n\nconst teamAlert = `⚠️ *PAGAMENTO REJEITADO* ⚠️\\n\\n` +\n  `👤 *Cliente:* ${data.clientName}\\n` +\n  `💵 *Valor:* ${data.currency} ${data.amount.toLocaleString('pt-BR')}\\n` +\n  `💳 *Método:* ${data.method}\\n` +\n  `❌ *Status:* ${data.status}\\n` +\n  `🔍 *Motivo:* ${data.rejectionReason}\\n` +\n  `💡 *Sugestão:* ${data.suggestion}\\n` +\n  `🔄 *Retry Possível:* ${data.retryPossible ? 'Sim' : 'Não'}\\n\\n` +\n  `📞 *Ação:* ${data.retryPossible ? 'Cliente pode tentar novamente' : 'CONTATO MANUAL NECESSÁRIO'}\\n` +\n  `🆔 *ID Pagamento:* ${data.paymentId}`;\n\nreturn [{\n  json: {\n    ...data,\n    notifications: {\n      whatsappMessage,\n      teamAlert\n    }\n  }\n}];"
+      },
+      "id": "prepare-failure-notifications",
+      "name": "Prepare Failure Notifications",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/whatsapp/send",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Webhook-Secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.notifications.whatsappMessage }}",
+            "priority": "HIGH",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "PAYMENT_FAILURE_RECOVERY"
+          }
+        }
+      },
+      "id": "send-failure-whatsapp",
+      "name": "Send Failure WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.retryPossible }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "retry-possible-check",
+      "name": "Retry Possible?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "amount": 4,
+        "unit": "hours"
+      },
+      "id": "wait-retry-delay",
+      "name": "Wait Retry Delay",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/whatsapp/send",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Webhook-Secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "🔄 Lembrete: Seu pagamento ainda está pendente\\n\\nOlá {{ $json.clientName }},\\n\\nNotamos que você tentou fazer um pagamento há algumas horas.\\n\\n💡 Que tal tentar novamente?\\n{{ $json.suggestion }}\\n\\n🔗 Link para pagamento: visa2any.com/payment\\n\\n💬 Precisa de ajuda? Responda esta mensagem!",
+            "priority": "MEDIUM",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "PAYMENT_RETRY_REMINDER"
+          }
+        }
+      },
+      "id": "send-retry-reminder",
+      "name": "Send Retry Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2600,
+        50
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Payment Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Payment Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Payment Webhook": {
+      "main": [
+        [
+          {
+            "node": "Payment Source Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payment Source Router": {
+      "main": [
+        [
+          {
+            "node": "Fetch MercadoPago Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Client and Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch MercadoPago Details": {
+      "main": [
+        [
+          {
+            "node": "Process MercadoPago Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process MercadoPago Payment": {
+      "main": [
+        [
+          {
+            "node": "Find Client and Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Client and Payment": {
+      "main": [
+        [
+          {
+            "node": "Payment Status Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payment Status Router": {
+      "main": [
+        [
+          {
+            "node": "Process Successful Payment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Failed Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Successful Payment": {
+      "main": [
+        [
+          {
+            "node": "Update Client Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Payment Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Client Status": {
+      "main": [
+        [
+          {
+            "node": "Prepare Success Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Payment Event": {
+      "main": [
+        [
+          {
+            "node": "Prepare Success Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Success Notifications": {
+      "main": [
+        [
+          {
+            "node": "Send Success WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Success Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Success WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Trigger Automation Sequences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Success Email": {
+      "main": [
+        [
+          {
+            "node": "Trigger Automation Sequences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Automation Sequences": {
+      "main": [
+        [
+          {
+            "node": "Execute Automation Trigger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Failed Payment": {
+      "main": [
+        [
+          {
+            "node": "Log Failed Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Failed Payment": {
+      "main": [
+        [
+          {
+            "node": "Prepare Failure Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Failure Notifications": {
+      "main": [
+        [
+          {
+            "node": "Send Failure WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Retry Possible?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Possible?": {
+      "main": [
+        [
+          {
+            "node": "Wait Retry Delay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Retry Delay": {
+      "main": [
+        [
+          {
+            "node": "Send Retry Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "timezone": "America/Sao_Paulo",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {},
+  "tags": [
+    {
+      "id": "payment-automation",
+      "name": "Payment Automation",
+      "description": ""
+    },
+    {
+      "id": "visa2any",
+      "name": "Visa2Any",
+      "description": ""
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-19T08:00:00.000Z",
+  "versionId": "1"
+}

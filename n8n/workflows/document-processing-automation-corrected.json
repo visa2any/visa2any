@@ -1,0 +1,503 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Document Processing Automation - Corrected",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "document-uploaded",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "id": "document-upload-webhook",
+      "name": "Document Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "document-uploaded",
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate document upload data\nconst body = $json.body;\nconst headers = $json.headers;\n\n// Validate webhook secret\nif (headers['x-webhook-secret'] !== 'visa2any_webhook_secret_2024') {\n  throw new Error('Invalid webhook secret');\n}\n\n// Extract document data\nconst documentData = {\n  documentId: body.documentId,\n  clientId: body.clientId,\n  fileName: body.fileName,\n  fileUrl: body.fileUrl,\n  fileType: body.fileType,\n  documentType: body.documentType, // PASSPORT, ID_CARD, BIRTH_CERTIFICATE, etc.\n  targetCountry: body.targetCountry,\n  visaType: body.visaType,\n  fileSize: body.fileSize,\n  uploadedAt: new Date().toISOString()\n};\n\n// Validate required fields\nconst requiredFields = ['documentId', 'clientId', 'fileName', 'fileUrl', 'documentType'];\nfor (const field of requiredFields) {\n  if (!documentData[field]) {\n    throw new Error(`Missing required field: ${field}`);\n  }\n}\n\n// Determine processing priority based on document type\nlet priority = 'medium';\nif (['PASSPORT', 'VISA'].includes(documentData.documentType)) {\n  priority = 'high';\n} else if (['FINANCIAL_STATEMENT', 'EMPLOYMENT_LETTER'].includes(documentData.documentType)) {\n  priority = 'medium';\n} else {\n  priority = 'low';\n}\n\nreturn [{ json: { ...documentData, priority } }];"
+      },
+      "id": "validate-document-data",
+      "name": "Validate Document Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.fileUrl }}",
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "responseType": "arraybuffer"
+        }
+      },
+      "id": "download-document",
+      "name": "Download Document",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create file hash for caching and duplicate detection\nconst crypto = require('crypto');\nconst documentData = $('validate-document-data').item.json;\nconst fileBuffer = Buffer.from($json.data);\n\n// Generate MD5 hash of file content\nconst fileHash = crypto.createHash('md5').update(fileBuffer).digest('hex');\n\n// Convert to base64 for API calls\nconst base64Content = fileBuffer.toString('base64');\n\nreturn [{\n  json: {\n    ...documentData,\n    fileHash,\n    base64Content,\n    fileBuffer: fileBuffer,\n    processStarted: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "prepare-file-data",
+      "name": "Prepare File Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'check_validation_cache',\n  data: {\n    fileHash: $json.fileHash,\n    query: 'SELECT * FROM document_validation_cache WHERE file_hash = ? AND expires_at > ? LIMIT 1',\n    values: [$json.fileHash, new Date().toISOString()]\n  }\n}) }}"
+      },
+      "id": "check-validation-cache",
+      "name": "Check Validation Cache",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        800,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('check-validation-cache').item?.json?.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "cache-miss-check",
+      "name": "Cache Miss Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://vision.googleapis.com/v1/images:annotate",
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.GOOGLE_VISION_API_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "requests": [
+              {
+                "image": {
+                  "content": "={{ $('prepare-file-data').item.json.base64Content }}"
+                },
+                "features": [
+                  {
+                    "type": "TEXT_DETECTION",
+                    "maxResults": 50
+                  },
+                  {
+                    "type": "DOCUMENT_TEXT_DETECTION",
+                    "maxResults": 50
+                  }
+                ],
+                "imageContext": {
+                  "languageHints": [
+                    "pt",
+                    "en",
+                    "es"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "id": "google-vision-ocr",
+      "name": "Google Vision OCR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process OCR results and extract structured data\nconst documentData = $('prepare-file-data').item.json;\nconst ocrResponse = $json;\n\nif (!ocrResponse.responses || !ocrResponse.responses[0]) {\n  throw new Error('No OCR response received');\n}\n\nconst response = ocrResponse.responses[0];\nconst fullText = response.fullTextAnnotation?.text || '';\nconst textAnnotations = response.textAnnotations || [];\n\n// Extract key information based on document type\nlet extractedData = {\n  fullText: fullText,\n  confidence: 0,\n  extractedFields: {},\n  validationResults: {},\n  issues: [],\n  recommendations: []\n};\n\n// Document type specific extraction\nswitch (documentData.documentType) {\n  case 'PASSPORT':\n    extractedData = extractPassportData(fullText, textAnnotations);\n    break;\n  case 'ID_CARD':\n    extractedData = extractIdCardData(fullText, textAnnotations);\n    break;\n  case 'BIRTH_CERTIFICATE':\n    extractedData = extractBirthCertificateData(fullText, textAnnotations);\n    break;\n  case 'FINANCIAL_STATEMENT':\n    extractedData = extractFinancialData(fullText, textAnnotations);\n    break;\n  case 'EMPLOYMENT_LETTER':\n    extractedData = extractEmploymentData(fullText, textAnnotations);\n    break;\n  default:\n    extractedData = extractGenericData(fullText, textAnnotations);\n}\n\n// Calculate overall confidence score\nconst avgConfidence = textAnnotations.length > 0 ? \n  textAnnotations.reduce((sum, annotation) => sum + (annotation.confidence || 0), 0) / textAnnotations.length : 0;\n\nextractedData.confidence = avgConfidence;\n\nfunction extractPassportData(text, annotations) {\n  const data = {\n    fullText: text,\n    extractedFields: {},\n    validationResults: {},\n    issues: [],\n    recommendations: []\n  };\n  \n  // Extract passport number (format varies by country)\n  const passportRegex = /(?:passport\\s*(?:no|number)?[:\\s]*)([A-Z0-9]{6,12})/gi;\n  const passportMatch = text.match(passportRegex);\n  if (passportMatch) {\n    data.extractedFields.passportNumber = passportMatch[0].replace(/.*[:\\s]/, '');\n  }\n  \n  // Extract dates\n  const dateRegex = /(\\d{1,2}[\\/\\-\\.\\s]\\d{1,2}[\\/\\-\\.\\s]\\d{2,4})/g;\n  const dates = text.match(dateRegex) || [];\n  data.extractedFields.dates = dates;\n  \n  // Extract names (uppercase text blocks)\n  const nameRegex = /[A-Z\\s]{10,}/g;\n  const names = text.match(nameRegex) || [];\n  data.extractedFields.names = names;\n  \n  // Validation\n  if (!data.extractedFields.passportNumber) {\n    data.issues.push('Número do passaporte não detectado');\n    data.recommendations.push('Verifique se a imagem está nítida e bem iluminada');\n  }\n  \n  if (dates.length < 2) {\n    data.issues.push('Datas de emissão/validade não detectadas');\n  }\n  \n  data.validationResults.isValid = data.issues.length === 0;\n  data.validationResults.completeness = Object.keys(data.extractedFields).length / 5 * 100;\n  \n  return data;\n}\n\nfunction extractIdCardData(text, annotations) {\n  const data = {\n    fullText: text,\n    extractedFields: {},\n    validationResults: {},\n    issues: [],\n    recommendations: []\n  };\n  \n  // Extract CPF/RG patterns\n  const cpfRegex = /(\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}|\\d{11})/g;\n  const rgRegex = /(\\d{1,2}\\.\\d{3}\\.\\d{3}\\-[\\dXx])/g;\n  \n  const cpfMatch = text.match(cpfRegex);\n  const rgMatch = text.match(rgRegex);\n  \n  if (cpfMatch) data.extractedFields.cpf = cpfMatch[0];\n  if (rgMatch) data.extractedFields.rg = rgMatch[0];\n  \n  // Validation\n  if (!cpfMatch && !rgMatch) {\n    data.issues.push('CPF ou RG não detectado');\n    data.recommendations.push('Certifique-se de que o documento está completo na imagem');\n  }\n  \n  data.validationResults.isValid = data.issues.length === 0;\n  return data;\n}\n\nfunction extractBirthCertificateData(text, annotations) {\n  const data = {\n    fullText: text,\n    extractedFields: {},\n    validationResults: {},\n    issues: [],\n    recommendations: []\n  };\n  \n  // Look for birth certificate specific terms\n  const birthTerms = ['nascimento', 'birth', 'certidão', 'certificate'];\n  const hasValidTerms = birthTerms.some(term => \n    text.toLowerCase().includes(term.toLowerCase())\n  );\n  \n  if (!hasValidTerms) {\n    data.issues.push('Documento não parece ser uma certidão de nascimento');\n  }\n  \n  data.validationResults.isValid = data.issues.length === 0;\n  return data;\n}\n\nfunction extractFinancialData(text, annotations) {\n  const data = {\n    fullText: text,\n    extractedFields: {},\n    validationResults: {},\n    issues: [],\n    recommendations: []\n  };\n  \n  // Extract monetary values\n  const moneyRegex = /(?:R\\$|\\$|€|£)\\s?([\\d\\.,]+)/g;\n  const amounts = text.match(moneyRegex) || [];\n  data.extractedFields.amounts = amounts;\n  \n  // Look for bank-related terms\n  const bankTerms = ['banco', 'bank', 'saldo', 'balance', 'extrato', 'statement'];\n  const hasBankTerms = bankTerms.some(term => \n    text.toLowerCase().includes(term.toLowerCase())\n  );\n  \n  if (!hasBankTerms) {\n    data.issues.push('Documento não parece ser um comprovante financeiro');\n  }\n  \n  if (amounts.length === 0) {\n    data.issues.push('Valores monetários não detectados');\n  }\n  \n  data.validationResults.isValid = data.issues.length === 0;\n  return data;\n}\n\nfunction extractEmploymentData(text, annotations) {\n  const data = {\n    fullText: text,\n    extractedFields: {},\n    validationResults: {},\n    issues: [],\n    recommendations: []\n  };\n  \n  // Look for employment-related terms\n  const employmentTerms = ['empresa', 'company', 'trabalho', 'employment', 'cargo', 'position', 'salário', 'salary'];\n  const hasEmploymentTerms = employmentTerms.some(term => \n    text.toLowerCase().includes(term.toLowerCase())\n  );\n  \n  if (!hasEmploymentTerms) {\n    data.issues.push('Documento não parece ser uma carta de trabalho');\n  }\n  \n  data.validationResults.isValid = data.issues.length === 0;\n  return data;\n}\n\nfunction extractGenericData(text, annotations) {\n  return {\n    fullText: text,\n    extractedFields: { text: text },\n    validationResults: { isValid: true, completeness: 50 },\n    issues: [],\n    recommendations: ['Documento processado genericamente - considere especificar o tipo correto']\n  };\n}\n\nreturn [{\n  json: {\n    ...documentData,\n    ocrResults: extractedData,\n    processedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "process-ocr-results",
+      "name": "Process OCR Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate document against government APIs when applicable\nconst data = $json;\nconst extractedFields = data.ocrResults.extractedFields;\nconst validationPromises = [];\nconst validationResults = {\n  apiValidations: {},\n  issues: [...data.ocrResults.issues],\n  recommendations: [...data.ocrResults.recommendations]\n};\n\n// CPF Validation using algorithm\nif (extractedFields.cpf) {\n  const cpf = extractedFields.cpf.replace(/\\D/g, '');\n  \n  // Basic CPF algorithm validation\n  const isValidCPF = validateCPFAlgorithm(cpf);\n  validationResults.apiValidations.cpf = {\n    number: extractedFields.cpf,\n    algorithmValid: isValidCPF,\n    apiChecked: false\n  };\n  \n  if (!isValidCPF) {\n    validationResults.issues.push('CPF com formato inválido');\n  }\n}\n\n// Document expiry validation\nif (extractedFields.dates && extractedFields.dates.length > 0) {\n  const dates = extractedFields.dates.map(d => new Date(d)).filter(d => !isNaN(d));\n  const today = new Date();\n  const futureDate = new Date(today.getTime() + 6 * 30 * 24 * 60 * 60 * 1000); // 6 months from now\n  \n  const expiryDates = dates.filter(d => d > today);\n  const expiringSoon = expiryDates.filter(d => d < futureDate);\n  \n  validationResults.apiValidations.expiry = {\n    hasValidDates: expiryDates.length > 0,\n    expiringSoon: expiringSoon.length > 0,\n    expiryDates: expiryDates.map(d => d.toISOString())\n  };\n  \n  if (expiryDates.length === 0) {\n    validationResults.issues.push('Documento aparenta estar vencido');\n  } else if (expiringSoon.length > 0) {\n    validationResults.recommendations.push('Documento vence em menos de 6 meses - considere renovar');\n  }\n}\n\n// Overall validation score\nconst issueCount = validationResults.issues.length;\nconst confidence = data.ocrResults.confidence || 0;\nconst validationScore = Math.max(0, (confidence * 100) - (issueCount * 15));\n\nfunction validateCPFAlgorithm(cpf) {\n  if (cpf.length !== 11) return false;\n  if (/^(\\d)\\1{10}$/.test(cpf)) return false; // All digits the same\n  \n  let sum = 0;\n  for (let i = 0; i < 9; i++) {\n    sum += parseInt(cpf.charAt(i)) * (10 - i);\n  }\n  let remainder = 11 - (sum % 11);\n  if (remainder === 10 || remainder === 11) remainder = 0;\n  if (remainder !== parseInt(cpf.charAt(9))) return false;\n  \n  sum = 0;\n  for (let i = 0; i < 10; i++) {\n    sum += parseInt(cpf.charAt(i)) * (11 - i);\n  }\n  remainder = 11 - (sum % 11);\n  if (remainder === 10 || remainder === 11) remainder = 0;\n  return remainder === parseInt(cpf.charAt(10));\n}\n\nreturn [{\n  json: {\n    ...data,\n    finalValidation: validationResults,\n    validationScore: validationScore,\n    validatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "validate-against-apis",
+      "name": "Validate Against APIs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/n8n/webhook",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "x-webhook-secret": "visa2any_webhook_secret_2024"
+          }
+        },
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  action: 'cache_validation_results',\n  data: {\n    documentId: $json.documentId,\n    fileHash: $json.fileHash,\n    ocrText: $json.ocrResults.fullText.slice(0, 1000),\n    validationResult: JSON.stringify($json.finalValidation),\n    confidenceScore: $json.validationScore,\n    processingTimeMs: new Date().getTime() - new Date($json.processStarted).getTime(),\n    validatedAt: $json.validatedAt,\n    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),\n    query: 'INSERT INTO document_validation_cache (document_id, file_hash, ocr_text, validation_result, confidence_score, processing_time_ms, validated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'\n  }\n}) }}"
+      },
+      "id": "cache-validation-results",
+      "name": "Cache Validation Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1800,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/documents/{{ $json.documentId }}",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "status": "={{ $json.validationScore >= 85 ? 'APPROVED' : ($json.validationScore >= 60 ? 'PENDING_REVIEW' : 'REJECTED') }}",
+            "ocrText": "={{ $json.ocrResults.fullText }}",
+            "extractedData": "={{ JSON.stringify($json.ocrResults.extractedFields) }}",
+            "validationResults": "={{ JSON.stringify($json.finalValidation) }}",
+            "validationScore": "={{ $json.validationScore }}",
+            "confidence": "={{ $json.ocrResults.confidence }}",
+            "processedAt": "={{ $json.validatedAt }}",
+            "processedBy": "N8N_AUTOMATION"
+          }
+        },
+        "method": "PATCH"
+      },
+      "id": "update-document-status",
+      "name": "Update Document Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/whatsapp/send",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Webhook-Secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "type": "document_validation_complete",
+            "source": "document_processing_automation",
+            "data": {
+              "clientId": "={{ $json.clientId }}",
+              "documentId": "={{ $json.documentId }}",
+              "validationResult": {
+                "isValid": "={{ $json.validationScore >= 60 }}",
+                "score": "={{ $json.validationScore }}",
+                "confidence": "={{ $json.ocrResults.confidence }}"
+              },
+              "issues": "={{ $json.finalValidation.issues }}",
+              "recommendations": "={{ $json.finalValidation.recommendations }}"
+            }
+          }
+        }
+      },
+      "id": "notify-validation-complete",
+      "name": "Notify Validation Complete",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2200,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Use cached validation results\nconst documentData = $('prepare-file-data').item.json;\nconst cachedData = $json;\n\nconst cachedValidation = JSON.parse(cachedData.validation_result);\n\nreturn [{\n  json: {\n    ...documentData,\n    ocrResults: {\n      fullText: cachedData.ocr_text,\n      confidence: cachedData.confidence_score / 100\n    },\n    finalValidation: cachedValidation,\n    validationScore: cachedData.confidence_score,\n    validatedAt: cachedData.validated_at,\n    fromCache: true\n  }\n}];"
+      },
+      "id": "use-cached-results",
+      "name": "Use Cached Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare client notification based on validation results\nconst data = $json;\nconst isFromCache = data.fromCache || false;\nconst score = data.validationScore;\nconst issues = data.finalValidation.issues || [];\nconst recommendations = data.finalValidation.recommendations || [];\n\nlet status = 'PENDING';\nlet title = 'Documento em Análise';\nlet message = 'Seu documento está sendo analisado.';\nlet priority = 'MEDIUM';\n\nif (score >= 85) {\n  status = 'APPROVED';\n  title = '✅ Documento Aprovado!';\n  message = `Seu ${data.documentType.toLowerCase()} foi validado com sucesso. Score: ${score.toFixed(1)}%`;\n  priority = 'HIGH';\n} else if (score >= 60) {\n  status = 'PENDING_REVIEW';\n  title = '⏳ Documento em Revisão';\n  message = `Seu ${data.documentType.toLowerCase()} precisa de revisão manual. Score: ${score.toFixed(1)}%`;\n  priority = 'MEDIUM';\n} else {\n  status = 'REJECTED';\n  title = '❌ Documento Rejeitado';\n  message = `Seu ${data.documentType.toLowerCase()} precisa ser reenviado. Problemas encontrados: ${issues.join(', ')}`;\n  priority = 'HIGH';\n}\n\nif (recommendations.length > 0) {\n  message += `\\n\\nRecomendações: ${recommendations.join(', ')}`;\n}\n\nconst notificationData = {\n  clientId: data.clientId,\n  documentId: data.documentId,\n  status,\n  title,\n  message,\n  priority,\n  score,\n  issues,\n  recommendations,\n  processedInstantly: isFromCache\n};\n\nreturn [{ json: notificationData }];"
+      },
+      "id": "prepare-client-notification",
+      "name": "Prepare Client Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/whatsapp/send",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Webhook-Secret": "visa2any_webhook_secret_2024"
+          },
+          "body": {
+            "phone": "{{ $('validate-document-data').item.json.clientPhone }}",
+            "message": "{{ $json.title }}\\n\\n{{ $json.message }}",
+            "priority": "{{ $json.priority }}",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "DOCUMENT_VALIDATION_RESULT"
+          }
+        }
+      },
+      "id": "send-client-notification",
+      "name": "Send Client Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2200,
+        0
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Document Upload Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Document Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Document Data": {
+      "main": [
+        [
+          {
+            "node": "Download Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Document": {
+      "main": [
+        [
+          {
+            "node": "Prepare File Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare File Data": {
+      "main": [
+        [
+          {
+            "node": "Check Validation Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Validation Cache": {
+      "main": [
+        [
+          {
+            "node": "Cache Miss Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache Miss Check": {
+      "main": [
+        [
+          {
+            "node": "Google Vision OCR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Use Cached Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vision OCR": {
+      "main": [
+        [
+          {
+            "node": "Process OCR Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process OCR Results": {
+      "main": [
+        [
+          {
+            "node": "Validate Against APIs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Against APIs": {
+      "main": [
+        [
+          {
+            "node": "Cache Validation Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache Validation Results": {
+      "main": [
+        [
+          {
+            "node": "Update Document Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Document Status": {
+      "main": [
+        [
+          {
+            "node": "Prepare Client Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Validation Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use Cached Results": {
+      "main": [
+        [
+          {
+            "node": "Update Document Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Client Notification": {
+      "main": [
+        [
+          {
+            "node": "Send Client Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  }
+}

@@ -16,8 +16,7 @@ export async function GET(
       return NextResponse.json(
         { error: 'Parâmetro reference é obrigatório' },
         { status: 400 }
-      )
-    }
+      )}
     
     const status = await partnerIntegrationService.checkStatus(partnerId, reference)
     
@@ -28,14 +27,11 @@ export async function GET(
       status: status.status,
       details: status.details,
       nextSteps: status.nextSteps,
-      lastChecked: new Date().toISOString()
-    })
+      lastChecked: new Date().toISOString()})
 
   } catch (error) {
     console.error('Erro ao verificar status:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

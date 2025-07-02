@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const targetId = searchParams.get('targetId')
     if (action === 'targets') {
       // Listar targets disponíveis
-      const targets = webScrapingService.getAvailableTargets()
+      const targets = webScrapingService.getTargets()
       
       return NextResponse.json({
         success: true,
@@ -18,8 +18,7 @@ export async function GET(request: NextRequest) {
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
         message: 'Targets de scraping listados'
-      })
-    }
+      })}
     if (action === 'slots' && targetId) {
       // Buscar slots via scraping
       const result = await webScrapingService.scrapeAvailableSlots(targetId)
@@ -32,8 +31,7 @@ export async function GET(request: NextRequest) {
         source: result.source,
         warning: 'Dados obtidos via web scraping - podem estar desatualizados',
         disclaimer: 'Este serviço é apenas para fins informativos'
-      })
-    }
+      })}
     
     return NextResponse.json(
       { error: 'Parâmetro action deve ser "targets" ou "slots" (com targetId)' },
@@ -47,7 +45,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
 
 // POST - Configurar scraping
 
@@ -72,7 +69,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-      const success = webScrapingService.setTargetEnabled(targetId, enabled, legalConfirmation)
+      const success = await webScrapingService.setTargetStatus(targetId, enabled)
       
       if (success) {
         return NextResponse.json({
@@ -100,7 +97,9 @@ export async function POST(request: NextRequest) {
       }
 
       // Iniciar monitoramento em background
-      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30)
+      webScrapingService.startMonitoring(targetIds, intervalMinutes || 30, (result) => {
+        console.log('Monitoramento scraping:', result)
+      })
       
       return NextResponse.json({
         success: true,
@@ -111,8 +110,7 @@ export async function POST(request: NextRequest) {
         },
         message: 'Monitoramento iniciado',
         warning: 'Monitoramento contínuo pode ser detectado pelos sites'
-      })
-    }
+      })}
     return NextResponse.json(
       { error: 'Action deve ser "configure" ou "start_monitoring"' },
       { status: 400 }

@@ -29,8 +29,7 @@ Ou me chame no WhatsApp: {whatsappLink}
 Att,
 Ana Silva
 Consultora Sênior Visa2Any
-📱 +55 11 99999-9999`
-    },
+📱 +55 11 99999-9999`},
     {
       delay: 60, // 1 hora depois se não respondeu
       subject: '⏰ {name}, restam apenas algumas horas...',
@@ -47,8 +46,7 @@ Vou guardar uma vaga até às 18h de hoje.
 Agende agora: {schedulingLink}
 
 Ana Silva
-Visa2Any`
-    }
+Visa2Any`}
   ],
 
   warm_lead_nurturing: [
@@ -75,8 +73,7 @@ Clique aqui para começar: {aiAnalysisLink}
 É 100% gratuito e você recebe o resultado na hora!
 
 Att,
-Equipe Visa2Any`
-    },
+Equipe Visa2Any`},
     {
       delay: 1440, // 24 horas
       subject: '📚 {name}, baixe nossos guias exclusivos',
@@ -96,8 +93,7 @@ Pegue os seus aqui: {leadMagnetsLink}
 
 PS: Tudo 100% gratuito, sem pegadinha!
 
-Equipe Visa2Any`
-    },
+Equipe Visa2Any`},
     {
       delay: 4320, // 3 dias
       subject: '🎯 {name}, vamos criar sua estratégia?',
@@ -118,8 +114,7 @@ Apenas R$ 297 (parcelamos em 12x)
 Quero agendar sua consultoria: {consultationLink}
 
 Ana Silva
-Consultora Sênior`
-    }
+Consultora Sênior`}
   ],
 
   cold_lead_education: [
@@ -143,8 +138,7 @@ Baixe tudo aqui: {educationalContentLink}
 Nos próximos dias vou te enviar mais dicas valiosas!
 
 Att,
-Equipe Visa2Any`
-    },
+Equipe Visa2Any`},
     {
       delay: 2880, // 2 dias
       subject: '💡 {name}, dica #1: Por onde começar',
@@ -164,8 +158,7 @@ Nossa IA Sofia pode fazer essa análise em 15 minutos:
 
 Próxima dica chegará em 2 dias.
 
-Equipe Visa2Any`
-    },
+Equipe Visa2Any`},
     {
       delay: 7200, // 5 dias
       subject: '🔍 {name}, dica #2: Evite estes erros fatais',
@@ -185,10 +178,8 @@ Mais de 10.000 pessoas já evitaram reprovações com esse material!
 
 Dica #3 chega em breve...
 
-Equipe Visa2Any`
-    }
-  ]
-}
+Equipe Visa2Any`}
+  ]}
 
 export async function POST(request: NextRequest) {
   try {
@@ -197,17 +188,13 @@ export async function POST(request: NextRequest) {
     
     if (!sequence || !email || !name) {
       return NextResponse.json({
-        error: 'Dados obrigatórios faltando'
-      }, { status: 400 })
-    }
+        error: 'Dados obrigatórios faltando'}, { status: 400 })}
 
     const templates = EMAIL_TEMPLATES[sequence as keyof typeof EMAIL_TEMPLATES]
     
     if (!templates) {
       return NextResponse.json({
-        error: 'Sequência de email não encontrada'
-      }, { status: 404 })
-    }
+        error: 'Sequência de email não encontrada'}, { status: 404 })}
 
     // Calcular score se não fornecido
     const score = responses ? calculateScoreFromResponses(responses) : 70
@@ -223,8 +210,7 @@ export async function POST(request: NextRequest) {
         destinationCountry,
         score,
         urgency,
-        budget
-      })
+        budget})
 
       const processedBody = processTemplate(template.template, {
         name,
@@ -249,33 +235,25 @@ export async function POST(request: NextRequest) {
         sendAt,
         sequence,
         clientId,
-        templateIndex: templates.indexOf(template)
-      })
-    }
+        templateIndex: templates.indexOf(template)})}
 
     return NextResponse.json({
       message: `Sequência ${sequence} ativada para ${email}`,
-      emailsScheduled: templates.length
-    })
+      emailsScheduled: templates.length})
 
   } catch (error) {
     console.error('Erro ao processar sequência de emails:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}
 
 function processTemplate(template: string, variables: Record<string, any>): string {
   let processed = template
   
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`\\{${key}\\}`, 'g')
-    processed = processed.replace(regex, String(value))
-  })
+    processed = processed.replace(regex, String(value))})
   
-  return processed
-}
+  return processed}
 
 function calculateScoreFromResponses(responses: any): number {
   // Lógica simplificada de cálculo de score
@@ -288,42 +266,34 @@ function calculateScoreFromResponses(responses: any): number {
       'Pós-graduação': 15,
       'Superior completo': 12,
       'Superior incompleto': 8,
-      'Ensino médio': 5
-    }
-    score += educationScores[responses.education] || 5
-  }
+      'Ensino médio': 5}
+    score += educationScores[responses.education] || 5}
 
   if (responses.budget) {
     const budgetScores: Record<string, number> = {
       'Acima de R$ 500.000': 15,
       'R$ 300.000 - R$ 500.000': 12,
       'R$ 100.000 - R$ 300.000': 8,
-      'R$ 50.000 - R$ 100.000': 5
-    }
-    score += budgetScores[responses.budget] || 2
-  }
+      'R$ 50.000 - R$ 100.000': 5}
+    score += budgetScores[responses.budget] || 2}
 
   if (responses.urgency) {
     const urgencyScores: Record<string, number> = {
       'Extremamente urgente (preciso sair já)': 10,
       'Muito urgente (próximos 3 meses)': 8,
-      'Urgente (próximos 6 meses)': 6
-    }
-    score += urgencyScores[responses.urgency] || 3
-  }
+      'Urgente (próximos 6 meses)': 6}
+    score += urgencyScores[responses.urgency] || 3}
 
-  return Math.min(score, 100)
-}
+  return Math.min(score, 100)}
 
 async function scheduleEmail(emailData: {
-  to: string
-  subject: string
-  body: string
-  sendAt: Date
+  to: string,
+  subject: string,
+  body: string,
+  sendAt: Date,
   sequence: string
-  clientId?: string
-  templateIndex: number
-}) {
+  clientId?: string,
+  templateIndex: number}) {
   try {
     // Em produção usar serviço de queue como Bull/Redis
     // Por enquanto simular agendamento
@@ -333,13 +303,11 @@ async function scheduleEmail(emailData: {
       subject: emailData.subject,
       sendAt: emailData.sendAt,
       sequence: emailData.sequence,
-      templateIndex: emailData.templateIndex
-    })
+      templateIndex: emailData.templateIndex})
 
     // Se o delay for 0 (imediato) enviar agora
     if (emailData.sendAt <= new Date()) {
-      await sendEmailNow(emailData)
-    }
+      await sendEmailNow(emailData)}
 
     // Salvar na base para controle
     if (emailData.clientId) {
@@ -351,23 +319,17 @@ async function scheduleEmail(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email agendado: ${emailData.subject}`,
-          completedAt: new Date()
-        }
-      })
-    }
+          completedAt: new Date()}})}
 
   } catch (error) {
-    console.error('Erro ao agendar email:', error)
-  }
-}
+    console.error('Erro ao agendar email:', error)}
 
 async function sendEmailNow(emailData: {
-  to: string
-  subject: string
-  body: string
+  to: string,
+  subject: string,
+  body: string,
   sequence: string
-  clientId?: string
-}) {
+  clientId?: string}) {
   try {
     // Usar serviço de email (Resend, SendGrid, etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)
@@ -382,10 +344,7 @@ async function sendEmailNow(emailData: {
         html: emailData.body.replace(/\n/g, '<br>'),
         template: 'automation',
         variables: {
-          content: emailData.body
-        }
-      })
-    })
+          content: emailData.body}})})
 
     if (emailData.clientId) {
       await prisma.interaction.create({
@@ -396,12 +355,7 @@ async function sendEmailNow(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email enviado: ${emailData.subject}`,
-          completedAt: new Date()
-        }
-      })
-    }
+          completedAt: new Date()}})}
 
   } catch (error) {
-    console.error('Erro ao enviar email:', error)
-  }
-}
+    console.error('Erro ao enviar email:', error)}

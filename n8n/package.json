@@ -1,0 +1,35 @@
+{
+  "name": "visa2any-n8n-automation",
+  "version": "1.0.0",
+  "description": "Visa2Any N8N Automation System with WhatsApp Baileys",
+  "main": "services/whatsapp-api.js",
+  "scripts": {
+    "start": "node services/whatsapp-api.js",
+    "whatsapp": "node services/whatsapp-api.js",
+    "test": "node test/test-whatsapp.js",
+    "setup": "npm install && node setup/database-setup.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.6.0",
+    "qrcode-terminal": "^0.12.0",
+    "@hapi/boom": "^10.0.1",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "whatsapp",
+    "baileys",
+    "n8n",
+    "automation",
+    "visa2any"
+  ],
+  "author": "Visa2Any",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

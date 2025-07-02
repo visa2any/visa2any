@@ -15,8 +15,7 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Parâmetro consulate é obrigatório' },
         { status: 400 }
-      )
-    }
+      )}
     
     const result = await appointmentBookingService.cancelAppointment(appointmentId, consulate)
     
@@ -24,20 +23,15 @@ export async function DELETE(
       // TODO: Atualizar status no banco de dados
       return NextResponse.json({
         message: result.message,
-        cancelledAt: new Date().toISOString()
-      })
-    } else {
+        cancelledAt: new Date().toISOString()})} else {
       return NextResponse.json(
         { error: 'Erro ao cancelar agendamento' },
         { status: 400 }
-      )
-    }
+      )}
 
   } catch (error) {
     console.error('Erro ao cancelar agendamento:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

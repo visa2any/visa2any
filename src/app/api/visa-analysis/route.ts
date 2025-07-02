@@ -551,4 +551,5 @@ function getRecommendationLevel(score: number): string {
   if (score >= 85) return 'ALTA'
   if (score >= 70) return 'MÉDIA-ALTA'
   if (score >= 50) return 'MÉDIA'
-  return 'BAIXA'}
+  return 'BAIXA'
+}

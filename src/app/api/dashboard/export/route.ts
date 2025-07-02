@@ -9,8 +9,7 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    }
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })}
     
     const { searchParams } = new URL(request.url)
     const period = parseInt(searchParams.get('period') || '30')
@@ -21,8 +20,7 @@ export async function GET(request: NextRequest) {
     const [clients, consultations, payments] = await Promise.all([
       prisma.client.findMany({
         where: {
-          createdAt: { gte: startDate }
-        },
+          createdAt: { gte: startDate }},
         select: {
           id: true,
           name: true,
@@ -30,30 +28,21 @@ export async function GET(request: NextRequest) {
           phone: true,
           status: true,
           createdAt: true,
-          assignedUserId: true
-        }
-      }),
+          assignedUserId: true}}),
       prisma.consultation.findMany({
         where: {
-          createdAt: { gte: startDate }
-        },
+          createdAt: { gte: startDate }},
         include: {
           client: {
-            select: { name: true, email: true }
-          }
-        }
-      }),
+            select: { name: true, email: true }}}}),
       prisma.payment.findMany({
         where: {
-          createdAt: { gte: startDate }
-        },
+          createdAt: { gte: startDate }},
         select: {
           amount: true,
           currency: true,
           status: true,
-          createdAt: true
-        }
-      })
+          createdAt: true}})
     ])
 
     // Gerar CSV
@@ -101,12 +90,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse(csvContent, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`
-      }
-    })
+        'Content-Disposition': `attachment; filename="dashboard-export-${period}d.csv"`}})
 
   } catch (error) {
     console.error('Erro no export:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
-  }
-}
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })}

@@ -389,6 +389,28 @@ class NotificationService {
             <p>Estamos muito felizes por mais esta conquista!</p>
             <p>Atenciosamente,<br>Equipe Visa2Any</p>`
   }
+
+  async testConfiguration(): Promise<{
+    whatsapp: { configured: boolean; status: string }
+    email: { configured: boolean; status: string; provider: string }
+    overall: boolean
+  }> {
+    const whatsappConfigured = !!(this.whatsappConfig.token && this.whatsappConfig.phoneNumberId)
+    const emailConfigured = !!this.emailConfig.apiKey
+    
+    return {
+      whatsapp: {
+        configured: whatsappConfigured,
+        status: whatsappConfigured ? 'Configurado' : 'Token ou Phone Number ID não configurado'
+      },
+      email: {
+        configured: emailConfigured,
+        status: emailConfigured ? 'Configurado' : 'API Key não configurada',
+        provider: this.emailConfig.provider
+      },
+      overall: whatsappConfigured || emailConfigured
+    }
+  }
 }
 
 export const notificationService = new NotificationService()

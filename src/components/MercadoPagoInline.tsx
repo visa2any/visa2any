@@ -244,7 +244,7 @@ export default function MercadoPagoInline({
                 console.log('🎯 Resultado completo do pagamento:', result)
                 if (result.success) {
                   // Se for PIX
-                  mostrar QR code na tela e enviar email
+                  // mostrar QR code na tela e enviar email
                   if ((selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') && result.qr_code_base64) {
                     setPaymentResult(result)
                     setShowPixCode(true)
@@ -539,8 +539,7 @@ export default function MercadoPagoInline({
   }
 
   // Se PIX foi gerado
-
-  mostrar tela de QR code
+  // mostrar tela de QR code
   if (showPixCode && paymentResult) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">

@@ -11,8 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos country e visaType são obrigatórios' },
         { status: 400 }
-      )
-    }
+      )}
     
     switch (action) {
       case 'search_slots':
@@ -33,8 +32,7 @@ export async function POST(request: NextRequest) {
             'Custo muito baixo (R$ 2/consulta)',
             'Suporte multiplataforma'
           ],
-          warning: '⚠️ Use com responsabilidade - pode violar ToS dos sites'
-        })
+          warning: '⚠️ Use com responsabilidade - pode violar ToS dos sites'})
 
       case 'start_monitoring':
         // Iniciar monitoramento contínuo
@@ -51,21 +49,17 @@ export async function POST(request: NextRequest) {
             'Email instantâneo',
             'Telegram bot',
             'Dashboard web'
-          ]
-        })
+          ]})
 
       default:
         return NextResponse.json(
           { error: 'Action deve ser "search_slots" ou "start_monitoring"' },
           { status: 400 }
-        )
-    }
+        )}
 
   } catch (error) {
     console.error('Erro na API de automação:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

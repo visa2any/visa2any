@@ -20,9 +20,7 @@ const nurturingSchema = z.object({
   customSchedule: z.array(z.object({
     day: z.number(),
     hour: z.number().optional(),
-    template: z.string()
-  })).optional()
-})
+    template: z.string()})).optional()})
 
 // POST /api/automation/nurturing - Iniciar sequência de nurturing
 export async function POST(request: NextRequest) {
@@ -36,25 +34,18 @@ export async function POST(request: NextRequest) {
       include: {
         interactions: {
           orderBy: { createdAt: 'desc' },
-          take: 5
-        }
-      }
-    })
+          take: 5}}})
 
     if (!client) {
       return NextResponse.json({
-        error: 'Cliente não encontrado'
-      }, { status: 404 })
-    }
+        error: 'Cliente não encontrado'}, { status: 404 })}
 
     // Determinar sequência baseada no tipo
     const sequence = getSequenceByType(validatedData.sequenceType)
     
     if (!sequence) {
       return NextResponse.json({
-        error: 'Tipo de sequência não suportado'
-      }, { status: 400 })
-    }
+        error: 'Tipo de sequência não suportado'}, { status: 400 })}
 
     // Iniciar sequência de nurturing
     const result = await startNurturingSequence({
@@ -62,29 +53,22 @@ export async function POST(request: NextRequest) {
       sequenceType: validatedData.sequenceType,
       sequence,
       triggerData: validatedData.triggerData,
-      customSchedule: validatedData.customSchedule
-    })
+      customSchedule: validatedData.customSchedule})
 
     return NextResponse.json({
       message: `Sequência ${validatedData.sequenceType} iniciada para ${client.name}`,
       sequenceId: result.sequenceId,
-      emailsScheduled: result.emailsScheduled
-    })
+      emailsScheduled: result.emailsScheduled})
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({
         error: 'Dados inválidos',
-        details: error.errors
-      }, { status: 400 })
-    }
+        details: error.errors}, { status: 400 })}
 
     console.error('Erro ao iniciar nurturing:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}
 
 // Função para obter sequência por tipo
 function getSequenceByType(type: string) {
@@ -93,46 +77,38 @@ function getSequenceByType(type: string) {
       {
         delay: 0,
         subject: '👋 Bem-vindo(a) à Visa2Any, {name}!',
-        template: 'welcome_template'
-      },
+        template: 'welcome_template'},
       {
         delay: 1440, // 24h
         subject: '📚 {name}, seus materiais gratuitos estão prontos',
-        template: 'materials_template'
-      }
+        template: 'materials_template'}
     ],
     assessment_follow_up: [
       {
         delay: 60, // 1h
         subject: '⏰ {name}, complete sua análise',
-        template: 'assessment_reminder'
-      }
+        template: 'assessment_reminder'}
     ],
     cart_abandonment: [
       {
         delay: 30, // 30min
         subject: '🛒 {name}, você esqueceu algo...',
-        template: 'cart_recovery_1'
-      },
+        template: 'cart_recovery_1'},
       {
         delay: 1440, // 24h
         subject: '💔 Ainda interessado, {name}?',
-        template: 'cart_recovery_2'
-      }
-    ]
-  }
+        template: 'cart_recovery_2'}
+    ]}
 
-  return sequences[type] || null
-}
+  return sequences[type] || null}
 
 // Função principal para iniciar sequência
 async function startNurturingSequence(params: {
-  client: any
-  sequenceType: string
+  client: any,
+  sequenceType: string,
   sequence: any[]
   triggerData?: any
-  customSchedule?: any[] | undefined
-}) {
+  customSchedule?: any[] | undefined}) {
   const { client, sequenceType, sequence, triggerData, customSchedule } = params
 
   // Usar schedule customizado se fornecido
@@ -151,8 +127,7 @@ async function startNurturingSequence(params: {
         name: client.name,
         email: client.email,
         targetCountry: client.targetCountry,
-        ...triggerData
-      }
+        ...triggerData}
 
       // Processar template
       const processedSubject = processTemplate(template.subject, variables)
@@ -166,14 +141,10 @@ async function startNurturingSequence(params: {
         body: processedBody,
         sendAt,
         sequenceType,
-        templateName: template.template || 'custom'
-      })
+        templateName: template.template || 'custom'})
 
-      emailsScheduled++
-    } catch (error) {
-      console.error('Erro ao agendar email da sequência:', error)
-    }
-  }
+      emailsScheduled++} catch (error) {
+      console.error('Erro ao agendar email da sequência:', error)}
 
   // Log da ativação da sequência
   await prisma.automationLog.create({
@@ -186,16 +157,11 @@ async function startNurturingSequence(params: {
         sequenceType,
         emailsScheduled,
         triggerData,
-        startedAt: new Date().toISOString()
-      }
-    }
-  })
+        startedAt: new Date().toISOString()}}})
 
   return {
     sequenceId: `nurturing_${sequenceType}_${Date.now()}`,
-    emailsScheduled
-  }
-}
+    emailsScheduled}
 
 // Função para processar templates
 function processTemplate(template: string, variables: Record<string, any>): string {
@@ -203,11 +169,9 @@ function processTemplate(template: string, variables: Record<string, any>): stri
   
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`\\{${key}\\}`, 'g')
-    processed = processed.replace(regex, String(value || ''))
-  })
+    processed = processed.replace(regex, String(value || ''))})
   
-  return processed
-}
+  return processed}
 
 // Função para obter conteúdo do template
 function getTemplateContent(templateName: string, variables: Record<string, any>): string {
@@ -268,8 +232,7 @@ Se tiver qualquer dúvida, estou aqui para ajudar.
 Ou se mudou de ideia, sem problemas! 
 
 Att,
-Equipe Visa2Any`
-  }
+Equipe Visa2Any`}
 
   const template = templates[templateName] || `Olá {name}!
 
@@ -280,32 +243,28 @@ Em breve entraremos em contato.
 Att,
 Equipe Visa2Any`
 
-  return processTemplate(template, variables)
-}
+  return processTemplate(template, variables)}
 
 // Função para agendar email de nurturing
 async function scheduleNurturingEmail(emailData: {
-  clientId: string
-  to: string
-  subject: string
-  body: string
-  sendAt: Date
-  sequenceType: string
-  templateName: string
-}) {
+  clientId: string,
+  to: string,
+  subject: string,
+  body: string,
+  sendAt: Date,
+  sequenceType: string,
+  templateName: string}) {
   try {
     // Log da programação
     console.log(`Email nurturing agendado:`, {
       to: emailData.to,
       subject: emailData.subject,
       sendAt: emailData.sendAt,
-      sequenceType: emailData.sequenceType
-    })
+      sequenceType: emailData.sequenceType})
 
     // Se for para envio imediato
     if (emailData.sendAt <= new Date()) {
-      await sendNurturingEmailNow(emailData)
-    }
+      await sendNurturingEmailNow(emailData)}
 
     // Registrar interação
     await prisma.interaction.create({
@@ -316,23 +275,18 @@ async function scheduleNurturingEmail(emailData: {
         direction: 'outbound',
         subject: emailData.subject,
         content: `Nurturing email agendado: ${emailData.sequenceType}`,
-        completedAt: new Date()
-      }
-    })
+        completedAt: new Date()}})
 
   } catch (error) {
-    console.error('Erro ao agendar email nurturing:', error)
-  }
-}
+    console.error('Erro ao agendar email nurturing:', error)}
 
 // Função para envio imediato
 async function sendNurturingEmailNow(emailData: {
-  to: string
-  subject: string
-  body: string
-  sequenceType: string
-  clientId: string
-}) {
+  to: string,
+  subject: string,
+  body: string,
+  sequenceType: string,
+  clientId: string}) {
   try {
     // Simular envio de email
     console.log(`Enviando email nurturing para ${emailData.to}`)
@@ -345,9 +299,7 @@ async function sendNurturingEmailNow(emailData: {
         to: emailData.to,
         subject: emailData.subject,
         html: emailData.body.replace(/\n/g, '<br>'),
-        template: 'nurturing'
-      })
-    })
+        template: 'nurturing'})})
 
     // Atualizar interação
     await prisma.interaction.create({
@@ -358,11 +310,7 @@ async function sendNurturingEmailNow(emailData: {
         direction: 'outbound',
         subject: emailData.subject,
         content: `Nurturing email enviado: ${emailData.sequenceType}`,
-        completedAt: new Date()
-      }
-    })
+        completedAt: new Date()}})
 
   } catch (error) {
-    console.error('Erro ao enviar email nurturing:', error)
-  }
-}
+    console.error('Erro ao enviar email nurturing:', error)}

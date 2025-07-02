@@ -10,20 +10,15 @@ export async function POST(request: NextRequest) {
     
     if (!name || !email || !password) {
       return NextResponse.json({
-        error: 'Nome, email e senha são obrigatórios'
-      }, { status: 400 })
-    }
+        error: 'Nome, email e senha são obrigatórios'}, { status: 400 })}
 
     // Verificar se já existe cliente com este email
     const existingCustomer = await prisma.client.findUnique({
-      where: { email }
-    })
+      where: { email }})
     
     if (existingCustomer) {
       return NextResponse.json({
-        error: 'Já existe uma conta com este email'
-      }, { status: 409 })
-    }
+        error: 'Já existe uma conta com este email'}, { status: 409 })}
 
     // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 12)
@@ -35,25 +30,20 @@ export async function POST(request: NextRequest) {
         email,
         phone: phone || null,
         status: 'LEAD',
-        score: 0
-      }
-    })
+        score: 0}})
 
     // Gerar token JWT
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor'
-      }, { status: 500 })
-    }
+        error: 'Erro de configuração do servidor'}, { status: 500 })}
     
     const token = jwt.sign(
       { 
         customerId: customer.id, 
         email: customer.email,
-        type: 'customer'
-      },
+        type: 'customer'},
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -70,10 +60,8 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         phone: customer.phone,
         status: customer.status,
-        eligibilityScore: customer.score
-      },
-      token
-    })
+        eligibilityScore: customer.score},
+      token})
 
     // Definir cookie httpOnly
     response.cookies.set('customer-token', token, {
@@ -81,15 +69,11 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
-    })
+      path: '/'})
     
     return response
 
   } catch (error) {
     console.error('Erro no registro do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}

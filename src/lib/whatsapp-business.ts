@@ -40,9 +40,7 @@ class WhatsAppBusinessService {
     error?: string 
   }> {
     
-    // Se não configurado
-    
-    usar fallback
+    // Se não configurado, usar fallback
     if (!this.isConfigured) {
       return this.sendWithFallback(messageData)
     }
@@ -205,16 +203,12 @@ class WhatsAppBusinessService {
     // Remove caracteres especiais
     let cleaned = phone.replace(/[^\d]/g, '')
     
-    // Se começar com 0
-    
-    remove
+    // Se começar com 0, remove
     if (cleaned.startsWith('0')) {
       cleaned = cleaned.substring(1)
     }
     
-    // Se não tem código do país
-    
-    adiciona Brasil (+55)
+    // Se não tem código do país, adiciona Brasil (+55)
     if (cleaned.length === 11 && cleaned.startsWith('11')) {
       cleaned = '55' + cleaned
     } else if (cleaned.length === 10) {

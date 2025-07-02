@@ -17,8 +17,7 @@ const leadCaptureSchema = z.object({
   userAgent: z.string().optional(),
   ip: z.string().optional(),
   interests: z.array(z.string()).optional(),
-  notes: z.string().optional()
-})
+  notes: z.string().optional()})
 
 // POST /api/leads/capture - Capturar lead
 
@@ -33,8 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se lead já existe
     let existingClient = await prisma.client.findUnique({
-      where: { email: validatedData.email }
-    })
+      where: { email: validatedData.email }})
     
     let client
     let isNewLead = false
@@ -45,55 +43,44 @@ export async function POST(request: NextRequest) {
         where: { id: existingClient.id },
         data: {
           name: validatedData.name,
-          phone: validatedData.phone || existingClient.phone,
-          lastActivityAt: new Date()
-        }
-      })
-    } else {
+          phone: validatedData.phone || existingClient.phone}})} else {
       // Criar novo lead
       client = await prisma.client.create({
         data: {
           name: validatedData.name,
           email: validatedData.email,
-          phone: validatedData.phone,
+          phone: validatedData.phone ?? null,
           status: 'LEAD',
           source: validatedData.source,
-          utmSource: validatedData.utmSource,
-          utmMedium: validatedData.utmMedium,
-          utmCampaign: validatedData.utmCampaign,
-          utmContent: validatedData.utmContent,
-          lastActivityAt: new Date()
-        }
-      })
-      isNewLead = true
-    }
+          notes: JSON.stringify({
+            utmSource: validatedData.utmSource,
+            utmMedium: validatedData.utmMedium,
+            utmCampaign: validatedData.utmCampaign,
+            utmContent: validatedData.utmContent})}})
+      isNewLead = true}
 
     // Calcular lead score baseado em dados disponíveis
     const leadScore = calculateLeadScore({
       source: validatedData.source,
-      leadMagnet: validatedData.leadMagnet,
+      leadMagnet: validatedData.leadMagnet ?? '',
       hasPhone: !!validatedData.phone,
-      utmSource: validatedData.utmSource,
-      utmMedium: validatedData.utmMedium
-    })
+      utmSource: validatedData.utmSource ?? '',
+      utmMedium: validatedData.utmMedium ?? ''})
 
     // Salvar interação de captura
     await prisma.interaction.create({
       data: {
-        type: 'LEAD_CAPTURE',
+        type: 'AUTOMATED_EMAIL',
         channel: getChannelFromSource(validatedData.source),
         direction: 'inbound',
         content: `Lead magnet: ${validatedData.leadMagnet || 'none'}`,
-        response: {
+        response: JSON.stringify({
           userAgent: request.headers.get('user-agent'),
           ip: ip,
           referrer: validatedData.referrer,
-          leadScore: leadScore
-        },
+          leadScore: leadScore}),
         clientId: client.id,
-        completedAt: new Date()
-      }
-    })
+        completedAt: new Date()}})
 
     // Log da captura
     await prisma.automationLog.create({
@@ -104,21 +91,15 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           source: validatedData.source,
-          leadMagnet: validatedData.leadMagnet,
-          leadScore: leadScore,
-          country: validatedData.country
-        }
-      }
-    })
+          leadMagnet: validatedData.leadMagnet ?? '',
+          leadScore: leadScore}}})
 
     // Disparar automações baseadas no lead score
     if (isNewLead) {
-      await triggerWelcomeSequence(client.id, validatedData.leadMagnet)
-    }
+      await triggerWelcomeSequence(client.id, validatedData.leadMagnet ?? '')}
     
     if (leadScore >= 70) {
-      await triggerHighPriorityActions(client.id, leadScore)
-    }
+      await triggerHighPriorityActions(client.id, leadScore)}
 
     // Resposta baseada no lead score
     let responseMessage = 'Lead capturado com sucesso'
@@ -126,40 +107,31 @@ export async function POST(request: NextRequest) {
     
     if (leadScore >= 80) {
       responseMessage = 'Lead de alta qualidade capturado'
-      recommendations = ['priority_contact', 'premium_offer']
-    } else if (leadScore >= 60) {
+      recommendations = ['priority_contact', 'premium_offer']} else if (leadScore >= 60) {
       responseMessage = 'Lead qualificado capturado'
-      recommendations = ['nurture_sequence', 'assessment_offer']
-    } else {
-      recommendations = ['basic_nurture', 'educational_content']
-    }
+      recommendations = ['nurture_sequence', 'assessment_offer']} else {
+      recommendations = ['basic_nurture', 'educational_content']}
     return NextResponse.json({
       data: {
         leadId: client.id,
         leadScore: leadScore,
         isNewLead: isNewLead,
-        recommendations: recommendations
-      },
-      message: responseMessage
-    })
+        recommendations: recommendations},
+      message: responseMessage})
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
     console.error('Erro ao capturar lead:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // GET /api/leads/capture/stats - Estatísticas de leads
 
@@ -177,70 +149,56 @@ const { searchParams } = new URL(request.url)
     const [totalLeads, newLeads, leadsBySource, leadsByMagnet] = await Promise.all([
       // Total de leads
       prisma.client.count({
-        where: { status: 'LEAD' }
-      }),
+        where: { status: 'LEAD' }}),
       
       // Novos leads no período
       prisma.client.count({
         where: {
           status: 'LEAD',
-          createdAt: { gte: startDate }
-        }
-      }),
+          createdAt: { gte: startDate }}}),
       
       // Leads por fonte
       prisma.client.groupBy({
         by: ['source'],
         where: {
           status: 'LEAD',
-          createdAt: { gte: startDate }
-        },
-        _count: { id: true }
-      }),
+          createdAt: { gte: startDate }},
+        _count: { id: true }}),
       
       // Leads por lead magnet
       prisma.interaction.groupBy({
-        by: ['details'],
+        by: ['type'],
         where: {
-          type: 'LEAD_CAPTURE',
-          createdAt: { gte: startDate }
-        },
-        _count: { id: true }
-      })
+          type: 'AUTOMATED_EMAIL',
+          createdAt: { gte: startDate }},
+        _count: { id: true }})
     ])
     return NextResponse.json({
       data: {
         overview: {
           totalLeads,
           newLeads,
-          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0
-        },
+          growthRate: totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) : 0},
         leadsBySource: leadsBySource.map(item => ({
           source: item.source,
-          count: item._count.id
-        })),
+          count: item._count.id})),
         leadsByMagnet: leadsByMagnet.slice(0, 10), // Top 10
-        period: `${days} dias`
-      }
-    })
+        period: `${days} dias`}})
 
   } catch (error) {
     console.error('Erro ao buscar estatísticas de leads:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Calcular score do lead baseado em fatores
 function calculateLeadScore(factors: {
   source?: string
-  leadMagnet?: string
+  leadMagnet?: string,
   hasPhone: boolean
   utmSource?: string
-  utmMedium?: string
-}) {
+  utmMedium?: string}) {
   let score = 0
 
   // Score por fonte
@@ -253,8 +211,7 @@ function calculateLeadScore(factors: {
     'organic': 20,
     'paid': 35,
     'social': 25,
-    'email': 45
-  }
+    'email': 45}
   score += sourceScores[factors.source || ''] || 10
 
   // Score por lead magnet (interesse específico)
@@ -264,8 +221,7 @@ function calculateLeadScore(factors: {
     'calculadora-tempo': 35,
     'guia-entrevista': 30,
     'planilha-financeira': 40,
-    'kit-emergencia': 50
-  }
+    'kit-emergencia': 50}
   score += magnetScores[factors.leadMagnet || ''] || 0
 
   // Score por ter telefone (mais engajado)
@@ -280,8 +236,7 @@ function calculateLeadScore(factors: {
 
   // Normalizar para 0-100
 
-  return Math.min(score, 100)
-}
+  return Math.min(score, 100)}
 
 // Determinar canal baseado na fonte
 function getChannelFromSource(source: string): string {
@@ -294,10 +249,8 @@ function getChannelFromSource(source: string): string {
     'organic': 'organic',
     'paid': 'paid_ads',
     'social': 'social_media',
-    'email': 'email'
-  }
-  return channelMap[source] || 'website'
-}
+    'email': 'email'}
+  return channelMap[source] || 'website'}
 
 // Disparar sequência de boas-vindas
 async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
@@ -310,19 +263,14 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
         template: 'welcome_lead',
         clientId: clientId,
         variables: {
-          lead_magnet: leadMagnet || 'website'
-        }
-      })
-    })
+          lead_magnet: leadMagnet || 'website'}})})
 
     // Agendar emails de nurturing
     // Em produção: usar queue/scheduler
     console.log(`Agendando sequência de nurturing para cliente ${clientId}`)
     
   } catch (error) {
-    console.error('Erro ao disparar sequência de boas-vindas:', error)
-  }
-}
+    console.error('Erro ao disparar sequência de boas-vindas:', error)}
 
 // Disparar ações para leads de alta prioridade
 async function triggerHighPriorityActions(clientId: string, leadScore: number) {
@@ -335,16 +283,11 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
         clientId: clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
-        },
-        success: true
-      }
-    })
+          action: 'automated_action'},
+        success: true}})
 
     // Em produção: enviar notificação Slack/Teams para vendas
     console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
     
   } catch (error) {
-    console.error('Erro ao processar lead de alta prioridade:', error)
-  }
-}
+    console.error('Erro ao processar lead de alta prioridade:', error)}

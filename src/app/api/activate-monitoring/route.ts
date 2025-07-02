@@ -14,17 +14,18 @@ let emailInterval: NodeJS.Timeout | null = null
 export async function POST(request: NextRequest) {
   try {
     const { action, system } = await request.json()
+    
     switch (action) {
       case 'activate_webscraping':
-        return await activateWebScraping()        
+        return await activateWebScraping()
       case 'activate_email':
-        return await activateEmailMonitoring()        
+        return await activateEmailMonitoring()
       case 'activate_automation':
-        return await activateAutomation()        
+        return await activateAutomation()
       case 'deactivate_all':
-        return await deactivateAll()        
+        return await deactivateAll()
       case 'status':
-        return getSystemStatus()        
+        return getSystemStatus()
       default:
         return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
     }
@@ -49,7 +50,7 @@ async function activateWebScraping() {
     webScrapingInterval = setInterval(async () => {
       try {
         console.log('🔍 Verificando slots via web scraping...')
-        const slots = await webScrapingService.checkAllSites()        
+        const slots = await webScrapingService.checkAllSites()
         if (slots.length > 0) {
           console.log(`✅ Encontrados ${slots.length} slots!`)
           await webScrapingService.notifySlots(slots)
@@ -73,6 +74,7 @@ async function activateWebScraping() {
 🔍 Status: Ativo e funcionando
 
 Você receberá alertas automáticos quando encontrarmos slots disponíveis!`)
+
     return NextResponse.json({
       success: true,
       message: 'Web scraping ativado com sucesso!'
@@ -126,6 +128,7 @@ async function activateEmailMonitoring() {
 🔍 Status: Ativo e funcionando
 
 Você receberá alertas quando consulados enviarem emails sobre vagas!`)
+
     return NextResponse.json({
       success: true,
       message: 'Email monitoring ativado com sucesso!'
@@ -153,6 +156,7 @@ async function activateAutomation() {
 🔍 Status: Ativo e funcionando
 
 Máxima eficiência na detecção de slots!`)
+
     return NextResponse.json({
       success: true,
       message: 'Browser automation ativado com sucesso!'
@@ -188,6 +192,7 @@ async function deactivateAll() {
 
   await sendActivationNotification('⏹️ SISTEMAS DESATIVADOS',
     'Todos os sistemas de monitoramento foram desativados com sucesso.')
+
   return NextResponse.json({
     success: true,
     message: 'Todos os sistemas foram desativados'
@@ -226,7 +231,9 @@ function calculateTotalCost() {
 async function sendActivationNotification(title: string, message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
+  
   if (!token || !chatId) return
+  
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',

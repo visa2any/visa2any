@@ -1,4 +1,4 @@
-// Sistema de Banco de Dados de Exames Médicos
+sim// Sistema de Banco de Dados de Exames Médicos
 // Clínicas aprovadas e agendamento de exames por país
 
 interface MedicalClinic {
@@ -367,6 +367,102 @@ class MedicalExamService {
   public getAvailableSlotsForClinic(clinicId: string, date: string): string[] {
     // Simulação de horários
     return ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+  }
+
+  public async getExamStatus(bookingId: string): Promise<{ success: boolean; booking?: ExamBooking; error?: string }> {
+    // Simulação: busca fictícia de agendamento
+    // Em produção, buscaria no banco de dados
+    if (!bookingId) {
+      return { success: false, error: 'ID do agendamento não fornecido' };
+    }
+    // Exemplo de booking simulado
+    const booking: ExamBooking = {
+      bookingId,
+      applicantId: 'applicant-123',
+      clinicId: 'usa-brazil-hcor',
+      examTypes: ['usa_medical_exam'],
+      appointmentDate: '2024-07-01',
+      appointmentTime: '10:00',
+      status: 'scheduled',
+      totalCost: 650,
+      notes: 'Agendamento simulado',
+      results: { available: false }
+    };
+    return { success: true, booking };
+  }
+
+  public async rescheduleExam(bookingId: string, newDate: string, newTime: string): Promise<{ success: boolean; confirmationCode?: string; message?: string; error?: string }> {
+    // Simulação: reagendamento fictício
+    if (!bookingId || !newDate || !newTime) {
+      return { success: false, error: 'Dados insuficientes para reagendar' };
+    }
+    // Exemplo de confirmação
+    return {
+      success: true,
+      confirmationCode: `CONFIRM-${bookingId}-${newDate.replace(/-/g, '')}${newTime.replace(':', '')}`,
+      message: 'Exame reagendado com sucesso'
+    };
+  }
+
+  public async cancelExam(bookingId: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    // Simulação: cancelamento fictício
+    if (!bookingId) {
+      return { success: false, error: 'ID do agendamento não fornecido' };
+    }
+    return {
+      success: true,
+      message: 'Exame cancelado com sucesso'
+    };
+  }
+
+  public async getApprovedClinics(country: string, city?: string, state?: string): Promise<MedicalClinic[]> {
+    // Simulação: filtra clínicas aprovadas pelo país, cidade e estado
+    let clinics = this.approvedClinics.filter(clinic => 
+      clinic.country.toLowerCase() === country.toLowerCase()
+    );
+    if (city) {
+      clinics = clinics.filter(clinic => clinic.city.toLowerCase() === city.toLowerCase());
+    }
+    if (state) {
+      clinics = clinics.filter(clinic => clinic.state.toLowerCase() === state.toLowerCase());
+    }
+    return clinics;
+  }
+
+  public getRequiredExams(country: string): MedicalExam[] {
+    return this.getRequiredExamsForCountry(country);
+  }
+
+  public async bookMedicalExam({
+    applicantId,
+    clinicId,
+    examTypes,
+    appointmentDate,
+    appointmentTime,
+    totalCost,
+    notes
+  }: {
+    applicantId: string,
+    clinicId: string,
+    examTypes: string[],
+    appointmentDate: string,
+    appointmentTime: string,
+    totalCost?: number,
+    notes?: string
+  }): Promise<{ success: boolean; bookingId?: string; confirmationCode?: string; instructions?: string; error?: string }> {
+    // Simulação: agendamento fictício
+    if (!applicantId || !clinicId || !examTypes || !appointmentDate || !appointmentTime) {
+      return { success: false, error: 'Dados insuficientes para agendar' };
+    }
+    const bookingId = `BKG-${Date.now()}`;
+    const confirmationCode = `CONFIRM-${bookingId}`;
+    const instructions = 'Compareça à clínica com 15 minutos de antecedência e traga seus documentos.';
+    return {
+      success: true,
+      bookingId,
+      confirmationCode,
+      instructions
+    };
   }
 }
 

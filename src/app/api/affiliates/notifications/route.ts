@@ -2,15 +2,14 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface NotificationData {
-  id: string
-  type: 'conversion' | 'payment' | 'tier_promotion' | 'bonus' | 'commission' | 'system'
-  title: string
+  id: string,
+  type: 'conversion' | 'payment' | 'tier_promotion' | 'bonus' | 'commission' | 'system',
+  title: string,
   message: string
-  data?: any
-  read: boolean
-  createdAt: string
-  priority: 'low' | 'medium' | 'high' | 'urgent'
-}
+  data?: any,
+  read: boolean,
+  createdAt: string,
+  priority: 'low' | 'medium' | 'high' | 'urgent'}
 
 // Simulação de storage de notificações (em produção usar Redis ou banco)
 const notificationsStore = new Map<string, NotificationData[]>()
@@ -25,9 +24,7 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório'
-      }, { status: 400 })
-    }
+        error: 'ID do afiliado é obrigatório'}, { status: 400 })}
 
     // Buscar notificações do storage
     let notifications = notificationsStore.get(affiliateId) || []
@@ -35,13 +32,11 @@ export async function GET(request: NextRequest) {
     // Se não há notificações, criar algumas de exemplo
     if (notifications.length === 0) {
       notifications = generateSampleNotifications(affiliateId)
-      notificationsStore.set(affiliateId, notifications)
-    }
+      notificationsStore.set(affiliateId, notifications)}
 
     // Filtrar apenas não lidas se solicitado
     if (unreadOnly) {
-      notifications = notifications.filter(n => !n.read)
-    }
+      notifications = notifications.filter(n => !n.read)}
 
     // Limitar quantidade
     notifications = notifications.slice(0, limit)
@@ -54,17 +49,12 @@ export async function GET(request: NextRequest) {
       data: {
         notifications,
         unreadCount,
-        total: notifications.length
-      }
-    })
+        total: notifications.length}})
 
   } catch (error) {
     console.error('Erro ao buscar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}
 
 // POST - Criar nova notificação
 export async function POST(request: NextRequest) {
@@ -76,14 +66,11 @@ export async function POST(request: NextRequest) {
       title,
       message,
       data = {},
-      priority = 'medium'
-    } = body
+      priority = 'medium'} = body
 
     if (!affiliateId || !type || !title || !message) {
       return NextResponse.json({
-        error: 'Campos obrigatórios: affiliateId, type, title, message'
-      }, { status: 400 })
-    }
+        error: 'Campos obrigatórios: affiliateId, type, title, message'}, { status: 400 })}
 
     const notification: NotificationData = {
       id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -93,8 +80,7 @@ export async function POST(request: NextRequest) {
       data,
       read: false,
       createdAt: new Date().toISOString(),
-      priority
-    }
+      priority}
 
     // Adicionar ao storage
     const existing = notificationsStore.get(affiliateId) || []
@@ -102,8 +88,7 @@ export async function POST(request: NextRequest) {
     
     // Manter apenas últimas 100 notificações
     if (existing.length > 100) {
-      existing.splice(100)
-    }
+      existing.splice(100)}
     
     notificationsStore.set(affiliateId, existing)
 
@@ -116,16 +101,12 @@ export async function POST(request: NextRequest) {
     // }
 
     return NextResponse.json({
-      data: notification
-    })
+      data: notification})
 
   } catch (error) {
     console.error('Erro ao criar notificação:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}
 
 // PUT - Marcar notificações como lidas
 export async function PUT(request: NextRequest) {
@@ -135,23 +116,17 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório'
-      }, { status: 400 })
-    }
+        error: 'ID do afiliado é obrigatório'}, { status: 400 })}
 
     const notifications = notificationsStore.get(affiliateId) || []
 
     if (markAllAsRead) {
       // Marcar todas como lidas
-      notifications.forEach(n => n.read = true)
-    } else if (notificationIds && Array.isArray(notificationIds)) {
+      notifications.forEach(n => n.read = true)} else if (notificationIds && Array.isArray(notificationIds)) {
       // Marcar específicas como lidas
       notifications.forEach(n => {
         if (notificationIds.includes(n.id)) {
-          n.read = true
-        }
-      })
-    }
+          n.read = true}})}
 
     notificationsStore.set(affiliateId, notifications)
 
@@ -160,17 +135,12 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       data: {
         message: 'Notificações atualizadas',
-        unreadCount
-      }
-    })
+        unreadCount}})
 
   } catch (error) {
     console.error('Erro ao atualizar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}
 
 // Função para gerar notificações de exemplo
 function generateSampleNotifications(affiliateId: string): NotificationData[] {
@@ -188,12 +158,10 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         conversionValue: 89.55,
         commissionValue: 13.43,
         conversionType: 'CONSULTATION',
-        clientName: 'Maria Silva'
-      },
+        clientName: 'Maria Silva'},
       read: false,
       createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-      priority: 'high'
-    },
+      priority: 'high'},
     {
       id: 'notif_2',
       type: 'payment',
@@ -202,12 +170,10 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         amount: 1450.75,
         paymentMethod: 'PIX',
-        transactionId: 'TXN123456789'
-      },
+        transactionId: 'TXN123456789'},
       read: false,
       createdAt: yesterday.toISOString(),
-      priority: 'high'
-    },
+      priority: 'high'},
     {
       id: 'notif_3',
       type: 'tier_promotion',
@@ -216,12 +182,10 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         oldTier: 'SILVER',
         newTier: 'GOLD',
-        newCommissionRate: 0.25
-      },
+        newCommissionRate: 0.25},
       read: true,
       createdAt: twoDaysAgo.toISOString(),
-      priority: 'urgent'
-    },
+      priority: 'urgent'},
     {
       id: 'notif_4',
       type: 'bonus',
@@ -230,12 +194,10 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       data: {
         bonusAmount: 250.00,
         reason: 'Meta mensal superada',
-        month: 'Junho'
-      },
+        month: 'Junho'},
       read: true,
       createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      priority: 'medium'
-    },
+      priority: 'medium'},
     {
       id: 'notif_5',
       type: 'system',
@@ -243,12 +205,10 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
       message: 'Adicionamos 5 novos banners e 3 templates de email ao seu kit de materiais promocionais. Confira agora!',
       data: {
         newMaterials: 8,
-        categories: ['banners', 'email_templates']
-      },
+        categories: ['banners', 'email_templates']},
       read: false,
       createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
-      priority: 'low'
-    },
+      priority: 'low'},
     {
       id: 'notif_6',
       type: 'commission',
@@ -258,14 +218,11 @@ function generateSampleNotifications(affiliateId: string): NotificationData[] {
         amount: 375.00,
         clientName: 'João Santos',
         conversionType: 'VISA_PROCESS',
-        dueDate: '2024-07-15'
-      },
+        dueDate: '2024-07-15'},
       read: true,
       createdAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
-      priority: 'medium'
-    }
-  ]
-}
+      priority: 'medium'}
+  ]}
 
 // Funções utilitárias para envio de notificações específicas
 async function sendConversionNotification(affiliateId: string, conversionData: any) {
@@ -275,16 +232,13 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
     title: '🎉 Nova Conversão!',
     message: `Parabéns! Nova conversão de R$ ${conversionData.value.toFixed(2)} através do seu link.`,
     data: conversionData,
-    priority: 'high'
-  }
+    priority: 'high'}
 
   // Simular envio da notificação
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)
-  })
-}
+    body: JSON.stringify(notification)})}
 
 async function sendPaymentNotification(affiliateId: string, paymentData: any) {
   const notification = {
@@ -293,15 +247,12 @@ async function sendPaymentNotification(affiliateId: string, paymentData: any) {
     title: '💰 Pagamento Processado',
     message: `Seu pagamento de R$ ${paymentData.amount.toFixed(2)} foi processado com sucesso.`,
     data: paymentData,
-    priority: 'high'
-  }
+    priority: 'high'}
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)
-  })
-}
+    body: JSON.stringify(notification)})}
 
 async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
   const notification = {
@@ -310,12 +261,9 @@ async function sendTierPromotionNotification(affiliateId: string, tierData: any)
     title: '⭐ Promoção de Nível!',
     message: `Parabéns! Você foi promovido para o nível ${tierData.newTier}!`,
     data: tierData,
-    priority: 'urgent'
-  }
+    priority: 'urgent'}
 
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)
-  })
-}
+    body: JSON.stringify(notification)})}

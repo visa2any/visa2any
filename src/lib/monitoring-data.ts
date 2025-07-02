@@ -366,6 +366,39 @@ class MonitoringDataService {
 
     return { activeChannels, vagasToday, totalVagas, monthlyCost }
   }
+
+  async markAlertAsNotified(alertId: string): Promise<void> {
+    await this.initialize();
+    const alert = this.alerts.find(a => a.id === alertId);
+    if (alert) {
+      alert.notified = true;
+    }
+  }
+
+  async updateChannelStatus(channelId: string, status: string): Promise<void> {
+    await this.initialize();
+    const channel = this.channels.find(c => c.id === channelId);
+    if (channel) {
+      channel.status = status as any;
+    }
+  }
+
+  async simulateVagaDetection(): Promise<MonitoringAlert> {
+    await this.initialize();
+    const newAlert: MonitoringAlert = {
+      id: `alert-${Date.now()}`,
+      channel: 'vaga-express-bot',
+      country: 'Brasil',
+      type: 'vaga',
+      date: new Date().toISOString().split('T')[0],
+      location: 'São Paulo',
+      time: new Date().toISOString().split('T')[1].slice(0,5),
+      notified: false,
+      createdAt: new Date().toISOString()
+    };
+    this.alerts.push(newAlert);
+    return newAlert;
+  }
 }
 
 export const monitoringDataService = new MonitoringDataService()

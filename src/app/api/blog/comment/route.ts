@@ -18,8 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Token de autenticação é obrigatório' },
         { status: 401 }
-      )
-    }
+      )}
 
     // Verify token
     const jwtSecret = process.env.NEXTAUTH_SECRET
@@ -27,21 +26,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
         { status: 500 }
-      )
-    }
+      )}
     
     let userId: string
     let userEmail: string
     try {
       const decoded = jwt.verify(authToken, jwtSecret) as any
       userId = decoded.userId
-      userEmail = decoded.email
-    } catch {
+      userEmail = decoded.email} catch {
       return NextResponse.json(
         { error: 'Token inválido' },
         { status: 401 }
-      )
-    }
+      )}
     
     const body = await request.json()
     const validatedData = commentSchema.parse(body)
@@ -49,15 +45,13 @@ export async function POST(request: NextRequest) {
     // Get user info
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true }
-    })
+      select: { id: true, name: true, email: true }})
     
     if (!user) {
       return NextResponse.json(
         { error: 'Usuário não encontrado' },
         { status: 404 }
-      )
-    }
+      )}
 
     // Create comment
     const comment = await prisma.blogPostComment.create({
@@ -65,53 +59,39 @@ export async function POST(request: NextRequest) {
         userId,
         postId: validatedData.postId,
         content: validatedData.content,
-        parentId: validatedData.parentId || null
-      },
+        parentId: validatedData.parentId || null},
       include: {
         user: {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        },
+            email: true}},
         replies: {
           include: {
             user: {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          }
-        }
-      }
-    })
+                email: true}}}}}})
     
     return NextResponse.json({
       comment,
-      message: 'Comentário adicionado com sucesso'
-    })
+      message: 'Comentário adicionado com sucesso'})
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
 
     console.error('Error adding blog comment:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // GET /api/blog/comment - Get comments for a blog post
 export async function GET(request: NextRequest) {
@@ -123,8 +103,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )
-    }
+      )}
     
     const comments = await prisma.blogPostComment.findMany({
       where: {
@@ -136,38 +115,25 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        },
+            email: true}},
         replies: {
           include: {
             user: {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          },
+                email: true}}},
           orderBy: {
-            createdAt: 'asc'
-          }
-        }
-      },
+            createdAt: 'asc'}}},
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: 'desc'}})
     
     return NextResponse.json({
-      comments
-    })
+      comments})
 
   } catch (error) {
     console.error('Error fetching blog comments:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

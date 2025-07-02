@@ -97,7 +97,7 @@ async function loginAdmin(email: string, password: string) {
         type: 'admin'},
       token}} catch (error) {
     console.error('Erro no login admin:', error)
-    return { success: false, error: 'Erro interno' }}
+    return { success: false, error: 'Erro interno' }
 
 // Função para login de cliente
 async function loginCustomer(email: string, password?: string) {
@@ -122,7 +122,7 @@ async function loginCustomer(email: string, password?: string) {
     if (client.password && password) {
       const isPasswordValid = await bcrypt.compare(password, client.password)
       if (!isPasswordValid) {
-        return { success: false, error: 'Credenciais inválidas' }}
+        return { success: false, error: 'Credenciais inválidas' }
     */
 
     const jwtSecret = process.env.NEXTAUTH_SECRET
@@ -147,4 +147,4 @@ async function loginCustomer(email: string, password?: string) {
         type: 'client'},
       token}} catch (error) {
     console.error('Erro no login cliente:', error)
-    return { success: false, error: 'Erro interno' }}
+    return { success: false, error: 'Erro interno' }

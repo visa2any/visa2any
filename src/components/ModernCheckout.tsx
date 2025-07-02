@@ -138,7 +138,7 @@ export default function ModernCheckout({
     
     if (price === 0) {
       // Para produtos gratuitos
-      ir direto para o formulário
+      // ir direto para o formulário
       window.open('/consultoria-ia', '_blank')
       return
     }

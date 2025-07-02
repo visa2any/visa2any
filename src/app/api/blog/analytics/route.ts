@@ -25,34 +25,26 @@ export async function GET(request: NextRequest) {
     ] = await Promise.all([
       prisma.blogPost.count(),
       prisma.blogPost.aggregate({
-        _sum: { views: true }
-      }),
+        _sum: { views: true }}),
       prisma.blogPost.aggregate({
-        _sum: { likes: true }
-      }),
+        _sum: { likes: true }}),
       prisma.blogPost.aggregate({
-        _sum: { comments: true }
-      }),
+        _sum: { comments: true }}),
       prisma.blogPost.count({
-        where: { published: true }
-      }),
+        where: { published: true }}),
       prisma.blogPost.count({
-        where: { featured: true }
-      }),
+        where: { featured: true }}),
       prisma.blogPost.count({
-        where: { trending: true }
-      }),
+        where: { trending: true }}),
       prisma.blogPost.count({
-        where: { urgent: true }
-      })
+        where: { urgent: true }})
     ])
 
     // Posts mais populares no período
     const popularPosts = await prisma.blogPost.findMany({
       where: {
         createdAt: { gte: dateFrom },
-        published: true
-      },
+        published: true},
       orderBy: { views: 'desc' },
       take: 10,
       select: {
@@ -62,39 +54,29 @@ export async function GET(request: NextRequest) {
         likes: true,
         comments: true,
         createdAt: true,
-        category: true
-      }
-    })
+        category: true}})
 
     // Posts por categoria
     const postsByCategory = await prisma.blogPost.groupBy({
       by: ['category'],
       where: {
         createdAt: { gte: dateFrom },
-        published: true
-      },
+        published: true},
       _count: {
-        id: true
-      },
+        id: true},
       _sum: {
-        views: true
-      }
-    })
+        views: true}})
 
     // Posts por país
     const postsByCountry = await prisma.blogPost.groupBy({
       by: ['country'],
       where: {
         createdAt: { gte: dateFrom },
-        published: true
-      },
+        published: true},
       _count: {
-        id: true
-      },
+        id: true},
       _sum: {
-        views: true
-      }
-    })
+        views: true}})
 
     // Estatísticas por data (últimos 30 dias)
     const dailyStats = []
@@ -110,28 +92,21 @@ export async function GET(request: NextRequest) {
         where: {
           createdAt: {
             gte: date,
-            lt: nextDate
-          },
-          published: true
-        },
+            lt: nextDate},
+          published: true},
         _count: {
-          id: true
-        },
+          id: true},
         _sum: {
           views: true,
           likes: true,
-          comments: true
-        }
-      })
+          comments: true}})
 
       dailyStats.push({
         date: date.toISOString().split('T')[0],
         posts: dayStats._count.id || 0,
         views: dayStats._sum.views || 0,
         likes: dayStats._sum.likes || 0,
-        comments: dayStats._sum.comments || 0
-      })
-    }
+        comments: dayStats._sum.comments || 0})}
 
     return NextResponse.json({
       data: {
@@ -145,29 +120,22 @@ export async function GET(request: NextRequest) {
           trendingPosts,
           urgentPosts,
           engagementRate: totalViews._sum.views ? 
-            ((totalLikes._sum.likes || 0) + (totalComments._sum.comments || 0)) / totalViews._sum.views * 100 : 0
-        },
+            ((totalLikes._sum.likes || 0) + (totalComments._sum.comments || 0)) / totalViews._sum.views * 100 : 0},
         popularPosts,
         categoryStats: postsByCategory.map(cat => ({
           category: cat.category,
           posts: cat._count.id,
-          views: cat._sum.views || 0
-        })),
+          views: cat._sum.views || 0})),
         countryStats: postsByCountry.map(country => ({
           country: country.country,
           posts: country._count.id,
-          views: country._sum.views || 0
-        })),
+          views: country._sum.views || 0})),
         dailyStats,
-        period: `${periodDays} dias`
-      }
-    })
+        period: `${periodDays} dias`}})
 
   } catch (error) {
     console.error('Erro ao buscar analytics do blog:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

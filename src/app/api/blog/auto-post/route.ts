@@ -17,28 +17,24 @@ export async function POST(request: NextRequest) {
       type,
       sourceUrl,
       urgent,
-      trending
-    } = body
+      trending} = body
 
     // Validação básica
     if (!title || !excerpt || !content || !category) {
       return NextResponse.json(
         { error: 'Campos obrigatórios: title, excerpt, content, category' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Verificar se já existe um post com o mesmo título
     const existingPost = await prisma.blogPost.findFirst({
-      where: { title }
-    })
+      where: { title }})
 
     if (existingPost) {
       return NextResponse.json(
         { error: 'Post com este título já existe' },
         { status: 409 }
-      )
-    }
+      )}
 
     // Criar novo post no banco
     const newPost = await prisma.blogPost.create({
@@ -62,9 +58,7 @@ export async function POST(request: NextRequest) {
         views: 0,
         likes: 0,
         comments: 0,
-        featured: urgent || trending || false
-      }
-    })
+        featured: urgent || trending || false}})
 
     // Log da criação automática
     await prisma.automationLog.create({
@@ -78,15 +72,11 @@ export async function POST(request: NextRequest) {
           category: newPost.category,
           urgent: newPost.urgent,
           trending: newPost.trending,
-          autoCreatedAt: new Date().toISOString()
-        }
-      }
-    })
+          autoCreatedAt: new Date().toISOString()}}})
 
     // Se for urgente ou trending, criar notificação
     if (urgent || trending) {
-      await createPostNotification(newPost)
-    }
+      await createPostNotification(newPost)}
 
     return NextResponse.json({
       data: {
@@ -95,26 +85,21 @@ export async function POST(request: NextRequest) {
         published: newPost.published,
         urgent: newPost.urgent,
         trending: newPost.trending,
-        readTime: newPost.readTime
-      },
-      message: 'Post criado automaticamente com sucesso!'
-    })
+        readTime: newPost.readTime},
+      message: 'Post criado automaticamente com sucesso!'})
 
   } catch (error) {
     console.error('Erro ao criar post automático:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função para calcular tempo de leitura
 function calculateReadTime(content: string): number {
   const wordsPerMinute = 200
   const wordCount = content.split(/\s+/).length
-  return Math.ceil(wordCount / wordsPerMinute)
-}
+  return Math.ceil(wordCount / wordsPerMinute)}
 
 // Função para criar notificação de post
 async function createPostNotification(post: any) {
@@ -134,9 +119,7 @@ async function createPostNotification(post: any) {
     // - Slack/Discord webhooks
 
   } catch (error) {
-    console.error('Erro ao criar notificação:', error)
-  }
-}
+    console.error('Erro ao criar notificação:', error)}
 
 // GET - Listar posts automáticos
 export async function GET(request: NextRequest) {
@@ -147,8 +130,7 @@ export async function GET(request: NextRequest) {
 
     const posts = await prisma.blogPost.findMany({
       where: {
-        author: 'Visa2Any Auto'
-      },
+        author: 'Visa2Any Auto'},
       orderBy: { createdAt: 'desc' },
       take: limit,
       skip: offset,
@@ -164,15 +146,11 @@ export async function GET(request: NextRequest) {
         published: true,
         views: true,
         createdAt: true,
-        publishDate: true
-      }
-    })
+        publishDate: true}})
 
     const total = await prisma.blogPost.count({
       where: {
-        author: 'Visa2Any Auto'
-      }
-    })
+        author: 'Visa2Any Auto'}})
 
     return NextResponse.json({
       data: {
@@ -180,15 +158,11 @@ export async function GET(request: NextRequest) {
         total,
         limit,
         offset,
-        hasMore: offset + limit < total
-      }
-    })
+        hasMore: offset + limit < total}})
 
   } catch (error) {
     console.error('Erro ao listar posts automáticos:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

@@ -1,0 +1,661 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Legal Changes Monitor",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 */2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "legal-monitor-cron",
+      "name": "Check Every 2 Hours",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        0,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://br.usembassy.gov/visas/",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-us-embassy",
+      "name": "Scrape US Embassy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        300,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship.html",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-canada-gov",
+      "name": "Scrape Canada Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        300,
+        200
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://immi.homeaffairs.gov.au/visas",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-AU,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br"
+          },
+          "followRedirect": true,
+          "timeout": 30000
+        }
+      },
+      "id": "scrape-australia-gov",
+      "name": "Scrape Australia Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.gov.uk/browse/visas-immigration",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-uk-gov",
+      "name": "Scrape UK Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.service-public.fr/particuliers/vosdroits/N19804",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-france-gov",
+      "name": "Scrape France Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.inclusion.gob.es/extranjeros/es/index.html",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "es-ES,es;q=0.9,en;q=0.8"
+          },
+          "followRedirect": true,
+          "timeout": 30000
+        }
+      },
+      "id": "scrape-spain-gov",
+      "name": "Scrape Spain Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        500
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.immigration.govt.nz/new-zealand-visas",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-newzealand-gov",
+      "name": "Scrape New Zealand Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        600,
+        600
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://ind.nl/en/residence-permits/work",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9,nl;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
+          },
+          "followRedirect": true,
+          "maxRedirects": 5,
+          "timeout": 30000
+        }
+      },
+      "id": "scrape-netherlands-gov",
+      "name": "Scrape Netherlands Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.udi.no/en/want-to-apply/work-immigration/",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-norway-gov",
+      "name": "Scrape Norway Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        200
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.nyidanmark.dk/en-GB/Applying/Work",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-denmark-gov",
+      "name": "Scrape Denmark Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://dofi.ibz.be/en/themes/third-country-nationals/entry-and-residence/work",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-belgium-gov",
+      "name": "Scrape Belgium Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        600
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.mom.gov.sg/passes-and-permits",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-singapore-gov",
+      "name": "Scrape Singapore Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        700
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.isa.go.jp/en/applications/procedures/nyuukokukanri10_00015.html",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-japan-gov",
+      "name": "Scrape Japan Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        800
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "https://www.hikorea.go.kr/info/InfViVsaInfoR.pt?MENU_ID=10102",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (compatible; Visa2Any-Bot/1.0)"
+          }
+        }
+      },
+      "id": "scrape-southkorea-gov",
+      "name": "Scrape South Korea Gov",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        900
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = []; for (const item of $input.all()) { try { const data = item.json.data || ''; const url = item.json.url || 'unknown'; let country = 'UNKNOWN'; if (url.includes('usembassy.gov')) country = 'USA'; else if (url.includes('canada.ca')) country = 'CANADA'; else if (url.includes('homeaffairs.gov.au')) country = 'AUSTRALIA'; else if (url.includes('gov.uk')) country = 'UK'; else if (url.includes('service-public.fr')) country = 'FRANCE'; else if (url.includes('inclusion.gob.es')) country = 'SPAIN'; else if (url.includes('immigration.govt.nz')) country = 'NEW ZEALAND'; else if (url.includes('ind.nl')) country = 'NETHERLANDS'; else if (url.includes('udi.no')) country = 'NORWAY'; else if (url.includes('nyidanmark.dk')) country = 'DENMARK';  else if (url.includes('dofi.ibz.be')) country = 'BELGIUM'; else if (url.includes('mom.gov.sg')) country = 'SINGAPORE'; else if (url.includes('isa.go.jp')) country = 'JAPAN'; else if (url.includes('hikorea.go.kr')) country = 'SOUTH KOREA';   const title = data.match(/<title[^>]*>([^<]*)<.title>/i)?.[1] || 'No Title'; const content = data.replace(/<[^>]*>/g, '').slice(0, 500); const keywords = ['visa', 'immigration', 'permit', 'residence']; const hasVisa = keywords.some(k => content.toLowerCase().includes(k)); if (hasVisa) { results.push({ title, content, url, country, contentHash: Date.now().toString(), processedAt: new Date().toISOString(), hasChanges: false }); } } catch (e) { console.log('Error:', e); } } return results.length > 0 ? results : $input.all();"
+      },
+      "id": "process-content",
+      "name": "Process Legal Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": true,
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "detect-changes",
+      "name": "Detect Changes",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json; const content = data.content || ''; const keywords = { POLICY: ['policy', 'regulation'], REQUIREMENT: ['requirement', 'document'], FEE: ['fee', 'cost', 'price'], PROCESS: ['process', 'procedure'], DEADLINE: ['deadline', 'date'] }; let type = 'GENERAL_UPDATE'; let priority = 'MEDIUM'; for (const [key, words] of Object.entries(keywords)) { if (words.some(w => content.toLowerCase().includes(w))) { type = key + '_CHANGE'; break; } } if (['REQUIREMENT_CHANGE', 'DEADLINE_CHANGE', 'FEE_CHANGE'].includes(type)) priority = 'HIGH'; const visaTypes = []; const patterns = ['tourist visa', 'work visa', 'student visa', 'business visa']; patterns.forEach(p => { if (content.toLowerCase().includes(p)) visaTypes.push(p.toUpperCase()); }); return [{ json: { ...data, changeType: type, priority, affectedVisaTypes: visaTypes, detectedAt: new Date().toISOString(), description: 'Legal update detected for ' + data.country + ': ' + type.replace('_', ' ').toLowerCase() } }];"
+      },
+      "id": "analyze-changes",
+      "name": "Analyze Changes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        200
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "message": "🚨 *LEGAL UPDATE DETECTED*\\n\\n📍 *Country:* {{ $json.country }}\\n🔄 *Type:* {{ $json.changeType }}\\n⚡ *Priority:* {{ $json.priority }}\\n🎯 *Affected Visas:* {{ $json.affectedVisaTypes.join(', ') }}\\n\\n📄 *Description:* {{ $json.description }}\\n\\n🔗 *Source:* {{ $json.url }}\\n\\n⏰ *Detected:* {{ $json.detectedAt }}",
+        "chatId": "-1001234567890",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "alert-team",
+      "name": "Alert Team (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 4,
+      "position": [
+        2200,
+        400
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Check Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Scrape US Embassy",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Canada Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Australia Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape UK Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape France Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Spain Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape New Zealand Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Netherlands Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Norway Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Denmark Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Belgium Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Singapore Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Japan Gov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape South Korea Gov",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape US Embassy": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Canada Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Australia Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape UK Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape France Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Spain Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape New Zealand Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Netherlands Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Norway Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Denmark Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Belgium Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Singapore Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Japan Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape South Korea Gov": {
+      "main": [
+        [
+          {
+            "node": "Process Legal Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Legal Content": {
+      "main": [
+        [
+          {
+            "node": "Detect Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Changes": {
+      "main": [
+        [
+          {
+            "node": "Analyze Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Changes": {
+      "main": [
+        [
+          {
+            "node": "Alert Team (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Change": {
+      "main": [
+        [
+          {
+            "node": "Alert Team (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

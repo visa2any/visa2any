@@ -25,8 +25,7 @@ const defaultMaterials = [
     `,
     imageUrl: '/images/banners/banner-principal.jpg',
     previewUrl: '/materials/preview/banner-principal',
-    isActive: true
-  },
+    isActive: true},
   {
     type: 'BANNER',
     title: 'Banner Visto EUA',
@@ -50,8 +49,7 @@ const defaultMaterials = [
     `,
     imageUrl: '/images/banners/banner-eua.jpg',
     previewUrl: '/materials/preview/banner-eua',
-    isActive: true
-  },
+    isActive: true},
 
   // Posts para Redes Sociais
   {
@@ -80,12 +78,11 @@ A @visa2any é especialista em realizar esse sonho!
 E muito mais!
 
 📞 Link na bio para consultoria gratuita
-🎁 Use o código: {{REFERRAL_CODE}}
+🎁 Use o código: {{REFERRAL_CODE}
 
 #morarfora #intercambio #imigração #visa2any #vivernoexterior #visto #consultoria #sonhoamericano`,
     imageUrl: '/images/posts/instagram-consultoria.jpg',
-    isActive: true
-  },
+    isActive: true},
   {
     type: 'SOCIAL_POST',
     title: 'Post Facebook - Depoimento',
@@ -111,15 +108,14 @@ E muito mais!
 • Vistos de investidor
 • Residência permanente
 
-🔗 Agende sua consultoria gratuita: {{AFFILIATE_LINK}}
-💝 Código especial: {{REFERRAL_CODE}}
+🔗 Agende sua consultoria gratuita: {{AFFILIATE_LINK}
+💝 Código especial: {{REFERRAL_CODE}
 
 Sua nova vida te espera! 🌍✈️
 
 #Visa2Any #Imigração #Canadá #ViverNoExterior #Sucesso`,
     imageUrl: '/images/posts/facebook-depoimento.jpg',
-    isActive: true
-  },
+    isActive: true},
 
   // Templates de Email
   {
@@ -182,8 +178,7 @@ Sua nova vida te espera! 🌍✈️
 </body>
 </html>
     `,
-    isActive: true
-  },
+    isActive: true},
 
   // Vídeos
   {
@@ -214,8 +209,7 @@ Sua nova vida te espera!"
     `,
     imageUrl: '/images/videos/depoimento-maria.jpg',
     previewUrl: '/materials/preview/video-depoimento',
-    isActive: true
-  },
+    isActive: true},
 
   // Guias/E-books
   {
@@ -261,15 +255,14 @@ BÔNUS: CHECKLIST COMPLETA
 
 Quer ajuda especializada? A Visa2Any tem 95% de aprovação em vistos americanos!
 
-Consultoria gratuita: {{AFFILIATE_LINK}}
-Código especial: {{REFERRAL_CODE}}
+Consultoria gratuita: {{AFFILIATE_LINK}
+Código especial: {{REFERRAL_CODE}
 
 © Visa2Any - Todos os direitos reservados
     `,
     downloadUrl: '/downloads/guia-visto-eua.pdf',
     imageUrl: '/images/guides/ebook-visto-eua.jpg',
-    isActive: true
-  }
+    isActive: true}
 ]
 
 // GET - Listar materiais promocionais
@@ -284,36 +277,31 @@ export async function GET(request: NextRequest) {
     const where: any = { isActive: true }
     
     if (type) {
-      where.type = type
-    }
+      where.type = type}
     
     if (category) {
-      where.category = category
-    }
+      where.category = category}
 
     // Se affiliateId for fornecido, incluir materiais específicos do afiliado
     if (affiliateId) {
       where.OR = [
         { affiliateId: null }, // Materiais públicos
         { affiliateId } // Materiais específicos do afiliado
-      ]
-    } else {
+      ]} else {
       where.affiliateId = null // Apenas materiais públicos
     }
 
     // Buscar materiais do banco
     const materials = await prisma.affiliateMaterial.findMany({
       where,
-      orderBy: { createdAt: 'desc' }
-    })
+      orderBy: { createdAt: 'desc' }})
 
     // Se não houver materiais no banco, retornar materiais padrão
     if (materials.length === 0 && !affiliateId) {
       const filteredDefaults = defaultMaterials.filter(material => {
         if (type && material.type !== type) return false
         if (category && material.category !== category) return false
-        return true
-      })
+        return true})
       
       return NextResponse.json({
         data: filteredDefaults.map((material, index) => ({
@@ -322,24 +310,16 @@ export async function GET(request: NextRequest) {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           views: Math.floor(Math.random() * 1000),
-          downloads: Math.floor(Math.random() * 500)
-        }))
-      })
-    }
+          downloads: Math.floor(Math.random() * 500)}))})}
 
     return NextResponse.json({
-      data: materials
-    })
+      data: materials})
 
   } catch (error) {
     console.error('Erro ao buscar materiais:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })} finally {
+    await prisma.$disconnect()}
 
 // POST - Criar novo material
 export async function POST(request: NextRequest) {
@@ -356,15 +336,12 @@ export async function POST(request: NextRequest) {
       downloadUrl,
       previewUrl,
       affiliateId,
-      language = 'pt'
-    } = body
+      language = 'pt'} = body
 
     // Validações básicas
     if (!type || !title || !description) {
       return NextResponse.json({
-        error: 'Tipo, título e descrição são obrigatórios'
-      }, { status: 400 })
-    }
+        error: 'Tipo, título e descrição são obrigatórios'}, { status: 400 })}
 
     const material = await prisma.affiliateMaterial.create({
       data: {
@@ -378,23 +355,16 @@ export async function POST(request: NextRequest) {
         downloadUrl,
         previewUrl,
         affiliateId,
-        language
-      }
-    })
+        language}})
 
     return NextResponse.json({
-      data: material
-    })
+      data: material})
 
   } catch (error) {
     console.error('Erro ao criar material:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })} finally {
+    await prisma.$disconnect()}
 
 // PUT - Atualizar material
 export async function PUT(request: NextRequest) {
@@ -404,28 +374,19 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json({
-        error: 'ID do material é obrigatório'
-      }, { status: 400 })
-    }
+        error: 'ID do material é obrigatório'}, { status: 400 })}
 
     const material = await prisma.affiliateMaterial.update({
       where: { id },
       data: {
         ...updateData,
-        updatedAt: new Date()
-      }
-    })
+        updatedAt: new Date()}})
 
     return NextResponse.json({
-      data: material
-    })
+      data: material})
 
   } catch (error) {
     console.error('Erro ao atualizar material:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })} finally {
+    await prisma.$disconnect()}

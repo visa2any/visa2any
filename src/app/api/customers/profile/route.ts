@@ -9,45 +9,33 @@ async function getCustomerFromToken(request: NextRequest) {
     const token = request.cookies.get('customer-token')?.value
     
     if (!token) {
-      return null
-    }
+      return null}
     
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
-      return null
-    }
+      return null}
     
     const payload = jwt.verify(token, jwtSecret) as any
     
     if (payload.type !== 'customer') {
-      return null
-    }
+      return null}
     
     return await prisma.client.findUnique({
       where: { id: payload.customerId },
       include: {
         consultations: {
           orderBy: { createdAt: 'desc' },
-          take: 5
-        },
+          take: 5},
         documents: {
-          orderBy: { uploadedAt: 'desc' }
-        },
+          orderBy: { uploadedAt: 'desc' }},
         interactions: {
           orderBy: { createdAt: 'desc' },
-          take: 10
-        },
+          take: 10},
         payments: {
-          orderBy: { createdAt: 'desc' }
-        }
-      }
-    })
-  } catch (error) {
+          orderBy: { createdAt: 'desc' }}}})} catch (error) {
     console.error('Erro ao buscar cliente:', error)
-    return null
-  }
-}
+    return null}
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,9 +43,7 @@ export async function GET(request: NextRequest) {
     
     if (!customer) {
       return NextResponse.json({
-        error: 'Cliente não encontrado ou não autenticado'
-      }, { status: 401 })
-    }
+        error: 'Cliente não encontrado ou não autenticado'}, { status: 401 })}
 
     // Calcular progresso baseado no status
     const progressMap: Record<string, number> = {
@@ -68,8 +54,7 @@ export async function GET(request: NextRequest) {
       'DOCUMENTS_PENDING': 60,
       'SUBMITTED': 80,
       'APPROVED': 95,
-      'COMPLETED': 100
-    }
+      'COMPLETED': 100}
     
     const progress = progressMap[customer.status] || 10
 
@@ -78,8 +63,7 @@ export async function GET(request: NextRequest) {
       name: 'Ana Silva',
       email: 'ana.silva@visa2any.com',
       phone: '+55 11 99999-9999',
-      avatar: null
-    }
+      avatar: null}
 
     // Simular próximo milestone
     const nextMilestone = {
@@ -91,8 +75,7 @@ export async function GET(request: NextRequest) {
              customer.status === 'SUBMITTED' ? 'Acompanhamento da Aplicação' :
              customer.status === 'APPROVED' ? 'Preparação para Viagem' : 'Processo Concluído',
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
-      description: 'Próxima etapa do seu processo de imigração'
-    }
+      description: 'Próxima etapa do seu processo de imigração'}
 
     // Simular timeline
     const timeline = [
@@ -101,47 +84,41 @@ export async function GET(request: NextRequest) {
         title: 'Cadastro Inicial',
         description: 'Conta criada e perfil inicial preenchido',
         date: customer.createdAt.toLocaleDateString('pt-BR'),
-        status: 'completed'
-      },
+        status: 'completed'},
       {
         id: '2',
         title: 'Análise de Elegibilidade',
         description: 'Avaliação inicial do seu perfil',
         date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
-        status: customer.status === 'LEAD' ? 'current' : 'completed'
-      },
+        status: customer.status === 'LEAD' ? 'current' : 'completed'},
       {
         id: '3',
         title: 'Consultoria Especializada',
         description: 'Reunião com consultor para estratégia personalizada',
         date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         status: ['CONSULTATION_SCHEDULED', 'IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming'
-      },
+                ['QUALIFIED'].includes(customer.status) ? 'current' : 'upcoming'},
       {
         id: '4',
         title: 'Coleta de Documentos',
         description: 'Preparação de toda documentação necessária',
         date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         status: ['IN_PROCESS', 'DOCUMENTS_PENDING', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming'
-      },
+                customer.status === 'CONSULTATION_SCHEDULED' ? 'current' : 'upcoming'},
       {
         id: '5',
         title: 'Submissão da Aplicação',
         description: 'Envio oficial da aplicação para as autoridades',
         date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         status: ['SUBMITTED', 'APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming'
-      },
+                ['DOCUMENTS_PENDING'].includes(customer.status) ? 'current' : 'upcoming'},
       {
         id: '6',
         title: 'Aprovação',
         description: 'Recebimento da aprovação oficial',
         date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         status: ['APPROVED', 'COMPLETED'].includes(customer.status) ? 'completed' :
-                customer.status === 'SUBMITTED' ? 'current' : 'upcoming'
-      }
+                customer.status === 'SUBMITTED' ? 'current' : 'upcoming'}
     ]
 
     // Simular documentos
@@ -150,8 +127,7 @@ export async function GET(request: NextRequest) {
       name: doc.fileName || 'Documento',
       status: doc.status?.toLowerCase() || 'pending',
       uploadDate: doc.uploadedAt.toLocaleDateString('pt-BR'),
-      comments: doc.validationNotes
-    }))
+      comments: doc.validationNotes}))
 
     // Adicionar documentos simulados se não houver nenhum
     if (documents.length === 0) {
@@ -161,17 +137,14 @@ export async function GET(request: NextRequest) {
           name: 'Passaporte',
           status: 'pending',
           uploadDate: 'Aguardando envio',
-          comments: null
-        },
+          comments: null},
         {
           id: 'doc2',
           name: 'Diploma Universitário',
           status: 'pending',
           uploadDate: 'Aguardando envio',
-          comments: null
-        }
-      )
-    }
+          comments: null}
+      )}
 
     // Simular pagamentos
     const payments = customer.payments.map(payment => ({
@@ -180,8 +153,7 @@ export async function GET(request: NextRequest) {
       amount: payment.amount,
       status: payment.status.toLowerCase(),
       dueDate: payment.dueDate ? payment.dueDate.toLocaleDateString('pt-BR') : 'A definir',
-      paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined
-    }))
+      paidDate: payment.paidAt ? payment.paidAt.toLocaleDateString('pt-BR') : undefined}))
 
     // Adicionar pagamentos simulados se não houver nenhum
     if (payments.length === 0) {
@@ -191,9 +163,7 @@ export async function GET(request: NextRequest) {
         amount: 297,
         status: 'pending',
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
-        paidDate: undefined
-      })
-    }
+        paidDate: undefined})}
 
     // Simular notificações
     const notifications = [
@@ -203,16 +173,14 @@ export async function GET(request: NextRequest) {
         message: 'Sua conta foi criada com sucesso. Comece explorando seu painel.',
         type: 'success',
         date: customer.createdAt.toLocaleDateString('pt-BR'),
-        read: false
-      },
+        read: false},
       {
         id: 'notif2',
         title: 'Próximos Passos',
         message: 'Complete seu perfil para uma análise mais precisa.',
         type: 'info',
         date: new Date().toLocaleDateString('pt-BR'),
-        read: false
-      }
+        read: false}
     ]
 
     const customerData = {
@@ -231,17 +199,12 @@ export async function GET(request: NextRequest) {
       documents,
       timeline,
       payments,
-      notifications
-    }
+      notifications}
     
     return NextResponse.json({
-      customer: customerData
-    })
+      customer: customerData})
 
   } catch (error) {
     console.error('Erro ao buscar perfil do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
-    }, { status: 500 })
-  }
-}
+      error: 'Erro interno do servidor'}, { status: 500 })}

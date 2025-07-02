@@ -52,7 +52,8 @@ export const useBehaviorTracking = (userId?: string) => {
           .filter(e => e.type === 'time_spent' && e.data.page === 'pricing')
           .reduce((total, e) => total + e.data.duration, 0)
         
-        return pricingViews >= 3 || timeOnPricing > 120000 // 2 minutes      },
+        return pricingViews >= 3 || timeOnPricing > 120000 // 2 minutes
+      },
       action: () => {
         showPricingAssistant()
       },
@@ -66,7 +67,8 @@ export const useBehaviorTracking = (userId?: string) => {
       condition: (events) => {
         const timeSpent = Date.now() - pageStartTime.current
         const scrollEvents = events.filter(e => e.type === 'scroll').length
-        return timeSpent > 60000 && scrollEvents < 3 // Low engagement      },
+        return timeSpent > 60000 && scrollEvents < 3 // Low engagement
+      },
       action: () => {
         showEngagementBooster()
       },
@@ -98,7 +100,8 @@ export const useBehaviorTracking = (userId?: string) => {
       action: () => {
         showSuccessCelebration()
       },
-      cooldown: 1440, // 24 hours,      priority: 1
+      cooldown: 1440, // 24 hours
+      priority: 1
     }
   ]
 

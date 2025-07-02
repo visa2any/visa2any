@@ -12,26 +12,21 @@ const visaRequirementSchema = z.object({
     name: z.string(),
     required: z.boolean(),
     description: z.string().optional(),
-    validityMonths: z.number().optional()
-  })),
+    validityMonths: z.number().optional()})),
   processingTime: z.string(),
   fees: z.object({
     government: z.number(),
     service: z.number().optional(),
-    currency: z.string().default('USD')
-  }),
+    currency: z.string().default('USD')}),
   eligibilityCriteria: z.array(z.object({
     criterion: z.string(),
     description: z.string(),
-    required: z.boolean()
-  })),
+    required: z.boolean()})),
   commonPitfalls: z.array(z.string()),
   successTips: z.array(z.string()),
   governmentLinks: z.array(z.object({
     name: z.string(),
-    url: z.string()
-  }))
-})
+    url: z.string()}))})
 
 // GET /api/visa-requirements - Listar requisitos de visto
 
@@ -50,19 +45,16 @@ export async function GET(request: NextRequest) {
     
     if (country) {
       where.country = { contains: country, mode: 'insensitive' }
-    }
     
     if (visaType) {
       where.visaType = { contains: visaType, mode: 'insensitive' }
-    }
     
     if (search) {
       where.OR = [
         { country: { contains: search, mode: 'insensitive' } },
         { visaType: { contains: search, mode: 'insensitive' } },
         { visaSubtype: { contains: search, mode: 'insensitive' } }
-      ]
-    }
+      ]}
 
     // Buscar requisitos
 
@@ -74,8 +66,7 @@ export async function GET(request: NextRequest) {
         orderBy: [
           { country: 'asc' },
           { visaType: 'asc' }
-        ]
-      }),
+        ]}),
       prisma.visaRequirement.count({ where })
     ])
 
@@ -84,13 +75,11 @@ export async function GET(request: NextRequest) {
     const countries = await prisma.visaRequirement.groupBy({
       by: ['country'],
       _count: { country: true },
-      where: { isActive: true }
-    })
+      where: { isActive: true }})
     const visaTypes = await prisma.visaRequirement.groupBy({
       by: ['visaType'],
       _count: { visaType: true },
-      where: { isActive: true }
-    })
+      where: { isActive: true }})
     const totalPages = Math.ceil(total / limit)
     return NextResponse.json({
       data: {
@@ -101,31 +90,23 @@ export async function GET(request: NextRequest) {
           totalRequirements: total,
           countries: countries.map(c => ({
             country: c.country,
-            count: c._count.country
-          })),
+            count: c._count.country})),
           visaTypes: visaTypes.map(v => ({
             type: v.visaType,
-            count: v._count.visaType
-          }))
-        },
+            count: v._count.visaType}))},
         pagination: {
           page,
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages
-        }
-      }
-    })
+          hasMore: page < totalPages}}})
 
   } catch (error) {
     console.error('Erro ao buscar requisitos:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // POST /api/visa-requirements - Criar requisitos de visto
 
@@ -141,16 +122,12 @@ export async function POST(request: NextRequest) {
         country_visaType_visaSubtype: {
           country: validatedData.country,
           visaType: validatedData.visaType,
-          visaSubtype: validatedData.visaSubtype || ''
-        }
-      }
-    })
+          visaSubtype: validatedData.visaSubtype || ''}}})
     if (existing) {
       return NextResponse.json(
         { error: 'Requisitos já existem para este país e tipo de visto' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Criar requisitos
 
@@ -158,9 +135,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...validatedData,
         visaSubtype: validatedData.visaSubtype || null,
-        lastUpdated: new Date()
-      }
-    })
+        lastUpdated: new Date()}})
 
     // Log da criação
 
@@ -171,32 +146,24 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
-        }
-      }
-    })
+          action: 'automated_action'}}})
     return NextResponse.json({
       data: requirement,
-      message: 'Requisitos criados com sucesso'
-    }, { status: 201 })
+      message: 'Requisitos criados com sucesso'}, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           error: 'Dados inválidos',
-          details: error.errors
-        },
+          details: error.errors},
         { status: 400 }
-      )
-    }
+      )}
     console.error('Erro ao criar requisitos:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // PUT /api/visa-requirements - Atualizar requisitos
 
@@ -208,16 +175,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'ID é obrigatório' },
         { status: 400 }
-      )
-    }
+      )}
     const validatedData = visaRequirementSchema.partial().parse(updateData)
     const requirement = await prisma.visaRequirement.update({
       where: { id },
       data: {
         ...validatedData,
-        lastUpdated: new Date()
-      }
-    })
+        lastUpdated: new Date()}})
 
     // Log da atualização
 
@@ -228,20 +192,14 @@ export async function PUT(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
-        }
-      }
-    })
+          action: 'automated_action'}}})
     return NextResponse.json({
       data: requirement,
-      message: 'Requisitos atualizados com sucesso'
-    })
+      message: 'Requisitos atualizados com sucesso'})
 
   } catch (error) {
     console.error('Erro ao atualizar requisitos:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

@@ -1,0 +1,453 @@
+{
+  "description": "N8N workflow for Visa2Any automation platform",
+  "name": "Proactive Client Care",
+  "version": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "daily-proactive-check",
+      "name": "Daily Check 9AM",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simular dados de clientes ativos para teste\n// Em produção, isso viria do banco de dados via webhook\n\nconst mockClients = [\n  {\n    id: 1,\n    name: 'João Silva',\n    email: 'joao@email.com',\n    phone: '+5511999999999',\n    status: 'DOCUMENTS_PENDING',\n    client_status: 'ACTIVE',\n    target_country: 'USA',\n    visa_type: 'Tourist',\n    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dias atrás\n    last_activity: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 dias atrás\n    last_engagement: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() // 6 dias atrás\n  },\n  {\n    id: 2,\n    name: 'Maria Santos',\n    email: 'maria@email.com',\n    phone: '+5511888888888',\n    status: 'PAYMENT_PENDING',\n    client_status: 'ACTIVE',\n    target_country: 'Canada',\n    visa_type: 'Work',\n    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 dias atrás\n    last_activity: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 dias atrás\n    last_engagement: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 7 dias atrás\n  },\n  {\n    id: 3,\n    name: 'Pedro Costa',\n    email: 'pedro@email.com',\n    phone: '+5511777777777',\n    status: 'ACTIVE',\n    client_status: 'ACTIVE',\n    target_country: 'Australia',\n    visa_type: 'Student',\n    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 dia atrás\n    last_activity: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 dias atrás\n    last_engagement: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 dia atrás\n  }\n];\n\nconsole.log(`Simulando ${mockClients.length} clientes ativos para análise`);\n\n// Retornar dados no formato esperado pelo próximo nó\nreturn mockClients.map(client => ({ json: client }));"
+      },
+      "id": "fetch-active-clients",
+      "name": "Fetch Active Clients",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Analyze each client for proactive intervention opportunities\nlet clients = [];\n\n// Handle different input formats\ntry {\n  const inputData = $input.all();\n  if (inputData && inputData.length > 0) {\n    clients = inputData.map(item => item.json || item);\n  } else {\n    // No clients found - return empty array\n    return [];\n  }\n} catch (error) {\n  console.log('Error processing input:', error);\n  return [];\n}\n\nconst alerts = [];\nconst now = new Date();\n\nfor (const client of clients) {\n  // Safety checks - ensure client exists and has required properties\n  if (!client || !client.id) {\n    console.log('Skipping invalid client:', client);\n    continue;\n  }\n\n  // Safely extract client properties with defaults\n  const lastEngagement = client.last_engagement ? new Date(client.last_engagement) : null;\n  const lastActivity = client.last_activity ? new Date(client.last_activity) : null;\n  const clientCreated = client.created_at ? new Date(client.created_at) : new Date();\n  \n  const daysSinceEngagement = lastEngagement ? \n    Math.floor((now - lastEngagement) / (1000 * 60 * 60 * 24)) : 999;\n  \n  const daysSinceActivity = lastActivity ? \n    Math.floor((now - lastActivity) / (1000 * 60 * 60 * 24)) : 999;\n  \n  const daysSinceCreated = Math.floor((now - clientCreated) / (1000 * 60 * 60 * 24));\n  \n  // Safely get status - try different possible field names\n  const clientStatus = client.status || client.client_status || 'UNKNOWN';\n  const clientStatusFromLog = client.client_status || client.status || 'UNKNOWN';\n  \n  let interventionType = null;\n  let priority = 'MEDIUM';\n  let message = '';\n  let recommendedAction = '';\n  \n  // RULE 1: No engagement for 5+ days\n  if (daysSinceEngagement >= 5 && clientStatusFromLog === 'ACTIVE') {\n    interventionType = 'LOW_ENGAGEMENT';\n    priority = 'HIGH';\n    message = `Cliente ${client.name || 'Unknown'} sem engajamento há ${daysSinceEngagement} dias`;\n    recommendedAction = 'PERSONALIZED_OUTREACH';\n  }\n  \n  // RULE 2: Documents pending for 3+ days\n  else if (clientStatus === 'DOCUMENTS_PENDING' && daysSinceActivity >= 3) {\n    interventionType = 'DOCUMENTS_STALLED';\n    priority = 'HIGH';\n    message = `Cliente ${client.name || 'Unknown'} com documentos pendentes há ${daysSinceActivity} dias`;\n    recommendedAction = 'DOCUMENT_ASSISTANCE';\n  }\n  \n  // RULE 3: Payment pending for 2+ days\n  else if (clientStatus === 'PAYMENT_PENDING' && daysSinceActivity >= 2) {\n    interventionType = 'PAYMENT_DELAYED';\n    priority = 'URGENT';\n    message = `Cliente ${client.name || 'Unknown'} com pagamento pendente há ${daysSinceActivity} dias`;\n    recommendedAction = 'PAYMENT_RECOVERY';\n  }\n  \n  // RULE 4: New client (< 2 days) without activity\n  else if (daysSinceCreated <= 2 && daysSinceActivity >= 1) {\n    interventionType = 'NEW_CLIENT_ABANDONED';\n    priority = 'HIGH';\n    message = `Novo cliente ${client.name || 'Unknown'} sem atividade há ${daysSinceActivity} dia(s)`;\n    recommendedAction = 'ONBOARDING_ACCELERATION';\n  }\n  \n  // RULE 5: Long-time client going cold\n  else if (daysSinceCreated > 30 && daysSinceEngagement >= 7) {\n    interventionType = 'LONG_TERM_DISENGAGEMENT';\n    priority = 'MEDIUM';\n    message = `Cliente antigo ${client.name || 'Unknown'} se afastando (${daysSinceEngagement} dias sem engajamento)`;\n    recommendedAction = 'REACTIVATION_CAMPAIGN';\n  }\n  \n  if (interventionType) {\n    alerts.push({\n      json: {\n        clientId: client.id,\n        clientName: client.name || 'Unknown',\n        clientEmail: client.email || '',\n        clientPhone: client.phone || '',\n        clientStatus: clientStatus,\n        interventionType,\n        priority,\n        message,\n        recommendedAction,\n        daysSinceEngagement,\n        daysSinceActivity,\n        daysSinceCreated,\n        targetCountry: client.target_country || '',\n        visaType: client.visa_type || '',\n        detectedAt: now.toISOString()\n      }\n    });\n  }\n}\n\n// Sort by priority: URGENT > HIGH > MEDIUM\nconst priorityOrder = { 'URGENT': 3, 'HIGH': 2, 'MEDIUM': 1 };\nalerts.sort((a, b) => priorityOrder[b.json.priority] - priorityOrder[a.json.priority]);\n\n// Log for debugging\nconsole.log(`Processed ${clients.length} clients, found ${alerts.length} alerts`);\n\nreturn alerts;"
+      },
+      "id": "analyze-client-health",
+      "name": "Analyze Client Health",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simular verificação de documentos expirando\n// Em produção, isso consultaria o banco de dados\n\nconst clientAlert = $json;\n\n// Simular alguns documentos expirando para teste\nconst mockExpiringDocs = [];\n\n// 30% chance de ter documentos expirando\nif (Math.random() < 0.3) {\n  mockExpiringDocs.push({\n    id: 1,\n    client_id: clientAlert.clientId,\n    document_type: 'Passport',\n    expiry_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 dias\n    status: 'APPROVED'\n  });\n}\n\n// 20% chance de ter mais documentos\nif (Math.random() < 0.2) {\n  mockExpiringDocs.push({\n    id: 2,\n    client_id: clientAlert.clientId,\n    document_type: 'Birth Certificate',\n    expiry_date: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(), // 25 dias\n    status: 'PENDING'\n  });\n}\n\nconsole.log(`Verificando expiração de documentos para cliente ${clientAlert.clientId}: ${mockExpiringDocs.length} documentos expirando`);\n\n// Retornar dados no formato esperado\nreturn mockExpiringDocs.map(doc => ({ json: doc }));"
+      },
+      "id": "check-document-expiry",
+      "name": "Check Document Expiry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced analysis with document expiry data\nconst clientAlert = $('analyze-client-health').item.json;\nconst documents = $input.all().map(item => item.json);\n\nconst expiringDocs = documents.filter(doc => {\n  if (!doc.expiry_date) return false;\n  const expiryDate = new Date(doc.expiry_date);\n  const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);\n  return expiryDate <= thirtyDaysFromNow;\n});\n\nlet enhancedAlert = { ...clientAlert };\n\nif (expiringDocs.length > 0) {\n  enhancedAlert.expiringDocuments = expiringDocs;\n  enhancedAlert.documentExpiryAlert = true;\n  enhancedAlert.priority = 'URGENT'; // Escalate priority\n  enhancedAlert.message += ` + ${expiringDocs.length} documento(s) expirando em 30 dias`;\n  enhancedAlert.recommendedAction = 'DOCUMENT_RENEWAL_URGENT';\n}\n\nreturn [{ json: enhancedAlert }];"
+      },
+      "id": "enhance-alert-data",
+      "name": "Enhance Alert Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.priority }}",
+              "operation": "equal",
+              "value2": "URGENT"
+            }
+          ]
+        }
+      },
+      "id": "urgent-priority-check",
+      "name": "Urgent Priority?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare immediate intervention for urgent cases\nconst alert = $json;\n\nlet whatsappMessage = '';\nlet emailSubject = '';\nlet nextSteps = [];\n\nswitch (alert.recommendedAction) {\n  case 'PAYMENT_RECOVERY':\n    whatsappMessage = `🚨 ${alert.clientName}, notamos que seu pagamento está pendente há ${alert.daysSinceActivity} dias.\\n\\n💳 Para não atrasar seu processo, acesse: visa2any.com/payment\\n\\n❓ Dúvidas? Responda esta mensagem!`;\n    emailSubject = '🚨 Pagamento Pendente - Ação Necessária';\n    nextSteps = ['Enviar link de pagamento', 'Oferecer parcelamento', 'Agendar ligação'];\n    break;\n    \n  case 'DOCUMENT_RENEWAL_URGENT':\n    whatsappMessage = `⚠️ ${alert.clientName}, alguns dos seus documentos expiram em breve!\\n\\n📄 Documentos expirando: ${alert.expiringDocuments.map(d => d.document_type).join(', ')}\\n\\n🔄 Renove agora para não atrasar seu visto: visa2any.com/documents\\n\\n📞 Precisa de ajuda? Responda aqui!`;\n    emailSubject = '⚠️ Documentos Expirando - Renovação Urgente';\n    nextSteps = ['Enviar checklist renovação', 'Agendar consultoria', 'Oferecer suporte premium'];\n    break;\n    \n  case 'DOCUMENT_ASSISTANCE':\n    whatsappMessage = `📋 ${alert.clientName}, vamos finalizar seus documentos?\\n\\n⏰ Estão pendentes há ${alert.daysSinceActivity} dias\\n\\n✅ Finalize em 15min: visa2any.com/documents\\n\\n🤝 Precisando de ajuda? Nossa equipe está aqui!`;\n    emailSubject = '📋 Vamos Finalizar Seus Documentos?';\n    nextSteps = ['Enviar tutorial documentos', 'Oferecer consultoria', 'Agendar ligação suporte'];\n    break;\n    \n  default:\n    whatsappMessage = `👋 ${alert.clientName}, como está seu processo de visto?\\n\\n🔍 Notamos que você não acessou a plataforma recentemente\\n\\n💪 Estamos aqui para te ajudar! Responda esta mensagem\\n\\n📱 Ou acesse: visa2any.com`;\n    emailSubject = 'Como Podemos Te Ajudar?';\n    nextSteps = ['Check-in personalizado', 'Oferecer suporte', 'Enviar dicas úteis'];\n}\n\nreturn [{\n  json: {\n    ...alert,\n    interventionPlan: {\n      whatsappMessage,\n      emailSubject,\n      nextSteps,\n      urgentIntervention: true,\n      expectedResponse: '2 hours'\n    }\n  }\n}];"
+      },
+      "id": "prepare-urgent-intervention",
+      "name": "Prepare Urgent Intervention",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.interventionPlan.whatsappMessage }}",
+            "priority": "URGENT",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "PROACTIVE_CARE_URGENT"
+          }
+        }
+      },
+      "id": "send-urgent-whatsapp",
+      "name": "Send Urgent WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        -150
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "{{ $json.interventionPlan.emailSubject }}",
+            "template": "proactive-care-urgent",
+            "priority": "URGENT",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "interventionType": "{{ $json.interventionType }}",
+              "recommendedAction": "{{ $json.recommendedAction }}",
+              "nextSteps": "{{ $json.interventionPlan.nextSteps }}",
+              "daysSinceActivity": "{{ $json.daysSinceActivity }}"
+            }
+          }
+        }
+      },
+      "id": "send-urgent-email",
+      "name": "Send Urgent Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        -50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare standard intervention for high/medium priority\nconst alert = $json;\n\nlet interventionPlan = {\n  whatsappMessage: '',\n  emailSubject: '',\n  nextSteps: [],\n  urgentIntervention: false,\n  expectedResponse: '24 hours'\n};\n\nswitch (alert.recommendedAction) {\n  case 'PERSONALIZED_OUTREACH':\n    interventionPlan.whatsappMessage = `👋 Olá ${alert.clientName}! Tudo bem com seu processo de ${alert.visaType} para ${alert.targetCountry}?\\n\\n🤔 Notamos que você não acessou a plataforma recentemente\\n\\n💬 Alguma dúvida? Estamos aqui para ajudar!\\n\\n✨ Confira as novidades: visa2any.com`;\n    interventionPlan.emailSubject = 'Como Está Seu Processo de Visto?';\n    interventionPlan.nextSteps = ['Enviar dicas personalizadas', 'Oferecer consultoria gratuita', 'Compartilhar casos de sucesso'];\n    break;\n    \n  case 'ONBOARDING_ACCELERATION':\n    interventionPlan.whatsappMessage = `🎉 Bem-vindo à Visa2Any, ${alert.clientName}!\\n\\n🚀 Vamos acelerar seu processo para ${alert.targetCountry}?\\n\\n📋 Próximos passos importantes aguardando você\\n\\n🔗 Continue de onde parou: visa2any.com/dashboard`;\n    interventionPlan.emailSubject = '🚀 Vamos Acelerar Seu Processo?';\n    interventionPlan.nextSteps = ['Enviar checklist personalizado', 'Agendar consultoria inicial', 'Ativar sequência onboarding'];\n    break;\n    \n  case 'REACTIVATION_CAMPAIGN':\n    interventionPlan.whatsappMessage = `💭 ${alert.clientName}, sentimos sua falta!\\n\\n🌟 Seu sonho de ${alert.targetCountry} ainda está vivo?\\n\\n🆕 Temos novidades que podem te interessar\\n\\n💪 Volte quando quiser: visa2any.com`;\n    interventionPlan.emailSubject = 'Seu Sonho Ainda Está Vivo?';\n    interventionPlan.nextSteps = ['Enviar atualizações relevantes', 'Oferecer desconto reativação', 'Agendar check-in opcional'];\n    break;\n    \n  default:\n    interventionPlan.whatsappMessage = `📞 ${alert.clientName}, como podemos te ajudar hoje?\\n\\n🔍 Nossa equipe está acompanhando seu processo\\n\\n💬 Responda esta mensagem com suas dúvidas\\n\\n🌐 Ou acesse: visa2any.com/help`;\n    interventionPlan.emailSubject = 'Como Podemos Te Ajudar?';\n    interventionPlan.nextSteps = ['Oferecer suporte personalizado', 'Enviar recursos úteis', 'Agendar conversa'];\n}\n\nreturn [{\n  json: {\n    ...alert,\n    interventionPlan\n  }\n}];"
+      },
+      "id": "prepare-standard-intervention",
+      "name": "Prepare Standard Intervention",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        100
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/whatsapp",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "phone": "{{ $json.clientPhone }}",
+            "message": "{{ $json.interventionPlan.whatsappMessage }}",
+            "priority": "{{ $json.priority }}",
+            "clientId": "{{ $json.clientId }}",
+            "campaign": "PROACTIVE_CARE_STANDARD"
+          }
+        }
+      },
+      "id": "send-standard-whatsapp",
+      "name": "Send Standard WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        50
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/notifications/email",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ $env.VISA2ANY_API_TOKEN }}"
+          },
+          "body": {
+            "to": "{{ $json.clientEmail }}",
+            "subject": "{{ $json.interventionPlan.emailSubject }}",
+            "template": "proactive-care-standard",
+            "priority": "{{ $json.priority }}",
+            "data": {
+              "clientName": "{{ $json.clientName }}",
+              "targetCountry": "{{ $json.targetCountry }}",
+              "visaType": "{{ $json.visaType }}",
+              "interventionType": "{{ $json.interventionType }}",
+              "nextSteps": "{{ $json.interventionPlan.nextSteps }}"
+            }
+          }
+        }
+      },
+      "id": "send-standard-email",
+      "name": "Send Standard Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        150
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log da intervenção executada\n// Em produção, isso salvaria no banco de dados\n\nconst interventionData = $json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  clientId: interventionData.clientId,\n  clientName: interventionData.clientName,\n  interventionType: interventionData.interventionType,\n  priority: interventionData.priority,\n  recommendedAction: interventionData.recommendedAction,\n  message: interventionData.message,\n  status: 'EXECUTED',\n  channels: interventionData.interventionPlan?.channels || ['whatsapp', 'email'],\n  expectedResponse: interventionData.interventionPlan?.expectedResponse || 'Client engagement'\n};\n\nconsole.log('📋 INTERVENÇÃO EXECUTADA:');\nconsole.log(`Cliente: ${logEntry.clientName} (${logEntry.clientId})`);\nconsole.log(`Tipo: ${logEntry.interventionType}`);\nconsole.log(`Prioridade: ${logEntry.priority}`);\nconsole.log(`Ação: ${logEntry.recommendedAction}`);\nconsole.log(`Canais: ${logEntry.channels.join(', ')}`);\nconsole.log(`Timestamp: ${logEntry.timestamp}`);\n\n// Em produção, aqui faria:\n// INSERT INTO proactive_interventions (client_id, intervention_type, priority, recommended_action, message, intervention_plan, detected_at, status)\n\nreturn [{ json: logEntry }];"
+      },
+      "id": "log-intervention",
+      "name": "Log Intervention",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        0
+      ],
+      "description": ""
+    },
+    {
+      "parameters": {
+        "message": "🎯 *PROACTIVE CARE EXECUTED*\\n\\n👤 *Client:* {{ $json.clientName }}\\n🚨 *Type:* {{ $json.interventionType }}\\n⚡ *Priority:* {{ $json.priority }}\\n🎬 *Action:* {{ $json.recommendedAction }}\\n\\n📱 *Channels:* WhatsApp + Email\\n⏰ *Executed:* {{ $json.detectedAt }}\\n\\n💡 *Expected Response:* {{ $json.interventionPlan.expectedResponse }}",
+        "chatId": "-1001234567890",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-team",
+      "name": "Notify Team",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 4,
+      "position": [
+        1800,
+        0
+      ],
+      "description": ""
+    }
+  ],
+  "connections": {
+    "Daily Check 9AM": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active Clients": {
+      "main": [
+        [
+          {
+            "node": "Analyze Client Health",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Client Health": {
+      "main": [
+        [
+          {
+            "node": "Check Document Expiry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Document Expiry": {
+      "main": [
+        [
+          {
+            "node": "Enhance Alert Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhance Alert Data": {
+      "main": [
+        [
+          {
+            "node": "Urgent Priority?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Priority?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Urgent Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Standard Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Urgent Intervention": {
+      "main": [
+        [
+          {
+            "node": "Send Urgent WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Urgent Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Urgent WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Log Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Urgent Email": {
+      "main": [
+        [
+          {
+            "node": "Log Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Standard Intervention": {
+      "main": [
+        [
+          {
+            "node": "Send Standard WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Standard Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Standard WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Log Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Standard Email": {
+      "main": [
+        [
+          {
+            "node": "Log Intervention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Intervention": {
+      "main": [
+        [
+          {
+            "node": "Notify Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "America/Sao_Paulo"
+  },
+  "triggerCount": 1
+}

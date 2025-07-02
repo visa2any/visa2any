@@ -8,7 +8,7 @@ export async function PATCH(
   try {
     const { id } = params
     const body = await request.json()
-const { status, error } = body
+    const { status, error } = body
 
     const socialPost = await prisma.socialPost.update({
       where: { id },
@@ -17,7 +17,7 @@ const { status, error } = body
         error: error || 'Erro desconhecido',
         updatedAt: new Date()
       }
-    })
+    }))
     return NextResponse.json({
       success: true,
       message: 'Erro registrado com sucesso',
