@@ -14,20 +14,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Nome e email são obrigatórios' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Verificar se cliente já existe
     const existingClient = await prisma.client.findUnique({
-      where: { email }
-    })
+      where: { email }})
 
     if (existingClient) {
       return NextResponse.json(
         { error: 'Email já cadastrado' },
         { status: 400 }
-      )
-    }
+      )}
 
     // Criar cliente
     const client = await prisma.client.create({
@@ -39,22 +36,18 @@ export async function POST(request: NextRequest) {
         nationality,
         targetCountry,
         source: source || 'direct',
-        status: 'LEAD'
-      }
-    })
+        status: 'LEAD'}})
 
     // Gerar token JWT
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
-      throw new Error('JWT secret não configurado')
-    }
+      throw new Error('JWT secret não configurado')}
 
     const token = jwt.sign(
       {
         userId: client.id,
         email: client.email,
-        type: 'client'
-      },
+        type: 'client'},
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -65,11 +58,9 @@ export async function POST(request: NextRequest) {
         id: client.id,
         name: client.name,
         email: client.email,
-        type: 'client'
-      },
+        type: 'client'},
       token,
-      message: 'Conta criada e login automático realizado'
-    })
+      message: 'Conta criada e login automático realizado'})
 
     // Configurar cookie httpOnly
     response.cookies.set('auth-token', token, {
@@ -77,8 +68,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
-    })
+      path: '/'})
 
     return response
 
@@ -87,6 +77,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}

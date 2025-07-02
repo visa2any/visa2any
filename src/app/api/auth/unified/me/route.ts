@@ -11,21 +11,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
-      )
-    }
+      )}
 
     return NextResponse.json({
-      user
-    })
+      user})
 
   } catch (error) {
     console.error('Erro ao verificar usuário:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função para verificar autenticação unificada
 async function verifyUnifiedAuth(request: NextRequest) {
@@ -36,13 +32,11 @@ async function verifyUnifiedAuth(request: NextRequest) {
     const token = authHeader?.replace('Bearer ', '') || cookieToken
 
     if (!token) {
-      return null
-    }
+      return null}
 
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
-      throw new Error('JWT secret não configurado')
-    }
+      throw new Error('JWT secret não configurado')}
 
     // Verificar e decodificar token
     const decoded = jwt.verify(token, jwtSecret) as any
@@ -52,10 +46,6 @@ async function verifyUnifiedAuth(request: NextRequest) {
       id: decoded.userId,
       email: decoded.email,
       type: decoded.type,
-      role: decoded.role || null
-    }
-  } catch (error) {
+      role: decoded.role || null}} catch (error) {
     console.error('Erro na verificação de auth:', error)
-    return null
-  }
-}
+    return null}

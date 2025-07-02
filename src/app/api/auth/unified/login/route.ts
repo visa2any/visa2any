@@ -11,8 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email é obrigatório' },
         { status: 400 }
-      )
-    }
+      )}
 
     let result
     if (type === 'admin') {
@@ -21,26 +20,21 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Senha é obrigatória para admin' },
           { status: 400 }
-        )
-      }
-      result = await loginAdmin(email, password)
-    } else {
+        )}
+      result = await loginAdmin(email, password)} else {
       // Login para cliente (pode não ter senha na primeira vez)
-      result = await loginCustomer(email, password)
-    }
+      result = await loginCustomer(email, password)}
 
     if (!result.success) {
       return NextResponse.json(
         { error: result.error || 'Credenciais inválidas' },
         { status: result.error === 'NEEDS_PASSWORD_SETUP' ? 202 : 401 }
-      )
-    }
+      )}
 
     // Criar cookie de autenticação
     const response = NextResponse.json({
       user: result.user,
-      token: result.token
-    })
+      token: result.token})
 
     // Configurar cookie httpOnly
     response.cookies.set('auth-token', result.token!, {
@@ -48,8 +42,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 dias
-      path: '/'
-    })
+      path: '/'})
 
     return response
 
@@ -58,9 +51,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )
-  }
-}
+    )}
 
 // Função para login de admin
 async function loginAdmin(email: string, password: string) {
@@ -73,31 +64,25 @@ async function loginAdmin(email: string, password: string) {
         email: true,
         password: true,
         role: true,
-        isActive: true
-      }
-    })
+        isActive: true}})
 
     if (!user || !user.isActive) {
       return { success: false, error: 'Credenciais inválidas' }
-    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
       return { success: false, error: 'Credenciais inválidas' }
-    }
 
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
-      throw new Error('JWT secret não configurado')
-    }
+      throw new Error('JWT secret não configurado')}
 
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role,
-        type: 'admin'
-      },
+        type: 'admin'},
       jwtSecret,
       { expiresIn: '24h' }
     )
@@ -109,15 +94,10 @@ async function loginAdmin(email: string, password: string) {
         name: user.name,
         email: user.email,
         role: user.role,
-        type: 'admin'
-      },
-      token
-    }
-  } catch (error) {
+        type: 'admin'},
+      token}} catch (error) {
     console.error('Erro no login admin:', error)
-    return { success: false, error: 'Erro interno' }
-  }
-}
+    return { success: false, error: 'Erro interno' }}
 
 // Função para login de cliente
 async function loginCustomer(email: string, password?: string) {
@@ -128,40 +108,32 @@ async function loginCustomer(email: string, password?: string) {
         id: true,
         name: true,
         email: true,
-        status: true
-      }
-    })
+        status: true}})
 
     if (!client) {
       return { success: false, error: 'Cliente não encontrado' }
-    }
 
     /*
     // Se cliente não tem senha definida, precisa configurar
     if (!client.password && !password) {
       return { success: false, error: 'NEEDS_PASSWORD_SETUP' }
-    }
 
     // Se tem senha, verificar
     if (client.password && password) {
       const isPasswordValid = await bcrypt.compare(password, client.password)
       if (!isPasswordValid) {
-        return { success: false, error: 'Credenciais inválidas' }
-      }
-    }
+        return { success: false, error: 'Credenciais inválidas' }}
     */
 
     const jwtSecret = process.env.NEXTAUTH_SECRET
     if (!jwtSecret) {
-      throw new Error('JWT secret não configurado')
-    }
+      throw new Error('JWT secret não configurado')}
 
     const token = jwt.sign(
       {
         userId: client.id,
         email: client.email,
-        type: 'client'
-      },
+        type: 'client'},
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -172,12 +144,7 @@ async function loginCustomer(email: string, password?: string) {
         id: client.id,
         name: client.name,
         email: client.email,
-        type: 'client'
-      },
-      token
-    }
-  } catch (error) {
+        type: 'client'},
+      token}} catch (error) {
     console.error('Erro no login cliente:', error)
-    return { success: false, error: 'Erro interno' }
-  }
-}
+    return { success: false, error: 'Erro interno' }}
