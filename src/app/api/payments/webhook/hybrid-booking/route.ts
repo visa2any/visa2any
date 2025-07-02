@@ -11,19 +11,15 @@ export async function POST(request: NextRequest) {
     const { data, type } = body
     
     if (type !== 'payment') {
-      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })
-    }
+      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })}
 
     // Buscar detalhes do pagamento no MercadoPago
     const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
       headers: {
-        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
-      }
-    })
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`}})
     
     if (!paymentResponse.ok) {
-      throw new Error('Erro ao buscar pagamento no MercadoPago')
-    }
+      throw new Error('Erro ao buscar pagamento no MercadoPago')}
     
     const paymentData = await paymentResponse.json()
     console.log('Dados do pagamento:', paymentData)
@@ -31,11 +27,10 @@ export async function POST(request: NextRequest) {
     // Validar se é um pagamento híbrido
     const paymentId = paymentData.external_reference
     if (!paymentId) {
-      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })
-    }
+      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })}
 
     // Buscar registro de pagamento híbrido
-    const hybridPayment = await prisma.hybridPayment.findUnique({
+    const hybridPayment = await prisma.payment.findUnique({
       where: { id: paymentId },
       include: {
         client: {
@@ -51,8 +46,7 @@ export async function POST(request: NextRequest) {
     
     if (!hybridPayment) {
       console.error('Pagamento híbrido não encontrado:', paymentId)
-      return NextResponse.json({ status: 'error', reason: 'payment not found' })
-    }
+      return NextResponse.json({ status: 'error', reason: 'payment not found' })}
 
     // Processar baseado no status do pagamento
     switch (paymentData.status) {
@@ -70,64 +64,43 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Status não tratado:', paymentData.status)
-    }
+        console.log('Status não tratado:', paymentData.status)}
     
     return NextResponse.json({ status: 'processed' })
 
   } catch (error) {
     console.error('Erro no webhook híbrido:', error)
-    return NextResponse.json({ status: 'error' }, { status: 500 })
-  }
-}
+    return NextResponse.json({ status: 'error' }, { status: 500 })}
 
 // Processar pagamento aprovado
 async function processApprovedPayment(hybridPayment: any, paymentData: any) {
   try {
     // Atualizar status do pagamento
-    await prisma.hybridPayment.update({
+    await prisma.payment.update({
       where: { id: hybridPayment.id },
       data: {
-        status: 'APPROVED',
+        status: 'COMPLETED',
         paymentMethod: paymentData.payment_method_id,
-        paymentId: paymentData.id.toString(),
-        paidAmount: paymentData.transaction_amount,
-        paidAt: new Date(paymentData.date_approved),
+        transactionId: paymentData.id.toString(),
+        amount: paymentData.transaction_amount,
+        paidAt: paymentData.date_approved ? new Date(paymentData.date_approved) : new Date(),
         updatedAt: new Date()
-      }
-    })
-
-    // Criar registro de agendamento para consultor
-    const booking = await prisma.hybridBooking.create({
-      data: {
-        paymentId: hybridPayment.id,
-        clientId: hybridPayment.clientId,
-        country: hybridPayment.country,
-        consulate: hybridPayment.consulate,
-        availableDates: hybridPayment.availableDates,
-        plan: hybridPayment.plan,
-        urgency: hybridPayment.urgency,
-        status: 'CONSULTANT_ASSIGNED',
-        assignedAt: new Date(),
-        deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency)),
-        createdAt: new Date()
       }
     })
 
     // Notificar consultor para agendar
     await notifyConsultantToBook({
-      bookingId: booking.id,
-      paymentId: hybridPayment.id,
+      bookingId: hybridPayment.id,
+      transactionId: hybridPayment.id,
       client: hybridPayment.client,
       country: hybridPayment.country,
       consulate: hybridPayment.consulate,
       plan: hybridPayment.plan,
       urgency: hybridPayment.urgency,
       availableDates: hybridPayment.availableDates,
-      paidAmount: paymentData.transaction_amount,
+      amount: paymentData.transaction_amount,
       paymentMethod: paymentData.payment_method_id,
-      deadline: booking.deadline
-    })
+      deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))})
 
     // Notificar cliente sobre confirmação
     await notifyClientPaymentConfirmed({
@@ -135,26 +108,23 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       country: hybridPayment.country,
       consulate: hybridPayment.consulate,
       plan: hybridPayment.plan,
-      paidAmount: paymentData.transaction_amount,
+      amount: paymentData.transaction_amount,
       paymentMethod: getPaymentMethodName(paymentData.payment_method_id),
-      bookingId: booking.id
-    })
+      bookingId: hybridPayment.id})
     
     console.log('Pagamento aprovado processado:', hybridPayment.id)
 
   } catch (error) {
-    console.error('Erro ao processar pagamento aprovado:', error)
-  }
-}
+    console.error('Erro ao processar pagamento aprovado:', error)}
 
 // Processar pagamento pendente
 async function processPendingPayment(hybridPayment: any, paymentData: any) {
   try {
-    await prisma.hybridPayment.update({
+    await prisma.payment.update({
       where: { id: hybridPayment.id },
       data: {
-        status: 'PENDING_PAYMENT',
-        paymentId: paymentData.id.toString(),
+        status: 'PENDING',
+        transactionId: paymentData.id.toString(),
         updatedAt: new Date()
       }
     })
@@ -171,8 +141,7 @@ Recebemos seu pagamento e ele está sendo processado:
 
 ${paymentData.payment_method_id === 'pix' ? 
   '⚡ PIX: Confirmação em até 5 minutos' : 
-  '📄 Boleto: Confirmação em até 2 dias úteis'
-}
+  '📄 Boleto: Confirmação em até 2 dias úteis'}
 
 ✅ Assim que confirmado, agendaremos sua vaga automaticamente!
 
@@ -183,24 +152,20 @@ ${paymentData.payment_method_id === 'pix' ?
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message
-      })
-    })
+        message: message})})
 
   } catch (error) {
-    console.error('Erro ao processar pagamento pendente:', error)
-  }
-}
+    console.error('Erro ao processar pagamento pendente:', error)}
 
 // Processar pagamento rejeitado
 async function processRejectedPayment(hybridPayment: any, paymentData: any) {
   try {
-    await prisma.hybridPayment.update({
+    await prisma.payment.update({
       where: { id: hybridPayment.id },
       data: {
-        status: 'REJECTED',
-        paymentId: paymentData.id.toString(),
-        rejectionReason: paymentData.status_detail,
+        status: 'FAILED',
+        transactionId: paymentData.id.toString(),
+        description: paymentData.status_detail,
         updatedAt: new Date()
       }
     })
@@ -232,28 +197,22 @@ Infelizmente seu pagamento não foi aprovado:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message
-      })
-    })
+        message: message})})
 
   } catch (error) {
-    console.error('Erro ao processar pagamento rejeitado:', error)
-  }
-}
+    console.error('Erro ao processar pagamento rejeitado:', error)}
 
 // Notificar consultor para fazer agendamento
 async function notifyConsultantToBook(data: any) {
   const urgencyEmoji = {
     'NORMAL': '⏰',
     'URGENT': '🚨',
-    'EMERGENCY': '🔥'
-  }
+    'EMERGENCY': '🔥'}
   
   const planEmoji = {
     'BASIC': '🥉',
     'PREMIUM': '🥈',
-    'VIP': '🥇'
-  }
+    'VIP': '🥇'}
   
   const deadlineText = data.urgency === 'EMERGENCY' ? 
     'EMERGÊNCIA - 30 MINUTOS!' :
@@ -261,14 +220,14 @@ async function notifyConsultantToBook(data: any) {
     'URGENTE - 2 HORAS!' :
     'NORMAL - 4 HORAS'
 
-  const message = `${urgencyEmoji[data.urgency]} PAGAMENTO CONFIRMADO - AGENDAR AGORA!
+  const message = `${urgencyEmoji[data.urgency as keyof typeof urgencyEmoji] || ''} PAGAMENTO CONFIRMADO - AGENDAR AGORA!
 
-${planEmoji[data.plan]} CLIENTE: ${data.client.name}
+${planEmoji[data.plan as keyof typeof planEmoji] || ''} CLIENTE: ${data.client.name}
 📧 Email: ${data.client.email}  
 📱 WhatsApp: ${data.client.phone}
 
 💰 PAGAMENTO APROVADO:
-• Valor: R$ ${data.paidAmount}
+• Valor: R$ ${data.amount}
 • Método: ${getPaymentMethodName(data.paymentMethod)}
 • Status: ✅ CONFIRMADO
 
@@ -300,13 +259,8 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML'
-      })
-    })
-  } catch (error) {
-    console.error('Erro ao notificar consultor:', error)
-  }
-}
+        parse_mode: 'HTML'})})} catch (error) {
+    console.error('Erro ao notificar consultor:', error)}
 
 // Notificar cliente sobre confirmação de pagamento
 async function notifyClientPaymentConfirmed(data: any) {
@@ -315,7 +269,7 @@ async function notifyClientPaymentConfirmed(data: any) {
 Parabéns ${data.client.name}! 🎉
 Seu pagamento foi aprovado com sucesso:
 
-💰 Valor: R$ ${data.paidAmount}
+💰 Valor: R$ ${data.amount}
 💳 Método: ${data.paymentMethod}
 🏛️ Destino: ${data.consulate} - ${data.country}
 🎯 Plano: ${data.plan}
@@ -329,8 +283,7 @@ Seu pagamento foi aprovado com sucesso:
 ⏰ TEMPO ESTIMADO:
 ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' : 
   data.plan === 'PREMIUM' ? '• Premium: Até 2 horas' : 
-  '• Basic: Até 4 horas'
-}
+  '• Basic: Até 4 horas'}
 
 📱 ACOMPANHE:
 🆔 Booking ID: ${data.bookingId}
@@ -346,13 +299,8 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: data.client.phone,
-        message: message
-      })
-    })
-  } catch (error) {
-    console.error('Erro ao notificar cliente:', error)
-  }
-}
+        message: message})})} catch (error) {
+    console.error('Erro ao notificar cliente:', error)}
 
 // Utilitários
 function getBookingDeadline(urgency: string): number {
@@ -361,8 +309,7 @@ function getBookingDeadline(urgency: string): number {
     'URGENT': 2 * 60 * 60 * 1000,  // 2 horas
     'EMERGENCY': 30 * 60 * 1000    // 30 minutos
   }
-  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL
-}
+  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL}
 
 function getPaymentMethodName(methodId: string): string {
   const methods: { [key: string]: string } = {
@@ -372,10 +319,8 @@ function getPaymentMethodName(methodId: string): string {
     'elo': 'Elo',
     'hipercard': 'Hipercard',
     'bolbradesco': 'Boleto Bradesco',
-    'account_money': 'Saldo Mercado Pago'
-  }
-  return methods[methodId] || 'Cartão'
-}
+    'account_money': 'Saldo Mercado Pago'}
+  return methods[methodId] || 'Cartão'}
 
 function getRejectionReason(detail: string): string {
   const reasons: { [key: string]: string } = {
@@ -386,7 +331,5 @@ function getRejectionReason(detail: string): string {
     'cc_rejected_bad_filled_other': 'Dados do cartão incorretos',
     'cc_rejected_blacklist': 'Cartão bloqueado',
     'cc_rejected_high_risk': 'Transação de alto risco',
-    'cc_rejected_max_attempts': 'Muitas tentativas'
-  }
-  return reasons[detail] || 'Verifique os dados e tente novamente'
-}
+    'cc_rejected_max_attempts': 'Muitas tentativas'}
+  return reasons[detail] || 'Verifique os dados e tente novamente'}

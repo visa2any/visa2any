@@ -50,8 +50,7 @@ export async function GET(request: NextRequest) {
               phone: true
             }
           }
-        }
-      }),
+        }),
       prisma.payment.count({ where })
     ])
 
@@ -102,7 +101,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
 
 // POST /api/payments - Criar pagamento
 export async function POST(request: NextRequest) {
@@ -129,9 +127,14 @@ export async function POST(request: NextRequest) {
     const payment = await prisma.payment.create({
       data: {
         ...validatedData,
+        paymentMethod: validatedData.paymentMethod ?? null,
         transactionId,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
-        status: 'PENDING'
+        status: 'PENDING',
+        clientId: validatedData.clientId,
+        description: validatedData.description,
+        amount: validatedData.amount,
+        currency: validatedData.currency
       },
       include: {
         client: {
@@ -142,8 +145,7 @@ export async function POST(request: NextRequest) {
             phone: true
           }
         }
-      }
-    })
+      })
 
     // Log da criação
     await prisma.automationLog.create({
@@ -193,8 +195,7 @@ export async function POST(request: NextRequest) {
 function generateTransactionId(): string {
   const timestamp = Date.now().toString()
   const random = Math.random().toString(36).substring(2, 10)
-  return `TXN_${timestamp}_${random}`.toUpperCase()
-}
+  return `TXN_${timestamp}_${random}`.toUpperCase()}
 
 // Função para gerar link de pagamento (simulado)
 async function generatePaymentLink(payment: any) {
@@ -256,8 +257,7 @@ export async function PUT(request: NextRequest) {
             'Lista de documentos necessários',
             'Suporte por email 48h'
           ],
-          popular: false
-        },
+          popular: false},
         {
           id: 'premium_consultation',
           name: 'Consulta Premium',
@@ -272,8 +272,7 @@ export async function PUT(request: NextRequest) {
             'Acompanhamento por 30 dias',
             'Suporte prioritário'
           ],
-          popular: true
-        },
+          popular: true},
         {
           id: 'vip_full_service',
           name: 'Serviço VIP Completo',
@@ -290,8 +289,7 @@ export async function PUT(request: NextRequest) {
             'Consultor dedicado'
           ],
           popular: false,
-          guarantee: true
-        },
+          guarantee: true},
         // Pacotes internacionais
         {
           id: 'international_basic',
@@ -306,8 +304,7 @@ export async function PUT(request: NextRequest) {
             'Required documents list',
             '48h email support'
           ],
-          popular: false
-        },
+          popular: false},
         {
           id: 'international_premium',
           name: 'International Premium',
@@ -322,14 +319,12 @@ export async function PUT(request: NextRequest) {
             '30-day follow-up',
             'Priority support'
           ],
-          popular: true
-        }
+          popular: true}
       ]
 
       return NextResponse.json({
         data: { packages }
-      })
-    }
+      })}
 
     return NextResponse.json(
       { error: 'Ação inválida' },

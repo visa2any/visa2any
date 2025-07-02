@@ -43,12 +43,13 @@ export async function POST(request: NextRequest) {
             data: {
               name: validatedData.clientInfo.name || 'Cliente',
               email: validatedData.clientInfo.email,
-              phone: validatedData.clientInfo.phone,
+              phone: validatedData.clientInfo.phone || null,
               status: 'LEAD',
               source: 'checkout'
             }
           })
         }
+    }
         
         clientId = client.id
       } catch (error) {
@@ -65,19 +66,22 @@ export async function POST(request: NextRequest) {
         status: 'PENDING',
         paymentMethod: 'MERCADO_PAGO',
         description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''} - Total: R$ ${validatedData.totalAmount}`,
-        clientId: clientId
+        clientId: clientId!
       }
     })
 
     // Gerar link de pagamento do Mercado Pago
-    const paymentUrl = await createMercadoPagoPayment({
+    const paymentData: any = {
       orderId: payment.id,
       title: validatedData.productName,
       quantity: validatedData.quantity,
-      unitPrice: validatedData.totalAmount, // MP recebe o valor total
-      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`,
-      clientEmail: validatedData.clientInfo?.email
-    })
+      unitPrice: validatedData.totalAmount,
+      description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`
+    };
+    if (validatedData.clientInfo?.email) {
+      paymentData.clientEmail = validatedData.clientInfo.email;
+    }
+    const paymentUrl = await createMercadoPagoPayment(paymentData);
 
     // Log da criação do pedido
     await prisma.automationLog.create({
@@ -123,16 +127,15 @@ export async function POST(request: NextRequest) {
 
 // Função para criar pagamento no Mercado Pago
 async function createMercadoPagoPayment(orderData: {
-  orderId: string
-  title: string
-  quantity: number
-  unitPrice: number
+  orderId: string,
+  title: string,
+  quantity: number,
+  unitPrice: number,
   description: string
-  clientEmail?: string
-}) {
+  clientEmail?: string}) {
   try {
     // Configurar dados da preferência
-    const preferenceData = {
+    const preferenceData: any = {
       items: [
         {
           id: orderData.orderId,
@@ -143,9 +146,6 @@ async function createMercadoPagoPayment(orderData: {
           currency_id: 'BRL'
         }
       ],
-      payer: orderData.clientEmail ? {
-        email: orderData.clientEmail
-      } : undefined,
       back_urls: {
         success: `${process.env.NEXTAUTH_URL}/success?payment_id=simulated&status=approved&external_reference=${orderData.orderId}`,
         failure: `${process.env.NEXTAUTH_URL}/cliente?payment=failed&order=${orderData.orderId}`,
@@ -162,6 +162,9 @@ async function createMercadoPagoPayment(orderData: {
         excluded_payment_types: [],
         installments: 12
       }
+    };
+    if (orderData.clientEmail) {
+      preferenceData.payer = { email: orderData.clientEmail };
     }
 
     // Usar SDK do Mercado Pago real
