@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Parâmetros consulate e visaType são obrigatórios' },
         { status: 400 }
-      )}
+      )
+    }
     
     const slots = await appointmentBookingService.getAvailableSlots(consulate, visaType, days)
     
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
       visaType,
       message: slots.length > 0 
         ? `${slots.length} vagas encontradas` 
-        : 'Nenhuma vaga disponível no período'})
+        : 'Nenhuma vaga disponível no período'
+    })
 
   } catch (error) {
     console.error('Erro ao buscar vagas:', error)
@@ -47,7 +49,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: `Campo ${field} é obrigatório` },
           { status: 400 }
-        )}
+        )
+      }
 
     // Validação dos dados do requerente
     const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality']
@@ -56,7 +59,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: `Campo applicantInfo.${field} é obrigatório` },
           { status: 400 }
-        )}
+        )
+      }
 
     // Tentar fazer o agendamento
     const bookingResult = await appointmentBookingService.bookAppointment(body)
@@ -72,14 +76,19 @@ export async function POST(request: NextRequest) {
           date: bookingResult.date,
           time: bookingResult.time,
           location: bookingResult.location,
-          instructions: bookingResult.instructions},
-        message: 'Agendamento realizado com sucesso!'})} else {
+          instructions: bookingResult.instructions
+        },
+        message: 'Agendamento realizado com sucesso!'
+      })
+    } else {
       return NextResponse.json(
         { 
           error: bookingResult.error,
-          message: 'Não foi possível realizar o agendamento'},
+          message: 'Não foi possível realizar o agendamento'
+        },
         { status: 400 }
-      )}
+      )
+    }
 
   } catch (error) {
     console.error('Erro ao fazer agendamento:', error)
@@ -100,7 +109,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: 'Campos appointmentId, newDate, newTime e consulate são obrigatórios' },
         { status: 400 }
-      )}
+      )
+    }
     
     const result = await appointmentBookingService.rescheduleAppointment(
       appointmentId,
@@ -116,12 +126,16 @@ export async function PUT(request: NextRequest) {
           confirmationCode: result.confirmationCode,
           date: result.date,
           time: result.time,
-          location: result.location},
-        message: 'Agendamento reagendado com sucesso!'})} else {
+          location: result.location
+        },
+        message: 'Agendamento reagendado com sucesso!'
+      })
+    } else {
       return NextResponse.json(
         { error: 'Erro ao reagendar agendamento' },
         { status: 400 }
-      )}
+      )
+    }
 
   } catch (error) {
     console.error('Erro ao reagendar:', error)
