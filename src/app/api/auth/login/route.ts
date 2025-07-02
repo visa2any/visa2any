@@ -9,7 +9,8 @@ import { applyRateLimit } from '@/lib/rate-limit'
 // Schema para login
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'Senha é obrigatória')})
+  password: z.string().min(1, 'Senha é obrigatória')
+})
 
 // POST /api/auth/login - Login de usuário com rate limiting
 export async function POST(request: NextRequest) {
@@ -30,8 +31,11 @@ export async function POST(request: NextRequest) {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
-            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()}
-      )}
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
 
     const body = await request.json()
     
@@ -47,20 +51,24 @@ export async function POST(request: NextRequest) {
         email: true,
         password: true,
         role: true,
-        isActive: true}})
+        isActive: true
+      }
+    })
 
     if (!user) {
       return NextResponse.json(
         { error: 'Credenciais inválidas' },
         { status: 401 }
-      )}
+      )
+    }
 
     // Verificar se usuário está ativo
     if (!user.isActive) {
       return NextResponse.json(
         { error: 'Usuário inativo' },
         { status: 401 }
-      )}
+      )
+    }
 
     // Verificar senha
     const isPasswordValid = await bcrypt.compare(validatedData.password, user.password)
@@ -69,7 +77,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Credenciais inválidas' },
         { status: 401 }
-      )}
+      )
+    }
 
     // ✅ Verificar se JWT secret está configurado
     const jwtSecret = process.env.NEXTAUTH_SECRET
@@ -78,7 +87,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
         { status: 500 }
-      )}
+      )
+    }
 
     // Gerar JWT token com configurações de segurança melhoradas
     const token = jwt.sign(
@@ -116,15 +126,22 @@ export async function POST(request: NextRequest) {
             userId: user.id,
             email: user.email,
             role: user.role,
-            loginTimestamp: new Date().toISOString()}}})} catch (logError) {
-      console.warn('Failed to log login:', logError)}
+            loginTimestamp: new Date().toISOString()
+          }
+        }
+      })
+    } catch (logError) {
+      console.warn('Failed to log login:', logError)
+    }
 
     // Configurar cookie httpOnly
     const response = NextResponse.json({
       data: {
         user: userData,
-        token},
-      message: 'Login realizado com sucesso'})
+        token
+      },
+      message: 'Login realizado com sucesso'
+    })
 
     // ✅ Definir cookie seguro com configurações melhoradas
     response.cookies.set('auth-token', token, {
@@ -133,7 +150,8 @@ export async function POST(request: NextRequest) {
       sameSite: 'strict', // ✅ Mais seguro que 'lax'
       maxAge: 24 * 60 * 60, // ✅ 24h ao invés de 7 dias
       path: '/',
-      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined})
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+    })
     
     console.log('🍪 Cookie auth-token definido com sucesso')
 
@@ -149,9 +167,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors},
+          details: error.errors
+        },
         { status: 400 }
-      )}
+      )
+    }
 
     console.error('Erro no login:', error)
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
@@ -161,4 +181,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

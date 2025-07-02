@@ -10,7 +10,9 @@ const chatMessageSchema = z.object({
   context: z.object({
     targetCountry: z.string().optional(),
     visaType: z.string().optional(),
-    currentStep: z.string().optional()}).optional()})
+    currentStep: z.string().optional()
+  }).optional()
+})
 
 // POST /api/ai/chat - Conversar com Sofia IA
 export async function POST(request: NextRequest) {
@@ -32,7 +34,8 @@ export async function POST(request: NextRequest) {
             select: { type: true, status: true }
           }
         }
-      })}
+      })
+    }
 
     // Processar mensagem com Sofia IA
     const sofiaResponse = await processSofiaMessage(
@@ -53,7 +56,8 @@ export async function POST(request: NextRequest) {
           clientId: validatedData.clientId,
           completedAt: new Date()
         }
-      })}
+      })
+    }
 
     // Log da conversa
     await prisma.automationLog.create({
@@ -77,16 +81,20 @@ export async function POST(request: NextRequest) {
         confidence: sofiaResponse.confidence,
         suggestions: sofiaResponse.suggestions,
         actions: sofiaResponse.actions,
-        conversationId: sofiaResponse.conversationId}})
+        conversationId: sofiaResponse.conversationId
+      }
+    })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors},
+          details: error.errors
+        },
         { status: 400 }
-      )}
+      )
+    }
 
     console.error('Erro no chat com Sofia:', error)
     return NextResponse.json(
@@ -102,7 +110,8 @@ export async function GET(request: NextRequest) {
     const intents = getSofiaIntents()
 
     return NextResponse.json({
-      data: { intents }})
+      data: { intents }
+    })
 
   } catch (error) {
     console.error('Erro ao buscar intenções:', error)
@@ -127,7 +136,9 @@ async function processSofiaMessage(message: string, clientContext: any, context:
     confidence: intent.confidence,
     suggestions: response.suggestions,
     actions: response.actions,
-    conversationId: generateConversationId()}
+    conversationId: generateConversationId()
+  }
+}
 
 // Detectar intenção da mensagem
 function detectIntent(message: string) {
@@ -144,13 +155,15 @@ function detectIntent(message: string) {
     for (const keyword of intentData.keywords) {
       if (lowercaseMessage.includes(keyword.toLowerCase())) {
         score += 1
-        matchedKeywords.push(keyword)}
+        matchedKeywords.push(keyword)
+      }
     
     // Verificar patterns
     for (const pattern of intentData.patterns) {
       const regex = new RegExp(pattern, 'i')
       if (regex.test(lowercaseMessage)) {
-        score += 2}
+        score += 2
+      }
     
     // Calcular confiança
     const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
@@ -159,9 +172,12 @@ function detectIntent(message: string) {
       bestMatch = {
         name: intentName,
         confidence,
-        keywords: matchedKeywords}}
+        keywords: matchedKeywords
+      }
+    }
   
-  return bestMatch}
+  return bestMatch
+}
 
 // Gerar resposta da Sofia
 async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {
@@ -504,28 +520,37 @@ function getSofiaIntents() {
   return {
     greeting: {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
-      patterns: ['^(olá|oi|hello|hi)']},
+      patterns: ['^(olá|oi|hello|hi)']
+    },
     
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
-      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']},
+      patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']
+    },
     
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
-      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']},
+      patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']
+    },
     
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
-      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']},
+      patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']
+    },
     
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
-      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']},
+      patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']
+    },
     
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
-      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']},
+      patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']
+    },
     
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
-      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']}}
+      patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']
+    }
+  }
+}
