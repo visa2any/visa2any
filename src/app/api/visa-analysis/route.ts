@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
     // Buscar requisitos para o país/visto
     const requirements = await prisma.visaRequirement.findMany({
       where: {
-        country: { contains: validatedData.targetCountry, mode: 'insensitive' },
+        country: { contains: validatedData.targetCountry },
         isActive: true,
         ...(validatedData.visaType && {
-          visaType: { contains: validatedData.visaType, mode: 'insensitive' }
+          visaType: { contains: validatedData.visaType }
         })
       }
     })
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         score: analyses[0]?.analysis.totalScore || 0,
         recommendation: generateRecommendation(analyses[0]),
         timeline: estimateTimeline(analyses[0]),
-        nextSteps: generateNextSteps(analyses[0]),
+        nextSteps: generateNextSteps(analyses[0]).join('\n'),
         completedAt: new Date()
       }
     })
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       where: { id: validatedData.clientId },
       data: {
         targetCountry: validatedData.targetCountry,
-        visaType: analyses[0]?.visaType,
+        visaType: analyses[0]?.visaType ?? null,
         score: analyses[0]?.analysis.totalScore || 0,
         status: analyses[0]?.analysis.totalScore >= 70 ? 'QUALIFIED' : 'LEAD'
       }
@@ -229,6 +229,7 @@ function analyzeCanadaEligibility(profile: any, requirement: any) {
       break
     default:
       educationScore = 28
+      break
   }
   totalScore += educationScore
   feedback.push(`Educação: ${educationScore}/150 pontos`)
@@ -349,6 +350,7 @@ function analyzeAustraliaEligibility(profile: any, requirement: any) {
       break
     default:
       educationScore = 10
+      break
   }
   totalScore += educationScore
   
@@ -549,5 +551,4 @@ function getRecommendationLevel(score: number): string {
   if (score >= 85) return 'ALTA'
   if (score >= 70) return 'MÉDIA-ALTA'
   if (score >= 50) return 'MÉDIA'
-  return 'BAIXA'
-}
+  return 'BAIXA'}
