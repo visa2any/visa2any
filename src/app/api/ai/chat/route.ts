@@ -92,7 +92,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // GET /api/ai/chat/intents - Listar intenções disponíveis
 export async function GET(request: NextRequest) {
@@ -107,7 +109,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // Função principal da Sofia IA
 async function processSofiaMessage(message: string, clientContext: any, context: any) {
