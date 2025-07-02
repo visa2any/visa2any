@@ -26,9 +26,13 @@ export async function POST(request: NextRequest) {
         include: {
           consultations: {
             orderBy: { createdAt: 'desc' },
-            take: 1},
+            take: 1
+          },
           documents: {
-            select: { type: true, status: true }}}})}
+            select: { type: true, status: true }
+          }
+        }
+      })}
 
     // Processar mensagem com Sofia IA
     const sofiaResponse = await processSofiaMessage(
@@ -47,7 +51,9 @@ export async function POST(request: NextRequest) {
           content: validatedData.message,
           response: sofiaResponse.message,
           clientId: validatedData.clientId,
-          completedAt: new Date()}})}
+          completedAt: new Date()
+        }
+      })}
 
     // Log da conversa
     await prisma.automationLog.create({
@@ -59,7 +65,10 @@ export async function POST(request: NextRequest) {
         details: {
           message: validatedData.message,
           intent: sofiaResponse.intent,
-          confidence: sofiaResponse.confidence}}})
+          confidence: sofiaResponse.confidence
+        }
+      }
+    })
 
     return NextResponse.json({
       data: {
