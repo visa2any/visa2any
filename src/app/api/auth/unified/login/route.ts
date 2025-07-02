@@ -94,10 +94,15 @@ async function loginAdmin(email: string, password: string) {
         name: user.name,
         email: user.email,
         role: user.role,
-        type: 'admin'},
-      token}} catch (error) {
+        type: 'admin'
+      },
+      token
+    }
+  } catch (error) {
     console.error('Erro no login admin:', error)
     return { success: false, error: 'Erro interno' }
+  }
+}
 
 // Função para login de cliente
 async function loginCustomer(email: string, password?: string) {
@@ -144,7 +149,12 @@ async function loginCustomer(email: string, password?: string) {
         id: client.id,
         name: client.name,
         email: client.email,
-        type: 'client'},
-      token}} catch (error) {
+        type: 'client'
+      },
+      token
+    }
+  } catch (error) {
     console.error('Erro no login cliente:', error)
     return { success: false, error: 'Erro interno' }
+  }
+}

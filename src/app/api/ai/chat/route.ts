@@ -242,12 +242,14 @@ Essas informações me ajudam a dar uma análise mais precisa!`,
           'Portugal',
           'Estados Unidos'
         ],
-        actions: []}
+        actions: []
+      }
     
     case 'documents_question':
       const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)
       if (country) {
-        return await getDocumentsResponse(country, clientName)}
+        return await getDocumentsResponse(country, clientName)
+      }
       
       return {
         message: `Para te ajudar com os documentos, preciso saber para qual país você está aplicando.
