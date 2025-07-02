@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório'}, { status: 400 })}
+        error: 'ID do afiliado é obrigatório'}, { status: 400 })
+    }
 
     // Buscar notificações do storage
     let notifications = notificationsStore.get(affiliateId) || []
@@ -49,12 +50,15 @@ export async function GET(request: NextRequest) {
       data: {
         notifications,
         unreadCount,
-        total: notifications.length}})
+        total: notifications.length
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao buscar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'}, { status: 500 })
+  }
 
 // POST - Criar nova notificação
 export async function POST(request: NextRequest) {
@@ -70,7 +74,8 @@ export async function POST(request: NextRequest) {
 
     if (!affiliateId || !type || !title || !message) {
       return NextResponse.json({
-        error: 'Campos obrigatórios: affiliateId, type, title, message'}, { status: 400 })}
+        error: 'Campos obrigatórios: affiliateId, type, title, message'}, { status: 400 })
+    }
 
     const notification: NotificationData = {
       id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -80,7 +85,8 @@ export async function POST(request: NextRequest) {
       data,
       read: false,
       createdAt: new Date().toISOString(),
-      priority}
+      priority
+    }
 
     // Adicionar ao storage
     const existing = notificationsStore.get(affiliateId) || []
@@ -88,7 +94,8 @@ export async function POST(request: NextRequest) {
     
     // Manter apenas últimas 100 notificações
     if (existing.length > 100) {
-      existing.splice(100)}
+      existing.splice(100)
+    }
     
     notificationsStore.set(affiliateId, existing)
 
@@ -106,7 +113,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao criar notificação:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'}, { status: 500 })
+  }
 
 // PUT - Marcar notificações como lidas
 export async function PUT(request: NextRequest) {
@@ -116,7 +124,8 @@ export async function PUT(request: NextRequest) {
 
     if (!affiliateId) {
       return NextResponse.json({
-        error: 'ID do afiliado é obrigatório'}, { status: 400 })}
+        error: 'ID do afiliado é obrigatório'}, { status: 400 })
+    }
 
     const notifications = notificationsStore.get(affiliateId) || []
 
@@ -126,7 +135,10 @@ export async function PUT(request: NextRequest) {
       // Marcar específicas como lidas
       notifications.forEach(n => {
         if (notificationIds.includes(n.id)) {
-          n.read = true}})}
+          n.read = true
+        }
+      })
+    }
 
     notificationsStore.set(affiliateId, notifications)
 
@@ -135,12 +147,15 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       data: {
         message: 'Notificações atualizadas',
-        unreadCount}})
+        unreadCount
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao atualizar notificações:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'}, { status: 500 })
+  }
 
 // Função para gerar notificações de exemplo
 function generateSampleNotifications(affiliateId: string): NotificationData[] {
@@ -238,7 +253,8 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)})}
+    body: JSON.stringify(notification)
+  })}
 
 async function sendPaymentNotification(affiliateId: string, paymentData: any) {
   const notification = {
@@ -252,7 +268,8 @@ async function sendPaymentNotification(affiliateId: string, paymentData: any) {
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)})}
+    body: JSON.stringify(notification)
+  })}
 
 async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
   const notification = {
@@ -266,4 +283,5 @@ async function sendTierPromotionNotification(affiliateId: string, tierData: any)
   return await fetch('/api/affiliates/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(notification)})}
+    body: JSON.stringify(notification)
+  })}
