@@ -122,14 +122,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       messages: filteredMessages,
-      total: filteredMessages.length})
+      total: filteredMessages.length
+    })
 
   } catch (error) {
     console.error('Messages fetch error:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -154,7 +157,9 @@ export async function POST(request: NextRequest) {
       priority: 'medium',
       attachments: attachments || [],
       metadata: {
-        sentAt: new Date().toISOString()}
+        sentAt: new Date().toISOString()
+      }
+    }
 
     // Simulate sending delay
 
@@ -162,11 +167,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: newMessage,
-      messageId: newMessage.id})
+      messageId: newMessage.id
+    })
 
   } catch (error) {
     console.error('Message send error:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

@@ -131,20 +131,26 @@ export async function PATCH(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: true}})
+          action: 'automated_action'
+        },
+        success: true
+      }
+    })
     
     return NextResponse.json({
-      data: updatedConsultation})
+      data: updatedConsultation
+    })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors},
+          details: error.errors
+        },
         { status: 400 }
-      )}
+      )
+    }
     
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
@@ -236,20 +242,26 @@ export async function PUT(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: true}})
+          action: 'automated_action'
+        },
+        success: true
+      }
+    })
     
     return NextResponse.json({
-      data: updatedConsultation})
+      data: updatedConsultation
+    })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors},
+          details: error.errors
+        },
         { status: 400 }
-      )}
+      )
+    }
     
     console.error('Erro ao atualizar consultoria:', error)
     return NextResponse.json(
@@ -296,11 +308,15 @@ export async function DELETE(
         clientId: existingConsultation.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: true}})
+          action: 'automated_action'
+        },
+        success: true
+      }
+    })
     
     return NextResponse.json({
-      message: 'Consultoria deletada com sucesso'})
+      message: 'Consultoria deletada com sucesso'
+    })
 
   } catch (error) {
     console.error('Erro ao deletar consultoria:', error)

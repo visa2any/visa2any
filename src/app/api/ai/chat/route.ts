@@ -309,9 +309,13 @@ Qual pacote faz mais sentido para você?`,
         ],
         actions: [{
           type: 'show_pricing',
-          label: 'Ver Detalhes dos Pacotes'}]}
+          label: 'Ver Detalhes dos Pacotes'
+        }]
+      }
+      break
+    }
     
-    case 'timeline_question':
+    case 'timeline_question': {
       return {
         message: `O tempo varia bastante por país ${clientName}! Aqui está um resumo:
 
@@ -340,6 +344,7 @@ Para qual país você está pensando?`,
         ],
         actions: []
       }
+    }
     
     case 'contact_human':
       return {
