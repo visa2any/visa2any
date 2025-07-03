@@ -27,7 +27,8 @@ export async function GET(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const { id } = params
     
@@ -37,27 +38,38 @@ export async function GET(
         client: {
           include: {
             documents: {
-              orderBy: { uploadedAt: 'desc' }}}},
+              orderBy: { uploadedAt: 'desc' }
+            }
+          }
+        },
         consultant: {
-          select: { id: true, name: true, email: true, role: true }},
+          select: { id: true, name: true, email: true, role: true }
+        },
         documents: {
-          orderBy: { uploadedAt: 'desc' }}}})
+          orderBy: { uploadedAt: 'desc' }
+        }
+      }
+    })
     
     if (!consultation) {
       return NextResponse.json(
         { error: 'Consultoria não encontrada' },
         { status: 404 }
-      )}
+      )
+    }
     
     return NextResponse.json({
-      data: consultation})
+      data: consultation
+    })
 
   } catch (error) {
     console.error('Erro ao buscar consultoria:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // PATCH /api/consultations/[id] - Atualizar campo específico (inline edit)
 export async function PATCH(
@@ -68,7 +80,8 @@ export async function PATCH(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const { id } = params
     const body = await request.json()
@@ -84,7 +97,8 @@ export async function PATCH(
       return NextResponse.json(
         { error: 'Consultoria não encontrada' },
         { status: 404 }
-      )}
+      )
+    }
 
     // Preparar dados para atualização
     const updateData: any = { ...validatedData }
@@ -136,7 +150,9 @@ export async function PATCH(
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // PUT /api/consultations/[id] - Atualizar consultoria
 export async function PUT(
@@ -147,7 +163,8 @@ export async function PUT(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const { id } = params
     const body = await request.json()
@@ -164,7 +181,8 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Consultoria não encontrada' },
         { status: 404 }
-      )}
+      )
+    }
 
     // Preparar dados para atualização
     const updateData: any = { ...validatedData }
@@ -237,7 +255,9 @@ export async function PUT(
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // DELETE /api/consultations/[id] - Deletar consultoria
 export async function DELETE(
@@ -248,7 +268,8 @@ export async function DELETE(
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const { id } = params
 
@@ -260,7 +281,8 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Consultoria não encontrada' },
         { status: 404 }
-      )}
+      )
+    }
 
     // Deletar consultoria
     await prisma.consultation.delete({
@@ -285,4 +307,6 @@ export async function DELETE(
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
