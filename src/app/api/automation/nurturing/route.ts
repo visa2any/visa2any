@@ -316,6 +316,7 @@ async function sendNurturingEmailNow(emailData: {
         template: 'nurturing'
       })
     })
+    
     // Atualizar interação
     await prisma.interaction.create({
       data: {
@@ -327,7 +328,7 @@ async function sendNurturingEmailNow(emailData: {
         content: `Nurturing email enviado: ${emailData.sequenceType}`,
         completedAt: new Date()
       }
-    }))
+    })
   } catch (error) {
     console.error('Erro ao enviar email nurturing:', error)
   }
