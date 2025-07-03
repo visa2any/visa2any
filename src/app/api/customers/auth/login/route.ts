@@ -10,10 +10,9 @@ export async function POST(request: NextRequest) {
     
     if (!email || !password) {
       return NextResponse.json({
-        error: 'Email e senha são obrigatórios'}, { status: 400 
-    })
-  }
-}
+        error: 'Email e senha são obrigatórios'
+      }, { status: 400 })
+    }
 
     // Buscar cliente por email
     const customer = await prisma.client.findUnique({
@@ -29,14 +28,16 @@ export async function POST(request: NextRequest) {
         score: true,
         consultations: {
           take: 1,
-          orderBy: { createdAt: 'desc' }}}})
+          orderBy: { createdAt: 'desc' }
+        }
+      }
+    })
     
     if (!customer) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'}, { status: 401 
-    })
-  }
-}
+        error: 'Credenciais inválidas'
+      }, { status: 401 })
+    }
 
     // Verificar senha - como não há campo password no modelo Client, vamos usar uma verificação alternativa
     // Por enquanto, vamos aceitar qualquer senha para clientes (implementar autenticação real depois)
@@ -44,26 +45,25 @@ export async function POST(request: NextRequest) {
     
     if (!passwordMatch) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'}, { status: 401 
-    })
-  }
-}
+        error: 'Credenciais inválidas'
+      }, { status: 401 })
+    }
 
     // Gerar token JWT
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor'}, { status: 500 
-    })
-  }
-}
+        error: 'Erro de configuração do servidor'
+      }, { status: 500 })
+    }
     
     const token = jwt.sign(
       { 
         customerId: customer.id, 
         email: customer.email,
-        type: 'customer'},
+        type: 'customer'
+      },
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -79,8 +79,10 @@ export async function POST(request: NextRequest) {
         status: customer.status,
         destinationCountry: customer.targetCountry,
         visaType: customer.visaType,
-        eligibilityScore: customer.score},
-      token})
+        eligibilityScore: customer.score
+      },
+      token
+    })
 
     // Definir cookie httpOnly
     response.cookies.set('customer-token', token, {
@@ -88,7 +90,8 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'})
+      path: '/'
+    })
     
     return response
 

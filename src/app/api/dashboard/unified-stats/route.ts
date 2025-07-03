@@ -157,11 +157,14 @@ export async function GET(request: NextRequest) {
       communicationStats}
     
     return NextResponse.json({
-      data: dashboardStats})
+      data: dashboardStats
+    })
 
   } catch (error) {
     console.error('Dashboard stats error:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

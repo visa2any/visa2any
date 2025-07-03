@@ -33,9 +33,15 @@ async function getCustomerFromToken(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
           take: 10},
         payments: {
-          orderBy: { createdAt: 'desc' }}}})} catch (error) {
+          orderBy: { createdAt: 'desc' }
+        }
+      }
+    })
+  } catch (error) {
     console.error('Erro ao buscar cliente:', error)
-    return null}
+    return null
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {

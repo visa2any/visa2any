@@ -166,23 +166,6 @@ export async function PATCH(
       { status: 500 }
     )
   }
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Dados inválidos',
-          details: error.errors
-        },
-        { status: 400 }
-      )
-    }
-    
-    console.error('Erro ao atualizar consultoria:', error)
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
-    )
-  }
 }
 
 // PUT /api/consultations/[id] - Atualizar consultoria

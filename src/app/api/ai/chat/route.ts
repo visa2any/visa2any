@@ -524,6 +524,7 @@ function extractCountryFromMessage(message: string): string | null {
              country === 'eua' || country === 'usa' ? 'estados unidos' : 
              country
     }
+  }
   
   return null
 }
