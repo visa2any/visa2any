@@ -157,19 +157,24 @@ export async function POST(request: NextRequest) {
         details: {
           timestamp: new Date().toISOString(),
           action: 'automated_action'},
-        success: true}})
+        success: true
+      }
+    })
     
     return NextResponse.json({
-      data: consultation}, { status: 201 })
+      data: consultation
+    }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
           error: 'Dados inválidos',
-          details: error.errors},
+          details: error.errors
+        },
         { status: 400 }
-      )}
+      )
+    }
     
     console.error('Erro ao criar consultoria:', error)
     return NextResponse.json(

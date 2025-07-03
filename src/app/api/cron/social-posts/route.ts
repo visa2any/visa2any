@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
         error: 'Erro no processamento de posts agendados',
         details: error instanceof Error ? error.message : 'Erro desconhecido'},
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // GET para verificar status
 export async function GET() {
