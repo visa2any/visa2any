@@ -43,7 +43,9 @@ export async function GET(request: NextRequest) {
     
     if (!customer) {
       return NextResponse.json({
-        error: 'Cliente não encontrado ou não autenticado'}, { status: 401 })}
+        error: 'Cliente não encontrado ou não autenticado'
+      }, { status: 401 })
+    }
 
     // Calcular progresso baseado no status
     const progressMap: Record<string, number> = {
@@ -207,4 +209,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar perfil do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
+  }
+}

@@ -10,7 +10,9 @@ export async function POST(request: NextRequest) {
     
     if (!name || !email || !password) {
       return NextResponse.json({
-        error: 'Nome, email e senha são obrigatórios'}, { status: 400 })}
+        error: 'Nome, email e senha são obrigatórios'
+      }, { status: 400 })
+    }
 
     // Verificar se já existe cliente com este email
     const existingCustomer = await prisma.client.findUnique({
@@ -18,7 +20,9 @@ export async function POST(request: NextRequest) {
     
     if (existingCustomer) {
       return NextResponse.json({
-        error: 'Já existe uma conta com este email'}, { status: 409 })}
+        error: 'Já existe uma conta com este email'
+      }, { status: 409 })
+    }
 
     // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 12)
@@ -37,7 +41,9 @@ export async function POST(request: NextRequest) {
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor'}, { status: 500 })}
+        error: 'Erro de configuração do servidor'
+      }, { status: 500 })
+    }
     
     const token = jwt.sign(
       { 
@@ -76,4 +82,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no registro do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
+  }
+}
