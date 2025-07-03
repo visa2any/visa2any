@@ -91,7 +91,8 @@ export async function PATCH(
 
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
-      where: { id }})
+      where: { id }
+    })
     
     if (!existingConsultation) {
       return NextResponse.json(
@@ -106,12 +107,15 @@ export async function PATCH(
     if (validatedData.scheduledAt) {
       // Handle both ISO string and datetime-local format
       if (validatedData.scheduledAt.includes('T')) {
-        updateData.scheduledAt = new Date(validatedData.scheduledAt)} else {
-        updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z')}
+        updateData.scheduledAt = new Date(validatedData.scheduledAt)
+      } else {
+        updateData.scheduledAt = new Date(validatedData.scheduledAt + 'T00:00:00.000Z')
+      }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date()}
+      updateData.completedAt = new Date()
+    }
 
     // Atualizar consultoria
     const updatedConsultation = await prisma.consultation.update({
@@ -119,9 +123,13 @@ export async function PATCH(
       data: updateData,
       include: {
         client: {
-          select: { id: true, name: true, email: true }},
+          select: { id: true, name: true, email: true }
+        },
         consultant: {
-          select: { id: true, name: true, email: true }}}})
+          select: { id: true, name: true, email: true }
+        }
+      }
+    })
 
     // Log da atualização
     await prisma.automationLog.create({
@@ -158,7 +166,23 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          error: 'Dados inválidos',
+          details: error.errors
+        },
+        { status: 400 }
+      )
+    }
+    
+    console.error('Erro ao atualizar consultoria:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
 }
 
 // PUT /api/consultations/[id] - Atualizar consultoria
@@ -182,7 +206,8 @@ export async function PUT(
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
       where: { id },
-      include: { client: true }})
+      include: { client: true }
+    })
     
     if (!existingConsultation) {
       return NextResponse.json(
@@ -195,14 +220,17 @@ export async function PUT(
     const updateData: any = { ...validatedData }
     
     if (validatedData.scheduledAt) {
-      updateData.scheduledAt = new Date(validatedData.scheduledAt)}
+      updateData.scheduledAt = new Date(validatedData.scheduledAt)
+    }
     
     if (validatedData.completedAt) {
-      updateData.completedAt = new Date(validatedData.completedAt)}
+      updateData.completedAt = new Date(validatedData.completedAt)
+    }
 
     // Se está marcando como completa, definir completedAt automaticamente
     if (validatedData.status === 'COMPLETED' && !updateData.completedAt) {
-      updateData.completedAt = new Date()}
+      updateData.completedAt = new Date()
+    }
 
     // Atualizar consultoria
     const updatedConsultation = await prisma.consultation.update({
@@ -214,9 +242,14 @@ export async function PUT(
             id: true, 
             name: true, 
             email: true, 
-            status: true }},
+            status: true
+          }
+        },
         consultant: {
-          select: { id: true, name: true, email: true }}}})
+          select: { id: true, name: true, email: true }
+        }
+      }
+    })
 
     // Atualizar status do cliente baseado no resultado da consultoria
     if (validatedData.status === 'COMPLETED') {
@@ -224,19 +257,21 @@ export async function PUT(
 
       // Lógica para determinar próximo status do cliente
       if (validatedData.score && validatedData.score >= 70) {
-        newClientStatus = 'IN_PROCESS'} else if (validatedData.score && validatedData.score < 40) {
+        newClientStatus = 'IN_PROCESS'
+      } else if (validatedData.score && validatedData.score < 40) {
         newClientStatus = 'QUALIFIED' // Precisa de mais trabalho
       } else {
-        newClientStatus = 'DOCUMENTS_PENDING'}
+        newClientStatus = 'DOCUMENTS_PENDING'
+      }
       
       await prisma.client.update({
         where: { id: existingConsultation.clientId },
         data: { 
           status: newClientStatus,
-          score: validatedData.score || existingConsultation.client.score}
-    })
-  }
-}
+          score: validatedData.score || existingConsultation.client.score
+        }
+      })
+    }
 
     // Log da atualização
     await prisma.automationLog.create({
@@ -291,7 +326,8 @@ export async function DELETE(
 
     // Verificar se consultoria existe
     const existingConsultation = await prisma.consultation.findUnique({
-      where: { id }})
+      where: { id }
+    })
     
     if (!existingConsultation) {
       return NextResponse.json(
@@ -302,7 +338,8 @@ export async function DELETE(
 
     // Deletar consultoria
     await prisma.consultation.delete({
-      where: { id }})
+      where: { id }
+    })
 
     // Log da deleção
     await prisma.automationLog.create({

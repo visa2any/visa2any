@@ -260,8 +260,10 @@ function processTemplate(template: string, variables: Record<string, any>): stri
   let processed = template
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`\{${key}\}`, 'g')
-    processed = processed.replace(regex, String(value))})
-  return processed}
+    processed = processed.replace(regex, String(value))
+  })
+  return processed
+}
 
 function calculateScoreFromResponses(responses: any): number {
   // Lógica simplificada de cálculo de score
@@ -273,21 +275,27 @@ function calculateScoreFromResponses(responses: any): number {
       'Pós-graduação': 15,
       'Superior completo': 12,
       'Superior incompleto': 8,
-      'Ensino médio': 5}
-    score += educationScores[responses.education] || 5}
+      'Ensino médio': 5
+    }
+    score += educationScores[responses.education] || 5
+  }
   if (responses.budget) {
     const budgetScores: Record<string, number> = {
       'Acima de R$ 500.000': 15,
       'R$ 300.000 - R$ 500.000': 12,
       'R$ 100.000 - R$ 300.000': 8,
-      'R$ 50.000 - R$ 100.000': 5}
-    score += budgetScores[responses.budget] || 2}
+      'R$ 50.000 - R$ 100.000': 5
+    }
+    score += budgetScores[responses.budget] || 2
+  }
   if (responses.urgency) {
     const urgencyScores: Record<string, number> = {
       'Extremamente urgente (preciso sair já)': 10,
       'Muito urgente (próximos 3 meses)': 8,
-      'Urgente (próximos 6 meses)': 6}
-    score += urgencyScores[responses.urgency] || 3}
+      'Urgente (próximos 6 meses)': 6
+    }
+    score += urgencyScores[responses.urgency] || 3
+  }
   return Math.min(score, 100)}
 
 async function scheduleEmail(emailData: {
@@ -306,10 +314,12 @@ async function scheduleEmail(emailData: {
       subject: emailData.subject,
       sendAt: emailData.sendAt,
       sequence: emailData.sequence,
-      templateIndex: emailData.templateIndex})
+      templateIndex: emailData.templateIndex
+    })
     // Se o delay for 0 (imediato) enviar agora
     if (emailData.sendAt <= new Date()) {
-      await sendEmailNow(emailData)}
+      await sendEmailNow(emailData)
+    }
     // Salvar na base para controle
     if (emailData.clientId) {
       await prisma.interaction.create({
@@ -322,8 +332,8 @@ async function scheduleEmail(emailData: {
           content: `Email agendado: ${emailData.subject}`,
           completedAt: new Date()
         }
-      
-    })
+      })
+    }
   } catch (error) {
     console.error('Erro ao agendar email:', error)
   }
@@ -348,7 +358,10 @@ async function sendEmailNow(emailData: {
         html: emailData.body.replace(/\n/g, '<br>'),
         template: 'automation',
         variables: {
-          content: emailData.body}})})
+          content: emailData.body
+        }
+      })
+    })
     if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
@@ -360,10 +373,8 @@ async function sendEmailNow(emailData: {
           content: `Email enviado: ${emailData.subject}`,
           completedAt: new Date()
         }
-      
-    })
-  }
-}
+      })
+    }
   } catch (error) {
     console.error('Erro ao enviar email:', error)
   }

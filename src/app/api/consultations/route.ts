@@ -11,7 +11,8 @@ const createConsultationSchema = z.object({
   scheduledAt: z.string().datetime().optional(),
   duration: z.number().min(15).max(480).optional(), // 15 min - 8 horas
   consultantId: z.string().optional(),
-  notes: z.string().optional()})
+  notes: z.string().optional()
+})
 
 // GET /api/consultations - Listar consultorias
 export async function GET(request: NextRequest) {
@@ -19,7 +20,8 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -33,13 +35,16 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     if (status && status !== 'ALL') {
-      where.status = status}
+      where.status = status
+    }
     
     if (type && type !== 'ALL') {
-      where.type = type}
+      where.type = type
+    }
     
     if (clientId) {
-      where.clientId = clientId}
+      where.clientId = clientId
+    }
 
     // Buscar consultorias
     const [consultations, total] = await Promise.all([
@@ -57,9 +62,14 @@ export async function GET(request: NextRequest) {
               phone: true,
               targetCountry: true,
               visaType: true,
-              status: true}},
+              status: true
+            }
+          },
           consultant: {
-            select: { id: true, name: true, email: true, role: true }}}}),
+            select: { id: true, name: true, email: true, role: true }
+          }
+        }
+      }),
       prisma.consultation.count({ where })
     ])
     
@@ -73,7 +83,10 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore: page < totalPages}}})
+          hasMore: page < totalPages
+        }
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao buscar consultorias:', error)
@@ -90,7 +103,8 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
     
     const body = await request.json()
     
@@ -105,18 +119,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Cliente não encontrado' },
         { status: 404 }
-      )}
+      )
+    }
 
     // Se for consultoria humana, verificar se consultor existe
     if (validatedData.consultantId) {
       const consultant = await prisma.user.findUnique({
-        where: { id: validatedData.consultantId }})
+        where: { id: validatedData.consultantId }
+      })
       
       if (!consultant) {
         return NextResponse.json(
           { error: 'Consultor não encontrado' },
           { status: 404 }
-        )}
+        )
+      }
+    }
 
     // Converter campos opcionais undefined para null
     const dataToCreate = {
@@ -126,7 +144,8 @@ export async function POST(request: NextRequest) {
       duration: validatedData.duration || 60, // Default 1 hora
       status: validatedData.scheduledAt ? ConsultationStatus.SCHEDULED : ConsultationStatus.IN_PROGRESS,
       notes: validatedData.notes ?? null,
-      consultantId: validatedData.consultantId ?? null};
+      consultantId: validatedData.consultantId ?? null
+    }
 
     // Criar consultoria
     const consultation = await prisma.consultation.create({
@@ -138,18 +157,22 @@ export async function POST(request: NextRequest) {
             name: true, 
             email: true, 
             targetCountry: true,
-            visaType: true}},
+            visaType: true
+          }
+        },
         consultant: {
-          select: { id: true, name: true, email: true }}}})
+          select: { id: true, name: true, email: true }
+        }
+      }
+    })
 
     // Atualizar status do cliente se necessário
     if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
       await prisma.client.update({
         where: { id: validatedData.clientId },
         data: { status: 'CONSULTATION_SCHEDULED' }
-    })
-  }
-}
+      })
+    }
 
     // Log da criação
     await prisma.automationLog.create({
@@ -159,7 +182,8 @@ export async function POST(request: NextRequest) {
         clientId: validatedData.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
+          action: 'automated_action'
+        },
         success: true
       }
     })
@@ -185,5 +209,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
 }
