@@ -102,8 +102,9 @@ export async function GET(request: NextRequest) {
         attachments: [],
         metadata: {
           sentiment: 'neutral',
-          requiresResponse: true}
-    ]
+          requiresResponse: true
+        }
+    }]
 
     let filteredMessages = mockMessages
 

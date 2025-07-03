@@ -314,8 +314,8 @@ async function sendNurturingEmailNow(emailData: {
         subject: emailData.subject,
         html: emailData.body.replace(/\n/g, '<br>'),
         template: 'nurturing'
-      }
-    })})
+      })
+    })
     // Atualizar interação
     await prisma.interaction.create({
       data: {
