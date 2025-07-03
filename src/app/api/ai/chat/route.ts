@@ -250,6 +250,7 @@ Essas informações me ajudam a dar uma análise mais precisa!`,
         actions: []
       }
       break
+    }
     
     case 'documents_question': {
       const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)

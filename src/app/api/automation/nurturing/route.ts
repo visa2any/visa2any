@@ -34,18 +34,22 @@ export async function POST(request: NextRequest) {
       include: {
         interactions: {
           orderBy: { createdAt: 'desc' },
-          take: 5}}})
+          take: 5
+        }
+      })
 
     if (!client) {
       return NextResponse.json({
-        error: 'Cliente não encontrado'}, { status: 404 })}
+        error: 'Cliente não encontrado'}, { status: 404 })
+    }
 
     // Determinar sequência baseada no tipo
     const sequence = getSequenceByType(validatedData.sequenceType)
     
     if (!sequence) {
       return NextResponse.json({
-        error: 'Tipo de sequência não suportado'}, { status: 400 })}
+        error: 'Tipo de sequência não suportado'}, { status: 400 })
+    }
 
     // Iniciar sequência de nurturing
     const result = await startNurturingSequence({
@@ -53,22 +57,27 @@ export async function POST(request: NextRequest) {
       sequenceType: validatedData.sequenceType,
       sequence,
       triggerData: validatedData.triggerData,
-      customSchedule: validatedData.customSchedule})
+      customSchedule: validatedData.customSchedule
+    })
 
     return NextResponse.json({
       message: `Sequência ${validatedData.sequenceType} iniciada para ${client.name}`,
       sequenceId: result.sequenceId,
-      emailsScheduled: result.emailsScheduled})
+      emailsScheduled: result.emailsScheduled
+    })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({
         error: 'Dados inválidos',
-        details: error.errors}, { status: 400 })}
+        details: error.errors}, { status: 400 })
+    }
 
     console.error('Erro ao iniciar nurturing:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'}, { status: 500 })
+  }
+}
 
 // Função para obter sequência por tipo
 function getSequenceByType(type: string) {
@@ -303,7 +312,9 @@ async function sendNurturingEmailNow(emailData: {
         to: emailData.to,
         subject: emailData.subject,
         html: emailData.body.replace(/\n/g, '<br>'),
-        template: 'nurturing'})})
+        template: 'nurturing'
+      }
+    })})
     // Atualizar interação
     await prisma.interaction.create({
       data: {
@@ -313,7 +324,9 @@ async function sendNurturingEmailNow(emailData: {
         direction: 'outbound',
         subject: emailData.subject,
         content: `Nurturing email enviado: ${emailData.sequenceType}`,
-        completedAt: new Date()}})
+        completedAt: new Date()
+      }
+    }))
   } catch (error) {
     console.error('Erro ao enviar email nurturing:', error)
   }

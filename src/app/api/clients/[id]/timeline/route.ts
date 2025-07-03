@@ -126,7 +126,9 @@ export async function GET(
         author: 'Carlos Santos',
         metadata: {
           oldValue: 'DOCUMENTS_PENDING',
-          newValue: 'IN_PROCESS'}
+          newValue: 'IN_PROCESS'
+        }
+      }
     ]
 
     // Sort timeline by timestamp (newest first)

@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
     const postsWithTags = posts.map(post => ({
       ...post,
       tags: Array.isArray(post.tags) ? post.tags : []
-    })))
+    }))
     
     return NextResponse.json({
       posts: postsWithTags,
