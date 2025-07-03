@@ -50,23 +50,29 @@ export async function POST(request: NextRequest) {
         await prisma.blogPostLike.create({
           data: {
             userId,
-            postId}})}} else if (action === 'unlike') {
+            postId
+          }
+        })
+      }
+    } else if (action === 'unlike') {
       await prisma.blogPostLike.deleteMany({
         where: {
           userId,
-          postId}
-    })
-  }
-}
+          postId
+        }
+      })
+    }
 
     // Get updated like count
     const likeCount = await prisma.blogPostLike.count({
-      where: { postId }})
+      where: { postId }
+    })
     
     return NextResponse.json({
       success: true,
       likeCount,
-      action})
+      action
+    })
 
   } catch (error) {
     console.error('Error handling blog like:', error)

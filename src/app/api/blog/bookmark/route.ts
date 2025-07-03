@@ -50,18 +50,23 @@ export async function POST(request: NextRequest) {
         await prisma.blogPostBookmark.create({
           data: {
             userId,
-            postId}})}} else if (action === 'remove') {
+            postId
+          }
+        })
+      }
+    } else if (action === 'remove') {
       await prisma.blogPostBookmark.deleteMany({
         where: {
           userId,
-          postId}
-    })
-  }
-}
+          postId
+        }
+      })
+    }
     
     return NextResponse.json({
       success: true,
-      action})
+      action
+    })
 
   } catch (error) {
     console.error('Error handling blog bookmark:', error)
