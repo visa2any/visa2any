@@ -257,9 +257,7 @@ async function sendConversionNotification(affiliateId: string, conversionData: a
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
-  
-    })
-  }
+  })
 }
 
 async function sendPaymentNotification(affiliateId: string, paymentData: any) {
@@ -275,9 +273,7 @@ async function sendPaymentNotification(affiliateId: string, paymentData: any) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
-  
-    })
-  }
+  })
 }
 
 async function sendTierPromotionNotification(affiliateId: string, tierData: any) {
@@ -293,7 +289,5 @@ async function sendTierPromotionNotification(affiliateId: string, tierData: any)
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(notification)
-  
-    })
-  }
+  })
 }
