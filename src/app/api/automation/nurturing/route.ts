@@ -333,3 +333,4 @@ async function sendNurturingEmailNow(emailData: {
     console.error('Erro ao enviar email nurturing:', error)
   }
 }
+}

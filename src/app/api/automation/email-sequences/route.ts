@@ -241,12 +241,12 @@ export async function POST(request: NextRequest) {
         clientId,
         templateIndex: templates.indexOf(template)
     })
-  }
-}
+    }
 
     return NextResponse.json({
       message: `Sequência ${sequence} ativada para ${email}`,
-      emailsScheduled: templates.length})
+      emailsScheduled: templates.length
+    })
 
   } catch (error) {
     console.error('Erro ao processar sequência de emails:', error)

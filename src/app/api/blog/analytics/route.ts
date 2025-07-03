@@ -108,8 +108,7 @@ export async function GET(request: NextRequest) {
         likes: dayStats._sum.likes || 0,
         comments: dayStats._sum.comments || 0
     })
-  }
-}
+    }
 
     return NextResponse.json({
       data: {
@@ -134,7 +133,9 @@ export async function GET(request: NextRequest) {
           posts: country._count.id,
           views: country._sum.views || 0})),
         dailyStats,
-        period: `${periodDays} dias`}})
+        period: `${periodDays} dias`
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao buscar analytics do blog:', error)

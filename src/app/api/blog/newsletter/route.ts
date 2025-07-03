@@ -67,7 +67,9 @@ export async function POST(request: NextRequest) {
       subscriber: {
         id: newSubscriber.id,
         name: newSubscriber.name,
-        isActive: newSubscriber.isActive}})
+        isActive: newSubscriber.isActive
+      }
+    })
 
   } catch (error) {
     console.error('❌ Erro ao cadastrar newsletter:', error)
