@@ -8,7 +8,10 @@ export async function POST(request: NextRequest) {
     
     if (!email || !name || !responses) {
       return NextResponse.json({
-        error: 'Dados obrigatórios faltando'}, { status: 400 })}
+        error: 'Dados obrigatórios faltando'}, { status: 400 
+    })
+  }
+}
 
     // Verificar se já existe cliente com este email
     let client = await prisma.client.findUnique({
@@ -37,7 +40,10 @@ export async function POST(request: NextRequest) {
           targetCountry: responses.country || null,
           visaType: responses['visa-type'] || null,
           createdAt: new Date(),
-          updatedAt: new Date()}})}
+          updatedAt: new Date()}
+    })
+  }
+}
 
     // Registrar interação da qualificação
     await prisma.interaction.create({
@@ -79,7 +85,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar qualificação:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'}, { status: 500 
+    })
+  }
+}
 
 async function createFollowUpTask(clientId: string, type: string, description: string, priority: number) {
   try {
@@ -140,7 +149,10 @@ async function triggerEmailAutomation(client: any, category: string, responses: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sequence: 'cold_lead_education',
-          ...automationData})})}
+          ...automationData})
+    })
+  }
+}
 
   } catch (error) {
     console.error('Erro ao trigger automação de email:', error)}

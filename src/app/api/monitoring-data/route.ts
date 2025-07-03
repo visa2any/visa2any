@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Tipo de dados não especificado' }, { status: 400 })}} catch (error) {
     return NextResponse.json({
       error: 'Erro ao buscar dados de monitoramento',
-      details: error instanceof Error ? error.message : String(error)}, { status: 500 })}
+      details: error instanceof Error ? error.message : String(error)}, { status: 500 
+    })
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,4 +77,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Ação não reconhecida' }, { status: 400 })}} catch (error) {
     return NextResponse.json({
       error: 'Erro ao processar ação',
-      details: error instanceof Error ? error.message : String(error)}, { status: 500 })}
+      details: error instanceof Error ? error.message : String(error)}, { status: 500 
+    })
+  }
+}

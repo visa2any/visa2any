@@ -45,7 +45,10 @@ export async function POST(request: NextRequest) {
         subscriber: {
           id: updatedSubscriber.id,
           name: updatedSubscriber.name,
-          isActive: updatedSubscriber.isActive}})}
+          isActive: updatedSubscriber.isActive}
+    })
+  }
+}
 
     // Criar novo assinante
     const newSubscriber = await prisma.whatsAppSubscriber.create({

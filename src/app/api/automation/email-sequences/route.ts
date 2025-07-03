@@ -239,7 +239,10 @@ export async function POST(request: NextRequest) {
         sendAt,
         sequence,
         clientId,
-        templateIndex: templates.indexOf(template)})}
+        templateIndex: templates.indexOf(template)
+    })
+  }
+}
 
     return NextResponse.json({
       message: `Sequência ${sequence} ativada para ${email}`,
@@ -319,7 +322,10 @@ async function scheduleEmail(emailData: {
           content: `Email agendado: ${emailData.subject}`,
           completedAt: new Date()
         }
-      })}
+      
+    })
+  }
+}
   } catch (error) {
     console.error('Erro ao agendar email:', error)}
 }
@@ -355,7 +361,10 @@ async function sendEmailNow(emailData: {
           content: `Email enviado: ${emailData.subject}`,
           completedAt: new Date()
         }
-      })}
+      
+    })
+  }
+}
   } catch (error) {
     console.error('Erro ao enviar email:', error)
   }

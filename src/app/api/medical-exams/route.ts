@@ -29,7 +29,10 @@ export async function GET(request: NextRequest) {
         total: clinics.length,
         message: clinics.length > 0 
           ? `${clinics.length} clínicas encontradas para ${country}` 
-          : `Nenhuma clínica encontrada para ${country}`})}
+          : `Nenhuma clínica encontrada para ${country}`
+    })
+  }
+}
     
     if (action === 'exams') {
       if (!country) {
@@ -45,7 +48,10 @@ export async function GET(request: NextRequest) {
         total: exams.length,
         message: exams.length > 0 
           ? `${exams.length} tipos de exame requeridos para ${country}` 
-          : `Nenhum exame específico encontrado para ${country}`})}
+          : `Nenhum exame específico encontrado para ${country}`
+    })
+  }
+}
     
     return NextResponse.json(
       { error: 'Parâmetro action deve ser "clinics" ou "exams"' },

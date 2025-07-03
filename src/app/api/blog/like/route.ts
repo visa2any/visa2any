@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
       await prisma.blogPostLike.deleteMany({
         where: {
           userId,
-          postId}})}
+          postId}
+    })
+  }
+}
 
     // Get updated like count
     const likeCount = await prisma.blogPostLike.count({

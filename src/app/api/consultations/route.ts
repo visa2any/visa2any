@@ -146,7 +146,10 @@ export async function POST(request: NextRequest) {
     if (client.status === 'LEAD' || client.status === 'QUALIFIED') {
       await prisma.client.update({
         where: { id: validatedData.clientId },
-        data: { status: 'CONSULTATION_SCHEDULED' }})}
+        data: { status: 'CONSULTATION_SCHEDULED' }
+    })
+  }
+}
 
     // Log da criação
     await prisma.automationLog.create({

@@ -40,4 +40,7 @@ export async function GET() {
     status: 'active',
     description: 'Processa posts agendados para redes sociais',
     schedule: 'A cada 5 minutos',
-    lastRun: new Date().toISOString()})}
+    lastRun: new Date().toISOString()
+    })
+  }
+}

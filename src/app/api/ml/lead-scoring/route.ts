@@ -54,7 +54,10 @@ const validatedData = leadScoringSchema.parse(body)
             take: 20},
           documents: true,
           consultations: true,
-          payments: true}})}
+          payments: true}
+    })
+  }
+}
 
     // Calcular lead score usando algoritmo ML
 
@@ -409,7 +412,10 @@ function getRecommendedActions(scoringResult: any): any[] {
       priority: 'LOW',
       action: 'educational_content',
       description: 'Enviar conteúdo educacional',
-      sla: '7 dias'})}
+      sla: '7 dias'
+    })
+  }
+}
   return actions}
 
 // Calcular probabilidade de conversão

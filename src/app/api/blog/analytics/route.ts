@@ -106,7 +106,10 @@ export async function GET(request: NextRequest) {
         posts: dayStats._count.id || 0,
         views: dayStats._sum.views || 0,
         likes: dayStats._sum.likes || 0,
-        comments: dayStats._sum.comments || 0})}
+        comments: dayStats._sum.comments || 0
+    })
+  }
+}
 
     return NextResponse.json({
       data: {

@@ -52,7 +52,10 @@ export async function POST(request: NextRequest) {
         error: result.error,
         attempts: result.attempts,
         warnings: result.warnings,
-        recommendations: generateRecommendations(result.attempts)}, { status: 400 })}
+        recommendations: generateRecommendations(result.attempts)}, { status: 400 
+    })
+  }
+}
 
   } catch (error) {
     console.error('Erro no agendamento híbrido:', error)

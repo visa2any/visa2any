@@ -125,7 +125,10 @@ async function handleConsularSlot(data: any) {
         channel: 'SMS',
         content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,
         scheduledAt: new Date(Date.now() + 2 * 60 * 1000), // 2 min delay
-        direction: 'outbound'}})}
+        direction: 'outbound'}
+    })
+  }
+}
 
 async function handleDocumentValidation(data: any) {
   const { clientId, documentId, validationResult, issues, recommendations } = data
@@ -135,7 +138,10 @@ async function handleDocumentValidation(data: any) {
     await prisma.document.update({
       where: { id: documentId },
       data: {
-        status: validationResult.isValid ? 'VALID' : 'INVALID'}})}
+        status: validationResult.isValid ? 'VALID' : 'INVALID'}
+    })
+  }
+}
 
   // Log validation
   await prisma.automationLog.create({
@@ -203,7 +209,10 @@ async function handleClientRiskAlert(data: any) {
         status: 'SCHEDULED',
         notes: `Consulta de emergência - Cliente em alto risco: ${riskType}`,
         scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-      }})}
+      }
+    })
+  }
+}
 
 async function handleAutomationCompleted(data: any) {
   const { workflowId, workflowName, clientId, result, metrics } = data
@@ -227,4 +236,7 @@ async function handleAutomationCompleted(data: any) {
     await prisma.client.update({
       where: { id: clientId },
       data: {
-        status: result.newStatus}})}
+        status: result.newStatus}
+    })
+  }
+}

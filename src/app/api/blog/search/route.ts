@@ -12,13 +12,19 @@ export async function GET(request: NextRequest) {
     if (!query.trim()) {
       return NextResponse.json({
         results: [],
-        suggestions: []})}
+        suggestions: []
+    })
+  }
+}
 
     // Se for para sugestões, retornar resultados mais rápidos
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
-        suggestions})}
+        suggestions
+    })
+  }
+}
 
     // Busca completa com ranking de relevância
     const results = await performAdvancedSearch(query)

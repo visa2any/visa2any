@@ -10,7 +10,10 @@ export async function POST(request: NextRequest) {
     
     if (!email || !password) {
       return NextResponse.json({
-        error: 'Email e senha são obrigatórios'}, { status: 400 })}
+        error: 'Email e senha são obrigatórios'}, { status: 400 
+    })
+  }
+}
 
     // Buscar cliente por email
     const customer = await prisma.client.findUnique({
@@ -30,7 +33,10 @@ export async function POST(request: NextRequest) {
     
     if (!customer) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'}, { status: 401 })}
+        error: 'Credenciais inválidas'}, { status: 401 
+    })
+  }
+}
 
     // Verificar senha - como não há campo password no modelo Client, vamos usar uma verificação alternativa
     // Por enquanto, vamos aceitar qualquer senha para clientes (implementar autenticação real depois)
@@ -38,14 +44,20 @@ export async function POST(request: NextRequest) {
     
     if (!passwordMatch) {
       return NextResponse.json({
-        error: 'Credenciais inválidas'}, { status: 401 })}
+        error: 'Credenciais inválidas'}, { status: 401 
+    })
+  }
+}
 
     // Gerar token JWT
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado')
       return NextResponse.json({
-        error: 'Erro de configuração do servidor'}, { status: 500 })}
+        error: 'Erro de configuração do servidor'}, { status: 500 
+    })
+  }
+}
     
     const token = jwt.sign(
       { 

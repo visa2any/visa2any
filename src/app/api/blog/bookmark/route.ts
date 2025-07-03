@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
       await prisma.blogPostBookmark.deleteMany({
         where: {
           userId,
-          postId}})}
+          postId}
+    })
+  }
+}
     
     return NextResponse.json({
       success: true,

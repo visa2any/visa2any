@@ -201,7 +201,10 @@ export async function GET(request: NextRequest) {
 }
       
       return NextResponse.json({
-        payment})}
+        payment
+    })
+  }
+}
     
     if (clientId) {
       // Buscar pagamentos do cliente
@@ -216,7 +219,10 @@ export async function GET(request: NextRequest) {
               email: true}}}})
       
       return NextResponse.json({
-        payments})}
+        payments
+    })
+  }
+}
     
     return NextResponse.json({
       error: 'paymentId ou clientId obrigatório'}, { status: 400 })

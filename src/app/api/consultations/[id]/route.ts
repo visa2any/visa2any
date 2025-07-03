@@ -232,7 +232,10 @@ export async function PUT(
         where: { id: existingConsultation.clientId },
         data: { 
           status: newClientStatus,
-          score: validatedData.score || existingConsultation.client.score}})}
+          score: validatedData.score || existingConsultation.client.score}
+    })
+  }
+}
 
     // Log da atualização
     await prisma.automationLog.create({
