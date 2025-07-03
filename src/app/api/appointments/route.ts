@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+    }
 
     // Validação dos dados do requerente
     const requiredApplicantInfo = ['fullName', 'email', 'phone', 'nationality']
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+    }
 
     // Tentar fazer o agendamento
     const bookingResult = await appointmentBookingService.bookAppointment(body)

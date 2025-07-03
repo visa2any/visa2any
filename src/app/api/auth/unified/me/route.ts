@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )}
+}
 
 // Função para verificar autenticação unificada
 async function verifyUnifiedAuth(request: NextRequest) {
@@ -46,6 +47,8 @@ async function verifyUnifiedAuth(request: NextRequest) {
       id: decoded.userId,
       email: decoded.email,
       type: decoded.type,
-      role: decoded.role || null}} catch (error) {
+      role: decoded.role || null}
+  } catch (error) {
     console.error('Erro na verificação de auth:', error)
     return null}
+}

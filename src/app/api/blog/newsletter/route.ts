@@ -72,7 +72,9 @@ export async function POST(request: NextRequest) {
       {
         error: 'Erro interno do servidor'},
       { status: 500 }
-    )}
+    )
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -132,7 +134,9 @@ export async function GET(request: NextRequest) {
       {
         error: 'Erro interno do servidor'},
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // Função para enviar mensagem de boas-vindas (placeholder)
 async function sendWelcomeMessage(phone: string, name: string) {

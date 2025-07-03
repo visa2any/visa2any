@@ -25,7 +25,9 @@ export async function GET() {
     return NextResponse.json(
       { error: 'Erro ao buscar fontes' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // POST - Adicionar nova fonte
 export async function POST(request: NextRequest) {
@@ -81,7 +83,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao criar fonte' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // PUT - Atualizar fonte existente
 export async function PUT(request: NextRequest) {
@@ -111,7 +115,9 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao atualizar fonte' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // DELETE - Remover fonte
 export async function DELETE(request: NextRequest) {
@@ -142,4 +148,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro ao deletar fonte' },
       { status: 500 }
-    )}
+    )
+  }
+}

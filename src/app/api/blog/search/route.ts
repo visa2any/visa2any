@@ -105,7 +105,9 @@ async function generateSuggestions(query: string): Promise<any[]> {
 
   } catch (error) {
     console.error('Erro ao gerar sugestões:', error)
-    return []}
+    return []
+  }
+}
 
 async function performAdvancedSearch(query: string) {
   const searchWords = query.toLowerCase().split(' ').filter(word => word.length > 1)
@@ -204,4 +206,6 @@ async function performAdvancedSearch(query: string) {
 
   } catch (error) {
     console.error('Erro na busca avançada:', error)
-    return []}
+    return []
+  }
+}

@@ -157,6 +157,7 @@ function detectIntent(message: string) {
         score += 1
         matchedKeywords.push(keyword)
       }
+    }
     
     // Verificar patterns
     for (const pattern of intentData.patterns) {
@@ -164,6 +165,7 @@ function detectIntent(message: string) {
       if (regex.test(lowercaseMessage)) {
         score += 2
       }
+    }
     
     // Calcular confiança
     const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
@@ -223,7 +225,10 @@ Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
             actions: [{
               type: 'start_analysis',
               label: 'Iniciar Análise Completa',
-              clientId: clientContext.id}]}}
+              clientId: clientContext.id
+            }]
+          }
+        }
       
       return {
         message: `Claro! Para analisar sua elegibilidade, preciso conhecer melhor seu perfil.
@@ -246,12 +251,11 @@ Essas informações me ajudam a dar uma análise mais precisa!`,
       }
       break
     
-    case 'documents_question':
+    case 'documents_question': {
       const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)
       if (country) {
         return await getDocumentsResponse(country, clientName)
       }
-      
       return {
         message: `Para te ajudar com os documentos, preciso saber para qual país você está aplicando.
 
@@ -264,7 +268,9 @@ Os documentos variam significativamente entre países:
 
 Para qual país você está interessado?`,
         suggestions: ['Canadá', 'Austrália', 'Portugal', 'Estados Unidos'],
-        actions: []}
+        actions: []
+      }
+      break
     
     case 'cost_question':
       return {
@@ -409,7 +415,11 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
           'Consultar custos',
           'Falar com especialista'
         ],
-        actions: []}}
+        actions: []
+      }
+    }
+  }
+}
 
 // Obter resposta sobre documentos por país
 async function getDocumentsResponse(country: string, clientName: string) {
@@ -418,7 +428,9 @@ async function getDocumentsResponse(country: string, clientName: string) {
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: countryLower },
-      isActive: true}})
+      isActive: true
+    }
+  })
   
   if (requirements && requirements.requiredDocuments) {
     const docs = requirements.requiredDocuments as any[];
@@ -434,7 +446,9 @@ async function getDocumentsResponse(country: string, clientName: string) {
       ],
       actions: [{
         type: 'check_my_documents',
-        label: 'Verificar Meus Documentos'}]}
+        label: 'Verificar Meus Documentos'
+      }]
+    }
 
   const genericDocs = getGenericDocuments(country)
   return {
@@ -446,7 +460,10 @@ async function getDocumentsResponse(country: string, clientName: string) {
     ],
     actions: [{
       type: 'schedule_consultation',
-      label: 'Agendar com Consultor'}]}
+      label: 'Agendar com Consultor'
+    }]
+  }
+}
 
 // Documentos genéricos por país
 function getGenericDocuments(country: string): string {
@@ -484,7 +501,8 @@ function getGenericDocuments(country: string): string {
 - Documentos educacionais
 - Experiência profissional
 - Antecedentes criminais
-- Comprovante financeiro`}
+- Comprovante financeiro`
+}
 
 // Extrair país da mensagem
 function extractCountryFromMessage(message: string): string | null {
@@ -496,9 +514,11 @@ function extractCountryFromMessage(message: string): string | null {
       return country === 'canada' ? 'canadá' : 
              country === 'australia' ? 'austrália' :
              country === 'eua' || country === 'usa' ? 'estados unidos' : 
-             country}
+             country
+    }
   
-  return null}
+  return null
+}
 
 // Mapear status para label
 function getStatusLabel(status: string): string {
@@ -510,13 +530,16 @@ function getStatusLabel(status: string): string {
     'DOCUMENTS_PENDING': 'Docs Pendentes',
     'SUBMITTED': 'Submetido',
     'APPROVED': 'Aprovado',
-    'COMPLETED': 'Concluído'}
+    'COMPLETED': 'Concluído'
+  }
   
-  return labels[status] || status}
+  return labels[status] || status
+}
 
 // Gerar ID de conversa
 function generateConversationId(): string {
-  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`}
+  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
 
 // Intenções da Sofia IA
 function getSofiaIntents() {

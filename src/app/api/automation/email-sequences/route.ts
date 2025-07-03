@@ -245,20 +245,18 @@ export async function POST(request: NextRequest) {
     console.error('Erro ao processar sequência de emails:', error)
     return NextResponse.json({
       error: 'Erro interno do servidor'}, { status: 500 })}
+}
 
 function processTemplate(template: string, variables: Record<string, any>): string {
   let processed = template
-  
   Object.entries(variables).forEach(([key, value]) => {
-    const regex = new RegExp(`\\{${key}\\}`, 'g')
+    const regex = new RegExp(`\{${key}\}`, 'g')
     processed = processed.replace(regex, String(value))})
-  
   return processed}
 
 function calculateScoreFromResponses(responses: any): number {
   // Lógica simplificada de cálculo de score
   let score = 50
-
   if (responses.education) {
     const educationScores: Record<string, number> = {
       'Doutorado': 20,
@@ -268,7 +266,6 @@ function calculateScoreFromResponses(responses: any): number {
       'Superior incompleto': 8,
       'Ensino médio': 5}
     score += educationScores[responses.education] || 5}
-
   if (responses.budget) {
     const budgetScores: Record<string, number> = {
       'Acima de R$ 500.000': 15,
@@ -276,14 +273,12 @@ function calculateScoreFromResponses(responses: any): number {
       'R$ 100.000 - R$ 300.000': 8,
       'R$ 50.000 - R$ 100.000': 5}
     score += budgetScores[responses.budget] || 2}
-
   if (responses.urgency) {
     const urgencyScores: Record<string, number> = {
       'Extremamente urgente (preciso sair já)': 10,
       'Muito urgente (próximos 3 meses)': 8,
       'Urgente (próximos 6 meses)': 6}
     score += urgencyScores[responses.urgency] || 3}
-
   return Math.min(score, 100)}
 
 async function scheduleEmail(emailData: {
@@ -297,18 +292,15 @@ async function scheduleEmail(emailData: {
   try {
     // Em produção usar serviço de queue como Bull/Redis
     // Por enquanto simular agendamento
-    
     console.log(`Email agendado:`, {
       to: emailData.to,
       subject: emailData.subject,
       sendAt: emailData.sendAt,
       sequence: emailData.sequence,
       templateIndex: emailData.templateIndex})
-
     // Se o delay for 0 (imediato) enviar agora
     if (emailData.sendAt <= new Date()) {
       await sendEmailNow(emailData)}
-
     // Salvar na base para controle
     if (emailData.clientId) {
       await prisma.interaction.create({
@@ -320,9 +312,9 @@ async function scheduleEmail(emailData: {
           subject: emailData.subject,
           content: `Email agendado: ${emailData.subject}`,
           completedAt: new Date()}})}
-
   } catch (error) {
     console.error('Erro ao agendar email:', error)}
+}
 
 async function sendEmailNow(emailData: {
   to: string,
@@ -333,7 +325,6 @@ async function sendEmailNow(emailData: {
   try {
     // Usar serviço de email (Resend, SendGrid, etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)
-    
     // Simular envio por enquanto
     const response = await fetch('/api/notifications/email', {
       method: 'POST',
@@ -345,7 +336,6 @@ async function sendEmailNow(emailData: {
         template: 'automation',
         variables: {
           content: emailData.body}})})
-
     if (emailData.clientId) {
       await prisma.interaction.create({
         data: {
@@ -356,6 +346,6 @@ async function sendEmailNow(emailData: {
           subject: emailData.subject,
           content: `Email enviado: ${emailData.subject}`,
           completedAt: new Date()}})}
-
   } catch (error) {
     console.error('Erro ao enviar email:', error)}
+}

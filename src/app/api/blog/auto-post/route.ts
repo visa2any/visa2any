@@ -93,13 +93,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // Função para calcular tempo de leitura
 function calculateReadTime(content: string): number {
   const wordsPerMinute = 200
   const wordCount = content.split(/\s+/).length
-  return Math.ceil(wordCount / wordsPerMinute)}
+  return Math.ceil(wordCount / wordsPerMinute)
+}
 
 // Função para criar notificação de post
 async function createPostNotification(post: any) {
@@ -119,7 +122,9 @@ async function createPostNotification(post: any) {
     // - Slack/Discord webhooks
 
   } catch (error) {
-    console.error('Erro ao criar notificação:', error)}
+    console.error('Erro ao criar notificação:', error)
+  }
+}
 
 // GET - Listar posts automáticos
 export async function GET(request: NextRequest) {
@@ -165,4 +170,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

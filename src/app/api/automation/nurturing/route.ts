@@ -143,8 +143,10 @@ async function startNurturingSequence(params: {
         sequenceType,
         templateName: template.template || 'custom'})
 
-      emailsScheduled++} catch (error) {
-      console.error('Erro ao agendar email da sequência:', error)}
+      emailsScheduled++
+    } catch (error) {
+      console.error('Erro ao agendar email da sequência:', error)
+    }
 
   // Log da ativação da sequência
   await prisma.automationLog.create({
@@ -161,7 +163,9 @@ async function startNurturingSequence(params: {
 
   return {
     sequenceId: `nurturing_${sequenceType}_${Date.now()}`,
-    emailsScheduled}
+    emailsScheduled
+  }
+}
 
 // Função para processar templates
 function processTemplate(template: string, variables: Record<string, any>): string {
@@ -279,6 +283,7 @@ async function scheduleNurturingEmail(emailData: {
 
   } catch (error) {
     console.error('Erro ao agendar email nurturing:', error)}
+}
 
 // Função para envio imediato
 async function sendNurturingEmailNow(emailData: {
@@ -290,7 +295,6 @@ async function sendNurturingEmailNow(emailData: {
   try {
     // Simular envio de email
     console.log(`Enviando email nurturing para ${emailData.to}`)
-    
     // Em produção, usar serviço real de email
     const response = await fetch('/api/notifications/email', {
       method: 'POST',
@@ -300,7 +304,6 @@ async function sendNurturingEmailNow(emailData: {
         subject: emailData.subject,
         html: emailData.body.replace(/\n/g, '<br>'),
         template: 'nurturing'})})
-
     // Atualizar interação
     await prisma.interaction.create({
       data: {
@@ -311,6 +314,7 @@ async function sendNurturingEmailNow(emailData: {
         subject: emailData.subject,
         content: `Nurturing email enviado: ${emailData.sequenceType}`,
         completedAt: new Date()}})
-
   } catch (error) {
-    console.error('Erro ao enviar email nurturing:', error)}
+    console.error('Erro ao enviar email nurturing:', error)
+  }
+}
