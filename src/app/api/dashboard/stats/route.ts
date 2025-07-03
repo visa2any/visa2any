@@ -14,14 +14,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
-      )}
+      )
+    }
 
     // Verificar se é admin
     if (!isAdmin(user)) {
       return NextResponse.json(
         { error: 'Acesso negado' },
         { status: 403 }
-      )}
+      )
+    }
     
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30'
@@ -44,7 +46,9 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           status: true,
-          createdAt: true}}).catch(() => [])
+          createdAt: true
+        }
+      }).catch(() => [])
     ])
 
     // Filtrar dados por período
@@ -56,9 +60,12 @@ export async function GET(request: NextRequest) {
     const clientsByStatus = allClients.reduce((acc, client) => {
       const existing = acc.find(item => item.status === client.status)
       if (existing) {
-        existing.count++} else {
-        acc.push({ status: client.status, count: 1 })}
-      return acc}, [] as Array<{ status: string, count: number }>)
+        existing.count++
+      } else {
+        acc.push({ status: client.status, count: 1 })
+      }
+      return acc
+    }, [] as Array<{ status: string, count: number }>)
 
     // Dados simulados para demonstração
     const simulatedData = {
@@ -72,7 +79,8 @@ export async function GET(request: NextRequest) {
         totalRevenue: totalClients * 2500 + Math.floor(Math.random() * 50000),
         revenueThisPeriod: newClientsThisPeriod * 2200 + Math.floor(Math.random() * 25000),
         revenueGrowth: Math.floor(Math.random() * 25) - 5, // -5% a +20%
-        averageTicket: 2200 + Math.floor(Math.random() * 800)},
+        averageTicket: 2200 + Math.floor(Math.random() * 800)
+      },
       clientsByStatus: clientsByStatus.length > 0 ? clientsByStatus : [
         { status: 'LEAD', count: Math.floor(totalClients * 0.4) },
         { status: 'QUALIFIED', count: Math.floor(totalClients * 0.25) },
@@ -85,9 +93,11 @@ export async function GET(request: NextRequest) {
         { type: 'FOLLOW_UP', count: Math.floor(totalClients * 0.15) },
         { type: 'VIP_SERVICE', count: Math.floor(totalClients * 0.05) }
       ],
-      recentActivity: await generateRecentActivity(startDate)}
+      recentActivity: await generateRecentActivity(startDate)
+    }
     return NextResponse.json({
-      data: simulatedData})
+      data: simulatedData
+    })
 
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error)
@@ -105,7 +115,8 @@ export async function GET(request: NextRequest) {
           totalRevenue: 425000,
           revenueThisPeriod: 52300,
           revenueGrowth: 15,
-          averageTicket: 2850},
+          averageTicket: 2850
+        },
         clientsByStatus: [
           { status: 'LEAD', count: 62 },
           { status: 'QUALIFIED', count: 38 },
@@ -140,7 +151,11 @@ export async function GET(request: NextRequest) {
             client: { name: 'Ana Costa', email: 'ana@email.com' },
             executedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() // 4h atrás
           }
-        ]}})}
+        ]
+      }
+    })
+  }
+}
 
 async function generateRecentActivity(startDate: Date) {
   try {
@@ -182,14 +197,17 @@ async function generateRecentActivity(startDate: Date) {
         type: 'USER_LOGIN',
         action: 'Login realizado',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()},
+        executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
+      },
       {
         id: '2',
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()}
-    ]} catch (error) {
+        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
+      }
+    ]
+  } catch (error) {
     // Retornar atividade simulada
     return [
       {
@@ -197,11 +215,15 @@ async function generateRecentActivity(startDate: Date) {
         type: 'USER_LOGIN',
         action: 'Login realizado',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()},
+        executedAt: new Date(Date.now() - 1000 * 60 * 15).toISOString()
+      },
       {
         id: '2',
         type: 'SYSTEM_STATUS',
         action: 'Sistema operacional',
         client: null,
-        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()}
-    ]}
+        executedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
+      }
+    ]
+  }
+}

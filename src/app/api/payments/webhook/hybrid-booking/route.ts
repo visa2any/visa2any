@@ -11,15 +11,19 @@ export async function POST(request: NextRequest) {
     const { data, type } = body
     
     if (type !== 'payment') {
-      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })}
+      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })
+    }
 
     // Buscar detalhes do pagamento no MercadoPago
     const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
       headers: {
-        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`}})
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+      }
+    })
     
     if (!paymentResponse.ok) {
-      throw new Error('Erro ao buscar pagamento no MercadoPago')}
+      throw new Error('Erro ao buscar pagamento no MercadoPago')
+    }
     
     const paymentData = await paymentResponse.json()
     console.log('Dados do pagamento:', paymentData)
@@ -27,7 +31,8 @@ export async function POST(request: NextRequest) {
     // Validar se é um pagamento híbrido
     const paymentId = paymentData.external_reference
     if (!paymentId) {
-      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })}
+      return NextResponse.json({ status: 'ignored', reason: 'no external_reference' })
+    }
 
     // Buscar registro de pagamento híbrido
     const hybridPayment = await prisma.payment.findUnique({
@@ -46,7 +51,8 @@ export async function POST(request: NextRequest) {
     
     if (!hybridPayment) {
       console.error('Pagamento híbrido não encontrado:', paymentId)
-      return NextResponse.json({ status: 'error', reason: 'payment not found' })}
+      return NextResponse.json({ status: 'error', reason: 'payment not found' })
+    }
 
     // Processar baseado no status do pagamento
     switch (paymentData.status) {
@@ -64,13 +70,16 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Status não tratado:', paymentData.status)}
+        console.log('Status não tratado:', paymentData.status)
+    }
     
     return NextResponse.json({ status: 'processed' })
 
   } catch (error) {
     console.error('Erro no webhook híbrido:', error)
-    return NextResponse.json({ status: 'error' }, { status: 500 })}
+    return NextResponse.json({ status: 'error' }, { status: 500 })
+  }
+}
 
 // Processar pagamento aprovado
 async function processApprovedPayment(hybridPayment: any, paymentData: any) {
@@ -100,7 +109,8 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       availableDates: hybridPayment.availableDates,
       amount: paymentData.transaction_amount,
       paymentMethod: paymentData.payment_method_id,
-      deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))})
+      deadline: new Date(Date.now() + getBookingDeadline(hybridPayment.urgency))
+    })
 
     // Notificar cliente sobre confirmação
     await notifyClientPaymentConfirmed({
@@ -110,12 +120,15 @@ async function processApprovedPayment(hybridPayment: any, paymentData: any) {
       plan: hybridPayment.plan,
       amount: paymentData.transaction_amount,
       paymentMethod: getPaymentMethodName(paymentData.payment_method_id),
-      bookingId: hybridPayment.id})
+      bookingId: hybridPayment.id
+    })
     
     console.log('Pagamento aprovado processado:', hybridPayment.id)
 
   } catch (error) {
-    console.error('Erro ao processar pagamento aprovado:', error)}
+    console.error('Erro ao processar pagamento aprovado:', error)
+  }
+}
 
 // Processar pagamento pendente
 async function processPendingPayment(hybridPayment: any, paymentData: any) {
@@ -152,10 +165,14 @@ ${paymentData.payment_method_id === 'pix' ?
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message})})
+        message: message
+      }
+    }))
 
   } catch (error) {
-    console.error('Erro ao processar pagamento pendente:', error)}
+    console.error('Erro ao processar pagamento pendente:', error)
+  }
+}
 
 // Processar pagamento rejeitado
 async function processRejectedPayment(hybridPayment: any, paymentData: any) {
@@ -197,10 +214,14 @@ Infelizmente seu pagamento não foi aprovado:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: hybridPayment.client.phone,
-        message: message})})
+        message: message
+      }
+    }))
 
   } catch (error) {
-    console.error('Erro ao processar pagamento rejeitado:', error)}
+    console.error('Erro ao processar pagamento rejeitado:', error)
+  }
+}
 
 // Notificar consultor para fazer agendamento
 async function notifyConsultantToBook(data: any) {
@@ -259,8 +280,13 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML'})})} catch (error) {
-    console.error('Erro ao notificar consultor:', error)}
+        parse_mode: 'HTML'
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao notificar consultor:', error)
+  }
+}
 
 // Notificar cliente sobre confirmação de pagamento
 async function notifyClientPaymentConfirmed(data: any) {
@@ -299,8 +325,12 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: data.client.phone,
-        message: message})})} catch (error) {
-    console.error('Erro ao notificar cliente:', error)}
+        message: message
+      }
+    }))} catch (error) {
+    console.error('Erro ao notificar cliente:', error)
+  }
+}
 
 // Utilitários
 function getBookingDeadline(urgency: string): number {
@@ -309,7 +339,8 @@ function getBookingDeadline(urgency: string): number {
     'URGENT': 2 * 60 * 60 * 1000,  // 2 horas
     'EMERGENCY': 30 * 60 * 1000    // 30 minutos
   }
-  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL}
+  return deadlines[urgency as keyof typeof deadlines] || deadlines.NORMAL
+}
 
 function getPaymentMethodName(methodId: string): string {
   const methods: { [key: string]: string } = {
@@ -320,7 +351,8 @@ function getPaymentMethodName(methodId: string): string {
     'hipercard': 'Hipercard',
     'bolbradesco': 'Boleto Bradesco',
     'account_money': 'Saldo Mercado Pago'}
-  return methods[methodId] || 'Cartão'}
+  return methods[methodId] || 'Cartão'
+}
 
 function getRejectionReason(detail: string): string {
   const reasons: { [key: string]: string } = {
@@ -332,4 +364,5 @@ function getRejectionReason(detail: string): string {
     'cc_rejected_blacklist': 'Cartão bloqueado',
     'cc_rejected_high_risk': 'Transação de alto risco',
     'cc_rejected_max_attempts': 'Muitas tentativas'}
-  return reasons[detail] || 'Verifique os dados e tente novamente'}
+  return reasons[detail] || 'Verifique os dados e tente novamente'
+}
