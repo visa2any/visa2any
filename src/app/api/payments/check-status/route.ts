@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         error: 'payment_id é obrigatório'
     }, { status: 400 })
-  }
-}
+    }
+    
     console.log('🔍 Verificando status do pagamento:', paymentId)
 
     // Buscar informações do pagamento no MercadoPago

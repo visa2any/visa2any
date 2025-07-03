@@ -55,12 +55,14 @@ const CONSULAR_FEES: ConsularFees = {
     paymentMethods: ['PIX', 'CARTAO', 'BOLETO'],
     officialPaymentUrl: 'https://france-visas.gouv.fr/payment'
   }
+}
 
 // Multiplicadores por plano
 const PLAN_MULTIPLIERS = {
   'BASIC': 1.0,
   'PREMIUM': 2.2,
-  'VIP': 3.0}
+  'VIP': 3.0
+}
 
 // Desconto PIX
 const PIX_DISCOUNT = 0.05 // 5%

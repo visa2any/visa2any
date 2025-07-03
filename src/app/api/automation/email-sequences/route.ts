@@ -360,4 +360,3 @@ async function sendEmailNow(emailData: {
     console.error('Erro ao enviar email:', error)
   }
 }
-}
