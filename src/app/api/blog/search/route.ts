@@ -14,24 +14,23 @@ export async function GET(request: NextRequest) {
         results: [],
         suggestions: []
     })
-  }
-}
+    }
 
     // Se for para sugestões, retornar resultados mais rápidos
     if (suggest) {
       const suggestions = await generateSuggestions(query)
       return NextResponse.json({
         suggestions
-    })
-  }
-}
+      })
+    }
 
     // Busca completa com ranking de relevância
     const results = await performAdvancedSearch(query)
     
     return NextResponse.json({
       results,
-      total: results.length})
+      total: results.length
+    })
 
   } catch (error) {
     console.error('❌ Erro na busca:', error)

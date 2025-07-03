@@ -159,6 +159,7 @@ export async function PATCH(
     )
   }
 }
+}
 
 // PUT /api/consultations/[id] - Atualizar consultoria
 export async function PUT(

@@ -324,10 +324,9 @@ async function scheduleEmail(emailData: {
         }
       
     })
-  }
-}
   } catch (error) {
-    console.error('Erro ao agendar email:', error)}
+    console.error('Erro ao agendar email:', error)
+  }
 }
 
 async function sendEmailNow(emailData: {
