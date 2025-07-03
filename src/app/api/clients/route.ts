@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
 
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -94,14 +95,19 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           totalPages,
-          hasMore}}})
+          hasMore
+        }
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao buscar clientes:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // POST /api/clients - Criar novo cliente
 export async function POST(request: NextRequest) {
@@ -109,7 +115,8 @@ export async function POST(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return createAuthError('Acesso não autorizado')}
+      return createAuthError('Acesso não autorizado')
+    }
 
     const body = await request.json()
     

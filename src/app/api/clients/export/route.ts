@@ -89,8 +89,12 @@ export async function GET(request: NextRequest) {
     return new NextResponse(finalCsv, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`}})
+        'Content-Disposition': `attachment; filename="clientes-${new Date().toISOString().split('T')[0]}.csv"`
+      }
+    })
 
   } catch (error) {
     console.error('Erro no export de clientes:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })}
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+  }
+}

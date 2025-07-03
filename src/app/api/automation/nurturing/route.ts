@@ -36,7 +36,8 @@ export async function POST(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
           take: 5
         }
-      })
+      }
+    })
 
     if (!client) {
       return NextResponse.json({

@@ -272,8 +272,9 @@ Para qual país você está interessado?`,
         actions: []
       }
       break
+    }
     
-    case 'cost_question':
+    case 'cost_question': {
       return {
         message: `Ótima pergunta ${clientName}! Os custos variam dependendo do país e tipo de serviço.
 
