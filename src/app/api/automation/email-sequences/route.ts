@@ -188,13 +188,17 @@ export async function POST(request: NextRequest) {
     
     if (!sequence || !email || !name) {
       return NextResponse.json({
-        error: 'Dados obrigatórios faltando'}, { status: 400 })}
+        error: 'Dados obrigatórios faltando'
+      }, { status: 400 })
+    }
 
     const templates = EMAIL_TEMPLATES[sequence as keyof typeof EMAIL_TEMPLATES]
     
     if (!templates) {
       return NextResponse.json({
-        error: 'Sequência de email não encontrada'}, { status: 404 })}
+        error: 'Sequência de email não encontrada'
+      }, { status: 404 })
+    }
 
     // Calcular score se não fornecido
     const score = responses ? calculateScoreFromResponses(responses) : 70
@@ -244,7 +248,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao processar sequência de emails:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
+  }
 }
 
 function processTemplate(template: string, variables: Record<string, any>): string {
@@ -311,7 +317,9 @@ async function scheduleEmail(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email agendado: ${emailData.subject}`,
-          completedAt: new Date()}})}
+          completedAt: new Date()
+        }
+      })}
   } catch (error) {
     console.error('Erro ao agendar email:', error)}
 }
@@ -345,7 +353,11 @@ async function sendEmailNow(emailData: {
           direction: 'outbound',
           subject: emailData.subject,
           content: `Email enviado: ${emailData.subject}`,
-          completedAt: new Date()}})}
+          completedAt: new Date()
+        }
+      })}
   } catch (error) {
-    console.error('Erro ao enviar email:', error)}
+    console.error('Erro ao enviar email:', error)
+  }
+}
 }

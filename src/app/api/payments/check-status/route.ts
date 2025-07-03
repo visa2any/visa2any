@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
     const paymentId = searchParams.get('payment_id')
     if (!paymentId) {
       return NextResponse.json({
-        error: 'payment_id é obrigatório'}, { status: 400 })}
+        error: 'payment_id é obrigatório'
+    }, { status: 400 })
+  }
+}
     console.log('🔍 Verificando status do pagamento:', paymentId)
 
     // Buscar informações do pagamento no MercadoPago
@@ -44,4 +47,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       error: 'Erro ao verificar status do pagamento',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'}, { status: 500 })}
+      details: error instanceof Error ? error.message : 'Erro desconhecido'
+    }, { status: 500 })
+  }
+}

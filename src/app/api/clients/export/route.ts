@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })}
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
 
     // Buscar todos os clientes
     const clients = await prisma.client.findMany({

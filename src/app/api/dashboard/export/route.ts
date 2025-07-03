@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     // Verificar autenticação
     const user = await verifyAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })}
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
     
     const { searchParams } = new URL(request.url)
     const period = parseInt(searchParams.get('period') || '30')
@@ -94,4 +95,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Erro no export:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })}
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+  }
+}

@@ -76,7 +76,10 @@ export async function POST(request: NextRequest) {
     if (!countryFees) {
       return NextResponse.json({
         error: 'País não suportado no momento',
-        supportedCountries: Object.keys(CONSULAR_FEES)}, { status: 400 })}
+        supportedCountries: Object.keys(CONSULAR_FEES)
+    }, { status: 400 })
+  }
+}
 
     // 2. Calcular custos detalhados
     const multiplier = PLAN_MULTIPLIERS[data.plan]
@@ -110,7 +113,10 @@ export async function POST(request: NextRequest) {
     
     if (!client) {
       return NextResponse.json({
-        error: 'Cliente não encontrado'}, { status: 404 })}
+        error: 'Cliente não encontrado'
+    }, { status: 404 })
+  }
+}
 
     // 4. Criar registro de pagamento
     const payment = await prisma.payment.create({
@@ -163,7 +169,10 @@ export async function POST(request: NextRequest) {
     console.error('Erro na cobrança híbrida:', error)
     return NextResponse.json({
       error: 'Erro interno do servidor',
-      details: error instanceof Error ? error.message : String(error)}, { status: 500 })}
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -184,7 +193,10 @@ export async function GET(request: NextRequest) {
       
       if (!payment) {
         return NextResponse.json({
-          error: 'Pagamento não encontrado'}, { status: 404 })}
+          error: 'Pagamento não encontrado'
+    }, { status: 404 })
+  }
+}
       
       return NextResponse.json({
         payment})}
@@ -210,7 +222,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao buscar pagamento:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'}, { status: 500 })}
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
+  }
+}
 
 // Gerar links de pagamento para diferentes métodos
 async function generatePaymentLinks(paymentId: string, costs: any, client: any) {
@@ -406,7 +421,12 @@ ${data.paymentLinks.boleto ? `📄 BOLETO: R$ ${data.costs.total.withoutDiscount
           costs: data.costs,
           paymentLinks: data.paymentLinks,
           paymentId: data.paymentId,
-          expiresIn: data.expiresIn}})})
+          expiresIn: data.expiresIn
+        }
+      })
+    })
 
   } catch (error) {
-    console.error('Erro ao notificar cliente:', error)}
+    console.error('Erro ao notificar cliente:', error)
+  }
+}
