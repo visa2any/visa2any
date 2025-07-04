@@ -144,7 +144,8 @@ async function startNurturingSequence(params: {
         name: client.name,
         email: client.email,
         targetCountry: client.targetCountry,
-        ...triggerData}
+        ...triggerData
+      }
 
       // Processar template
       const processedSubject = processTemplate(template.subject, variables)
@@ -158,12 +159,14 @@ async function startNurturingSequence(params: {
         body: processedBody,
         sendAt,
         sequenceType,
-        templateName: template.template || 'custom'})
+        templateName: template.template || 'custom'
+      })
 
       emailsScheduled++
     } catch (error) {
       console.error('Erro ao agendar email da sequência:', error)
     }
+  }
 
   // Log da ativação da sequência
   await prisma.automationLog.create({
@@ -176,7 +179,10 @@ async function startNurturingSequence(params: {
         sequenceType,
         emailsScheduled,
         triggerData,
-        startedAt: new Date().toISOString()}}})
+        startedAt: new Date().toISOString()
+      }
+    }
+  })
 
   return {
     sequenceId: `nurturing_${sequenceType}_${Date.now()}`,
@@ -339,5 +345,4 @@ async function sendNurturingEmailNow(emailData: {
   } catch (error) {
     console.error('Erro ao enviar email nurturing:', error)
   }
-}
 }

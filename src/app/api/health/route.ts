@@ -199,4 +199,4 @@ export async function GET(request: NextRequest) {
                      health.status === 'minimal' ? 200 : 503
 
   return NextResponse.json(health, { status: statusCode })
-}}
+}
