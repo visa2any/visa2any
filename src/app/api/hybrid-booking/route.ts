@@ -52,17 +52,17 @@ export async function POST(request: NextRequest) {
         error: result.error,
         attempts: result.attempts,
         warnings: result.warnings,
-        recommendations: generateRecommendations(result.attempts)}, { status: 400 
-    })
-  }
-}
-
+        recommendations: generateRecommendations(result.attempts)
+      }, { status: 400 })
+    }
   } catch (error) {
     console.error('Erro no agendamento híbrido:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // GET - Buscar vagas disponíveis em todos os métodos
 
@@ -118,6 +118,7 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )}
+}
 
 // Métodos auxiliares para recomendações
 function generateRecommendations(attempts: any[]): string[] {
@@ -162,6 +163,8 @@ function generateAvailabilityRecommendations(results: any): string[] {
     recommendations.push('❌ Nenhuma vaga encontrada - tente outros períodos ou consulados')}
   
   if (results.consolidated.length > 10) {
-    recommendations.push('✨ Muitas opções disponíveis - escolha o melhor horário')}
+    recommendations.push('✨ Muitas opções disponíveis - escolha o melhor horário')
+  }
   
-  return recommendations}
+  return recommendations
+}

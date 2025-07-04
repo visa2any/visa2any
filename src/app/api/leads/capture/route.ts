@@ -126,18 +126,20 @@ export async function POST(request: NextRequest) {
           error: 'Dados inválidos',
           details: error.errors},
         { status: 400 }
-      )}
+      )
+    }
     console.error('Erro ao capturar lead:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // GET /api/leads/capture/stats - Estatísticas de leads
-
 export async function GET(request: NextRequest) {
-try {
-const { searchParams } = new URL(request.url)
+  try {
+    const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30'
     const days = parseInt(period)
     
@@ -190,7 +192,9 @@ const { searchParams } = new URL(request.url)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // Calcular score do lead baseado em fatores
 function calculateLeadScore(factors: {
@@ -271,6 +275,7 @@ async function triggerWelcomeSequence(clientId: string, leadMagnet?: string) {
     
   } catch (error) {
     console.error('Erro ao disparar sequência de boas-vindas:', error)}
+}
 
 // Disparar ações para leads de alta prioridade
 async function triggerHighPriorityActions(clientId: string, leadScore: number) {
@@ -290,4 +295,6 @@ async function triggerHighPriorityActions(clientId: string, leadScore: number) {
     console.log(`🚨 LEAD QUENTE: Cliente ${clientId} com score ${leadScore}`)
     
   } catch (error) {
-    console.error('Erro ao processar lead de alta prioridade:', error)}
+    console.error('Erro ao processar lead de alta prioridade:', error)
+  }
+}

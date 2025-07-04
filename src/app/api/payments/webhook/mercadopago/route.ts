@@ -95,17 +95,21 @@ export async function POST(request: NextRequest) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: true}})
+          action: 'automated_action'
+        },
+        success: true
+      }
+    });
 
     // Se pagamento foi aprovado e não estava aprovado antes, processar automações
     if (newStatus === 'COMPLETED' && !wasCompleted) {
-      await processPaymentSuccess(updatedPayment)}
+      await processPaymentSuccess(updatedPayment);
+    }
     
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('Erro ao processar webhook MercadoPago:', error)
+    console.error('Erro ao processar webhook MercadoPago:', error);
     
     // Log do erro
     await prisma.automationLog.create({
@@ -115,13 +119,18 @@ export async function POST(request: NextRequest) {
         clientId: null,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: false}}).catch(() => {}) // Não falhar se log não funcionar
+          action: 'automated_action'
+        },
+        success: false
+      }
+    }).catch(() => {}); // Não falhar se log não funcionar
 
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    );
+  }
+}
 
 // Processar automações quando pagamento é confirmado
 async function processPaymentSuccess(payment: any) {
@@ -130,7 +139,9 @@ async function processPaymentSuccess(payment: any) {
     await prisma.client.update({
       where: { id: payment.clientId },
       data: { 
-        status: 'IN_PROCESS'}})
+        status: 'IN_PROCESS'
+      }
+    });
 
     // 2. Enviar email de confirmação
     try {
@@ -145,8 +156,13 @@ async function processPaymentSuccess(payment: any) {
             payment_amount: `R$ ${payment.amount.toFixed(2)}`,
             payment_plan: getPaymentPackageName(payment.productId),
             payment_date: new Date().toLocaleDateString('pt-BR'),
-            transaction_id: payment.transactionId}})})} catch (emailError) {
-      console.error('Erro ao enviar email de confirmação:', emailError)}
+            transaction_id: payment.transactionId
+          }
+        })
+      });
+    } catch (emailError) {
+      console.error('Erro ao enviar email de confirmação:', emailError);
+    }
 
     // 3. Enviar WhatsApp de confirmação
     try {
@@ -160,17 +176,25 @@ async function processPaymentSuccess(payment: any) {
             clientId: payment.clientId,
             variables: {
               payment_amount: `R$ ${payment.amount.toFixed(2)}`,
-              payment_plan: getPaymentPackageName(payment.productId)}})})}} catch (whatsappError) {
-      console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError)}
+              payment_plan: getPaymentPackageName(payment.productId)
+            }
+          })
+        });
+      }
+    } catch (whatsappError) {
+      console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError);
+    }
 
     // 4. Criar consultoria se aplicável
-    const consultationTypes = ['consultoria-express', 'servico-vip']
+    const consultationTypes = ['consultoria-express', 'servico-vip'];
     
     if (consultationTypes.some(type => payment.productId.includes(type))) {
       const existingConsultation = await prisma.consultation.findFirst({
         where: { 
           clientId: payment.clientId,
-          status: { in: ['SCHEDULED', 'IN_PROGRESS'] }}})
+          status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
+        }
+      });
       
       if (!existingConsultation) {
         await prisma.consultation.create({
@@ -179,7 +203,11 @@ async function processPaymentSuccess(payment: any) {
             status: 'SCHEDULED',
             clientId: payment.clientId,
             scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
-            notes: `Consultoria criada automaticamente após pagamento confirmado (${payment.transactionId})`}})}
+            notes: `Consultoria criada automaticamente após pagamento confirmado (${payment.transactionId})`
+          }
+        });
+      }
+    }
 
     // 5. Log das automações
     await prisma.automationLog.create({
@@ -189,11 +217,14 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: true}})
+          action: 'automated_action'
+        },
+        success: true
+      }
+    });
 
   } catch (error) {
-    console.error('Erro ao processar automações do pagamento:', error)
+    console.error('Erro ao processar automações do pagamento:', error);
     
     await prisma.automationLog.create({
       data: {
@@ -202,19 +233,27 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'},
-        success: false}}).catch(() => {})}
+          action: 'automated_action'
+        },
+        success: false
+      }
+    }).catch(() => {});
+  }
+}
 
 function getPaymentPackageName(productId: string): string {
   const packageNames: Record<string, string> = {
     'pre-analise': 'Pré-análise Gratuita',
     'relatorio-premium': 'Relatório Premium',
     'consultoria-express': 'Consultoria Express',
-    'servico-vip': 'Serviço VIP'}
+    'servico-vip': 'Serviço VIP'
+  };
 
   // Encontrar o pacote baseado no productId
   for (const [key, name] of Object.entries(packageNames)) {
     if (productId.includes(key)) {
-      return name}
-  
-  return 'Serviço Visa2Any'}
+      return name;
+    }
+  }
+  return 'Serviço Visa2Any';
+}

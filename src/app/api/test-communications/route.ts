@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const email = searchParams.get('email') || 'teste@visa2any.com'
@@ -13,9 +12,9 @@ export async function GET(request: NextRequest) {
       email: { configured: false, working: false },
       whatsapp: { configured: false, working: false }
     }
+  }
 
   // 1. Testar configuração de email
-
   console.log('🧪 Testando sistema de comunicações...')
   
   try {
@@ -27,7 +26,6 @@ export async function GET(request: NextRequest) {
     results.summary.email.configured = hasEmailConfig
     
     // Testar envio de email
-    
     if (hasEmailConfig) {
       const emailResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
         method: 'POST',
@@ -58,10 +56,9 @@ export async function GET(request: NextRequest) {
         message: 'Email não configurado - usando simulação',
         details: 'Configure SENDGRID_API_KEY ou RESEND_API_KEY'
       })
-    }}
+    }
 
     // 2. Testar configuração de WhatsApp
-
     const hasWhatsAppConfig = !!(
       process.env.WHATSAPP_API_TOKEN &&
       process.env.WHATSAPP_PHONE_NUMBER_ID
@@ -69,7 +66,6 @@ export async function GET(request: NextRequest) {
     results.summary.whatsapp.configured = hasWhatsAppConfig
     
     // Testar envio de WhatsApp
-    
     const whatsappResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -88,7 +84,6 @@ export async function GET(request: NextRequest) {
     })
 
     // 3. Testar webhook de pagamento (simulação)
-
     try {
       const mockPayment = {
         id: 'test_payment',
@@ -101,9 +96,9 @@ export async function GET(request: NextRequest) {
           email: email,
           phone: phone
         }
+      }
 
       // Simular automações de pagamento aprovado
-
       console.log('🔄 Simulando automações de pagamento...')
       
       results.tests.push({
@@ -118,10 +113,10 @@ export async function GET(request: NextRequest) {
         type: 'webhook_simulation',
         status: 'error',
         message: 'Erro ao simular webhook'
-      })}
+      })
+    }
 
     // 4. Retornar resultados
-
     return NextResponse.json({
       data: results,
       message: 'Testes de comunicação concluídos'

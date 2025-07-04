@@ -11,11 +11,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       preference_id: 'test-preference-' + Date.now(),
       public_key: process.env.MERCADOPAGO_PUBLIC_KEY || 'TEST-PUBLIC-KEY',
-      message: 'Preferência de teste criada com sucesso'})
+      message: 'Preferência de teste criada com sucesso'
+    })
     
   } catch (error) {
     console.error('❌ Erro na API de teste:', error)
     
     return NextResponse.json({
       error: 'Erro na API de teste',
-      details: error instanceof Error ? error.message : 'Erro desconhecido'}, { status: 500 })}
+      details: error instanceof Error ? error.message : 'Erro desconhecido'
+    }, { status: 500 })
+  }
+}

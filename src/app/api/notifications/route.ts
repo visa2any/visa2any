@@ -100,14 +100,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Action deve ser: send_booking_created, send_payment_link, send_payment_confirmation, send_booking_update, ou send_booking_completed' },
           { status: 400 }
-        )}
+        )
+    }
 
   } catch (error) {
     console.error('Erro na API de notificações:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // GET - Verificar configuração e enviar testes
 export async function GET(request: NextRequest) {
@@ -126,11 +129,14 @@ export async function GET(request: NextRequest) {
             whatsapp: {
               status: config.whatsapp.status,
               configured: config.whatsapp.configured,
-              provider: 'WhatsApp Business API'},
+              provider: 'WhatsApp Business API'
+            },
             email: {
               status: config.email.status,
               configured: config.email.configured,
-              provider: config.email.provider}},
+              provider: config.email.provider
+            }
+          },
           setup: {
             whatsapp: {
               required: ['WHATSAPP_API_TOKEN', 'WHATSAPP_PHONE_NUMBER_ID'],
@@ -138,7 +144,10 @@ export async function GET(request: NextRequest) {
             },
             email: {
               required: ['SENDGRID_API_KEY ou RESEND_API_KEY', 'FROM_EMAIL'],
-              providers: ['SendGrid', 'Resend']}}})
+              providers: ['SendGrid', 'Resend']
+            }
+          }
+        })
         
       case 'test':
         // Enviar notificação de teste
@@ -150,7 +159,8 @@ export async function GET(request: NextRequest) {
           serviceLevel: 'premium',
           country: 'usa',
           visaType: 'tourist',
-          amount: 45.00}
+          amount: 45.00
+        }
         
         const testResult = await notificationService.sendBookingCreated(testData)
         
@@ -159,8 +169,10 @@ export async function GET(request: NextRequest) {
           test: {
             whatsapp: testResult.whatsappSent ? 'Enviado' : 'Falhou',
             email: testResult.emailSent ? 'Enviado' : 'Falhou',
-            errors: testResult.errors},
-          message: 'Teste de notificação executado'})
+            errors: testResult.errors
+          },
+          message: 'Teste de notificação executado'
+        })
         
       case 'templates':
         // Listar templates disponíveis
@@ -171,35 +183,44 @@ export async function GET(request: NextRequest) {
               {
                 name: 'booking_created',
                 description: 'Agendamento criado',
-                variables: ['customerName', 'trackingId', 'country', 'serviceLevel']},
+                variables: ['customerName', 'trackingId', 'country', 'serviceLevel']
+              },
               {
                 name: 'payment_link',
                 description: 'Link de pagamento',
-                variables: ['paymentUrl', 'amount', 'pixCode']},
+                variables: ['paymentUrl', 'amount', 'pixCode']
+              },
               {
                 name: 'payment_confirmed',
                 description: 'Pagamento confirmado',
-                variables: ['trackingId', 'amount']},
+                variables: ['trackingId', 'amount']
+              },
               {
                 name: 'booking_completed',
                 description: 'Agendamento concluído',
-                variables: ['appointmentDetails', 'confirmationCode']}
+                variables: ['appointmentDetails', 'confirmationCode']
+              }
             ],
             email: [
               {
                 name: 'booking_created_email',
                 description: 'Email de agendamento criado',
-                type: 'HTML template'},
+                type: 'HTML template'
+              },
               {
                 name: 'payment_confirmed_email',
                 description: 'Email de pagamento confirmado',
-                type: 'HTML template'},
+                type: 'HTML template'
+              },
               {
                 name: 'booking_completed_email',
                 description: 'Email de agendamento concluído',
-                type: 'HTML template'}
-            ]},
-          customization: 'Templates podem ser personalizados no código'})
+                type: 'HTML template'
+              }
+            ]
+          },
+          customization: 'Templates podem ser personalizados no código'
+        })
         
       case 'stats':
         // Estatísticas de notificações (simulado)
@@ -208,27 +229,36 @@ export async function GET(request: NextRequest) {
           statistics: {
             today: {
               whatsapp: { sent: 12, failed: 1, rate: '92.3%' },
-              email: { sent: 15, failed: 0, rate: '100%' }},
+              email: { sent: 15, failed: 0, rate: '100%' }
+            },
             thisWeek: {
               whatsapp: { sent: 89, failed: 8, rate: '91.8%' },
-              email: { sent: 95, failed: 2, rate: '97.9%' }},
+              email: { sent: 95, failed: 2, rate: '97.9%' }
+            },
             thisMonth: {
               whatsapp: { sent: 324, failed: 28, rate: '92.0%' },
-              email: { sent: 341, failed: 9, rate: '97.4%' }}},
+              email: { sent: 341, failed: 9, rate: '97.4%' }
+            }
+          },
           performance: {
             averageDeliveryTime: '2.3 segundos',
             peakHours: '09:00-11:00 e 14:00-17:00',
-            bestPerformingChannel: 'Email'}})
+            bestPerformingChannel: 'Email'
+          }
+        })
         
       default:
         return NextResponse.json(
           { error: 'Action deve ser: config, test, templates, ou stats' },
           { status: 400 }
-        )}
+        )
+    }
 
   } catch (error) {
     console.error('Erro na consulta de notificações:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

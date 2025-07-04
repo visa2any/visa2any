@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-
 export async function GET(request: NextRequest) {
   try {
     const token = process.env.TELEGRAM_BOT_TOKEN
     
     if (!token) {
       return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
-    }}
+    }
 
     // Buscar updates do Telegram
-
     const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates`)
     const data = await response.json()
 
     // Extrair chat IDs únicos
-
     const chatIds = new Set<number>()
     const messages: any[] = []
     
@@ -37,7 +34,8 @@ export async function GET(request: NextRequest) {
           })
         }
       })
-    }}
+    }
+    
     return NextResponse.json({
       success: true,
       token: `${token.substring(0, 10)}...`,
@@ -53,7 +51,7 @@ export async function GET(request: NextRequest) {
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
-}}
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,10 +60,9 @@ export async function POST(request: NextRequest) {
     
     if (!token) {
       return NextResponse.json({ error: 'Token não configurado' }, { status: 400 })
-    }}
+    }
 
     // Enviar mensagem de teste
-
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: {
@@ -75,7 +72,8 @@ export async function POST(request: NextRequest) {
         chat_id: chatId,
         text: message || '🤖 Teste do Visa2Any!\n\nSeu bot está funcionando perfeitamente! ✅'
       })
-    })})
+    })
+    
     const data = await response.json()
     return NextResponse.json({
       success: data.ok,
@@ -90,4 +88,4 @@ export async function POST(request: NextRequest) {
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
-}}
+} 

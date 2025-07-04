@@ -166,8 +166,8 @@ ${paymentData.payment_method_id === 'pix' ?
       body: JSON.stringify({
         to: hybridPayment.client.phone,
         message: message
-      }
-    }))
+      })
+    })
 
   } catch (error) {
     console.error('Erro ao processar pagamento pendente:', error)
@@ -215,8 +215,8 @@ Infelizmente seu pagamento não foi aprovado:
       body: JSON.stringify({
         to: hybridPayment.client.phone,
         message: message
-      }
-    }))
+      })
+    })
 
   } catch (error) {
     console.error('Erro ao processar pagamento rejeitado:', error)
@@ -280,8 +280,8 @@ ${data.availableDates.map((date: string) => `• ${date}`).join('\n')}
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'HTML'
-      }
+        parse_mode: 'HTML',
+      })
     })
   } catch (error) {
     console.error('Erro ao notificar consultor:', error)
@@ -326,8 +326,9 @@ ${data.plan === 'VIP' ? '• VIP: Até 30 minutos' :
       body: JSON.stringify({
         to: data.client.phone,
         message: message
-      }
-    }))} catch (error) {
+      })
+    })
+  } catch (error) {
     console.error('Erro ao notificar cliente:', error)
   }
 }

@@ -20,14 +20,12 @@ const createOrderSchema = z.object({
 })
 
 // POST /api/payments/create-order - Criar pedido
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const validatedData = createOrderSchema.parse(body)
 
     // Criar ou encontrar cliente se informações foram fornecidas
-
     let clientId = null
     
     if (validatedData.clientInfo?.email) {
@@ -49,7 +47,6 @@ export async function POST(request: NextRequest) {
             }
           })
         }
-    }
         
         clientId = client.id
       } catch (error) {
@@ -78,9 +75,11 @@ export async function POST(request: NextRequest) {
       unitPrice: validatedData.totalAmount,
       description: `${validatedData.productName} - ${validatedData.adults} adulto(s)${validatedData.children > 0 ? ` + ${validatedData.children} criança(s)` : ''}`
     };
+    
     if (validatedData.clientInfo?.email) {
       paymentData.clientEmail = validatedData.clientInfo.email;
     }
+    
     const paymentUrl = await createMercadoPagoPayment(paymentData);
 
     // Log da criação do pedido
@@ -132,7 +131,8 @@ async function createMercadoPagoPayment(orderData: {
   quantity: number,
   unitPrice: number,
   description: string
-  clientEmail?: string}) {
+  clientEmail?: string
+}) {
   try {
     // Configurar dados da preferência
     const preferenceData: any = {
@@ -163,6 +163,7 @@ async function createMercadoPagoPayment(orderData: {
         installments: 12
       }
     };
+    
     if (orderData.clientEmail) {
       preferenceData.payer = { email: orderData.clientEmail };
     }

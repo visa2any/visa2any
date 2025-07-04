@@ -172,9 +172,8 @@ export async function GET(request: NextRequest) {
         status: 'pending',
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
         paidDate: undefined
-    })
-  }
-}
+      })
+    }
 
     // Simular notificações
     const notifications = [
@@ -213,7 +212,8 @@ export async function GET(request: NextRequest) {
       notifications}
     
     return NextResponse.json({
-      customer: customerData})
+      customer: customerData
+    })
 
   } catch (error) {
     console.error('Erro ao buscar perfil do cliente:', error)

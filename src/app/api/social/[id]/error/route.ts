@@ -17,7 +17,8 @@ export async function PATCH(
         error: error || 'Erro desconhecido',
         updatedAt: new Date()
       }
-    }))
+    })
+    
     return NextResponse.json({
       success: true,
       message: 'Erro registrado com sucesso',

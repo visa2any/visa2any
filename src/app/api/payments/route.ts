@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const [payments, total] = await Promise.all([
       prisma.payment.findMany({
         where,
-        skip,
+        skip: (page - 1) * limit,
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
@@ -50,7 +50,8 @@ export async function GET(request: NextRequest) {
               phone: true
             }
           }
-        }),
+        }
+      }),
       prisma.payment.count({ where })
     ])
 
@@ -101,6 +102,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+}
 
 // POST /api/payments - Criar pagamento
 export async function POST(request: NextRequest) {
@@ -145,7 +147,8 @@ export async function POST(request: NextRequest) {
             phone: true
           }
         }
-      })
+      }
+    })
 
     // Log da criação
     await prisma.automationLog.create({
@@ -195,7 +198,8 @@ export async function POST(request: NextRequest) {
 function generateTransactionId(): string {
   const timestamp = Date.now().toString()
   const random = Math.random().toString(36).substring(2, 10)
-  return `TXN_${timestamp}_${random}`.toUpperCase()}
+  return `TXN_${timestamp}_${random}`.toUpperCase()
+}
 
 // Função para gerar link de pagamento (simulado)
 async function generatePaymentLink(payment: any) {

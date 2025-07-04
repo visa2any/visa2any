@@ -1,120 +1,103 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
+import { verifyAuth } from '@/lib/auth'
 
-// Schema para mensagem do chat
-const chatMessageSchema = z.object({
-  message: z.string().min(1, 'Mensagem é obrigatória'),
-  clientId: z.string().optional(),
-  conversationId: z.string().optional(),
-  context: z.object({
-    targetCountry: z.string().optional(),
-    visaType: z.string().optional(),
-    currentStep: z.string().optional()
-  }).optional()
-})
-
-// POST /api/ai/chat - Conversar com Sofia IA
+// POST /api/ai/chat - Chat com Sofia IA
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const validatedData = chatMessageSchema.parse(body)
+    const { message, clientId, conversationId } = body
 
-    // Obter contexto do cliente se disponível
+    if (!message) {
+      return NextResponse.json(
+        { error: 'Mensagem é obrigatória' },
+        { status: 400 }
+      )
+    }
+
+    // Buscar contexto do cliente
     let clientContext = null
-    if (validatedData.clientId) {
+    if (clientId) {
       clientContext = await prisma.client.findUnique({
-        where: { id: validatedData.clientId },
-        include: {
-          consultations: {
-            orderBy: { createdAt: 'desc' },
-            take: 1
-          },
-          documents: {
-            select: { type: true, status: true }
-          }
+        where: { id: clientId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          status: true,
+          targetCountry: true,
+          visaType: true,
+          score: true
         }
       })
     }
 
     // Processar mensagem com Sofia IA
-    const sofiaResponse = await processSofiaMessage(
-      validatedData.message,
-      clientContext,
-      validatedData.context
-    )
+    const response = await processSofiaMessage(message, clientContext, {
+      conversationId: conversationId || generateConversationId(),
+      timestamp: new Date().toISOString()
+    })
 
-    // Salvar interação se tem cliente
-    if (validatedData.clientId) {
+    // Salvar interação se houver cliente
+    if (clientId) {
       await prisma.interaction.create({
         data: {
-          type: 'AUTOMATED_EMAIL',
-          channel: 'chat',
-          direction: 'inbound',
-          content: validatedData.message,
-          response: sofiaResponse.message,
-          clientId: validatedData.clientId,
-          completedAt: new Date()
+          clientId,
+          type: 'AUTOMATED_WHATSAPP',
+          channel: 'ai_chat',
+          direction: 'outbound',
+          content: response.message,
+          response: message,
+          createdAt: new Date()
         }
       })
     }
 
-    // Log da conversa
-    await prisma.automationLog.create({
-      data: {
-        type: 'AI_CHAT_INTERACTION',
-        action: 'chat_with_sofia',
-        clientId: validatedData.clientId || null,
-        success: true,
-        details: {
-          message: validatedData.message,
-          intent: sofiaResponse.intent,
-          confidence: sofiaResponse.confidence
-        }
-      }
-    })
-
     return NextResponse.json({
-      data: {
-        message: sofiaResponse.message,
-        intent: sofiaResponse.intent,
-        confidence: sofiaResponse.confidence,
-        suggestions: sofiaResponse.suggestions,
-        actions: sofiaResponse.actions,
-        conversationId: sofiaResponse.conversationId
-      }
+      response,
+      conversationId: response.conversationId
     })
 
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    console.error('Erro no chat AI:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// GET /api/ai/chat - Buscar histórico de conversa
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const conversationId = searchParams.get('conversationId')
+    const clientId = searchParams.get('clientId')
+
+    if (!conversationId && !clientId) {
       return NextResponse.json(
-        { 
-          error: 'Dados inválidos',
-          details: error.errors
-        },
+        { error: 'conversationId ou clientId é obrigatório' },
         { status: 400 }
       )
     }
 
-    console.error('Erro no chat com Sofia:', error)
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
-    )
-  }
-}
+    const where: any = {}
+    if (conversationId) where.conversationId = conversationId
+    if (clientId) where.clientId = clientId
 
-// GET /api/ai/chat/intents - Listar intenções disponíveis
-export async function GET(request: NextRequest) {
-  try {
-    const intents = getSofiaIntents()
+    const interactions = await prisma.interaction.findMany({
+      where,
+      orderBy: { createdAt: 'asc' },
+      take: 50
+    })
 
     return NextResponse.json({
-      data: { intents }
+      interactions,
+      conversationId
     })
 
   } catch (error) {
-    console.error('Erro ao buscar intenções:', error)
+    console.error('Erro ao buscar histórico:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
@@ -122,272 +105,249 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Função principal da Sofia IA
+// Processar mensagem com Sofia IA
 async function processSofiaMessage(message: string, clientContext: any, context: any) {
-  // Detectar intenção
+  const clientName = clientContext?.name || 'Cliente'
+  
+  // Detectar intenção da mensagem
   const intent = detectIntent(message)
   
-  // Gerar resposta baseada na intenção e contexto
+  // Gerar resposta baseada na intenção
   const response = await generateSofiaResponse(intent, message, clientContext, context)
   
   return {
-    message: response.message,
-    intent: intent.name,
-    confidence: intent.confidence,
-    suggestions: response.suggestions,
-    actions: response.actions,
-    conversationId: generateConversationId()
+    ...response,
+    conversationId: context.conversationId,
+    intent: intent.type,
+    confidence: intent.confidence
   }
 }
 
 // Detectar intenção da mensagem
 function detectIntent(message: string) {
-  const lowercaseMessage = message.toLowerCase()
+  const messageLower = message.toLowerCase()
   const intents = getSofiaIntents()
   
-  let bestMatch: { name: string; confidence: number; keywords: string[] } = { name: 'unknown', confidence: 0, keywords: [] }
+  let bestMatch = { type: 'unknown', confidence: 0 }
   
-  for (const [intentName, intentData] of Object.entries(intents)) {
-    let score = 0
-    const matchedKeywords: string[] = []
-    
+  for (const [type, intent] of Object.entries(intents)) {
     // Verificar keywords
-    for (const keyword of intentData.keywords) {
-      if (lowercaseMessage.includes(keyword.toLowerCase())) {
-        score += 1
-        matchedKeywords.push(keyword)
-      }
-    }
+    const keywordMatches = intent.keywords.filter(keyword => 
+      messageLower.includes(keyword)
+    ).length
     
     // Verificar patterns
-    for (const pattern of intentData.patterns) {
+    const patternMatches = intent.patterns.filter(pattern => {
       const regex = new RegExp(pattern, 'i')
-      if (regex.test(lowercaseMessage)) {
-        score += 2
-      }
-    }
+      return regex.test(message)
+    }).length
     
-    // Calcular confiança
-    const confidence = Math.min(score / Math.max(intentData.keywords.length, 1), 1)
+    const confidence = (keywordMatches * 0.3) + (patternMatches * 0.7)
     
     if (confidence > bestMatch.confidence) {
-      bestMatch = {
-        name: intentName,
-        confidence,
-        keywords: matchedKeywords
-      }
+      bestMatch = { type, confidence }
     }
+  }
   
   return bestMatch
 }
 
-// Gerar resposta da Sofia
+// Gerar resposta da Sofia IA
 async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {
-  const intentName = intent.name
-  const clientName = clientContext?.name?.split(' ')[0] || 'Cliente'
+  const clientName = clientContext?.name || 'Cliente'
+  const country = extractCountryFromMessage(message)
   
-  switch (intentName) {
+  switch (intent.type) {
     case 'greeting':
       return {
-        message: `Olá ${clientName}! 👋 Eu sou a Sofia, sua assistente virtual especializada em vistos e imigração. Como posso te ajudar hoje?`,
+        message: `Olá ${clientName}! 👋 Sou a Sofia, sua assistente virtual especializada em processos de imigração.
+
+🎯 **Como posso te ajudar hoje?**
+- 📋 Análise de elegibilidade para vistos
+- 📄 Documentos necessários por país
+- 💰 Custos e timeline de processos
+- 📅 Agendamento de consultorias
+- 🤝 Conectar com especialistas humanos
+
+Me conte o que você precisa!`,
         suggestions: [
-          'Quero analisar minha elegibilidade',
-          'Quais documentos preciso?',
-          'Quanto custa o processo?',
-          'Quanto tempo demora?'
-        ],
-        actions: []}
-    
-    case 'eligibility_question':
-      if (clientContext) {
-        const targetCountry = clientContext.targetCountry || context?.targetCountry
-        if (targetCountry) {
-          return {
-            message: `Perfeito ${clientName}! Vejo que você está interessado em ${targetCountry}.
-
-Baseado no seu perfil, aqui está uma análise preliminar:
-
-📊 **Seu Status Atual:**
-- País de destino: ${targetCountry}
-- Score de elegibilidade: ${clientContext.score || 'Não calculado'}
-- Status: ${getStatusLabel(clientContext.status)}
-
-Gostaria de fazer uma análise mais detalhada? Posso te ajudar a:
-1. Calcular sua elegibilidade completa
-2. Mostrar os documentos necessários
-3. Estimar timeline e custos`,
-            suggestions: [
-              'Fazer análise completa',
-              'Ver documentos necessários',
-              'Conhecer os custos',
-              'Falar com especialista'
-            ],
-            actions: [{
-              type: 'start_analysis',
-              label: 'Iniciar Análise Completa',
-              clientId: clientContext.id
-            }]
-          }
-        }
-      
-      return {
-        message: `Claro! Para analisar sua elegibilidade, preciso conhecer melhor seu perfil.
-
-Vamos começar com algumas perguntas:
-
-1. **Para qual país você quer imigrar?** 🌍
-2. **Qual sua idade?** 👤
-3. **Qual seu nível de educação?** 🎓
-4. **Quantos anos de experiência profissional você tem?** 💼
-
-Essas informações me ajudam a dar uma análise mais precisa!`,
-        suggestions: [
-          'Canadá',
-          'Austrália',
-          'Portugal',
-          'Estados Unidos'
+          'Analisar minha elegibilidade',
+          'Ver documentos necessários',
+          'Consultar custos',
+          'Agendar consultoria',
+          'Falar com especialista'
         ],
         actions: []
       }
-      break
-    }
     
-    case 'documents_question': {
-      const country = clientContext?.targetCountry || context?.targetCountry || extractCountryFromMessage(message)
+    case 'eligibility_question':
+      if (country) {
+        return await getEligibilityResponse(country, clientName, clientContext)
+      }
+      return {
+        message: `Ótima pergunta, ${clientName}! Para analisar sua elegibilidade, preciso de algumas informações:
+
+🌍 **Para qual país você quer imigrar?**
+- Canadá
+- Austrália
+- Portugal
+- Estados Unidos
+- Reino Unido
+
+📋 **Qual tipo de visto você está considerando?**
+- Trabalho qualificado
+- Estudo
+- Reunião familiar
+- Investimento
+- Outros
+
+Me conte mais sobre seu objetivo e eu farei uma análise personalizada!`,
+        suggestions: [
+          'Quero ir para o Canadá',
+          'Interessado na Austrália',
+          'Portugal para trabalho',
+          'Estados Unidos',
+          'Falar com consultor'
+        ],
+        actions: []
+      }
+    
+    case 'documents_question':
       if (country) {
         return await getDocumentsResponse(country, clientName)
       }
       return {
-        message: `Para te ajudar com os documentos, preciso saber para qual país você está aplicando.
+        message: `Claro, ${clientName}! Para te ajudar com os documentos, preciso saber:
 
-Os documentos variam significativamente entre países:
+🌍 **Para qual país você está se preparando?**
+- Canadá
+- Austrália
+- Portugal
+- Estados Unidos
+- Reino Unido
 
-🇨🇦 **Canadá**: Foco em credenciais educacionais e experiência
-🇦🇺 **Austrália**: Skills assessment é fundamental  
-🇵🇹 **Portugal**: Ênfase em comprovação de renda
-🇺🇸 **EUA**: Documentos variam por categoria de visto
+📋 **Qual tipo de visto?**
+- Trabalho qualificado
+- Estudo
+- Reunião familiar
+- Investimento
 
-Para qual país você está interessado?`,
-        suggestions: ['Canadá', 'Austrália', 'Portugal', 'Estados Unidos'],
+Assim posso te dar a lista exata dos documentos necessários!`,
+        suggestions: [
+          'Documentos para Canadá',
+          'Documentos para Austrália',
+          'Documentos para Portugal',
+          'Falar com consultor'
+        ],
         actions: []
       }
-      break
-    }
     
-    case 'cost_question': {
+    case 'cost_question':
       return {
-        message: `Ótima pergunta ${clientName}! Os custos variam dependendo do país e tipo de serviço.
+        message: `Entendo sua preocupação com os custos, ${clientName}! 💰
 
-💰 **Nossos Pacotes:**
+Os custos variam muito dependendo do país e tipo de visto:
 
-📋 **Consulta Básica - R$ 299**
-- Análise IA completa
-- Consultoria de 30min
-- Lista de documentos
-- Suporte por email
+🇨🇦 **Canadá:**
+- Taxa consular: R$ 380
+- Serviços: R$ 200-600
+- Total: R$ 580-980
 
-⭐ **Consulta Premium - R$ 599** (Mais Popular)
-- Tudo do Básico
-- Consultoria de 60min  
-- Preparação de documentos
-- Acompanhamento 30 dias
+🇦🇺 **Austrália:**
+- Taxa consular: R$ 650
+- Serviços: R$ 200-600
+- Total: R$ 850-1.250
 
-👑 **Serviço VIP - R$ 1.299**
-- Serviço completo hands-off
-- Consultor dedicado
-- Garantia de reembolso*
-- Suporte 24/7
+🇵🇹 **Portugal:**
+- Taxa consular: R$ 480
+- Serviços: R$ 150-400
+- Total: R$ 630-880
 
-*Taxas governamentais à parte
-
-Qual pacote faz mais sentido para você?`,
+💡 **Dica:** Agende uma consultoria gratuita para um orçamento personalizado baseado no seu perfil!`,
         suggestions: [
-          'Consulta Básica - R$ 299',
-          'Consulta Premium - R$ 599',
-          'Serviço VIP - R$ 1.299',
-          'Preciso de mais detalhes'
+          'Agendar consultoria gratuita',
+          'Ver mais detalhes dos custos',
+          'Falar com consultor',
+          'Ver opções de pagamento'
         ],
         actions: [{
-          type: 'show_pricing',
-          label: 'Ver Detalhes dos Pacotes'
+          type: 'schedule_consultation',
+          label: 'Agendar Consultoria Gratuita'
         }]
       }
-      break
-    }
     
-    case 'timeline_question': {
+    case 'timeline_question':
       return {
-        message: `O tempo varia bastante por país ${clientName}! Aqui está um resumo:
+        message: `Ótima pergunta sobre prazos, ${clientName}! ⏰
 
-⏱️ **Timeline por País:**
+Os prazos variam por país e tipo de visto:
 
-🇵🇹 **Portugal (D7)**: 2-4 meses
-- Mais rápido para aposentados/renda passiva
+🇨🇦 **Canadá:**
+- Express Entry: 6-8 meses
+- Provincial: 12-18 meses
+- Estudo: 2-4 meses
 
-🇨🇦 **Canadá (Express Entry)**: 6-8 meses  
-- Pode acelerar com PNP (Provincial)
+🇦🇺 **Austrália:**
+- Skilled Migration: 8-12 meses
+- Student Visa: 2-3 meses
+- Partner Visa: 12-18 meses
 
-🇦🇺 **Austrália (Skilled)**: 8-12 meses
-- Skills assessment adiciona tempo
+🇵🇹 **Portugal:**
+- D7 (Rendimentos): 6-8 meses
+- D2 (Trabalho): 4-6 meses
+- Golden Visa: 12-18 meses
 
-🇺🇸 **EUA (EB-1)**: 12-24 meses
-- Mais complexo, varia por categoria
-
-**💡 Dica:** Com nosso serviço VIP, otimizamos cada etapa para acelerar seu processo!
-
-Para qual país você está pensando?`,
+📅 **Quer que eu verifique as vagas disponíveis para agendamento?**`,
         suggestions: [
-          'Portugal - mais rápido',
-          'Canadá - boa opção',
-          'Austrália - quero detalhes',
-          'Estados Unidos'
+          'Ver vagas disponíveis',
+          'Agendar consultoria',
+          'Falar com consultor',
+          'Ver mais detalhes'
         ],
-        actions: []
+        actions: [{
+          type: 'check_availability',
+          label: 'Ver Vagas Disponíveis'
+        }]
       }
-    }
     
     case 'contact_human':
       return {
-        message: `Claro ${clientName}! Vou te conectar com um de nossos especialistas.
+        message: `Perfeito, ${clientName}! 🤝 Entendo que você quer falar com um especialista humano.
 
-👥 **Opções de Contato:**
+📞 **Opções de contato:**
+- **WhatsApp:** +55 11 99999-9999
+- **Telefone:** +55 11 99999-9999
+- **Email:** contato@visa2any.com
 
-📞 **Ligação Imediata**
-- Especialista disponível agora
-- Consultoria de 15min gratuita
+⏰ **Horário de atendimento:**
+- Segunda a Sexta: 9h às 18h
+- Sábado: 9h às 14h
 
-📅 **Agendar Consultoria**  
-- Escolha melhor horário
-- Consultoria completa (30-60min)
-- Análise detalhada do seu caso
-
-📧 **Email/WhatsApp**
-- Resposta em até 2h
-- Ideal para dúvidas rápidas
-
-Qual opção prefere?`,
+💡 **Dica:** Se for urgente, posso escalar para um consultor agora mesmo!`,
         suggestions: [
-          'Ligar agora',
-          'Agendar consultoria',
-          'WhatsApp',
-          'Email'
+          'Falar agora mesmo',
+          'Agendar horário',
+          'Enviar WhatsApp',
+          'Enviar email'
         ],
         actions: [{
-          type: 'contact_specialist',
-          label: 'Falar com Especialista Agora'}]}
+          type: 'escalate_to_human',
+          label: 'Falar Agora Mesmo'
+        }]
+      }
     
     case 'complaint':
       return {
-        message: `${clientName}, lamento muito pelo inconveniente! 😔
+        message: `Sinto muito pelo problema, ${clientName}! 😔 
 
-Sua satisfação é nossa prioridade. Vou escalar isso imediatamente:
+Vou escalar isso imediatamente para nossa equipe de suporte.
 
-🚨 **Ação Imediata:**
-- Gerente de atendimento notificado
-- Protocolo aberto: #${Date.now().toString().slice(-6)}
-- Retorno garantido em 2h
+🚨 **Escalado para:**
+- Gerente de Atendimento
+- Equipe Técnica (se aplicável)
+- Consultor Sênior
 
-📞 **Contato Direto:**
+📞 **Contato direto:**
 - WhatsApp: +55 11 99999-9999
 - Email: urgente@visa2any.com
 
@@ -401,7 +361,9 @@ Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução
         ],
         actions: [{
           type: 'escalate_complaint',
-          label: 'Falar com Gerente Agora'}]}
+          label: 'Falar com Gerente Agora'
+        }]
+      }
     
     default:
       return {
@@ -425,7 +387,6 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
         ],
         actions: []
       }
-    }
   }
 }
 
@@ -457,6 +418,7 @@ async function getDocumentsResponse(country: string, clientName: string) {
         label: 'Verificar Meus Documentos'
       }]
     }
+  }
 
   const genericDocs = getGenericDocuments(country)
   return {
@@ -469,6 +431,37 @@ async function getDocumentsResponse(country: string, clientName: string) {
     actions: [{
       type: 'schedule_consultation',
       label: 'Agendar com Consultor'
+    }]
+  }
+}
+
+// Obter resposta sobre elegibilidade
+async function getEligibilityResponse(country: string, clientName: string, clientContext: any) {
+  const score = clientContext?.score || 0
+  
+  let message = `Olá ${clientName}! Vou analisar sua elegibilidade para ${country}.\n\n`
+  
+  if (score >= 70) {
+    message += `🎉 **Excelente!** Sua pontuação atual é ${score}/100\n\nVocê tem grandes chances de aprovação! Recomendo iniciar o processo o quanto antes.`
+  } else if (score >= 50) {
+    message += `👍 **Boa!** Sua pontuação atual é ${score}/100\n\nVocê tem chances, mas podemos melhorar seu perfil com algumas estratégias.`
+  } else {
+    message += `⚠️ **Atenção!** Sua pontuação atual é ${score}/100\n\nPrecisamos trabalhar para melhorar seu perfil. Mas não desanime, temos estratégias específicas!`
+  }
+  
+  message += `\n\n💡 **Próximos passos:**\n- Agendar consultoria personalizada\n- Analisar pontos de melhoria\n- Criar estratégia de aplicação`
+  
+  return {
+    message,
+    suggestions: [
+      'Agendar consultoria',
+      'Ver pontos de melhoria',
+      'Falar com especialista',
+      'Ver custos'
+    ],
+    actions: [{
+      type: 'schedule_consultation',
+      label: 'Agendar Consultoria'
     }]
   }
 }
@@ -503,7 +496,8 @@ function getGenericDocuments(country: string): string {
 - Formulários específicos (I-140, etc)
 - Evidências de habilidade extraordinária
 - Cartas de recomendação
-- Histórico profissional detalhado`}
+- Histórico profissional detalhado`
+  }
   
   return genericDocs[country] || `- Passaporte válido
 - Documentos educacionais
@@ -588,4 +582,4 @@ function getSofiaIntents() {
       patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']
     }
   }
-}
+} 

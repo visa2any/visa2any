@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWhatsAppServiceSimple } from '@/lib/whatsapp-simple'
 
 // GET /api/whatsapp/status - Verificar status do WhatsApp
-
 export async function GET(request: NextRequest) {
   try {
     const whatsappService = getWhatsAppServiceSimple()
@@ -18,19 +17,23 @@ export async function GET(request: NextRequest) {
           '3. Abra WhatsApp > Menu > Dispositivos conectados',
           '4. Escaneie o QR Code',
           '5. Aguarde confirmação de conexão'
-        ] : null}})
+        ] : null
+      }
+    })
 
   } catch (error) {
     console.error('Erro ao verificar status do WhatsApp:', error)
     return NextResponse.json(
       {
         error: 'Erro ao verificar status do WhatsApp',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'},
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      },
       { status: 500 }
-    )}
+    )
+  }
+}
 
 // POST /api/whatsapp/status - Reconectar WhatsApp
-
 export async function POST(request: NextRequest) {
   try {
     // Reconectar forçadamente
@@ -38,13 +41,17 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       message: 'Reconexão iniciada. Verifique o console para o QR Code.',
-      timestamp: new Date().toISOString()})
+      timestamp: new Date().toISOString()
+    })
 
   } catch (error) {
     console.error('Erro ao reconectar WhatsApp:', error)
     return NextResponse.json(
       {
         error: 'Erro ao reconectar WhatsApp',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'},
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      },
       { status: 500 }
-    )}
+    )
+  }
+} 

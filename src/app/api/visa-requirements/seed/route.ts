@@ -356,17 +356,24 @@ export async function POST(request: NextRequest) {
         success: true,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'}}})
+          action: 'automated_action'
+        }
+      }
+    })
 
     return NextResponse.json({
       data: {
         created: created.length,
-        requirements: created},
-      message: `${created.length} requisitos de visto criados com sucesso`})
+        requirements: created
+      },
+      message: `${created.length} requisitos de visto criados com sucesso`
+    })
 
   } catch (error) {
     console.error('Erro ao popular base de conhecimento:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
-    )}
+    )
+  }
+}

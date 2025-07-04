@@ -132,7 +132,9 @@ export async function POST(request: NextRequest) {
         ip_address: clientIP,
         user_agent: body.metadata?.user_agent || '',
         session_id: body.external_reference || `session-${Date.now()}`,
-        timestamp: new Date().toISOString()}
+        timestamp: new Date().toISOString()
+      }
+    }
     
     console.log('📋 Dados do pagamento preparados:', JSON.stringify(paymentData, null, 2))
 
@@ -156,7 +158,8 @@ export async function POST(request: NextRequest) {
         }
       })
       
-      console.log('✅ Pagamento salvo no banco de dados')} catch (dbError) {
+      console.log('✅ Pagamento salvo no banco de dados')
+    } catch (dbError) {
       console.error('⚠️ Erro ao salvar no banco:', dbError)
       // Não falhar o pagamento por erro de DB
     }
@@ -179,7 +182,8 @@ export async function POST(request: NextRequest) {
         card: result.card ? {
           first_six_digits: result.card.first_six_digits,
           last_four_digits: result.card.last_four_digits,
-          cardholder_name: result.card.cardholder?.name} : undefined,
+          cardholder_name: result.card.cardholder?.name
+        } : undefined,
 
         // Para outros métodos (PIX, boleto, etc)
         point_of_interaction: result.point_of_interaction,
@@ -189,7 +193,10 @@ export async function POST(request: NextRequest) {
         
         // Informações de segurança (apenas em desenvolvimento)
         ...(process.env.NODE_ENV === 'development' && {
-          raw_response: result})}
+          raw_response: result
+        })
+      }
+    }
     
     return NextResponse.json(response)
 
@@ -205,14 +212,20 @@ export async function POST(request: NextRequest) {
       // Erros comuns do MercadoPago
       if (error.message.includes('invalid_token')) {
         errorCode = 'INVALID_TOKEN'
-        errorMessage = 'Token do cartão inválido'} else if (error.message.includes('card_not_found')) {
+        errorMessage = 'Token do cartão inválido'
+      } else if (error.message.includes('card_not_found')) {
         errorCode = 'CARD_NOT_FOUND'
-        errorMessage = 'Cartão não encontrado'} else if (error.message.includes('insufficient_amount')) {
+        errorMessage = 'Cartão não encontrado'
+      } else if (error.message.includes('insufficient_amount')) {
         errorCode = 'INSUFFICIENT_AMOUNT'
-        errorMessage = 'Valor insuficiente'} else if (error.message.includes('cc_rejected')) {
+        errorMessage = 'Valor insuficiente'
+      } else if (error.message.includes('cc_rejected')) {
         errorCode = 'CARD_REJECTED'
-        errorMessage = 'Cartão rejeitado'} else {
-        errorMessage = error.message}
+        errorMessage = 'Cartão rejeitado'
+      } else {
+        errorMessage = error.message
+      }
+    }
     
     return NextResponse.json({
       success: false,
@@ -222,4 +235,9 @@ export async function POST(request: NextRequest) {
       ...(process.env.NODE_ENV === 'development' && {
         debug: {
           errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-          stack: error instanceof Error ? error.stack : 'No stack trace'}})}, { status: 500 })}
+          stack: error instanceof Error ? error.stack : 'No stack trace'
+        }
+      })
+    }, { status: 500 })
+  }
+}

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { webScrapingService } from '@/lib/web-scraping-service'
 
 // GET - Buscar vagas via web scraping
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
     const targetId = searchParams.get('targetId')
+    
     if (action === 'targets') {
       // Listar targets disponíveis
       const targets = webScrapingService.getTargets()
@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
         total: targets.length,
         warning: 'Web scraping pode violar ToS dos sites consultares. Use com responsabilidade legal.',
         message: 'Targets de scraping listados'
-      })}
+      })
+    }
+    
     if (action === 'slots' && targetId) {
       // Buscar slots via scraping
       const result = await webScrapingService.scrapeAvailableSlots(targetId)
@@ -31,7 +33,8 @@ export async function GET(request: NextRequest) {
         source: result.source,
         warning: 'Dados obtidos via web scraping - podem estar desatualizados',
         disclaimer: 'Este serviço é apenas para fins informativos'
-      })}
+      })
+    }
     
     return NextResponse.json(
       { error: 'Parâmetro action deve ser "targets" ou "slots" (com targetId)' },
@@ -45,13 +48,14 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+}
 
 // POST - Configurar scraping
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, targetId, enabled, legalConfirmation } = body
+    
     if (action === 'configure') {
       if (!targetId || typeof enabled !== 'boolean') {
         return NextResponse.json(
@@ -59,6 +63,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+      
       if (enabled && !legalConfirmation) {
         return NextResponse.json(
           {
@@ -69,6 +74,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+      
       const success = await webScrapingService.setTargetStatus(targetId, enabled)
       
       if (success) {
@@ -86,6 +92,7 @@ export async function POST(request: NextRequest) {
         )
       }
     }
+    
     if (action === 'start_monitoring') {
       const { targetIds, intervalMinutes } = body
       
@@ -110,7 +117,9 @@ export async function POST(request: NextRequest) {
         },
         message: 'Monitoramento iniciado',
         warning: 'Monitoramento contínuo pode ser detectado pelos sites'
-      })}
+      })
+    }
+    
     return NextResponse.json(
       { error: 'Action deve ser "configure" ou "start_monitoring"' },
       { status: 400 }

@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: `Sequência ${validatedData.sequenceType} iniciada para ${client.name}`,
-      sequenceId: result.sequenceId,
-      emailsScheduled: result.emailsScheduled
+      sequenceId: result?.sequenceId,
+      emailsScheduled: result?.emailsScheduled
     })
 
   } catch (error) {
@@ -87,30 +87,37 @@ function getSequenceByType(type: string) {
       {
         delay: 0,
         subject: '👋 Bem-vindo(a) à Visa2Any, {name}!',
-        template: 'welcome_template'},
+        template: 'welcome_template'
+      },
       {
         delay: 1440, // 24h
         subject: '📚 {name}, seus materiais gratuitos estão prontos',
-        template: 'materials_template'}
+        template: 'materials_template'
+      }
     ],
     assessment_follow_up: [
       {
         delay: 60, // 1h
         subject: '⏰ {name}, complete sua análise',
-        template: 'assessment_reminder'}
+        template: 'assessment_reminder'
+      }
     ],
     cart_abandonment: [
       {
         delay: 30, // 30min
         subject: '🛒 {name}, você esqueceu algo...',
-        template: 'cart_recovery_1'},
+        template: 'cart_recovery_1'
+      },
       {
         delay: 1440, // 24h
         subject: '💔 Ainda interessado, {name}?',
-        template: 'cart_recovery_2'}
-    ]}
+        template: 'cart_recovery_2'
+      }
+    ]
+  }
 
-  return sequences[type] || null}
+  return sequences[type] || []
+}
 
 // Função principal para iniciar sequência
 async function startNurturingSequence(params: {

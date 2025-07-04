@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
         languages,
         total: Object.keys(languages).length,
         message: 'Idiomas suportados recuperados com sucesso'
-      })}
+      })
+    }
 
     if (action === 'translators') {
       const sourceLanguage = searchParams.get('sourceLanguage')
@@ -31,7 +32,8 @@ export async function GET(request: NextRequest) {
         message: translators.length > 0 
           ? `${translators.length} tradutores encontrados` 
           : 'Nenhum tradutor disponível para os idiomas especificados'
-      })}
+      })
+    }
 
     return NextResponse.json(
       { error: 'Parâmetro action deve ser "languages" ou "translators"' },
@@ -45,6 +47,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+}
 
 // POST - Traduzir texto ou documento
 export async function POST(request: NextRequest) {
@@ -89,6 +92,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+    }
 
     if (type === 'document') {
       // Tradução de documento
@@ -129,6 +133,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+    }
 
     return NextResponse.json(
       { error: 'Parâmetro type deve ser "text" ou "document"' },
@@ -142,4 +147,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+} 
