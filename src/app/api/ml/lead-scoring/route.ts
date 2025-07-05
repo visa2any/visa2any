@@ -493,10 +493,15 @@ async function updateClientScore(clientId: string, scoringResult: any) {
   try {
     await prisma.client.update({
       where: { id: clientId },
-      data: {}
+      data: {
+        score: scoringResult.totalScore,
+        lastAnalyzed: new Date(),
+        scoringDetails: JSON.stringify(scoringResult.breakdown)
+      }
     })
   } catch (error) {
     console.error('Erro ao atualizar score do cliente:', error)
+    throw new Error('Falha ao atualizar score do cliente')
   }
 }
 
