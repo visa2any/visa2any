@@ -366,9 +366,9 @@ export function CountryComparison() {
     const country = countries[countryCode]
     if (!country) return 0
 
-    const immigrationScore = country.immigration.successRate * (country.immigration.difficultyLevel === 'easy' ? 1.2 : country.immigration.difficultyLevel === 'medium' ? 1.0 : 0.8)
-    const economyScore = (country.economy.gdpPerCapita / 1000) * 0.5 + (100 - country.economy.costOfLivingIndex) * 0.3 + (100 - country.economy.unemploymentRate * 10) * 0.2
-    const qualityScore = (country.quality.qualityOfLifeIndex + country.quality.safetyIndex + country.quality.healthcareIndex + country.quality.educationIndex) / 4
+    const immigrationScore = (country.immigration?.successRate || 0) * (country.immigration?.difficultyLevel === 'easy' ? 1.2 : country.immigration?.difficultyLevel === 'medium' ? 1.0 : 0.8)
+    const economyScore = ((country.economy?.gdpPerCapita || 0) / 1000) * 0.5 + (100 - (country.economy?.costOfLivingIndex || 0)) * 0.3 + (100 - ((country.economy?.unemploymentRate || 0) * 10)) * 0.2
+    const qualityScore = ((country.quality?.qualityOfLifeIndex || 0) + (country.quality?.safetyIndex || 0) + (country.quality?.healthcareIndex || 0) + (country.quality?.educationIndex || 0)) / 4
 
     const weightedScore = (
       immigrationScore * (comparisonCriteria.immigration / 10) * 0.3 +

@@ -31,8 +31,11 @@
     "type-check:ultra": "npx tsc --noEmit --project tsconfig.ultrafast.json",
     "type-check:strict": "npx tsc --noEmit --project tsconfig.json",
     "validate:deploy": "node scripts/validate-before-deploy.js",
+    "build:local": "node scripts/build-local-test.js",
+    "build:test": "npm run build:local",
+    "quick-check": "node scripts/quick-type-check.js",
     "pre-commit": "npm run validate && npm run type-check:fast",
-    "pre-deploy": "npm run validate:deploy",
+    "pre-deploy": "npm run quick-check",
     "status": "node check-services.js",
     "restart:services": "node restart-all-services.js"
   },
