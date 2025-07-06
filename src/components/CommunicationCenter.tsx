@@ -474,7 +474,7 @@ export function CommunicationCenter({
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
-                          <h4 className="font-medium text-gray-900 truncate text-sm">{client.name}</h4>
+                          <h4 className="font-medium text-gray-900 truncate text-sm">{client?.name || 'Cliente não identificado'}</h4>
                           {getMessageIcon(lastMessage.type)}
                         </div>
                         <p className="text-sm text-gray-500 truncate">{lastMessage.content}</p>
