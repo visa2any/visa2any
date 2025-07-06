@@ -142,6 +142,7 @@ export default function Dashboard() {
     }
 
     const config = statusConfig[status] || statusConfig['pending']
+    if (!config) return <Badge className="bg-gray-500 text-white">Desconhecido</Badge>
     return <Badge className={`${config.color} text-white`}>{config.text}</Badge>
   }
 
@@ -153,6 +154,7 @@ export default function Dashboard() {
     }
 
     const config = statusConfig[status] || statusConfig['pending']
+    if (!config) return <Badge className="bg-gray-500 text-white">Desconhecido</Badge>
     return <Badge className={`${config.color} text-white`}>{config.text}</Badge>
   }
 
@@ -194,7 +196,7 @@ export default function Dashboard() {
         // Atualizar localmente
         setBookings(prev => prev.map(b => 
           b.trackingId === trackingId 
-            ? { ...b, status: newStatus as any }
+            ? { ...b, status: newStatus as 'pending' | 'payment_pending' | 'processing' | 'completed' | 'cancelled' }
             : b
         ))
         alert('Status atualizado e cliente notificado!')
@@ -309,11 +311,11 @@ export default function Dashboard() {
                         <div className="font-medium">{booking.customerName}</div>
                         <div className="text-sm text-gray-500">{booking.trackingId}</div>
                         <div className="text-sm">
-                          {booking.country.toUpperCase()} - {booking.visaType} - {booking.serviceLevel}
+                          {booking.country?.toUpperCase() || 'N/A'} - {booking.visaType || 'N/A'} - {booking.serviceLevel || 'N/A'}
                         </div>
                       </div>
                       <div className="text-right space-y-2">
-                        <div className="font-bold">R$ {booking.amount.toFixed(2)}</div>
+                        <div className="font-bold">R$ {booking.amount?.toFixed(2) || '0.00'}</div>
                         {getStatusBadge(booking.status)}
                         {getPaymentStatusBadge(booking.paymentStatus)}
                       </div>
@@ -370,7 +372,7 @@ export default function Dashboard() {
                       <div className="text-sm text-gray-500">{booking.trackingId}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold">R$ {booking.amount.toFixed(2)}</div>
+                      <div className="font-bold">R$ {booking.amount?.toFixed(2) || '0.00'}</div>
                       {getPaymentStatusBadge(booking.paymentStatus)}
                     </div>
                   </div>
@@ -765,14 +767,14 @@ export default function Dashboard() {
                 <div>
                   <label className="font-medium">Pagamento:</label>
                   <div>{getPaymentStatusBadge(selectedBooking.paymentStatus)}</div>
-                  <div className="font-bold">R$ {selectedBooking.amount.toFixed(2)}</div>
+                  <div className="font-bold">R$ {selectedBooking.amount?.toFixed(2) || '0.00'}</div>
                 </div>
               </div>
               
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="font-medium">País:</label>
-                  <div>{selectedBooking.country.toUpperCase()}</div>
+                  <div>{selectedBooking.country?.toUpperCase() || 'N/A'}</div>
                 </div>
                 <div>
                   <label className="font-medium">Tipo de Visto:</label>
@@ -788,10 +790,10 @@ export default function Dashboard() {
                 <div className="border-t pt-4">
                   <h3 className="font-medium mb-2">Detalhes do Agendamento:</h3>
                   <div className="bg-green-50 p-4 rounded">
-                    <div><strong>Data:</strong> {selectedBooking.appointmentDetails.date}</div>
-                    <div><strong>Horário:</strong> {selectedBooking.appointmentDetails.time}</div>
-                    <div><strong>Local:</strong> {selectedBooking.appointmentDetails.location}</div>
-                    <div><strong>Confirmação:</strong> {selectedBooking.appointmentDetails.confirmationCode}</div>
+                    <div><strong>Data:</strong> {selectedBooking.appointmentDetails?.date || 'N/A'}</div>
+                    <div><strong>Horário:</strong> {selectedBooking.appointmentDetails?.time || 'N/A'}</div>
+                    <div><strong>Local:</strong> {selectedBooking.appointmentDetails?.location || 'N/A'}</div>
+                    <div><strong>Confirmação:</strong> {selectedBooking.appointmentDetails?.confirmationCode || 'N/A'}</div>
                   </div>
                 </div>
               )}
