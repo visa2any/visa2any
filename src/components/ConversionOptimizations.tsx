@@ -66,6 +66,8 @@ export function LiveSocialProof() {
 
   const proof = proofs[currentProof]
 
+  if (!proof) return null
+
   return (
     <div className="fixed bottom-6 left-6 bg-white rounded-lg shadow-xl border border-gray-200 p-4 max-w-sm z-40 animate-slide-in-left">
       <div className="flex items-start">
@@ -101,7 +103,7 @@ export function ScarcityTimer({ endDate }: { endDate?: Date }) {
   const [spots, setSpots] = useState(7) // Simular vagas restantes
 
   useEffect(() => {
-    const targetDate = endDate || new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h default,    
+    const targetDate = endDate || new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h default    
     const interval = setInterval(() => {
       const now = new Date().getTime()
       const distance = targetDate.getTime() - now
@@ -184,10 +186,25 @@ export function AuthorityBadges() {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
       {badges.map((badge, index) => (
         <div key={index} className="text-center bg-white rounded-lg p-4 shadow-sm border">
-          <div className={`w-12 h-12 mx-auto mb-2 rounded-lg bg-${badge.color}-100 flex items-center justify-center`}>
-            <badge.icon className={`h-6 w-6 text-${badge.color}-600`} />
+          <div className={`w-12 h-12 mx-auto mb-2 rounded-lg ${
+            badge.color === 'blue' ? 'bg-blue-100' :
+            badge.color === 'green' ? 'bg-green-100' :
+            badge.color === 'yellow' ? 'bg-yellow-100' :
+            badge.color === 'red' ? 'bg-red-100' : 'bg-gray-100'
+          } flex items-center justify-center`}>
+            <badge.icon className={`h-6 w-6 ${
+              badge.color === 'blue' ? 'text-blue-600' :
+              badge.color === 'green' ? 'text-green-600' :
+              badge.color === 'yellow' ? 'text-yellow-600' :
+              badge.color === 'red' ? 'text-red-600' : 'text-gray-600'
+            }`} />
           </div>
-          <div className={`text-2xl font-bold text-${badge.color}-600 mb-1`}>
+          <div className={`text-2xl font-bold mb-1 ${
+            badge.color === 'blue' ? 'text-blue-600' :
+            badge.color === 'green' ? 'text-green-600' :
+            badge.color === 'yellow' ? 'text-yellow-600' :
+            badge.color === 'red' ? 'text-red-600' : 'text-gray-600'
+          }`}>
             {badge.number}
           </div>
           <div className="text-sm text-gray-600">
@@ -377,7 +394,7 @@ export function GamificationRewards({ score, achievements }: {
     { name: 'Campeão', threshold: 90, icon: '👑', color: 'gold' }
   ]
 
-  const currentBadge = badges.reverse().find(badge => score >= badge.threshold)
+  const currentBadge = [...badges].reverse().find(badge => score >= badge.threshold)
 
   return (
     <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 mb-4">
