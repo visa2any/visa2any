@@ -481,7 +481,7 @@ export function CommunicationCenter({
                         </div>
                         <p className="text-sm text-gray-500 truncate">{lastMessage?.content || 'Sem conteúdo'}</p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className="text-xs text-gray-400">{formatTimestamp(lastMessage?.timestamp || new Date())}</span>
+                          <span className="text-xs text-gray-400">{formatTimestamp(lastMessage?.timestamp || new Date().toISOString())}</span>
                           {lastMessage?.priority === 'high' && (
                             <Star className="h-3 w-3 text-red-500" />
                           )}
@@ -526,12 +526,12 @@ export function CommunicationCenter({
                   <div className="flex items-center space-x-3">
                     <div className="h-9 w-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-sm">
-                        {selectedMessages[0]?.client.name.charAt(0).toUpperCase()}
+                        {selectedMessages[0]?.client?.name?.charAt(0).toUpperCase() || '?'}
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-sm">{selectedMessages[0]?.client.name}</h3>
-                      <p className="text-xs text-gray-500">{selectedMessages[0]?.client.email}</p>
+                      <h3 className="font-semibold text-gray-900 text-sm">{selectedMessages[0]?.client?.name || 'Cliente não identificado'}</h3>
+                      <p className="text-xs text-gray-500">{selectedMessages[0]?.client?.email || 'Email não disponível'}</p>
                     </div>
                   </div>
                   
@@ -688,14 +688,17 @@ export function CommunicationCenter({
                       onKeyPress={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault()
-                          sendMessage(getDefaultMessageType(), newMessage, selectedConversation)
+                          if (selectedConversation) {
+                            sendMessage(getDefaultMessageType(), newMessage, selectedConversation)
+                            setNewMessage('')
+                          }
                         }
                       }}
                     />
                     
                     <div className="flex space-x-1">
                       <button
-                        onClick={() => sendMessage('whatsapp', newMessage, selectedConversation)}
+                        onClick={() => selectedConversation && sendMessage('whatsapp', newMessage, selectedConversation)}
                         disabled={!newMessage.trim()}
                         className={`p-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
                           selectedMode === 'whatsapp' 
@@ -708,7 +711,7 @@ export function CommunicationCenter({
                       </button>
                       
                       <button
-                        onClick={() => sendMessage('email', newMessage, selectedConversation)}
+                        onClick={() => selectedConversation && sendMessage('email', newMessage, selectedConversation)}
                         disabled={!newMessage.trim()}
                         className={`p-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
                           selectedMode === 'email' 
@@ -721,7 +724,7 @@ export function CommunicationCenter({
                       </button>
                       
                       <button
-                        onClick={() => sendMessage('sms', newMessage, selectedConversation)}
+                        onClick={() => selectedConversation && sendMessage('sms', newMessage, selectedConversation)}
                         disabled={!newMessage.trim()}
                         className={`p-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
                           selectedMode === 'phone' 
