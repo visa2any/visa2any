@@ -61,10 +61,13 @@ export default function DocumentUpload({
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       
+      // Check if file exists
+      if (!file) continue
+      
       // Validate file size (max 10MB)
       
       if (file.size > 10 * 1024 * 1024) {
-        alert(`Arquivo ${file.name} é muito grande. Máximo 10MB.`)
+        window.alert(`Arquivo ${file.name} é muito grande. Máximo 10MB.`)
         continue
       }
 
@@ -72,7 +75,7 @@ export default function DocumentUpload({
 
       const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       if (!allowedTypes.includes(file.type)) {
-        alert(`Tipo de arquivo não suportado: ${file.name}`)
+        window.alert(`Tipo de arquivo não suportado: ${file.name}`)
         continue
       }
 
@@ -118,7 +121,7 @@ export default function DocumentUpload({
             status,
             aiScore,
             feedback,
-            url: URL.createObjectURL(files[Array.from(files).indexOf(files[0])])
+            url: files[0] ? URL.createObjectURL(files[0]) : undefined
           } : d
         ))
         
@@ -332,7 +335,11 @@ export default function DocumentUpload({
                   type="file"
                   multiple
                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                  onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleFileUpload(e.target.files)
+                    }
+                  }}
                   className="hidden"
                 />
 
@@ -341,7 +348,11 @@ export default function DocumentUpload({
                   type="file"
                   accept="image/*"
                   capture="environment"
-                  onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleFileUpload(e.target.files)
+                    }
+                  }}
                   className="hidden"
                 />
               </div>
