@@ -456,6 +456,8 @@ export function CommunicationCenter({
               const unreadCount = clientMessages.filter(m => m.status !== 'read' && m.direction === 'inbound').length
               const client = clients.find(c => c.id === clientId) || lastMessage?.client
               
+              if (!lastMessage) return null
+              
               return (
                 <div
                   key={clientId}
@@ -475,12 +477,12 @@ export function CommunicationCenter({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
                           <h4 className="font-medium text-gray-900 truncate text-sm">{client?.name || 'Cliente não identificado'}</h4>
-                          {getMessageIcon(lastMessage.type)}
+                          {getMessageIcon(lastMessage?.type || 'general')}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{lastMessage.content}</p>
+                        <p className="text-sm text-gray-500 truncate">{lastMessage?.content || 'Sem conteúdo'}</p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className="text-xs text-gray-400">{formatTimestamp(lastMessage.timestamp)}</span>
-                          {lastMessage.priority === 'high' && (
+                          <span className="text-xs text-gray-400">{formatTimestamp(lastMessage?.timestamp || new Date())}</span>
+                          {lastMessage?.priority === 'high' && (
                             <Star className="h-3 w-3 text-red-500" />
                           )}
                         </div>
@@ -493,10 +495,10 @@ export function CommunicationCenter({
                           {unreadCount}
                         </span>
                       )}
-                      <span className={`text-xs ${getStatusColor(lastMessage.status)}`}>
-                        {lastMessage.status === 'read' ? <Check className="h-3 w-3" /> : 
-                         lastMessage.status === 'delivered' ? <CheckCircle className="h-3 w-3" /> :
-                         lastMessage.status === 'failed' ? <X className="h-3 w-3" /> : 
+                      <span className={`text-xs ${getStatusColor(lastMessage?.status || 'sent')}`}>
+                        {lastMessage?.status === 'read' ? <Check className="h-3 w-3" /> : 
+                         lastMessage?.status === 'delivered' ? <CheckCircle className="h-3 w-3" /> :
+                         lastMessage?.status === 'failed' ? <X className="h-3 w-3" /> : 
                          <Clock className="h-3 w-3" />}
                       </span>
                     </div>
