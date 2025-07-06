@@ -495,8 +495,7 @@ async function updateClientScore(clientId: string, scoringResult: any) {
       where: { id: clientId },
       data: {
         score: scoringResult.totalScore,
-        lastAnalyzed: new Date(),
-        scoringDetails: JSON.stringify(scoringResult.breakdown)
+        updatedAt: new Date()
       }
     })
   } catch (error) {
