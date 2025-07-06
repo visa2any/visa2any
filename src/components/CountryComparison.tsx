@@ -68,7 +68,8 @@ interface CountryData {
 }
 
 interface ComparisonCriteria {
-  immigration: number // weight 0-10,  economy: number
+  immigration: number // weight 0-10
+  economy: number
   quality: number
   personalPreference: number
 }
