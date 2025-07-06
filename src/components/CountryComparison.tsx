@@ -784,7 +784,7 @@ export function CountryComparison() {
               Recomendação IA Personalizada
             </h3>
             <p className="text-purple-700 mb-3">
-              Baseado no seu perfil e critérios, recomendamos <strong>{countries[selectedCountries[0]]?.name || 'um dos países selecionados'}</strong> como primeira opção.
+              Baseado no seu perfil e critérios, recomendamos <strong>{selectedCountries[0] ? countries[selectedCountries[0]]?.name || 'um dos países selecionados' : 'um dos países selecionados'}</strong> como primeira opção.
             </p>
             <div className="bg-white rounded-lg p-4">
               <h4 className="font-medium text-gray-900 mb-2">Próximos Passos Sugeridos:</h4>
