@@ -174,10 +174,10 @@ export default function Dashboard() {
       })
 
       if (response.ok) {
-        alert('Lembrete de pagamento enviado!')
+        window.alert('Lembrete de pagamento enviado!')
       }
     } catch (error) {
-      alert('Erro ao enviar lembrete')
+      window.alert('Erro ao enviar lembrete')
     }
   }
 
@@ -199,10 +199,10 @@ export default function Dashboard() {
             ? { ...b, status: newStatus as 'pending' | 'payment_pending' | 'processing' | 'completed' | 'cancelled' }
             : b
         ))
-        alert('Status atualizado e cliente notificado!')
+        window.alert('Status atualizado e cliente notificado!')
       }
     } catch (error) {
-      alert('Erro ao atualizar status')
+      window.alert('Erro ao atualizar status')
     }
   }
 
@@ -503,23 +503,23 @@ export default function Dashboard() {
                       time: '12:20',
                       notified: true
                     }
-                  ].map((alert, index) => (
+                  ].map((alertItem, index) => (
                     <div 
                       key={index} 
-                      className={`border rounded p-3 ${alert.notified ? 'bg-green-50' : 'bg-yellow-50'}`}
+                      className={`border rounded p-3 ${alertItem.notified ? 'bg-green-50' : 'bg-yellow-50'}`}
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">🎯 {alert.country} - {alert.type}</div>
+                          <div className="font-medium">🎯 {alertItem.country} - {alertItem.type}</div>
                           <div className="text-sm text-gray-600">
-                            📅 {alert.date} | 📍 {alert.location}
+                            📅 {alertItem.date} | 📍 {alertItem.location}
                           </div>
                           <div className="text-sm text-gray-500">
-                            📢 {alert.channel} - {alert.time}
+                            📢 {alertItem.channel} - {alertItem.time}
                           </div>
                         </div>
                         <div>
-                          {alert.notified ? (
+                          {alertItem.notified ? (
                             <Badge className="bg-green-500 text-white">Notificado</Badge>
                           ) : (
                             <Button 
@@ -534,7 +534,7 @@ export default function Dashboard() {
                                   })
                                 })
                                 if (response.ok) {
-                                  alert('Cliente notificado!')
+                                  window.alert('Cliente notificado!')
                                   loadDashboardData() // Recarregar
                                 }
                               }}
@@ -586,7 +586,7 @@ export default function Dashboard() {
                         const result = await response.json()
                         alert(result.instructions || 'Instruções:\n\n1. Acesse @BotFather no Telegram\n2. Digite /newbot\n3. Configure TELEGRAM_BOT_TOKEN no .env\n4. Entre nos canais: @vagaexpress')
                       } catch (error) {
-                        alert('Instruções:\n\n1. Acesse @BotFather no Telegram\n2. Digite /newbot\n3. Configure TELEGRAM_BOT_TOKEN no .env\n4. Entre nos canais: @vagaexpress')
+                        window.alert('Instruções:\n\n1. Acesse @BotFather no Telegram\n2. Digite /newbot\n3. Configure TELEGRAM_BOT_TOKEN no .env\n4. Entre nos canais: @vagaexpress')
                       }
                     }}
                   >
@@ -615,7 +615,7 @@ export default function Dashboard() {
                         const result = await response.json()
                         alert(JSON.stringify(result, null, 2))
                       } catch (error) {
-                        alert('Monitoramento web ativado!')
+                        window.alert('Monitoramento web ativado!')
                       }
                     }}
                   >
@@ -636,7 +636,7 @@ export default function Dashboard() {
                         const result = await response.json()
                         alert(result.instructions || 'Configure:\n\n1. Gmail API\n2. Palavras-chave: "appointment available"\n3. SENDGRID_API_KEY no .env')
                       } catch (error) {
-                        alert('Configure:\n\n1. Gmail API\n2. Palavras-chave: "appointment available"\n3. SENDGRID_API_KEY no .env')
+                        window.alert('Configure:\n\n1. Gmail API\n2. Palavras-chave: "appointment available"\n3. SENDGRID_API_KEY no .env')
                       }
                     }}
                   >
