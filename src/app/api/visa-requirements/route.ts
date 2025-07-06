@@ -4,8 +4,14 @@ import { z } from 'zod'
 
 const visaRequirementSchema = z.object({
   country: z.string().min(1, 'País é obrigatório'),
+  countryCode: z.string().min(1, 'Código do país é obrigatório'),
   visaType: z.string().min(1, 'Tipo de visto é obrigatório'),
   visaSubtype: z.string().optional(),
+  visaCategory: z.enum(['TOURIST', 'BUSINESS', 'TRANSIT', 'STUDENT', 'WORK', 'IMMIGRANT', 'FAMILY', 'DIPLOMATIC', 'OFFICIAL', 'RELIGIOUS', 'MEDIA', 'CREW', 'MEDICAL', 'INVESTMENT', 'STARTUP', 'EXTRAORDINARY', 'VICTIM', 'ASYLUM', 'REFUGEE']),
+  requiresInterview: z.boolean().default(true),
+  onlineApplication: z.boolean().default(false),
+  transitVisa: z.boolean().default(false),
+  maxStayDuration: z.string().optional(),
   requiredDocuments: z.array(z.object({
     type: z.string(),
     name: z.string(),
@@ -29,7 +35,17 @@ const visaRequirementSchema = z.object({
   governmentLinks: z.array(z.object({
     name: z.string(),
     url: z.string()
-  }))
+  })),
+  consulateInfo: z.array(z.object({
+    name: z.string(),
+    address: z.string(),
+    contact: z.string().optional()
+  })),
+  medicalExamRequired: z.boolean().default(false),
+  biometricsRequired: z.boolean().default(false),
+  apostilleRequired: z.boolean().default(false),
+  translationRequired: z.boolean().default(false),
+  validLanguages: z.array(z.string())
 })
 
 // GET /api/visa-requirements - Listar requisitos de visto
@@ -155,6 +171,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...validatedData,
         visaSubtype: validatedData.visaSubtype || null,
+        maxStayDuration: validatedData.maxStayDuration || null,
         lastUpdated: new Date()
       }
     })
@@ -200,7 +217,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, ...updateData } = body    
+    const { id, ...bodyData } = body    
     
     if (!id) {
       return NextResponse.json(
@@ -209,11 +226,18 @@ export async function PUT(request: NextRequest) {
       )
     }
     
-    const validatedData = visaRequirementSchema.partial().parse(updateData)
+    const validatedData = visaRequirementSchema.partial().parse(bodyData)
+    // Filtrar campos undefined
+    const updateData = Object.fromEntries(
+      Object.entries(validatedData).filter(([_, value]) => value !== undefined)
+    )
+    
     const requirement = await prisma.visaRequirement.update({
       where: { id },
       data: {
-        ...validatedData,
+        ...updateData,
+        visaSubtype: validatedData.visaSubtype || null,
+        maxStayDuration: validatedData.maxStayDuration || null,
         lastUpdated: new Date()
       }
     })

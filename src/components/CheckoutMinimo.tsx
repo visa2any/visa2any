@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Shield, Star, WhatsApp, CreditCard, Zap } from 'lucide-react'
+import { ArrowRight, Shield, Star, CreditCard, Zap } from 'lucide-react'
 
 export default function CheckoutMinimo() {
   const [formData, setFormData] = useState({
@@ -178,8 +178,7 @@ export default function CheckoutMinimo() {
             target="_blank"
             className="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
           >
-            <WhatsApp className="mr-2 h-5 w-5" />
-            WhatsApp Direto
+            📱 WhatsApp Direto
           </a>
         </div>
       </div>

@@ -1,6 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Funções auxiliares para mapear dados
+function getCountryCode(country: string): string {
+  const codes: { [key: string]: string } = {
+    'Canadá': 'CAN',
+    'Austrália': 'AUS',
+    'Portugal': 'PRT',
+    'Estados Unidos': 'USA'
+  }
+  return codes[country] || 'UNK'
+}
+
+function getVisaCategory(visaType: string): 'WORK' | 'IMMIGRANT' | 'STUDENT' | 'TOURIST' | 'BUSINESS' {
+  if (visaType.includes('Express Entry') || visaType.includes('Skilled')) return 'WORK'
+  if (visaType.includes('D7')) return 'IMMIGRANT'
+  if (visaType.includes('EB-1A')) return 'WORK'
+  return 'WORK'
+}
+
+function getConsulateInfo(country: string): any {
+  const consulates: { [key: string]: any } = {
+    'Canadá': [
+      { name: 'Consulado Geral do Canadá em São Paulo', address: 'São Paulo, SP', contact: '+55 11 5509-4321' }
+    ],
+    'Austrália': [
+      { name: 'Embaixada da Austrália em Brasília', address: 'Brasília, DF', contact: '+55 61 3226-3111' }
+    ],
+    'Portugal': [
+      { name: 'Consulado Geral de Portugal em São Paulo', address: 'São Paulo, SP', contact: '+55 11 3087-1800' }
+    ],
+    'Estados Unidos': [
+      { name: 'Consulado dos EUA em São Paulo', address: 'São Paulo, SP', contact: '+55 11 3250-5000' }
+    ]
+  }
+  return consulates[country] || []
+}
+
+function getValidLanguages(country: string): string[] {
+  const languages: { [key: string]: string[] } = {
+    'Canadá': ['en', 'fr'],
+    'Austrália': ['en'],
+    'Portugal': ['pt'],
+    'Estados Unidos': ['en']
+  }
+  return languages[country] || ['en']
+}
+
 // POST /api/visa-requirements/seed - Popular base de conhecimento
 export async function POST(request: NextRequest) {
   try {
@@ -343,8 +389,14 @@ export async function POST(request: NextRequest) {
         prisma.visaRequirement.create({
           data: {
             ...requirement,
+            countryCode: getCountryCode(requirement.country),
+            visaCategory: getVisaCategory(requirement.visaType),
+            consulateInfo: getConsulateInfo(requirement.country),
+            validLanguages: getValidLanguages(requirement.country),
             lastUpdated: new Date(),
-            isActive: true}})
+            isActive: true
+          }
+        })
       )
     )
 

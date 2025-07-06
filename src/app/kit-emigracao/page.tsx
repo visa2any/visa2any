@@ -66,7 +66,13 @@ export default function KitEmigracao() {
     }
   }
 
-  const countries = {
+  const countries: { [key: string]: {
+    name: string
+    flag: string
+    documents: string[]
+    timeline: string
+    price: string
+  }} = {
     eua: {
       name: 'Estados Unidos',
       flag: '🇺🇸',
@@ -313,14 +319,14 @@ export default function KitEmigracao() {
           {/* Documentos por País */}
           <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-8">
             <h3 className="text-2xl font-bold mb-6 text-center">
-              {countries[selectedCountry].flag} Documentos para {countries[selectedCountry].name}
+              {countries[selectedCountry]?.flag} Documentos para {countries[selectedCountry]?.name}
             </h3>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-bold text-lg mb-4">📄 Documentos Necessários:</h4>
                 <ul className="space-y-3">
-                  {countries[selectedCountry].documents.map((doc, index) => (
+                  {countries[selectedCountry]?.documents.map((doc, index) => (
                     <li key={index} className="flex items-center gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                       <span className="text-gray-700">{doc}</span>

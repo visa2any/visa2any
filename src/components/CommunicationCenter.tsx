@@ -96,6 +96,7 @@ export function CommunicationCenter({
       const interval = setInterval(fetchMessages, 10000) // Refresh a cada 10 segundos
       return () => clearInterval(interval)
     }
+    return undefined
   }, [autoRefresh])
 
   // Remove auto-scroll automático - apenas quando necessário
@@ -453,7 +454,7 @@ export function CommunicationCenter({
             {Object.entries(groupedMessages).map(([clientId, clientMessages]) => {
               const lastMessage = clientMessages[clientMessages.length - 1]
               const unreadCount = clientMessages.filter(m => m.status !== 'read' && m.direction === 'inbound').length
-              const client = clients.find(c => c.id === clientId) || lastMessage.client
+              const client = clients.find(c => c.id === clientId) || lastMessage?.client
               
               return (
                 <div
@@ -467,7 +468,7 @@ export function CommunicationCenter({
                     <div className="flex items-start space-x-3 flex-1 min-w-0">
                       <div className="h-9 w-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
-                          {client.name.charAt(0).toUpperCase()}
+                          {client?.name?.charAt(0).toUpperCase() || '?'}
                         </span>
                       </div>
                       

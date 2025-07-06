@@ -102,7 +102,9 @@
       "Bash(time npm run type-check:ultra)",
       "Bash(tar:*)",
       "WebFetch(domain:visa2any1-visa2anys-projects.vercel.app)",
-      "Bash(do echo \"Fixing $file\")"
+      "Bash(do echo \"Fixing $file\")",
+      "Bash(NEXT_DISABLE_FONT_OPTIMIZATION=true npm run build)",
+      "Bash(NODE_ENV=production timeout 120 npx next build)"
     ],
     "deny": []
   }

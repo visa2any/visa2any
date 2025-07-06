@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,    // ✅ Habilita otimizações React
   swcMinify: true,         // ✅ Usa SWC para minificação rápida
+  output: 'standalone',    // ✅ Melhora build para deploy
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error']     // Remove console.log em prod, mantém errors

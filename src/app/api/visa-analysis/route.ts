@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
         targetCountry: validatedData.targetCountry,
         visaType: analyses[0]?.visaType ?? null,
         score: analyses[0]?.analysis.totalScore || 0,
-        status: analyses[0]?.analysis.totalScore >= 70 ? 'QUALIFIED' : 'LEAD'
+        status: (analyses[0]?.analysis?.totalScore ?? 0) >= 70 ? 'QUALIFIED' : 'LEAD'
       }
     })
 

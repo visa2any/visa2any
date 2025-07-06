@@ -51,6 +51,16 @@ interface CustomerData {
     nextAction: string
     engagementScore: number
   }
+  vagaExpressSubscription?: {
+    plan: string
+    status: string
+    expiryDate: string
+    slotsFound: number
+    notificationsSent: number
+    monitoringCountries: string[]
+    lastSlotDetected: string
+    nextCheck: string
+  }
 }
 
 

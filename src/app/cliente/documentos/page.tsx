@@ -8,7 +8,7 @@ import {
   Brain, CheckCircle, AlertTriangle, Clock, Sparkles
 } from 'lucide-react'
 
-interface Document {
+interface CustomerDocument {
   id: string
   name: string
   type: string
@@ -32,7 +32,7 @@ interface CustomerData {
 
 export default function DocumentosPage() {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null)
-  const [documents, setDocuments] = useState<Document[]>([])
+  const [documents, setDocuments] = useState<CustomerDocument[]>([])
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -108,7 +108,7 @@ export default function DocumentosPage() {
     }
   }
 
-  const handleDocumentsChange = (newDocuments: Document[]) => {
+  const handleDocumentsChange = (newDocuments: CustomerDocument[]) => {
     setDocuments(newDocuments)
     localStorage.setItem('customer-documents', JSON.stringify(newDocuments))
   }
@@ -381,7 +381,10 @@ export default function DocumentosPage() {
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onDocumentsChange={handleDocumentsChange}
-        existingDocuments={documents}
+        existingDocuments={documents.map(doc => ({
+          ...doc,
+          uploadDate: typeof doc.uploadDate === 'string' ? new Date(doc.uploadDate) : doc.uploadDate
+        }))}
       />
     </div>
   )

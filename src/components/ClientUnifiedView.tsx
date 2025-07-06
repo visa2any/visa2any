@@ -180,15 +180,13 @@ export function ClientUnifiedView({ clients, filters, onFiltersChange, onClientS
 
   const handleEmailClient = async (client: Client, e: React.MouseEvent) => {
     e.stopPropagation()
-    try {
-      if (onCommunicationSelect) {
-        onCommunicationSelect(client, 'email')
-        notifySuccess('Email', `Abrindo Central de Comunicação para ${client.name}`)
-      } else {
-        notifyError('Erro', 'Central de Comunicação não disponível')
-      }
-    } catch (error) {
-      notifyError('Erro', 'Falha ao abrir Central de Comunicação')
+    if (onCommunicationSelect) {
+      onCommunicationSelect(client, 'email')
+    } else {
+      // Fallback: open default email client
+      const subject = encodeURIComponent(`Visa2Any - Acompanhamento do seu processo`)
+      const body = encodeURIComponent(`Olá ${client.name},\n\nEspero que esteja bem!\n\nGostaria de saber como está o andamento do seu processo de visto.\n\nAtenciosamente,\nEquipe Visa2Any`)
+      window.open(`mailto:${client.email}?subject=${subject}&body=${body}`)
     }
   }
 
@@ -684,6 +682,23 @@ function KanbanView({ clients, onClientSelect }: { clients: Client[], onClientSe
 
   const getColumnClients = (status: string) => {
     return clients.filter(client => client.status === status)
+  }
+
+  const handleEmailClient = async (client: Client, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const subject = encodeURIComponent(`Visa2Any - Acompanhamento do seu processo`)
+    const body = encodeURIComponent(`Olá ${client.name},\n\nEspero que esteja bem!\n\nGostaria de saber como está o andamento do seu processo de visto.\n\nAtenciosamente,\nEquipe Visa2Any`)
+    window.open(`mailto:${client.email}?subject=${subject}&body=${body}`)
+  }
+
+  const handleWhatsAppClient = async (client: Client, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!client.phone) {
+      alert('Cliente não possui número de telefone')
+      return
+    }
+    const message = encodeURIComponent(`Olá ${client.name}! Gostaria de saber como está o andamento do seu processo de visto.`)
+    window.open(`https://wa.me/${client.phone.replace(/\D/g, '')}?text=${message}`)
   }
 
   return (

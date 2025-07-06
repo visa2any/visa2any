@@ -262,7 +262,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     publicKey: string
   } | null>(null)
 
-  const productData = PRODUCT_DATA[currentProduct.id] || {}
+  const productData = PRODUCT_DATA[currentProduct?.id || ''] || {}
   
   // Auto-save dos dados do formulário
   useEffect(() => {
@@ -279,11 +279,12 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         setIsSaving(false)
       }
     }
+    return undefined
   }, [customerData, currentAdults, currentChildren])
 
   // Preços base
-  const getBaseAdultPrice = () => currentProduct.originalPrice || currentProduct.currentPrice
-  const getBaseChildPrice = () => (currentProduct as any).childPrice || (currentProduct.originalPrice || currentProduct.currentPrice)
+  const getBaseAdultPrice = () => currentProduct?.originalPrice || currentProduct?.currentPrice || 0
+  const getBaseChildPrice = () => (currentProduct as any)?.childPrice || (currentProduct?.originalPrice || currentProduct?.currentPrice || 0)
   
   // Preços finais com desconto
   const getFinalAdultPrice = () => {
@@ -344,19 +345,19 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     // Validação dos dígitos verificadores
     let sum = 0
     for (let i = 0; i < 9; i++) {
-      sum += parseInt(cleanCPF[i]) * (10 - i)
+      sum += parseInt(cleanCPF[i] as string) * (10 - i)
     }
     let remainder = (sum * 10) % 11
     if (remainder === 10 || remainder === 11) remainder = 0
-    if (remainder !== parseInt(cleanCPF[9])) return false
+    if (remainder !== parseInt(cleanCPF[9] as string)) return false
     
     sum = 0
     for (let i = 0; i < 10; i++) {
-      sum += parseInt(cleanCPF[i]) * (11 - i)
+      sum += parseInt(cleanCPF[i] as string) * (11 - i)
     }
     remainder = (sum * 10) % 11
     if (remainder === 10 || remainder === 11) remainder = 0
-    if (remainder !== parseInt(cleanCPF[10])) return false
+    if (remainder !== parseInt(cleanCPF[10] as string)) return false
     
     return true
   }
@@ -421,7 +422,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       const orderData = {
         ...customerData,
         fullPhone,
-        product: currentProduct.id,
+        product: currentProduct?.id || '',
         total: currentTotal,
         adults: adults,
         children: children
@@ -440,9 +441,9 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
             cpf: customerData.cpf
           },
           items: [{
-            id: currentProduct.id,
-            title: currentProduct.name,
-            description: currentProduct.description,
+            id: currentProduct?.id || '',
+            title: currentProduct?.name || '',
+            description: currentProduct?.description || '',
             unit_price: currentTotal,
             quantity: 1
           }],
@@ -456,7 +457,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
             failure: `${window.location.origin}/payment/failure`,
             pending: `${window.location.origin}/payment/pending`
           },
-          external_reference: `${currentProduct.id}-${Date.now()}`
+          external_reference: `${currentProduct?.id || ''}-${Date.now()}`
         })
       })
       
@@ -480,11 +481,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
       }
       
       // Se for produto Vaga Express processar com integração
-      if (currentProduct.id.includes('vaga-express')) {
+      if (currentProduct?.id?.includes('vaga-express')) {
         console.log('Processando pedido Vaga Express:', orderData)
 
         const vagaExpressData = {
-          product: currentProduct.id,
+          product: currentProduct?.id || '',
           customerName: customerData.name,
           customerEmail: customerData.email,
           customerPhone: fullPhone,
@@ -512,14 +513,14 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         if (result.success) {
           console.log('Pedido Vaga Express processado:', result)
           // Redirecionar com informações específicas do Vaga Express
-          window.location.href = `/success?product=${currentProduct.id}&checkout=moderno&orderId=${result.orderId}&type=vaga-express`
+          window.location.href = `/success?product=${currentProduct?.id || ''}&checkout=moderno&orderId=${result.orderId}&type=vaga-express`
         } else {
           console.error('Erro ao processar Vaga Express:', result.error)
           alert('Erro ao ativar monitoramento. Contacte o suporte.')
         }
       } else {
         // Produtos normais - fluxo original
-        window.location.href = `/success?product=${currentProduct.id}&checkout=moderno`
+        window.location.href = `/success?product=${currentProduct?.id || ''}&checkout=moderno`
       }
       
     } catch (error) {
@@ -610,8 +611,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       {productData.badge}
                     </div>
                   )}
-                  <h1 className="text-3xl font-bold text-gray-900 mb-3">{title || currentProduct.name}</h1>
-                  <p className="text-gray-600 mb-4">{subtitle || currentProduct.description}</p>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-3">{title || currentProduct?.name || ''}</h1>
+                  <p className="text-gray-600 mb-4">{subtitle || currentProduct?.description || ''}</p>
                   
                   {/* Trust indicators */}
                   <div className="flex items-center gap-6 text-sm text-gray-600">
@@ -655,14 +656,14 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
               </div>
 
               {/* Features - Restauradas */}
-              {currentProduct.features.length > 0 && (
+              {(currentProduct?.features?.length || 0) > 0 && (
                 <div className="border-t pt-6">
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                     <Check className="h-5 w-5 mr-2 text-green-500" />
                     Incluído no seu plano
                   </h3>
                   <div className="grid md:grid-cols-2 gap-3">
-                    {currentProduct.features.map((feature, index) => (
+                    {currentProduct?.features?.map((feature, index) => (
                       <div key={index} className="flex items-start text-sm text-gray-700">
                         <CheckCircle className="h-4 w-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                         {feature}
@@ -1182,7 +1183,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-start pb-4 border-b border-gray-100">
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{currentProduct.name}</div>
+                    <div className="font-medium text-gray-900">{currentProduct?.name || ''}</div>
                     <div className="text-sm text-gray-600">
                       {(currentAdults > 1 || currentChildren > 0) ? (
                         <span>👥 {currentAdults} adulto{currentAdults > 1 ? 's' : ''}{currentChildren > 0 ? ` + ${currentChildren} criança${currentChildren > 1 ? 's' : ''}` : ''}</span>
@@ -1251,8 +1252,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
             <ServiceContract
-              serviceType={currentProduct.variant === 'premium' ? 'relatorio-premium' : 
-                          currentProduct.variant === 'consultation' ? 'consultoria-express' : 'assessoria-vip'}
+              serviceType={currentProduct?.variant === 'premium' ? 'relatorio-premium' : 
+                          currentProduct?.variant === 'consultation' ? 'consultoria-express' : 'assessoria-vip'}
               clientName={customerData.name}
               clientEmail={customerData.email}
               clientCPF={customerData.cpf}

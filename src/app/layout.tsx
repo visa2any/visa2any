@@ -1,23 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Inter, Poppins } from 'next/font/google'
 import ConditionalLayout from '@/components/ConditionalLayout'
-
-// Otimização de fontes com next/font
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-  weight: ['300', '400', '500', '600', '700']
-})
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  display: 'swap', 
-  variable: '--font-poppins',
-  weight: ['400', '500', '600', '700', '800']
-})
 
 export const metadata: Metadata = {
   title: {
@@ -73,7 +57,7 @@ export const metadata: Metadata = {
     }
   },
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION
+    google: process.env.GOOGLE_SITE_VERIFICATION || null
   }
 }
 
@@ -83,13 +67,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="pt-BR">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="theme-color" content="#0284c7" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased" style={{ fontFamily: 'system-ui, arial, sans-serif' }}>
         <ConditionalLayout>
           {children}
         </ConditionalLayout>

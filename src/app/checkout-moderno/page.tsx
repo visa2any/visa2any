@@ -144,7 +144,7 @@ function CheckoutContent() {
   if (!product) {
     // Tentar encontrar produto baseado em padrões
     if (productId.includes('-free')) {
-      const country = productId.split('-')[0]
+      const country = productId.split('-')[0] || 'Geral'
       product = {
         name: `${country.toUpperCase()} - Análise Gratuita`,
         price: 0,
@@ -159,7 +159,7 @@ function CheckoutContent() {
         supportsQuantity: false
       }
     } else if (productId.includes('-report')) {
-      const country = productId.split('-')[0]
+      const country = productId.split('-')[0] || 'Geral'
       product = {
         name: `${country.toUpperCase()} - Relatório Premium`,
         price: 197,

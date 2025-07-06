@@ -36,7 +36,7 @@ export default function TesteCheckoutPage() {
           'Suporte WhatsApp por 30 dias',
           'Relatório em PDF'
         ]}
-        variant="consultation"
+        variant="premium"
         title="Teste do Checkout Inline"
         subtitle="Teste para verificar o funcionamento do checkout inline"
         ctaText="Testar Checkout"

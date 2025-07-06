@@ -81,7 +81,7 @@ export default function ChatBot() {
         text,
         isBot: true,
         timestamp: new Date(),
-        options
+        options: options || []
       }
       setMessages(prev => [...prev, newMessage])
       setIsTyping(false)

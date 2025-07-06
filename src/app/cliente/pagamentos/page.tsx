@@ -44,7 +44,7 @@ export default function PagamentosPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [packageDataData, setPackageData] = useState<Package | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedTab, setSelectedTab] = useState<'payments' | 'packageData' | 'packageDatas'>('payments')
+  const [selectedTab, setSelectedTab] = useState<'payments' | 'subscription' | 'plans'>('payments')
 
   useEffect(() => {
     loadData()
@@ -118,9 +118,9 @@ export default function PagamentosPage() {
 
       // Load packageData
 
-      setPackage({
+      setPackageData({
         id: 'sub_1',
-        packageData: 'Premium',
+        package: 'Premium',
         price: 599,
         billing_cycle: 'monthly',
         status: 'active',
@@ -358,7 +358,7 @@ export default function PagamentosPage() {
               </div>
             )}
 
-            {selectedTab === 'subscription' && subscription && (
+            {selectedTab === 'subscription' && packageDataData && (
               <div className="space-y-6">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
                   <div className="flex items-center justify-between mb-4">
@@ -367,16 +367,16 @@ export default function PagamentosPage() {
                         <Crown className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">Plano {subscription.plan}</h3>
+                        <h3 className="text-xl font-bold text-gray-900">Plano {packageDataData.package}</h3>
                         <p className="text-blue-600">
-                          {formatCurrency(subscription.price, 'BRL')} / {subscription.billing_cycle === 'monthly' ? 'mês' : 'ano'}
+                          {formatCurrency(packageDataData.price, 'BRL')} / {packageDataData.billing_cycle === 'monthly' ? 'mês' : 'ano'}
                         </p>
                       </div>
                     </div>
                     <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      subscription.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      packageDataData.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                     }`}>
-                      {subscription.status === 'active' ? 'Ativo' : 'Inativo'}
+                      {packageDataData.status === 'active' ? 'Ativo' : 'Inativo'}
                     </div>
                   </div>
                   
@@ -384,7 +384,7 @@ export default function PagamentosPage() {
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-3">Recursos Incluídos:</h4>
                       <ul className="space-y-2">
-                        {subscription.features.map((feature, index) => (
+                        {packageDataData.features.map((feature, index) => (
                           <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
                             <CheckCircle className="h-4 w-4 text-green-500" />
                             {feature}
@@ -398,11 +398,11 @@ export default function PagamentosPage() {
                       <div className="space-y-2 text-sm text-gray-700">
                         <div className="flex justify-between">
                           <span>Próximo pagamento:</span>
-                          <span className="font-medium">{new Date(subscription.next_billing).toLocaleDateString()}</span>
+                          <span className="font-medium">{new Date(packageDataData.next_billing).toLocaleDateString()}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Ciclo de cobrança:</span>
-                          <span className="font-medium">{subscription.billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}</span>
+                          <span className="font-medium">{packageDataData.billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Método de pagamento:</span>

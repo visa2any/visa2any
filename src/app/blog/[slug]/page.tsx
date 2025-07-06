@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: post.title,
         description: post.excerpt,
         type: 'article',
-        publishedTime: post.publishDate,
+        publishedTime: post.publishDate.toISOString(),
         authors: [post.author],
         images: post.imageUrl ? [{
           url: post.imageUrl,

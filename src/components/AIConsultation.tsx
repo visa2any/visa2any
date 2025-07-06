@@ -149,6 +149,7 @@ export default function AIConsultation() {
       }, 1000)
       return () => clearInterval(timer)
     }
+    return undefined
   }, [isActive, timeRemaining])
 
   useEffect(() => {
@@ -159,7 +160,7 @@ export default function AIConsultation() {
 
   const startConsultation = () => {
     setIsActive(true)
-    addAIMessage(consultationQuestions[0].question)
+    addAIMessage(consultationQuestions[0]?.question || 'Olá! Vamos começar sua consultoria.')
   }
 
   const addAIMessage = (text: string, data?: any) => {
@@ -194,6 +195,8 @@ export default function AIConsultation() {
 
   const handleAnswer = (answer: string | number) => {
     const currentQuestion = consultationQuestions[currentStep]
+    if (!currentQuestion) return
+    
     addUserMessage(answer.toString())
     
     setUserProfile(prev => ({
@@ -206,6 +209,10 @@ export default function AIConsultation() {
     let nextStep = currentStep + 1
     while (nextStep < consultationQuestions.length) {
       const nextQuestion = consultationQuestions[nextStep]
+      if (!nextQuestion) {
+        nextStep++
+        continue
+      }
       
       // Verificar se a pergunta deve ser mostrada
       
@@ -227,7 +234,7 @@ export default function AIConsultation() {
     if (nextStep < consultationQuestions.length) {
       setTimeout(() => {
         setCurrentStep(nextStep)
-        addAIMessage(consultationQuestions[nextStep].question)
+        addAIMessage(consultationQuestions[nextStep]?.question || 'Próxima pergunta')
       }, 1000)
     } else {
       // Finalizar consultoria e gerar análise
@@ -278,7 +285,7 @@ export default function AIConsultation() {
       if (profile.nationality === 'Brasileira') {
         score += 20 // Facilidades CPLP para brasileiros
         if (profile.visaType === 'Cidadania por descendência') score += 15
-      } else if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(profile.nationality)) {
+      } else if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(profile.nationality || '')) {
         score += 25 // Outros países CPLP têm ainda mais facilidades
       } else {
         score += 5 // Outros têm menos facilidades
@@ -312,7 +319,7 @@ export default function AIConsultation() {
         if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
           score += 15 // EB-2 NIW facilitado para brasileiros qualificados
         }
-      } else if (['Mexicana', 'Centro-americana'].includes(profile.nationality)) {
+      } else if (['Mexicana', 'Centro-americana'].includes(profile.nationality || '')) {
         score -= 10 // Processos mais rigorosos
         warnings.push('Nacionalidade requer análise mais cuidadosa')
       }
@@ -564,7 +571,7 @@ export default function AIConsultation() {
             </div>
           </div>
           
-          {currentQuestion.type === 'select' && (
+          {currentQuestion?.type === 'select' && (
             <div className="grid gap-2">
               {currentQuestion.options?.map((option) => (
                 <button
@@ -578,7 +585,7 @@ export default function AIConsultation() {
             </div>
           )}
           
-          {currentQuestion.type === 'text' && (
+          {currentQuestion?.type === 'text' && (
             <div className="space-y-3">
               <input
                 type="text"

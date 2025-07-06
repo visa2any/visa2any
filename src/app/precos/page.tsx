@@ -60,7 +60,7 @@ const VAGA_EXPRESS_PLANS = {
 }
 
 // Configuração de países e preços
-const COUNTRIES = {
+const COUNTRIES: { [key: string]: any } = {
   usa: {
     name: 'EUA',
     flag: '🇺🇸',
@@ -178,7 +178,7 @@ const COUNTRIES = {
   }
 }
 
-const VISA_TYPES = {
+const VISA_TYPES: { [key: string]: any } = {
   turismo: {
     name: 'Turismo/Negócios',
     icon: '🏖️',
@@ -237,7 +237,14 @@ const VISA_TYPES = {
   }
 }
 
-const PACKAGES = [
+const PACKAGES: Array<{
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  variant: 'default' | 'premium' | 'vip';
+  popular?: boolean;
+}> = [
   {
     id: 'free',
     name: '🆓 Análise Gratuita',
@@ -304,7 +311,7 @@ export default function PrecosPage() {
 
   // Função para gerar product ID baseado nas seleções
 
-  const generateProductId = (planId, country, visaType) => {
+  const generateProductId = (planId: string, country: string, visaType: string) => {
     if (planId === 'free') return 'pre-analise'
     
     const countryPrefix = country === 'usa' ? 'usa' : 
@@ -332,7 +339,7 @@ export default function PrecosPage() {
 
   // Função para obter preço baseado nas seleções
 
-  const getPrice = (planId) => {
+  const getPrice = (planId: string) => {
     if (planId === 'free') return 0
     if (!selectedCountry || !selectedVisaType) return 97
     
@@ -377,7 +384,7 @@ export default function PrecosPage() {
             
             <div className="p-6 overflow-y-auto max-h-[70vh]">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {COUNTRIES.outros.countries.map((country, index) => (
+                {COUNTRIES.outros.countries.map((country: string, index: number) => (
                   <div
                     key={index}
                     onClick={() => {
@@ -503,7 +510,7 @@ export default function PrecosPage() {
                   description={plan.description}
                   features={plan.features}
                   variant={plan.popular ? "premium" : "default"}
-                  popular={plan.popular}
+                  popular={plan.popular || false}
                   className="h-full"
                 />
               </div>
@@ -725,7 +732,7 @@ export default function PrecosPage() {
                         description={plan.description}
                         features={plan.features}
                         variant={plan.variant}
-                        popular={plan.popular}
+                        popular={plan.popular || false}
                         disabled={isDisabled}
                         className="h-full"
                       />

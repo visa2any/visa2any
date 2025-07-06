@@ -60,7 +60,13 @@ export default function AssessoriaJuridicaPage() {
     }
   }
 
-  const countries = {
+  const countries: { [key: string]: {
+    name: string;
+    flag: string;
+    services: string[];
+    partners: string;
+    price: string;
+  }} = {
     eua: {
       name: 'Estados Unidos',
       flag: '🇺🇸',
@@ -318,14 +324,14 @@ export default function AssessoriaJuridicaPage() {
           {/* Serviços por País */}
           <div className="bg-white rounded-2xl p-8 shadow-lg">
             <h3 className="text-2xl font-bold mb-6 text-center">
-              {countries[selectedCountry].flag} Serviços de Imigração - {countries[selectedCountry].name}
+              {countries[selectedCountry]?.flag} Serviços de Imigração - {countries[selectedCountry]?.name}
             </h3>
             
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h4 className="font-bold text-lg mb-4">🌆 Serviços Disponíveis:</h4>
                 <ul className="space-y-3">
-                  {countries[selectedCountry].services.map((service, index) => (
+                  {countries[selectedCountry]?.services.map((service, index) => (
                     <li key={index} className="flex items-center gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                       <span className="text-gray-700">{service}</span>
@@ -337,7 +343,7 @@ export default function AssessoriaJuridicaPage() {
               <div>
                 <h4 className="font-bold text-lg mb-4">🏢 Nossos Parceiros:</h4>
                 <div className="bg-indigo-50 rounded-lg p-4 mb-4">
-                  <p className="text-gray-700">{countries[selectedCountry].partners}</p>
+                  <p className="text-gray-700">{countries[selectedCountry]?.partners}</p>
                 </div>
                 
                 <div className="space-y-3">

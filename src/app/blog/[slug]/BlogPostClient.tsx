@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
-import SocialAuth from '@/components/SocialAuth'
+
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { Button } from '@/components/ui/button'
 import { 
@@ -695,7 +695,12 @@ export default function BlogPostClient({ slug }: Props) {
             ) : (
               <div className="bg-gray-50 rounded-lg p-6 mb-8 text-center">
                 <p className="text-gray-600 mb-4">Faça login para comentar</p>
-                <SocialAuth />
+                <button 
+                  onClick={() => window.location.href = '/login'}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Fazer Login
+                </button>
               </div>
             )}
             
