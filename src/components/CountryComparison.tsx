@@ -402,7 +402,10 @@ export function CountryComparison() {
   const addCountryToComparison = (countryCode: string) => {
     if (!selectedCountries.includes(countryCode) && selectedCountries.length < 4) {
       setSelectedCountries([...selectedCountries, countryCode])
-      notifySuccess('País adicionado', `${countries[countryCode].name} foi adicionado à comparação`)
+      const country = countries[countryCode]
+      if (country) {
+        notifySuccess('País adicionado', `${country.name} foi adicionado à comparação`)
+      }
     }
   }
 
@@ -434,8 +437,8 @@ export function CountryComparison() {
         <div className="flex flex-wrap gap-3 mb-4">
           {selectedCountries.map((code) => (
             <div key={code} className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-              <span className="text-2xl">{countries[code].flag}</span>
-              <span className="font-medium text-gray-900">{countries[code].name}</span>
+              <span className="text-2xl">{countries[code]?.flag || '🏳️'}</span>
+              <span className="font-medium text-gray-900">{countries[code]?.name || 'País desconhecido'}</span>
               {selectedCountries.length > 2 && (
                 <button
                   onClick={() => removeCountryFromComparison(code)}
@@ -459,8 +462,8 @@ export function CountryComparison() {
                 className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4" />
-                <span className="text-xl">{countries[code].flag}</span>
-                <span>{countries[code].name}</span>
+                <span className="text-xl">{countries[code]?.flag || '🏳️'}</span>
+                <span>{countries[code]?.name || 'País desconhecido'}</span>
               </button>
             ))}
         </div>
@@ -515,8 +518,8 @@ export function CountryComparison() {
                 {selectedCountries.map((code) => (
                   <th key={code} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-2xl">{countries[code].flag}</span>
-                      <span>{countries[code].name}</span>
+                      <span className="text-2xl">{countries[code]?.flag || '🏳️'}</span>
+                      <span>{countries[code]?.name || 'País desconhecido'}</span>
                     </div>
                   </th>
                 ))}
@@ -551,8 +554,8 @@ export function CountryComparison() {
                 </td>
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-${getDifficultyColor(countries[code].immigration.difficultyLevel)}-100 text-${getDifficultyColor(countries[code].immigration.difficultyLevel)}-800`}>
-                      {getDifficultyText(countries[code].immigration.difficultyLevel)}
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-${getDifficultyColor(countries[code]?.immigration?.difficultyLevel || 'medium')}-100 text-${getDifficultyColor(countries[code]?.immigration?.difficultyLevel || 'medium')}-800`}>
+                      {getDifficultyText(countries[code]?.immigration?.difficultyLevel || 'medium')}
                     </span>
                   </td>
                 ))}
@@ -569,7 +572,7 @@ export function CountryComparison() {
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="text-lg font-semibold text-green-600">
-                      {countries[code].immigration.successRate}%
+                      {countries[code]?.immigration?.successRate || 0}%
                     </div>
                   </td>
                 ))}
@@ -585,7 +588,7 @@ export function CountryComparison() {
                 </td>
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
-                    {countries[code].immigration.processTime}
+                    {countries[code]?.immigration?.processTime || 'N/A'}
                   </td>
                 ))}
               </tr>
@@ -600,7 +603,7 @@ export function CountryComparison() {
                 </td>
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
-                    ${countries[code].economy.gdpPerCapita.toLocaleString()}
+                    ${countries[code]?.economy?.gdpPerCapita?.toLocaleString() || 'N/A'}
                   </td>
                 ))}
               </tr>
@@ -616,7 +619,7 @@ export function CountryComparison() {
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="text-sm font-semibold text-gray-900">
-                      {countries[code].economy.costOfLivingIndex}
+                      {countries[code]?.economy?.costOfLivingIndex || 0}
                     </div>
                     <div className="text-xs text-gray-500">índice</div>
                   </td>
@@ -634,7 +637,7 @@ export function CountryComparison() {
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="text-lg font-semibold text-red-600">
-                      {countries[code].quality.qualityOfLifeIndex}/100
+                      {countries[code]?.quality?.qualityOfLifeIndex || 0}/100
                     </div>
                   </td>
                 ))}
@@ -650,7 +653,7 @@ export function CountryComparison() {
                 </td>
                 {selectedCountries.map((code) => (
                   <td key={code} className="px-6 py-4 whitespace-nowrap text-center text-sm font-semibold text-blue-600">
-                    {countries[code].quality.safetyIndex}/100
+                    {countries[code]?.quality?.safetyIndex || 0}/100
                   </td>
                 ))}
               </tr>
@@ -664,6 +667,8 @@ export function CountryComparison() {
         {selectedCountries.map((code) => {
           const country = countries[code]
           const score = calculateCountryScore(code)
+          
+          if (!country) return null
           
           return (
             <div key={code} className="bg-white rounded-lg shadow-sm border p-6">
@@ -749,10 +754,10 @@ export function CountryComparison() {
                   </h4>
                   <div className="text-xs text-gray-600">
                     <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                      country.recent_updates[0].impact === 'positive' ? 'bg-green-500' :
-                      country.recent_updates[0].impact === 'negative' ? 'bg-red-500' : 'bg-gray-500'
+                      country.recent_updates?.[0]?.impact === 'positive' ? 'bg-green-500' :
+                      country.recent_updates?.[0]?.impact === 'negative' ? 'bg-red-500' : 'bg-gray-500'
                     }`}></span>
-                    {country.recent_updates[0].title}
+                    {country.recent_updates?.[0]?.title || 'Nenhuma atualização disponível'}
                   </div>
                 </div>
               )}
@@ -779,7 +784,7 @@ export function CountryComparison() {
               Recomendação IA Personalizada
             </h3>
             <p className="text-purple-700 mb-3">
-              Baseado no seu perfil e critérios, recomendamos <strong>{countries[selectedCountries[0]].name}</strong> como primeira opção.
+              Baseado no seu perfil e critérios, recomendamos <strong>{countries[selectedCountries[0]]?.name || 'um dos países selecionados'}</strong> como primeira opção.
             </p>
             <div className="bg-white rounded-lg p-4">
               <h4 className="font-medium text-gray-900 mb-2">Próximos Passos Sugeridos:</h4>
