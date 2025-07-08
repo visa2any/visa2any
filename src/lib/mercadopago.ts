@@ -101,15 +101,24 @@ export async function createPreference(data: PreferenceData) {
 
     const response = await preference.create({ body: preferenceData })
     
+    if (!response.id) {
+      throw new Error('Failed to create payment preference')
+    }
+
     return {
+      success: true,
       preference_id: response.id,
       init_point: response.init_point,
-      sandbox_init_point: response.sandbox_init_point
+      sandbox_init_point: response.sandbox_init_point,
+      checkout_url: response.init_point // For backward compatibility
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erro ao criar preferência MercadoPago:', error)
+    const err = error as {response?: {data?: unknown}}
     return {
-      error: error instanceof Error ? error.message : String(error)
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      error_details: err.response?.data || null
     }
   }
 }
@@ -176,15 +185,55 @@ export function mapPaymentStatus(mpStatus: string) {
 }
 
 // Gerar código PIX (simulado para desenvolvimento)
-export function generatePixCode(amount: number, description: string) {
-  // Em produção, usar a API real do MercadoPago para PIX
-  const pixCode = `00020101021243650016COM.MERCADOLIVRE02013063204398735204000053039865802BR5925Visa2Any Assessoria Inter6009SAO PAULO62070503***6304${Math.random().toString(36).substr(2, 4).toUpperCase()}`
-  
-  return {
-    qr_code: pixCode,
-    qr_code_base64: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`, // Placeholder,    expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
-    amount: amount,
-    description: description
+export async function generatePixCode(amount: number, description: string) {
+  try {
+    // In production, use real MercadoPago PIX API
+    if (process.env.NODE_ENV === 'production') {
+      const response = await payment.create({
+        body: {
+          transaction_amount: amount,
+          description: description,
+          payment_method_id: 'pix',
+          payer: {
+            email: 'client@example.com' // Should be replaced with actual client email
+          }
+        }
+      })
+      
+      if (!response.point_of_interaction?.transaction_data) {
+        throw new Error('Invalid PIX response from MercadoPago')
+      }
+      
+      const transactionData = response.point_of_interaction.transaction_data
+      return {
+        success: true,
+        qr_code: transactionData.qr_code,
+        qr_code_base64: transactionData.qr_code_base64 || '',
+        ticket_url: transactionData.ticket_url || '',
+        expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Default expiration if not provided
+        amount: amount,
+        description: description,
+        payment_id: response.id
+      }
+    }
+
+    // Development mock
+    const pixCode = `00020101021243650016COM.MERCADOLIVRE02013063204398735204000053039865802BR5925Visa2Any Assessoria Inter6009SAO PAULO62070503***6304${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+    
+    return {
+      success: true,
+      qr_code: pixCode,
+      qr_code_base64: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`,
+      expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+      amount: amount,
+      description: description
+    }
+  } catch (error) {
+    console.error('Erro ao gerar código PIX:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error)
+    }
   }
 }
 
