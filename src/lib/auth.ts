@@ -82,6 +82,10 @@ export function requireAuth() {
       }
     }
 
+    return {
+      user,
+      status: 200
+    }
   }
 }
 
@@ -104,6 +108,10 @@ export function requireAdmin() {
       }
     }
 
+    return {
+      user,
+      status: 200
+    }
   }
 }
 

@@ -40,7 +40,7 @@ interface InterviewSession {
     duration: number
     confidence: number
     aiScore?: number
-    feedback?: string
+    feedback?: string | undefined
   }>
   overallScore?: number
   aiAnalysis?: {
@@ -184,6 +184,7 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
     } else if (sessionActive && timeRemaining === 0) {
       handleTimeUp()
     }
+    return () => {}
   }, [sessionActive, timeRemaining])
 
   useEffect(() => {
@@ -191,8 +192,10 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
     const interview = mockInterviews.find(
       m => m.country === country && m.visaType === visaType
     ) || mockInterviews[0]
-    setSelectedMockInterview(interview)
-  }, [country, visaType])
+    if (interview) {
+      setSelectedMockInterview(interview)
+    }
+  }, [country, visaType, mockInterviews])
 
   const startMockInterview = () => {
     if (!selectedMockInterview) return
@@ -217,10 +220,11 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
     if (!currentSession || !selectedMockInterview) return
 
     const question = selectedMockInterview.questions[currentQuestion]
+    if (!question) return
+
     const answerDuration = question.timeLimit - timeRemaining
 
     // Simulate AI analysis
-
     const aiScore = Math.floor(Math.random() * 30) + 70 // 70-100
     const confidence = userAnswer.length > 50 ? Math.floor(Math.random() * 20) + 80 : Math.floor(Math.random() * 30) + 50
 
@@ -230,8 +234,8 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
       duration: answerDuration,
       confidence,
       aiScore,
-      feedback: generateAIFeedback(userAnswer, question)
-    }
+      feedback: question ? generateAIFeedback(userAnswer, question) : undefined
+    } as const
 
     const updatedSession = {
       ...currentSession,
@@ -242,9 +246,10 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
 
     // Move to next question or finish
 
-    if (currentQuestion < selectedMockInterview.questions.length - 1) {
+    if (selectedMockInterview?.questions && currentQuestion < selectedMockInterview.questions.length - 1) {
+      const nextQuestion = selectedMockInterview.questions[currentQuestion + 1]
       setCurrentQuestion(currentQuestion + 1)
-      setTimeRemaining(selectedMockInterview.questions[currentQuestion + 1].timeLimit)
+      setTimeRemaining(nextQuestion?.timeLimit || 60)
       setUserAnswer('')
     } else {
       finishInterview(updatedSession)
@@ -299,18 +304,93 @@ export function InterviewPrep({ country = 'USA', visaType = 'B1/B2', userLevel =
   }
 
   const handleTimeUp = () => {
+    // Store references to avoid potential state changes during execution
+    const session = currentSession;
+    const interview = selectedMockInterview;
+    
+    // Early return if required objects are missing
+    if (!interview || !session) {
+      setSessionActive(false);
+      notifyError('Erro', 'Sessão ou entrevista não encontrada');
+      return;
+    }
+
+    // If user has provided an answer, submit it
     if (userAnswer.trim()) {
-      handleAnswer()
-    } else {
-      notifyError('Tempo Esgotado', 'Tente responder mais rapidamente na próxima pergunta.')
-      // Skip to next question
-      if (currentQuestion < (selectedMockInterview?.questions.length || 0) - 1) {
-        setCurrentQuestion(currentQuestion + 1)
-        setTimeRemaining(selectedMockInterview?.questions[currentQuestion + 1]?.timeLimit || 60)
-        setUserAnswer('')
-      } else {
-        finishInterview(currentSession!)
+      handleAnswer();
+      return;
+    }
+
+    notifyError('Tempo Esgotado', 'Tente responder mais rapidamente na próxima pergunta.');
+    
+    // Skip to next question if available
+    if (currentQuestion < interview.questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setTimeRemaining(interview.questions[currentQuestion + 1]?.timeLimit || 60);
+      setUserAnswer('');
+      return;
+    }
+
+    // Finalize interview if we're on the last question
+    try {
+      // Comprehensive type guard with runtime checks
+      const isValidSession = (
+        session !== null &&
+        typeof session === 'object' &&
+        typeof session.id === 'string' &&
+        typeof session.mockInterviewId === 'string' &&
+        session.startTime instanceof Date &&
+        Array.isArray(session.answers)
+      );
+
+      if (!isValidSession) {
+        throw new Error('Invalid session object');
       }
+      
+      // Create validated session object with all required fields
+      const validatedSession: InterviewSession = {
+        id: session.id,
+        mockInterviewId: session.mockInterviewId,
+        startTime: session.startTime,
+        answers: [...session.answers],
+        endTime: new Date()
+      };
+
+      // Additional runtime validation
+      if (
+        !validatedSession.id || 
+        !validatedSession.mockInterviewId || 
+        !validatedSession.startTime ||
+        !(validatedSession.startTime instanceof Date)
+      ) {
+        throw new Error('Missing or invalid required session fields');
+      }
+
+      if (!Array.isArray(validatedSession.answers)) {
+        throw new Error('Invalid answers array');
+      }
+
+      // Ensure finishInterview exists and is callable
+      if (typeof finishInterview !== 'function') {
+        throw new Error('finishInterview is not available');
+      }
+
+      // Final validation - TypeScript now understands validatedSession is valid
+      if (isValidSession) {
+        finishInterview({
+          id: session.id,
+          mockInterviewId: session.mockInterviewId,
+          startTime: session.startTime,
+          answers: [...session.answers],
+          endTime: new Date()
+        });
+      } else {
+        throw new Error('Failed to validate session');
+      }
+    } catch (error) {
+      console.error('Error finalizing interview:', error);
+      setSessionActive(false);
+      notifyError('Erro', 'Falha ao finalizar entrevista');
     }
   }
 

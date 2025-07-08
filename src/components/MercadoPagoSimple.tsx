@@ -17,6 +17,11 @@ interface MercadoPagoSimpleProps {
   }
 }
 
+interface PaymentBrickCallbackParams {
+  selectedPaymentMethod: string
+  formData: Record<string, any>
+}
+
 declare global {
   interface Window {
     MercadoPago: any
@@ -148,7 +153,7 @@ export default function MercadoPagoSimple({
               applyBasicStyles()
             }, 1000)
           },
-          onSubmit: async ({ selectedPaymentMethod, formData }) => {
+          onSubmit: async ({ selectedPaymentMethod, formData }: PaymentBrickCallbackParams) => {
             console.log('💳 Processando pagamento:', selectedPaymentMethod)
             
             try {

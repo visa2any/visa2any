@@ -22,6 +22,16 @@ interface MercadoPagoVisualUpgradeProps {
   }
 }
 
+interface PaymentMethodData {
+  id: string
+  type: string
+  name: string
+}
+
+interface FormData {
+  [key: string]: any
+}
+
 declare global {
   interface Window {
     MercadoPago: any
@@ -68,7 +78,8 @@ export default function MercadoPagoVisualUpgrade({
     loadMercadoPagoSDK()
     
     return () => {
-      // Não resetar flags globais    }
+      // Não resetar flags globais
+    }
   }, [preferenceId])
 
   const loadMercadoPagoSDK = () => {
@@ -199,7 +210,7 @@ export default function MercadoPagoVisualUpgrade({
             setTimeout(() => applyPremiumStyles(), 1500)
             setTimeout(() => applyPremiumStyles(), 3000)
           },
-          onSubmit: async ({ selectedPaymentMethod, formData }) => {
+          onSubmit: async ({ selectedPaymentMethod, formData }: { selectedPaymentMethod: PaymentMethodData, formData: FormData }) => {
             try {
               const response = await fetch('/api/payments/process-payment', {
                 method: 'POST',
@@ -216,7 +227,7 @@ export default function MercadoPagoVisualUpgrade({
               const result = await response.json()
 
               if (result.success) {
-                if (selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') {
+                if (selectedPaymentMethod.type === 'pix' || selectedPaymentMethod.type === 'bank_transfer') {
                   setPaymentResult(result)
                   setShowPixCode(true)
                   

@@ -1,4 +1,18 @@
-import { webScrapingService } from './web-scraping'
+interface WebScrapingStatus {
+  isAvailable: boolean
+  message: string
+}
+
+interface WebScrapingService {
+  checkStatus?: () => Promise<WebScrapingStatus>
+}
+
+const webScrapingService: WebScrapingService = {}
+
+const DEFAULT_SCRAPING_STATUS: WebScrapingStatus = {
+  isAvailable: false,
+  message: 'service_unavailable'
+}
 
 export interface MonitoringChannel {
   id: string
@@ -259,7 +273,18 @@ class MonitoringDataService {
       // Verificar Web Scraping
       if (process.env.ENABLE_REAL_MONITORING === 'true') {
         try {
-          const scrapingStatus = await webScrapingService.checkStatus()
+          let scrapingStatus: WebScrapingStatus = DEFAULT_SCRAPING_STATUS
+          try {
+            if (webScrapingService && typeof webScrapingService.checkStatus === 'function') {
+              const status = await webScrapingService.checkStatus()
+              if (status) {
+                scrapingStatus = status
+              }
+            }
+          } catch (error) {
+            console.error('Error checking scraping status:', error)
+          }
+          
           const scrapingChannel = channels.find(c => c.id === 'web-scraping')
           if (scrapingChannel) {
             scrapingChannel.status = scrapingStatus.isAvailable ? 'active' : 'error'
@@ -390,9 +415,9 @@ class MonitoringDataService {
       channel: 'vaga-express-bot',
       country: 'Brasil',
       type: 'vaga',
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split('T')[0] ?? '',
       location: 'São Paulo',
-      time: new Date().toISOString().split('T')[1].slice(0,5),
+      time: new Date().toISOString().split('T')[1]?.slice(0,5) ?? '',
       notified: false,
       createdAt: new Date().toISOString()
     };

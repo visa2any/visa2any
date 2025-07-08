@@ -13,7 +13,8 @@ interface AutomationTrigger {
   name: string
   condition: (events: BehaviorEvent[], userData: any) => boolean
   action: (userData: any) => void
-  cooldown: number // minutes,  priority: number
+  cooldown: number // minutes
+  priority: number
   lastTriggered?: number
 }
 
@@ -114,7 +115,8 @@ export const useBehaviorTracking = (userId?: string) => {
       timestamp: Date.now()
     }
     
-    setEvents(prev => [...prev.slice(-50), event]) // Keep last 50 events,    
+    setEvents(prev => [...prev.slice(-50), event]) // Keep last 50 events
+    
     // Send to backend for persistent tracking
     if (userId) {
       fetch('/api/automation/behavioral-triggers', {
@@ -146,7 +148,8 @@ export const useBehaviorTracking = (userId?: string) => {
         return trigger.condition(events, { userId })
       })
       .sort((a, b) => a.priority - b.priority)
-      .slice(0, 1) // Execute only highest priority,      .forEach(trigger => {
+      .slice(0, 1) // Execute only highest priority
+      .forEach(trigger => {
         trigger.lastTriggered = now
         setActiveTriggers(prev => [...prev, trigger.id])
         trigger.action({ userId })
@@ -213,7 +216,8 @@ export const useBehaviorTracking = (userId?: string) => {
   // Check triggers periodically
 
   useEffect(() => {
-    const triggerChecker = setInterval(checkTriggers, 5000) // Every 5 seconds,    return () => clearInterval(triggerChecker)
+    const triggerChecker = setInterval(checkTriggers, 5000) // Every 5 seconds
+    return () => clearInterval(triggerChecker)
   }, [events])
 
   return {

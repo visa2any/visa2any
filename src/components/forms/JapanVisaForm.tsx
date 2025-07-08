@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Check, ChevronRight, Flag, Torii, MapPin, Briefcase } from 'lucide-react'
+import { Check, ChevronRight, Flag, MapPin, Briefcase } from 'lucide-react'
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
 
 interface JapanFormData {
@@ -30,6 +30,7 @@ interface JapanFormData {
     portOfEntry: string
     hasVisitedBefore: boolean
     hasBeenDenied: boolean
+    previousVisitReason?: string
   }
   backgroundInfo: {
     currentOccupation: string
@@ -281,7 +282,7 @@ export function JapanVisaForm({ onSubmit, initialData }: JapanVisaFormProps) {
           {selectedVisaType && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
-                <Torii className="h-5 w-5 text-red-600" />
+                <Flag className="h-5 w-5 text-red-600" />
                 <h4 className="font-medium text-red-900">Informações sobre {selectedVisaType.label}</h4>
               </div>
               <p className="text-sm text-red-700">
@@ -741,7 +742,7 @@ export function JapanVisaForm({ onSubmit, initialData }: JapanVisaFormProps) {
 
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <Torii className="h-5 w-5 text-red-600" />
+                <Flag className="h-5 w-5 text-red-600" />
               <h4 className="font-medium text-red-900">Informações Importantes</h4>
             </div>
             <ul className="text-sm text-red-700 space-y-1">

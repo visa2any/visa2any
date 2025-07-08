@@ -1,5 +1,5 @@
 // 🚀 Sistema de Inicialização Automática - Visa2Any
-import { whatsappService } from './whatsapp'
+import { getWhatsAppService } from './whatsapp'
 import { backupSystem } from './backup-system'
 
 let servicesInitialized = false

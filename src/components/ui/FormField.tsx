@@ -6,7 +6,7 @@ import { Tooltip, HelpTooltip } from './Tooltip'
 
 interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
-  error?: string
+  error?: string | undefined
   helpText?: string
   tooltip?: string | React.ReactNode
   success?: boolean

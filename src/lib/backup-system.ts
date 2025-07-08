@@ -32,32 +32,29 @@ export class BackupSystem {
       const backupPath = path.join(this.backupDir, backupFileName)
 
       // Verificar se o banco existe
-
       if (!fs.existsSync(this.dbPath)) {
-        throw new Error('Database file not found')
+        return { success: false, error: 'Database file not found' }
       }
 
       // Copiar arquivo do banco
-
       fs.copyFileSync(this.dbPath, backupPath)
 
       // Verificar integridade do backup
-
       const isValid = await this.verifyBackupIntegrity(backupPath)
       if (!isValid) {
         fs.unlinkSync(backupPath)
-        throw new Error('Backup integrity check failed')
+        return { success: false, error: 'Backup integrity check failed' }
       }
 
       console.log(`✅ Backup criado: ${backupFileName}`)
       
       // Limpar backups antigos
-      
       await this.cleanOldBackups()
 
-
+      return { success: true, filePath: backupPath }
     } catch (error) {
       console.error('❌ Erro ao criar backup:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
     }
   }
 
@@ -83,7 +80,6 @@ export class BackupSystem {
       const exportPath = path.join(this.backupDir, exportFileName)
 
       // Exportar dados críticos
-
       const exportData = {
         timestamp: new Date().toISOString(),
         version: '1.0',
@@ -126,13 +122,16 @@ export class BackupSystem {
       }
 
       // Salvar arquivo JSON
-
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2))
 
       console.log(`✅ Export de dados criado: ${exportFileName}`)
-
+      return { success: true, filePath: exportPath }
     } catch (error) {
       console.error('❌ Erro ao criar export de dados:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }
     }
   }
 
@@ -172,36 +171,35 @@ export class BackupSystem {
     try {
       // Verificar se o backup existe
       if (!fs.existsSync(backupPath)) {
-        throw new Error('Backup file not found')
+        return { success: false, error: 'Backup file not found' }
       }
 
       // Verificar integridade antes de restaurar
-
       const isValid = await this.verifyBackupIntegrity(backupPath)
       if (!isValid) {
-        throw new Error('Backup file is corrupted')
+        return { success: false, error: 'Backup file is corrupted' }
       }
 
       // Fazer backup do banco atual antes de restaurar
-
       const currentBackup = await this.createDatabaseBackup()
       if (!currentBackup.success) {
-        throw new Error('Failed to backup current database')
+        return { success: false, error: 'Failed to backup current database' }
       }
 
       // Fechar conexões do Prisma
-
       await prisma.$disconnect()
 
       // Restaurar banco
-
       fs.copyFileSync(backupPath, this.dbPath)
 
       console.log('✅ Backup restaurado com sucesso')
       return { success: true }
-
     } catch (error) {
       console.error('❌ Erro ao restaurar backup:', error)
+      return { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
     }
   }
 
@@ -224,11 +222,10 @@ export class BackupSystem {
             name: file,
             size: stats.size,
             date: stats.mtime,
-            type: file.endsWith('.db') ? 'database' : 'export'
+            type: file.endsWith('.db') ? 'database' as const : 'export' as const
           }
         })
         .sort((a, b) => b.date.getTime() - a.date.getTime())
-
     } catch (error) {
       console.error('Erro ao listar backups:', error)
       return []
@@ -257,10 +254,24 @@ export class BackupSystem {
       })
 
       if (hasError && files.length === 0) {
+        return { success: false, error: 'All backup operations failed' }
       }
 
-
+      if (files.length > 0) {
+        return hasError 
+          ? { success: false, files, error: 'Partial backup completed with errors' }
+          : { success: true, files }
+      } else {
+        return hasError
+          ? { success: false, error: 'Partial backup completed with errors' }
+          : { success: true }
+      }
     } catch (error) {
+      console.error('❌ Erro no backup completo:', error)
+      return { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
     }
   }
 }
@@ -294,7 +305,7 @@ export class BackupScheduler {
     
     // Se já passou das 02:00 hoje
     
-    agendar para amanhã
+    // Schedule for tomorrow
     if (target <= now) {
       target.setDate(target.getDate() + 1)
     }

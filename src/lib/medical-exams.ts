@@ -1,4 +1,4 @@
-sim// Sistema de Banco de Dados de Exames Médicos
+// Sistema de Banco de Dados de Exames Médicos
 // Clínicas aprovadas e agendamento de exames por país
 
 interface MedicalClinic {

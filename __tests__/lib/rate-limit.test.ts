@@ -165,9 +165,9 @@ describe('Rate Limiting System', () => {
 
       const response = createRateLimitResponse(rateLimitResult)
 
-      expect(typeof response.headers['X-RateLimit-Limit'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('X-RateLimit-Limit') : undefined).toBe('100')
-      expect(typeof response.headers['X-RateLimit-Remaining'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('X-RateLimit-Remaining') : undefined).toBe('99')
-      expect(typeof response.headers['X-RateLimit-Reset'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('X-RateLimit-Reset') : undefined).toBeDefined()
+      expect(response.headers instanceof Headers ? response.headers.get('X-RateLimit-Limit') : response.headers['X-RateLimit-Limit']).toBe('100')
+      expect(response.headers instanceof Headers ? response.headers.get('X-RateLimit-Remaining') : response.headers['X-RateLimit-Remaining']).toBe('99')
+      expect(response.headers instanceof Headers ? response.headers.get('X-RateLimit-Reset') : response.headers['X-RateLimit-Reset']).toBeDefined()
     })
 
     it('deve criar resposta de erro 429 quando limite excedido', () => {
@@ -182,9 +182,9 @@ describe('Rate Limiting System', () => {
       const response = createRateLimitResponse(rateLimitResult) as Response
 
       expect(response.status).toBe(429)
-      expect(typeof response.headers['X-RateLimit-Limit'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('X-RateLimit-Limit') : undefined).toBe('5')
-      expect(typeof response.headers['X-RateLimit-Remaining'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('X-RateLimit-Remaining') : undefined).toBe('0')
-      expect(typeof response.headers['Retry-After'] === 'string' || typeof response.headers.get === 'function' ? response.headers.get('Retry-After') : undefined).toBeDefined()
+      expect(response.headers instanceof Headers ? response.headers.get('X-RateLimit-Limit') : response.headers['X-RateLimit-Limit']).toBe('5')
+      expect(response.headers instanceof Headers ? response.headers.get('X-RateLimit-Remaining') : response.headers['X-RateLimit-Remaining']).toBe('0')
+      expect(response.headers instanceof Headers ? response.headers.get('Retry-After') : response.headers['Retry-After']).toBeDefined()
     })
 
     it('deve incluir informações de rate limit no corpo da resposta de erro', async () => {

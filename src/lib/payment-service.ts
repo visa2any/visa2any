@@ -2,6 +2,7 @@
 // Cobrança automática para agendamentos
 
 import { MercadoPagoConfig, Payment } from 'mercadopago'
+import type { PaymentCreateData } from 'mercadopago/dist/clients/payment/create/types'
 
 interface PaymentRequest {
   trackingId: string
@@ -20,12 +21,12 @@ interface PaymentRequest {
 interface PaymentResponse {
   success: boolean
   paymentId?: string
-  pixCode?: string | undefined
-  pixQrCode?: string | undefined
-  paymentUrl?: string | undefined
+  pixCode?: string
+  pixQrCode?: string
+  paymentUrl?: string
   status: 'pending' | 'approved' | 'rejected' | 'cancelled'
-  error?: string | undefined
-  expiresAt?: string | undefined
+  error?: string
+  expiresAt?: string
 }
 
 class PaymentService {
@@ -72,24 +73,35 @@ class PaymentService {
       
       if (result.status === 'pending') {
         // Salvar no banco de dados
-        await this.savePaymentRecord({
-          trackingId: request.trackingId,
-          paymentId: result.id!.toString(),
-          amount: request.amount,
-          status: 'pending',
-          pixCode: result.point_of_interaction?.transaction_data?.qr_code,
-          pixQrCode: result.point_of_interaction?.transaction_data?.qr_code_base64,
-          expiresAt: this.calculateExpirationDate()
-        })
+          const record = {
+            trackingId: request.trackingId,
+            paymentId: result.id!.toString(),
+            amount: request.amount,
+            status: 'pending' as const,
+            ...(result.point_of_interaction?.transaction_data?.qr_code && { 
+              pixCode: result.point_of_interaction.transaction_data.qr_code 
+            }),
+            ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
+              pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
+            }),
+            expiresAt: this.calculateExpirationDate()
+          }
+          await this.savePaymentRecord(record)
 
-        return {
-          success: true,
-          paymentId: result.id!.toString(),
-          pixCode: result.point_of_interaction?.transaction_data?.qr_code,
-          pixQrCode: result.point_of_interaction?.transaction_data?.qr_code_base64,
-          status: 'pending',
-          expiresAt: this.calculateExpirationDate()
-        }
+          const expiresAt = this.calculateExpirationDate()
+          const response: PaymentResponse = {
+            success: true,
+            paymentId: result.id!.toString(),
+            status: 'pending',
+            ...(result.point_of_interaction?.transaction_data?.qr_code && {
+              pixCode: result.point_of_interaction.transaction_data.qr_code
+            }),
+            ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
+              pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
+            }),
+            expiresAt: expiresAt.toISOString()
+          }
+          return response
       } else {
         return {
           success: false,
@@ -144,12 +156,13 @@ class PaymentService {
         expiresAt: this.calculateExpirationDate()
       })
 
-      return {
+      const response: PaymentResponse = {
         success: result.status === 'approved',
         paymentId: result.id!.toString(),
         status: result.status as any || 'pending',
-        error: result.status === 'rejected' ? 'Pagamento rejeitado' : undefined
+        ...(result.status === 'rejected' && { error: 'Pagamento rejeitado' })
       }
+      return response
 
     } catch (error) {
       console.error('Erro ao processar cartão:', error)
@@ -236,36 +249,49 @@ class PaymentService {
     if (pixPayment.success) {
       const paymentUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/payment/${trackingId}`
       
-      return {
+      const response = {
         success: true,
         paymentUrl,
-        pixCode: pixPayment.pixCode,
         amount: pricing.amount,
-        expiresAt: pixPayment.expiresAt
+        ...(pixPayment.pixCode && { pixCode: pixPayment.pixCode }),
+        expiresAt: pixPayment.expiresAt ?? ''
       }
+      return response
     }
 
     return {
       success: false,
-      amount: pricing.amount
+      amount: pricing.amount,
+      expiresAt: ''
     }
   }
 
   // Métodos auxiliares para banco de dados
-  private async savePaymentRecord(data: any) {
+  private async savePaymentRecord(data: {
+    trackingId: string
+    paymentId: string
+    amount: number
+    status: 'pending' | 'approved' | 'rejected' | 'cancelled'
+    pixCode?: string
+    pixQrCode?: string
+    expiresAt?: Date
+  }) {
     // Simulação de salvar no banco de dados
     console.log('Salvando registro de pagamento:', data)
   }
 
-  private async updatePaymentStatus(paymentId: string, status: string) {
+  private async updatePaymentStatus(
+    paymentId: string, 
+    status: 'pending' | 'approved' | 'rejected' | 'cancelled'
+  ) {
     // Simulação de atualizar no banco de dados
     console.log(`Atualizando status do pagamento ${paymentId} para ${status}`)
   }
 
-  private calculateExpirationDate(): string {
+  private calculateExpirationDate(): Date {
     const date = new Date()
     date.setHours(date.getHours() + 1) // Expira em 1 hora
-    return date.toISOString()
+    return date
   }
 
   async testIntegration(): Promise<{ success: boolean; mercadoPagoStatus: string; environment: string; }> {

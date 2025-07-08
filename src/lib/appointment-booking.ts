@@ -394,7 +394,7 @@ class AppointmentBookingService {
         
         slots.push({
           id: `slot-${i}-${index}`,
-          date: dateStr,
+          date: dateStr || '',
           time,
           available,
           location: this.getLocationByConsulate(consulate),

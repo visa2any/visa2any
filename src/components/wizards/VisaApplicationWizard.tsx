@@ -154,13 +154,13 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
 
     // Customize steps based on country and visa type
 
-    if (country === 'USA') {
-      baseSteps[4].component = USAVisaForm
-    } else if (country === 'CAN') {
-      baseSteps[4].component = CanadaVisaForm
-    } else if (country === 'PRT') {
-      baseSteps[4].component = PortugalVisaForm
-    }
+      if (country === 'USA' && baseSteps[4]) {
+        baseSteps[4].component = USAVisaForm
+      } else if (country === 'CAN' && baseSteps[4]) {
+        baseSteps[4].component = CanadaVisaForm
+      } else if (country === 'PRT' && baseSteps[4]) {
+        baseSteps[4].component = PortugalVisaForm
+      }
 
     return baseSteps
   }
@@ -187,7 +187,11 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
   }
 
   const completeStep = (stepId: string) => {
-    setCompletedSteps(prev => new Set([...prev, stepId]))
+    setCompletedSteps(prev => {
+      const newSet = new Set(prev)
+      newSet.add(stepId)
+      return newSet
+    })
     setWizardSteps(prev => 
       prev.map(step => 
         step.id === stepId ? { ...step, completed: true } : step
@@ -424,7 +428,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
           </p>
           <button
             onClick={() => {
-              completeStep(currentStepData.id)
+              currentStepData && completeStep(currentStepData.id)
               nextStep()
             }}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
@@ -448,6 +452,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
 
   const renderGenericStep = () => {
     const currentStepData = wizardSteps[currentStep]
+    if (!currentStepData) return null
 
     return (
       <div className="space-y-6">
@@ -464,7 +469,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
         <div className="bg-gray-50 rounded-lg p-6">
           <h3 className="font-semibold text-gray-900 mb-3">Requisitos desta etapa:</h3>
           <ul className="space-y-2">
-            {currentStepData.requirements.map((req, index) => (
+            {currentStepData.requirements?.map((req, index) => (
               <li key={index} className="flex items-start space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
                 <span className="text-sm text-gray-700">{req}</span>
@@ -476,7 +481,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
         <div className="text-center">
           <button
             onClick={() => {
-              completeStep(currentStepData.id)
+              currentStepData && completeStep(currentStepData.id)
               nextStep()
             }}
             className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
@@ -496,6 +501,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
     }
 
     const currentStepData = wizardSteps[currentStep]
+    if (!currentStepData) return null
 
     switch (currentStepData.id) {
       case 'eligibility_check':
@@ -589,7 +595,7 @@ export function VisaApplicationWizard({ country, visaType, onComplete }: VisaApp
           {currentStep === wizardSteps.length - 1 ? (
             <button
               onClick={() => {
-                completeStep(wizardSteps[currentStep].id)
+                wizardSteps[currentStep] && completeStep(wizardSteps[currentStep].id)
                 onComplete?.(applicationData)
                 notifySuccess('Sucesso!', 'Aplicação de visto concluída com sucesso!')
               }}

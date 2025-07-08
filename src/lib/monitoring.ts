@@ -19,7 +19,8 @@ class SimpleMonitoring {
   log(data: Omit<MonitoringData, 'timestamp'>) {
     const logEntry: MonitoringData = {
       ...data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      metadata: data.metadata || {}
     }
 
     this.logs.push(logEntry)
@@ -38,15 +39,27 @@ class SimpleMonitoring {
   }
 
   info(message: string, metadata?: Record<string, any>) {
-    this.log({ level: 'info', message, metadata })
+    this.log({ 
+      level: 'info', 
+      message,
+      metadata: metadata || {}
+    })
   }
 
   warn(message: string, metadata?: Record<string, any>) {
-    this.log({ level: 'warn', message, metadata })
+    this.log({ 
+      level: 'warn', 
+      message,
+      metadata: metadata || {}
+    })
   }
 
   error(message: string, metadata?: Record<string, any>) {
-    this.log({ level: 'error', message, metadata })
+    this.log({ 
+      level: 'error', 
+      message,
+      metadata: metadata || {}
+    })
   }
 
   // Monitorar performance de endpoints
@@ -60,7 +73,7 @@ class SimpleMonitoring {
       message: `${request.method} ${endpoint} - ${statusCode}`,
       endpoint,
       ip,
-      userAgent: request.headers.get('user-agent') || undefined,
+      userAgent: request.headers.get('user-agent') || '',
       duration,
       statusCode,
       metadata: {
@@ -165,23 +178,28 @@ class SimpleMonitoring {
   }
 
   private getClientIP(request: NextRequest): string {
-    const forwardedFor = request.headers.get('x-forwarded-for')
-    const realIP = request.headers.get('x-real-ip')
-    const ip = request.headers.get('x-vercel-forwarded-for')
-    
-    if (forwardedFor) {
-      return forwardedFor.split(',')[0].trim()
+    try {
+      const forwardedFor = request.headers.get('x-forwarded-for')
+      const realIP = request.headers.get('x-real-ip')
+      const ip = request.headers.get('x-vercel-forwarded-for')
+      
+      if (forwardedFor && typeof forwardedFor === 'string') {
+        const ips = forwardedFor.split(',')
+        return ips[0]?.trim() || 'unknown'
+      }
+      
+      if (realIP && typeof realIP === 'string') {
+        return realIP.trim()
+      }
+      
+      if (ip && typeof ip === 'string') {
+        return ip.trim()
+      }
+      
+      return 'unknown'
+    } catch (error) {
+      return 'unknown'
     }
-    
-    if (realIP) {
-      return realIP.trim()
-    }
-    
-    if (ip) {
-      return ip.trim()
-    }
-    
-    return 'unknown'
   }
 }
 

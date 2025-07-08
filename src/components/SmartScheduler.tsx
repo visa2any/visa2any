@@ -103,7 +103,7 @@ export default function SmartScheduler() {
         slots.push({
           time,
           available: isAvailable,
-          specialist: isAvailable ? specialists[Math.floor(Math.random() * specialists.length)].name : undefined,
+          specialist: isAvailable ? specialists[Math.floor(Math.random() * specialists.length)]?.name ?? '' : '',
           type: isPremium ? 'premium' : 'standard'
         })
       }
@@ -447,7 +447,7 @@ Deseja acessar seu portal agora?`)) {
             {availableDays.map((day) => (
               <button
                 key={day.fullDate}
-                onClick={() => handleDateSelect(day.fullDate)}
+                onClick={() => day.fullDate && handleDateSelect(day.fullDate)}
                 className={`p-4 rounded-xl border-2 transition-all ${
                   selectedDate === day.fullDate
                     ? 'border-blue-600 bg-blue-50'

@@ -85,7 +85,7 @@ interface PortugalFormData {
     investments: number
     proofOfFunds: number
     healthInsurance: boolean
-    insuranceProvider?: string
+    insuranceProvider: string
   }
   
   healthInfo: {
@@ -176,7 +176,8 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
       properties: 0,
       investments: 0,
       proofOfFunds: 0,
-      healthInsurance: false
+      healthInsurance: false,
+      insuranceProvider: ''
     },
     healthInfo: {
       hasHealthIssues: false,
@@ -214,16 +215,64 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
     'Açores', 'Madeira'
   ]
 
-  const steps = [
-    { id: 1, title: 'Informações Pessoais', icon: User },
-    { id: 2, title: 'Contato & Endereço', icon: MapPin },
-    { id: 3, title: 'Tipo de Visto', icon: Flag },
-    { id: 4, title: 'Educação & Idiomas', icon: GraduationCap },
-    { id: 5, title: 'Informações Profissionais', icon: Briefcase },
-    { id: 6, title: 'Situação Financeira', icon: Euro },
-    { id: 7, title: 'Saúde & Seguro', icon: Heart },
-    { id: 8, title: 'Informações Adicionais', icon: Info }
+  type StepIcon = React.ForwardRefExoticComponent<
+    React.SVGProps<SVGSVGElement> & 
+    { className?: string | undefined } & 
+    React.RefAttributes<SVGSVGElement>
+  >
+
+  interface Step {
+    id: number
+    title: string
+    icon: StepIcon
+  }
+
+  const steps: Step[] = [
+    { 
+      id: 1, 
+      title: 'Informações Pessoais', 
+      icon: User 
+    },
+    { 
+      id: 2, 
+      title: 'Contato & Endereço', 
+      icon: MapPin 
+    },
+    { 
+      id: 3, 
+      title: 'Tipo de Visto', 
+      icon: Flag 
+    },
+    { 
+      id: 4, 
+      title: 'Educação & Idiomas', 
+      icon: GraduationCap 
+    },
+    { 
+      id: 5, 
+      title: 'Informações Profissionais', 
+      icon: Briefcase 
+    },
+    { 
+      id: 6, 
+      title: 'Situação Financeira', 
+      icon: Euro 
+    },
+    { 
+      id: 7, 
+      title: 'Saúde & Seguro', 
+      icon: Heart 
+    },
+    { 
+      id: 8, 
+      title: 'Informações Adicionais', 
+      icon: Info 
+    }
   ]
+
+  const safeSteps: Step[] = steps || []
+  const currentStepData = safeSteps[currentStep - 1] || { id: 0, title: '', icon: Info }
+  const hasSteps = safeSteps.length > 0
 
   const updateFormData = (section: keyof PortugalFormData, field: string, value: any) => {
     setFormData(prev => ({
@@ -248,7 +297,8 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
   }
 
   const calculateMinimumIncome = () => {
-    const baseAmount = 760 // Valor mínimo para D7 em 2024,    const spouseAmount = formData.personalInfo.maritalStatus === 'married' ? 380 : 0
+    const baseAmount = 760 // Valor mínimo para D7 em 2024
+    const spouseAmount = formData.personalInfo.maritalStatus === 'married' ? 380 : 0
     const childrenAmount = formData.personalInfo.children * 228
     return baseAmount + spouseAmount + childrenAmount
   }
@@ -271,21 +321,22 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
 
       // Validate minimum income for D7
 
-      if (formData.visaInfo.visaType === 'D7') {
+      if (formData?.visaInfo?.visaType === 'D7') {
         const minIncome = calculateMinimumIncome()
-        if (formData.financialInfo.monthlyIncome < minIncome) {
+        if ((formData?.financialInfo?.monthlyIncome ?? 0) < minIncome) {
           notifyError('Atenção', `Para o visto D7, a renda mínima deve ser €${minIncome}/mês`)
           return
         }
       }
 
-      if (onSubmit) {
+      if (onSubmit && formData && formData.visaInfo && formData.financialInfo) {
         await onSubmit(formData)
       }
 
       notifySuccess('Sucesso', 'Formulário enviado com sucesso! Nossa equipe entrará em contato em breve.')
-    } catch (error) {
-      notifyError('Erro', 'Falha ao enviar formulário. Tente novamente.')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Falha ao enviar formulário. Tente novamente.'
+      notifyError('Erro', message)
     }
   }
 
@@ -643,7 +694,7 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Ex: 1500"
                 />
-                {formData.visaInfo.visaType === 'D7' && formData.financialInfo.monthlyIncome > 0 && (
+                {formData.visaInfo.visaType === 'D7' && (
                   <p className={`text-xs mt-1 ${
                     formData.financialInfo.monthlyIncome >= calculateMinimumIncome() 
                       ? 'text-green-600' : 'text-red-600'
@@ -739,8 +790,8 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
                   </label>
                   <input
                     type="text"
-                    value={formData.financialInfo.insuranceProvider || ''}
-                    onChange={(e) => updateFormData('financialInfo', 'insuranceProvider', e.target.value)}
+                  value={formData.financialInfo.insuranceProvider}
+                  onChange={(e) => updateFormData('financialInfo', 'insuranceProvider', e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
@@ -754,13 +805,13 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
                 <div>
                   <span className="text-gray-600">Renda Total Mensal:</span>
                   <span className="font-medium text-gray-900 ml-2">
-                    €{(formData.financialInfo.monthlyIncome + formData.financialInfo.otherIncome).toLocaleString()}
+                    €{(formData.financialInfo?.monthlyIncome + formData.financialInfo?.otherIncome || 0).toLocaleString()}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-600">Patrimônio Total:</span>
                   <span className="font-medium text-gray-900 ml-2">
-                    €{(formData.financialInfo.bankBalance + formData.financialInfo.properties + formData.financialInfo.investments).toLocaleString()}
+                    €{(formData.financialInfo?.bankBalance + formData.financialInfo?.properties + formData.financialInfo?.investments || 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -833,26 +884,28 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
       {/* Progress Steps */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex flex-col items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                currentStep >= step.id 
-                  ? 'bg-green-600 border-green-600 text-white'
-                  : 'border-gray-300 text-gray-400'
-              }`}>
-                {currentStep > step.id ? (
-                  <Check className="h-5 w-5" />
-                ) : (
-                  <step.icon className="h-5 w-5" />
-                )}
+          {hasSteps ? (
+            safeSteps.map((step) => (
+              <div key={step.id} className="flex flex-col items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                  currentStep >= step.id 
+                    ? 'bg-green-600 border-green-600 text-white'
+                    : 'border-gray-300 text-gray-400'
+                }`}>
+                  {currentStep > step.id ? (
+                    <Check className="h-5 w-5" />
+                  ) : (
+                    step.icon && <step.icon className="h-5 w-5" />
+                  )}
+                </div>
+                <span className={`text-xs mt-2 text-center max-w-20 ${
+                  currentStep >= step.id ? 'text-green-600 font-medium' : 'text-gray-400'
+                }`}>
+                  {step.title}
+                </span>
               </div>
-              <span className={`text-xs mt-2 text-center max-w-20 ${
-                currentStep >= step.id ? 'text-green-600 font-medium' : 'text-gray-400'
-              }`}>
-                {step.title}
-              </span>
-            </div>
-          ))}
+            ))
+          ) : null}
         </div>
       </div>
 
@@ -860,8 +913,12 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
-            {React.createElement(steps[currentStep - 1].icon, { className: "h-5 w-5 text-green-600" })}
-            <span>{steps[currentStep - 1].title}</span>
+            {currentStepData.icon ? (
+              React.createElement(currentStepData.icon, { className: "h-5 w-5 text-green-600" })
+            ) : (
+              <Info className="h-5 w-5 text-gray-400" />
+            )}
+            <span>{currentStepData.title}</span>
           </h2>
         </div>
 
@@ -878,7 +935,7 @@ export function PortugalVisaForm({ onSubmit, initialData }: PortugalVisaFormProp
           <span>Anterior</span>
         </button>
 
-        {currentStep === steps.length ? (
+        {hasSteps && currentStep === safeSteps.length ? (
           <button
             onClick={handleSubmit}
             className="flex items-center space-x-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"

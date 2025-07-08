@@ -305,7 +305,7 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
   const [leadData, setLeadData] = useState<LeadData | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const currentStepData = QUALIFICATION_STEPS[currentStep]
+  const currentStepData = QUALIFICATION_STEPS[currentStep]!
   const progress = ((currentStep + 1) / QUALIFICATION_STEPS.length) * 100
 
   const handleAnswer = (questionId: string, answer: any) => {
@@ -417,7 +417,8 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
             break
 
           default:
-            questionScore = 7 // Score padrão        }
+            questionScore = 7 // Score padrão
+        }
 
         totalScore += questionScore * question.weight
       })
@@ -453,7 +454,7 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
   }
 
   const canProceed = () => {
-    const requiredQuestions = currentStepData.questions.filter(q => q.required)
+    const requiredQuestions = currentStepData?.questions?.filter(q => q.required) || []
     return requiredQuestions.every(q => responses[q.id])
   }
 

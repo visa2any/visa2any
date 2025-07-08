@@ -23,6 +23,16 @@ interface MercadoPagoSingleProps {
   }
 }
 
+interface PaymentBrickCallbackParams {
+  selectedPaymentMethod: string
+  formData: Record<string, any>
+}
+
+interface PaymentBrickError {
+  message: string
+  [key: string]: any
+}
+
 declare global {
   interface Window {
     MercadoPago: any
@@ -151,7 +161,7 @@ export default function MercadoPagoSingle({
             setLoading(false)
             isInitializing = false
           },
-          onSubmit: async ({ selectedPaymentMethod, formData }) => {
+          onSubmit: async ({ selectedPaymentMethod, formData }: PaymentBrickCallbackParams) => {
             console.log('💳 Pagamento enviado:', { selectedPaymentMethod, formData })
             
             try {
@@ -189,7 +199,7 @@ export default function MercadoPagoSingle({
               setError('Erro de comunicação')
             }
           },
-          onError: (error) => {
+          onError: (error: PaymentBrickError) => {
             console.error('❌ Erro do Payment Brick:', error)
             setError(`Erro: ${error.message || 'Erro na inicialização'}`)
             isInitializing = false

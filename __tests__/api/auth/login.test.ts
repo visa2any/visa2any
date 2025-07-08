@@ -33,7 +33,7 @@ describe('/api/auth/login', () => {
     }
 
     ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
-    mockBcrypt.compare.mockResolvedValue(true)
+    mockBcrypt.compare.mockResolvedValue(true as never)
     ;(prisma.automationLog.create as jest.Mock).mockResolvedValue({})
 
     const request = new NextRequest('http://localhost:3000/api/auth/login', {
@@ -191,7 +191,7 @@ describe('/api/auth/login', () => {
     }
 
     ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
-    mockBcrypt.compare.mockResolvedValue(true)
+    mockBcrypt.compare.mockResolvedValue(true as never)
 
     const request = new NextRequest('http://localhost:3000/api/auth/login', {
       method: 'POST',

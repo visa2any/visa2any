@@ -187,7 +187,7 @@ export default function ModernCheckoutFlow({
 
   const validateStep = (step: number): boolean => {
     if (step === 3) {
-      return customerData.name && customerData.email && customerData.phone && customerData.terms
+      return !!customerData.name && !!customerData.email && !!customerData.phone && !!customerData.terms
     }
     return true
   }

@@ -28,7 +28,7 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
   return {
     title: config.title,
     description: config.description,
-    keywords: config.keywords?.join(', '),
+    keywords: config.keywords ? config.keywords.join(', ') : null,
     authors: config.author ? [{ name: config.author }] : [{ name: 'Visa2Any' }],
     creator: 'Visa2Any',
     publisher: 'Visa2Any',
@@ -74,9 +74,11 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
         'max-snippet': -1
       }
     },
-    verification: {
-      google: process.env.GOOGLE_SITE_VERIFICATION
-    }
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? {
+      verification: {
+        google: process.env.GOOGLE_SITE_VERIFICATION
+      }
+    } : {})
   }
 }
 

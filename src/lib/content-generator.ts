@@ -1,4 +1,5 @@
-import { OpenAI } from 'openai'
+import OpenAI from 'openai'
+import type { ChatCompletionMessageParam } from 'openai/resources/chat'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -251,7 +252,7 @@ const CTA_BY_PERSONA = {
 // Gerar ideias de conteúdo automaticamente
 export async function generateContentIdeas(
   platform: string,
-  country: string,
+  country: string = 'eua',
   count: number = 10
 ): Promise<ContentIdea[]> {
   try {
@@ -288,7 +289,8 @@ Responda em JSON array.
       max_tokens: 2000
     })
 
-    const ideas = JSON.parse(response.choices[0].message.content || '[]')
+    const content = response.choices[0]?.message?.content || '[]'
+    const ideas = JSON.parse(content)
     
     return ideas.map((idea: any, index: number) => ({
       id: `${platform}-${country}-${Date.now()}-${index}`,
@@ -354,7 +356,7 @@ Seja específico, prático e viral.
       max_tokens: 800
     })
 
-    return response.choices[0].message.content || ''
+    return response.choices[0]?.message?.content || ''
 
   } catch (error) {
     console.error('Erro ao gerar script:', error)
@@ -363,11 +365,20 @@ Seja específico, prático e viral.
 }
 
 // Gerar cronograma de conteúdo mensal
+interface CalendarDay {
+  date: number
+  dayOfWeek: string
+  theme: string
+  country: string
+  platform: string
+  content: ContentIdea | null
+}
+
 export async function generateMonthlyCalendar(
-  countries: string[],
-  platforms: string[]
-): Promise<any> {
-  const calendar = {}
+  countries: string[] = ['eua'],
+  platforms: string[] = ['instagram']
+): Promise<Record<number, CalendarDay>> {
+  const calendar: Record<number, CalendarDay> = {}
   const daysInMonth = 30
   
   for (let day = 1; day <= daysInMonth; day++) {
@@ -384,18 +395,25 @@ export async function generateMonthlyCalendar(
     
     // Distribuir países e plataformas
     
-    const country = countries[day % countries.length]
-    const platform = platforms[day % platforms.length]
+    const country: string = countries[day % countries.length] ?? 'eua'
+    if (!country) throw new Error('Country must be defined')
+    const platform: string = platforms[day % platforms.length] ?? 'instagram'
+    if (!platform) throw new Error('Platform must be defined')
     
-    const ideas = await generateContentIdeas(platform, country, 1)
+    const ideas = platform && country ? await generateContentIdeas(platform, country, 1) : []
+    const content: ContentIdea | null = ideas.length > 0 ? ideas[0] ?? null : null
     
+    if (!country || !platform) {
+      throw new Error('Country and platform must be defined')
+    }
+
     calendar[day] = {
       date: day,
-      dayOfWeek: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][dayOfWeek],
-      theme,
-      country,
-      platform,
-      content: ideas[0] || null
+      dayOfWeek: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][dayOfWeek] || 'Seg',
+      theme: theme || 'general',
+      country: country || 'eua',
+      platform: platform || 'instagram',
+      content: content ?? null
     }
   }
   
@@ -403,8 +421,16 @@ export async function generateMonthlyCalendar(
 }
 
 // Analisar performance e otimizar conteúdo
+interface ContentPerformance {
+  id: string
+  title: string
+  engagement: number
+  reach: number
+  conversions?: number
+}
+
 export async function analyzeAndOptimize(
-  pastContent: any[],
+  pastContent: ContentPerformance[],
   metrics: any[]
 ): Promise<string[]> {
   try {
@@ -434,7 +460,10 @@ Sugira 10 otimizações específicas para melhorar performance.
       max_tokens: 1000
     })
 
-    const optimizations = response.choices[0].message.content?.split('\n').filter(line => line.trim()) || []
+    const content = response.choices[0]?.message?.content || ''
+    const optimizations = content
+      .split('\n')
+      .filter((line: string) => line.trim())
     return optimizations
 
   } catch (error) {

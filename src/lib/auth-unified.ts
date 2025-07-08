@@ -11,12 +11,12 @@ export interface UnifiedUser {
   role?: 'ADMIN' | 'MANAGER' | 'STAFF' | 'CONSULTANT'
   isActive: boolean
   clientData?: {
-    phone?: string
-    country?: string
-    nationality?: string
-    targetCountry?: string
+    phone?: string | null
+    country?: string | null
+    nationality?: string | null
+    targetCountry?: string | null
     status: string
-    score?: number
+    score?: number | null
   }
 }
 
@@ -80,12 +80,12 @@ export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUs
         type: 'CUSTOMER',
         isActive: true,
         clientData: {
-          phone: client.phone || undefined,
-          country: client.country || undefined,
-          nationality: client.nationality || undefined,
-          targetCountry: client.targetCountry || undefined,
+          phone: client.phone ?? null,
+          country: client.country ?? null,
+          nationality: client.nationality ?? null,
+          targetCountry: client.targetCountry ?? null,
           status: client.status,
-          score: client.score || undefined
+          score: client.score ?? null
         }
       }
     } else {
@@ -134,10 +134,13 @@ export async function loginCustomer(email: string, password?: string): Promise<{
     })
 
     if (!client) {
+      return { success: false, error: 'CLIENT_NOT_FOUND' }
     }
 
-    // Se não tem senha, é primeiro login (criar senha),    if (!password) {
+    // Se não tem senha, é primeiro login (criar senha)
+    if (!password) {
       return { 
+        success: true,
         error: 'NEEDS_PASSWORD_SETUP',
         user: {
           id: client.id,
@@ -156,20 +159,21 @@ export async function loginCustomer(email: string, password?: string): Promise<{
       type: 'CUSTOMER',
       isActive: true,
       clientData: {
-        phone: client.phone || undefined,
-        country: client.country || undefined,
-        nationality: client.nationality || undefined,
-        targetCountry: client.targetCountry || undefined,
+        phone: client.phone ?? null,
+        country: client.country ?? null,
+        nationality: client.nationality ?? null,
+        targetCountry: client.targetCountry ?? null,
         status: client.status,
-        score: client.score || undefined
+        score: client.score ?? null
       }
     }
 
     const token = generateToken(user)
-
+    return { success: true, user, token }
 
   } catch (error) {
     console.error('Erro no login do cliente:', error)
+    return { success: false, error: 'LOGIN_FAILED' }
   }
 }
 
@@ -181,10 +185,12 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
     })
 
     if (!user || !user.isActive) {
+      return { success: false, error: 'USER_NOT_FOUND' }
     }
 
     const passwordValid = await bcrypt.compare(password, user.password)
     if (!passwordValid) {
+      return { success: false, error: 'INVALID_PASSWORD' }
     }
 
     const unifiedUser: UnifiedUser = {
@@ -197,10 +203,11 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
     }
 
     const token = generateToken(unifiedUser)
-
+    return { success: true, user: unifiedUser, token }
 
   } catch (error) {
     console.error('Erro no login do admin:', error)
+    return { success: false, error: 'LOGIN_FAILED' }
   }
 }
 
@@ -228,12 +235,13 @@ export async function createCustomerAccount(data: {
         data: {
           name: data.name,
           email: data.email,
-          phone: data.phone,
-          country: data.country,
-          nationality: data.nationality,
-          targetCountry: data.targetCountry,
+          phone: data.phone ?? null,
+          country: data.country ?? null,
+          nationality: data.nationality ?? null,
+          targetCountry: data.targetCountry ?? null,
           source: data.source || 'website_purchase',
-          status: 'QUALIFIED' // Cliente que comprou já é qualificado        }
+          status: 'QUALIFIED' // Cliente que comprou já é qualificado
+        }
       })
     } else {
       // Atualizar dados se cliente já existe
@@ -241,18 +249,17 @@ export async function createCustomerAccount(data: {
         where: { id: client.id },
         data: {
           name: data.name,
-          phone: data.phone || client.phone,
-          country: data.country || client.country,
-          nationality: data.nationality || client.nationality,
-          targetCountry: data.targetCountry || client.targetCountry,
+          phone: data.phone ?? client.phone,
+          country: data.country ?? client.country,
+          nationality: data.nationality ?? client.nationality,
+          targetCountry: data.targetCountry ?? client.targetCountry,
           status: client.status === 'LEAD' ? 'QUALIFIED' : client.status
         }
       })
     }
 
     // Se foi passado dados de compra
-
-    criar registro de pagamento
+    // Criar registro de pagamento
     if (data.product && data.amount) {
       await prisma.payment.create({
         data: {
@@ -273,20 +280,21 @@ export async function createCustomerAccount(data: {
       type: 'CUSTOMER',
       isActive: true,
       clientData: {
-        phone: client.phone || undefined,
-        country: client.country || undefined,
-        nationality: client.nationality || undefined,
-        targetCountry: client.targetCountry || undefined,
+        phone: client.phone ?? null,
+        country: client.country ?? null,
+        nationality: client.nationality ?? null,
+        targetCountry: client.targetCountry ?? null,
         status: client.status,
-        score: client.score || undefined
+        score: client.score ?? null
       }
     }
 
     const token = generateToken(user)
-
+    return { success: true, user, token }
 
   } catch (error) {
     console.error('Erro ao criar conta do cliente:', error)
+    return { success: false, error: 'ACCOUNT_CREATION_FAILED' }
   }
 }
 
@@ -309,6 +317,10 @@ export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSUL
       }
     }
 
+    return {
+      user,
+      status: 200
+    }
   }
 }
 
@@ -321,7 +333,7 @@ export function createUnifiedAuthError(message: string, status: number = 401) {
 
 // Verificar se é admin
 export function isAdminUser(user: UnifiedUser): boolean {
-  return user.type === 'ADMIN' && user.role && ['ADMIN', 'MANAGER'].includes(user.role)
+  return !!(user.type === 'ADMIN' && user.role && ['ADMIN', 'MANAGER'].includes(user.role))
 }
 
 // Verificar se é cliente

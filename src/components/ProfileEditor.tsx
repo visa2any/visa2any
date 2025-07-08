@@ -50,8 +50,9 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleInputChange = (field: keyof ProfileData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  const handleInputChange = (field: keyof ProfileData, value: string | number | React.ChangeEvent<HTMLInputElement>) => {
+    const actualValue = typeof value === 'object' ? value.target.value : value
+    setFormData(prev => ({ ...prev, [field]: actualValue }))
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
@@ -226,7 +227,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                 <FormField
                   label="Nome Completo"
                   value={formData.name}
-                  onChange={(value) => handleInputChange('name', value)}
+                  onChange={(e) => handleInputChange('name', e)}
                   formatValue={formatters.titleCase}
                   validation={combineValidators(validators.required, validators.minLength(2))}
                   error={errors.name}
@@ -238,7 +239,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   label="Email"
                   type="email"
                   value={formData.email}
-                  onChange={(value) => handleInputChange('email', value)}
+                  onChange={(e) => handleInputChange('email', e)}
                   validation={validators.email}
                   error={errors.email}
                   leftIcon={<Mail className="h-4 w-4" />}
@@ -248,7 +249,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                 <FormField
                   label="Telefone/WhatsApp"
                   value={formData.phone}
-                  onChange={(value) => handleInputChange('phone', value)}
+                  onChange={(e) => handleInputChange('phone', e)}
                   formatValue={formatters.phone}
                   validation={validators.phone}
                   error={errors.phone}
@@ -260,7 +261,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   label="Idade"
                   type="number"
                   value={formData.age?.toString() || ''}
-                  onChange={(value) => handleInputChange('age', parseInt(value) || 0)}
+                  onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 0)}
                   validation={validators.required}
                   error={errors.age}
                   leftIcon={<Calendar className="h-4 w-4" />}
@@ -282,7 +283,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   </label>
                   <select
                     value={formData.country}
-                    onChange={(e) => handleInputChange('country', e.target.value)}
+                    onChange={(e) => handleInputChange('country', String(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Selecione o país</option>
@@ -295,7 +296,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                 <FormField
                   label="Nacionalidade"
                   value={formData.nationality}
-                  onChange={(value) => handleInputChange('nationality', value)}
+                  onChange={(e) => handleInputChange('nationality', e)}
                   formatValue={formatters.titleCase}
                   leftIcon={<Flag className="h-4 w-4" />}
                   tooltip="Nacionalidade conforme passaporte"
@@ -313,7 +314,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                 <FormField
                   label="Profissão/Ocupação"
                   value={formData.profession}
-                  onChange={(value) => handleInputChange('profession', value)}
+                  onChange={(e) => handleInputChange('profession', e)}
                   formatValue={formatters.titleCase}
                   leftIcon={<Briefcase className="h-4 w-4" />}
                   tooltip="Sua profissão ou ocupação atual"
@@ -325,7 +326,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   </label>
                   <select
                     value={formData.education}
-                    onChange={(e) => handleInputChange('education', e.target.value)}
+                    onChange={(e) => handleInputChange('education', String(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Selecione o nível</option>
@@ -350,7 +351,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   </label>
                   <select
                     value={formData.targetCountry}
-                    onChange={(e) => handleInputChange('targetCountry', e.target.value)}
+                    onChange={(e) => handleInputChange('targetCountry', String(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Selecione o destino</option>
@@ -366,7 +367,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
                   </label>
                   <select
                     value={formData.visaType}
-                    onChange={(e) => handleInputChange('visaType', e.target.value)}
+                    onChange={(e) => handleInputChange('visaType', String(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Selecione o tipo</option>

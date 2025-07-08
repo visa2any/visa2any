@@ -78,20 +78,24 @@ class WhatsAppBusinessService {
       if (response.ok && result.messages?.[0]?.id) {
         console.log('✅ WhatsApp enviado:', result.messages[0].id)
         return {
-          messageId: result.messages[0].id
+          success: true,
+          messageId: result.messages?.[0]?.id || 'unknown',
+          queued: false
         }
       } else {
         console.error('❌ Erro Meta API:', result)
         return {
+          success: false,
           error: result.error?.message || 'Erro desconhecido'
         }
       }
 
     } catch (error) {
       console.error('❌ Erro ao enviar WhatsApp:', error)
-      return {
-        error: error.message || 'Erro de conexão'
-      }
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erro de conexão'
+        }
     }
   }
 
@@ -121,7 +125,9 @@ class WhatsAppBusinessService {
         if (response.ok) {
           const result = await response.json()
           return {
-            messageId: result.messageId || `wh_${Date.now()}`
+            success: true,
+            messageId: result.id || 'unknown',
+            queued: false
           }
         }
       } catch (error) {
@@ -137,10 +143,11 @@ class WhatsAppBusinessService {
     console.log('💡 Para ativar envios reais, configure WHATSAPP_API_TOKEN')
     console.log('---')
 
-    return {
-      messageId: `sim_${Date.now()}`,
-      queued: false
-    }
+      return {
+        success: true,
+        messageId: 'local-mock-id',
+        queued: false
+      }
   }
 
   // Templates pré-aprovados (para uso com Meta API)
@@ -183,19 +190,22 @@ class WhatsAppBusinessService {
 
       if (response.ok && result.messages?.[0]?.id) {
         return {
-          messageId: result.messages[0].id
+          success: true,
+          messageId: result.messages?.[0]?.id || 'unknown'
         }
       } else {
         return {
+          success: false,
           error: result.error?.message || 'Erro no template'
         }
       }
 
     } catch (error) {
       console.error('❌ Erro template:', error)
-      return {
-        error: error.message
-      }
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erro desconhecido'
+        }
     }
   }
 

@@ -147,12 +147,12 @@ export class PolicyMonitoringEngine {
     return {
       id: changeId,
       country: source.country,
-      visaType,
+      visaType: visaType || '',
       changeType: changeType as any,
       severity: severity as any,
       title: `Mudança em ${changeType} para ${visaType}`,
       description: `Nova política implementada para ${visaType} visas em ${source.country}`,
-      effectiveDate: date.toISOString().split('T')[0],
+      effectiveDate: date.toISOString().split('T')[0] || '',
       source: source.name,
       sourceUrl: source.url,
       impact: ['Processamento', 'Documentação', 'Custos'],
@@ -388,4 +388,4 @@ export function getPolicyChanges(filters?: any): PolicyChange[] {
 
 export function getPendingAlerts(): PolicyAlert[] {
   return policyMonitor.getPendingAlerts()
-} 
+}

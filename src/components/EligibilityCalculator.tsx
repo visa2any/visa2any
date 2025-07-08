@@ -668,11 +668,11 @@ export default function EligibilityCalculator() {
 
       {/* Question */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          {currentQuestion.question}
-        </h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          {currentQuestion?.question || 'Question not available'}
+      </h2>
 
-        {currentQuestion.type === 'select' && (
+        {currentQuestion?.type === 'select' && (
           <div className="space-y-3">
             {currentQuestion.options?.map((option) => (
               <button
@@ -690,14 +690,14 @@ export default function EligibilityCalculator() {
           </div>
         )}
 
-        {currentQuestion.type === 'range' && (
+        {currentQuestion?.type === 'range' && (
           <div className="space-y-4">
             <input
               type="range"
               min="18"
               max="65"
-              value={answers[currentQuestion.id] || 25}
-              onChange={(e) => handleAnswer(currentQuestion.id, parseInt(e.target.value))}
+              value={answers[currentQuestion?.id] || 25}
+              onChange={(e) => handleAnswer(currentQuestion?.id || '', parseInt(e.target.value))}
               className="w-full"
             />
             <div className="text-center">
@@ -721,7 +721,7 @@ export default function EligibilityCalculator() {
         <Button 
           onClick={nextQuestion}
           className="btn-gradient"
-          disabled={!answers[currentQuestion.id]}
+          disabled={!answers[currentQuestion?.id || '']}
         >
           {currentStep === questions.length - 1 ? 'Ver Resultado' : 'Próxima'}
         </Button>

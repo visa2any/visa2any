@@ -174,12 +174,12 @@ export default function MonitoringDashboard() {
       ))
 
       if (enabled) {
-        alert(`Canal ${channelId} ativado! Monitoramento iniciado.`)
+        window.alert(`Canal ${channelId} ativado! Monitoramento iniciado.`)
       } else {
-        alert(`Canal ${channelId} desativado.`)
+        window.alert(`Canal ${channelId} desativado.`)
       }
     } catch (error) {
-      alert('Erro ao alterar status do canal')
+      window.alert('Erro ao alterar status do canal')
     }
   }
 
@@ -187,16 +187,16 @@ export default function MonitoringDashboard() {
     try {
       const response = await fetch('/api/cost-effective?action=telegram_setup')
       const result = await response.json()
-      alert(`Teste do canal ${channelId}:\n${JSON.stringify(result, null, 2)}`)
+      window.alert(`Teste do canal ${channelId}:\n${JSON.stringify(result, null, 2)}`)
     } catch (error) {
-      alert('Erro ao testar canal')
+      window.alert('Erro ao testar canal')
     }
   }
 
   const notifyClient = async (alertId: string) => {
     try {
-      const alert = alerts.find(a => a.id === alertId)
-      if (!alert) return
+      const foundAlert = alerts.find(a => a.id === alertId)
+      if (!foundAlert) return
 
       // Simular notificação ao cliente
 
@@ -216,21 +216,22 @@ export default function MonitoringDashboard() {
         setAlerts(prev => prev.map(a => 
           a.id === alertId ? { ...a, notified: true } : a
         ))
-        alert('Cliente notificado sobre a vaga!')
+        window.alert('Cliente notificado sobre a vaga!')
       }
     } catch (error) {
-      alert('Erro ao notificar cliente')
+      window.alert('Erro ao notificar cliente')
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    const config: Record<string, { color: string, text: string }> = {
+  const getStatusBadge = (status: 'active' | 'inactive' | 'error') => {
+    const config = {
       'active': { color: 'bg-green-500', text: 'Ativo' },
       'inactive': { color: 'bg-gray-500', text: 'Inativo' },
       'error': { color: 'bg-red-500', text: 'Erro' }
-    }
-    const { color, text } = config[status] || config['inactive']
-    return <Badge className={`${color} text-white`}>{text}</Badge>
+    } as const
+
+    const statusConfig = config[status] || config.inactive
+    return <Badge className={`${statusConfig.color} text-white`}>{statusConfig.text}</Badge>
   }
 
   const getChannelIcon = (type: string) => {
@@ -444,8 +445,8 @@ export default function MonitoringDashboard() {
                   <Button 
                     onClick={async () => {
                       const response = await fetch('/api/cost-effective?action=telegram_setup')
-                      const result = await response.json()
-                      alert(JSON.stringify(result.instructions, null, 2))
+      const result = await response.json()
+      window.alert(JSON.stringify(result.instructions, null, 2))
                     }}
                   >
                     📋 Ver Instruções Completas
@@ -465,8 +466,8 @@ export default function MonitoringDashboard() {
                   <Button 
                     onClick={async () => {
                       const response = await fetch('/api/automation?action=status')
-                      const result = await response.json()
-                      alert(JSON.stringify(result, null, 2))
+      const result = await response.json()
+      window.alert(JSON.stringify(result, null, 2))
                     }}
                   >
                     ⚡ Ativar Monitoramento Web
@@ -486,8 +487,8 @@ export default function MonitoringDashboard() {
                   <Button 
                     onClick={async () => {
                       const response = await fetch('/api/cost-effective?action=email_setup')
-                      const result = await response.json()
-                      alert(JSON.stringify(result.instructions, null, 2))
+      const result = await response.json()
+      window.alert(JSON.stringify(result.instructions, null, 2))
                     }}
                   >
                     📬 Configurar Email Monitor

@@ -13,6 +13,7 @@ const payment = new Payment(client)
 const preference = new Preference(client)
 
 export interface PaymentData {
+  id: string
   title: string
   quantity: number
   unit_price: number
@@ -36,7 +37,7 @@ export interface PayerData {
   }
   address?: {
     street_name: string
-    street_number: number
+    street_number: string
     zip_code: string
   }
 }
@@ -67,9 +68,19 @@ export async function createPreference(data: PreferenceData) {
   try {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
     
+    const payerData = data.payer || {
+      name: '',
+      surname: '',
+      email: ''
+    };
+    
     const preferenceData = {
-      items: data.items,
-      payer: data.payer,
+      payer: {
+        ...payerData,
+        name: payerData.name || '',
+        surname: payerData.surname || '',
+        email: payerData.email || ''
+      },
       back_urls: {
         success: `${baseUrl}/payment/success`,
         failure: `${baseUrl}/payment/failure`,
@@ -82,9 +93,10 @@ export async function createPreference(data: PreferenceData) {
         ...data.payment_methods
       },
       notification_url: `${baseUrl}/api/payments/webhook/mercadopago`,
-      external_reference: data.external_reference,
+      external_reference: data.external_reference || '',
       expires: false,
-      ...data
+      ...data,
+      items: data.items
     }
 
     const response = await preference.create({ body: preferenceData })
@@ -97,7 +109,7 @@ export async function createPreference(data: PreferenceData) {
   } catch (error) {
     console.error('Erro ao criar preferência MercadoPago:', error)
     return {
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }
   }
 }
@@ -114,7 +126,7 @@ export async function getPayment(paymentId: string) {
     console.error('Erro ao buscar pagamento:', error)
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }
   }
 }
@@ -141,7 +153,7 @@ export function processWebhook(body: any) {
     console.error('Erro ao processar webhook:', error)
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }
   }
 }

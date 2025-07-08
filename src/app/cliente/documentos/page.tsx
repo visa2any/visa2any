@@ -8,17 +8,7 @@ import {
   Brain, CheckCircle, AlertTriangle, Clock, Sparkles
 } from 'lucide-react'
 
-interface CustomerDocument {
-  id: string
-  name: string
-  type: string
-  status: 'uploading' | 'analyzing' | 'valid' | 'invalid' | 'needs_review'
-  aiScore?: number
-  feedback?: string
-  size: number
-  uploadDate: Date | string
-  url?: string
-}
+import type { Document as CustomerDocument } from '@/components/DocumentUpload'
 
 interface CustomerData {
   id: string
@@ -65,41 +55,41 @@ export default function DocumentosPage() {
         setDocuments(JSON.parse(storedDocs))
       } else {
         // Default documents
-        setDocuments([
-          {
-            id: '1',
-            name: 'Passaporte_JoaoSilva.pdf',
-            type: 'passport',
-            status: 'valid',
-            aiScore: 98,
-            feedback: 'Passaporte em excelente condição, todas as informações legíveis',
-            size: 2048000,
-            uploadDate: '2024-01-15',
-            url: '#'
-          },
-          {
-            id: '2',
-            name: 'Comprovante_Financeiro.pdf',
-            type: 'bank_statement',
-            status: 'needs_review',
-            aiScore: 85,
-            feedback: 'Extrato válido, considere incluir período mais recente',
-            size: 1024000,
-            uploadDate: '2024-01-20',
-            url: '#'
-          },
-          {
-            id: '3',
-            name: 'Carta_Empregador.pdf',
-            type: 'work_cert',
-            status: 'valid',
-            aiScore: 92,
-            feedback: 'Documento aprovado pela análise IA',
-            size: 512000,
-            uploadDate: '2024-01-22',
-            url: '#'
-          }
-        ])
+          setDocuments([
+            {
+              id: '1',
+              name: 'Passaporte_JoaoSilva.pdf',
+              type: 'passport',
+              status: 'valid',
+              aiScore: 98,
+              feedback: 'Passaporte em excelente condição, todas as informações legíveis',
+              size: 2048000,
+              uploadDate: new Date('2024-01-15'),
+              url: '#'
+            },
+            {
+              id: '2',
+              name: 'Comprovante_Financeiro.pdf',
+              type: 'bank_statement',
+              status: 'needs_review',
+              aiScore: 85,
+              feedback: 'Extrato válido, considere incluir período mais recente',
+              size: 1024000,
+              uploadDate: new Date('2024-01-20'),
+              url: '#'
+            },
+            {
+              id: '3',
+              name: 'Carta_Empregador.pdf',
+              type: 'work_cert',
+              status: 'valid',
+              aiScore: 92,
+              feedback: 'Documento aprovado pela análise IA',
+              size: 512000,
+              uploadDate: new Date('2024-01-22'),
+              url: '#'
+            }
+          ])
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error)

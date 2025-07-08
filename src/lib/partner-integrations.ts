@@ -338,7 +338,7 @@ class PartnerIntegrationService {
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
     
     return {
-      status: randomStatus,
+      status: randomStatus ?? 'unknown',
       details: `O status atual do seu processo com ${partnerId} é: ${randomStatus}.`,
       nextSteps: 'Verifique seu email para mais detalhes ou entre em contato com o parceiro.'
     }

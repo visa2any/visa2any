@@ -136,26 +136,35 @@ export const validators = {
       return 'CPF inválido'
     }
 
-    // Validate CPF algorithm
-    let sum = 0
+    // Convert string to array of numbers
+    const digits = numbers.split('').map(d => parseInt(d));
+
+    // Validate first digit
+    let sum = 0;
     for (let i = 0; i < 9; i++) {
-      sum += parseInt(numbers[i]) * (10 - i)
+      const digit = digits[i] ?? 0;
+      sum += digit * (10 - i);
     }
-    let digit1 = (sum * 10) % 11
-    if (digit1 === 10) digit1 = 0
+    let digit1 = (sum * 10) % 11;
+    if (digit1 === 10) digit1 = 0;
 
-    sum = 0
+    // Validate second digit
+    sum = 0;
     for (let i = 0; i < 10; i++) {
-      sum += parseInt(numbers[i]) * (11 - i)
+      const digit = digits[i] ?? 0;
+      sum += digit * (11 - i);
     }
-    let digit2 = (sum * 10) % 11
-    if (digit2 === 10) digit2 = 0
+    let digit2 = (sum * 10) % 11;
+    if (digit2 === 10) digit2 = 0;
 
-    if (parseInt(numbers[9]) !== digit1 || parseInt(numbers[10]) !== digit2) {
-      return 'CPF inválido'
+    // Check validation digits
+    const checkDigit1 = digits[9] ?? -1;
+    const checkDigit2 = digits[10] ?? -1;
+    if (checkDigit1 !== digit1 || checkDigit2 !== digit2) {
+      return 'CPF inválido';
     }
 
-    return null
+    return null;
   },
 
   // CNPJ validation
@@ -171,29 +180,39 @@ export const validators = {
       return 'CNPJ inválido'
     }
 
-    // Validate CNPJ algorithm
-    const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-    const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    // Convert string to array of numbers
+    const digits = numbers.split('').map(d => parseInt(d));
 
-    let sum = 0
+    // Validate first digit
+    const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    let sum = 0;
     for (let i = 0; i < 12; i++) {
-      sum += parseInt(numbers[i]) * weights1[i]
+      const digit = digits[i] ?? 0;
+      const weight = weights1[i] ?? 0;
+      sum += digit * weight;
     }
-    let digit1 = sum % 11
-    digit1 = digit1 < 2 ? 0 : 11 - digit1
+    let digit1 = sum % 11;
+    digit1 = digit1 < 2 ? 0 : 11 - digit1;
 
-    sum = 0
+    // Validate second digit
+    const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    sum = 0;
     for (let i = 0; i < 13; i++) {
-      sum += parseInt(numbers[i]) * weights2[i]
+      const digit = digits[i] ?? 0;
+      const weight = weights2[i] ?? 0;
+      sum += digit * weight;
     }
-    let digit2 = sum % 11
-    digit2 = digit2 < 2 ? 0 : 11 - digit2
+    let digit2 = sum % 11;
+    digit2 = digit2 < 2 ? 0 : 11 - digit2;
 
-    if (parseInt(numbers[12]) !== digit1 || parseInt(numbers[13]) !== digit2) {
-      return 'CNPJ inválido'
+    // Check validation digits
+    const checkDigit1 = digits[12] ?? -1;
+    const checkDigit2 = digits[13] ?? -1;
+    if (checkDigit1 !== digit1 || checkDigit2 !== digit2) {
+      return 'CNPJ inválido';
     }
 
-    return null
+    return null;
   },
 
   // CEP validation

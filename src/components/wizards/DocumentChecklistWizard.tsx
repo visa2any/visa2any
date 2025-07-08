@@ -357,7 +357,7 @@ export function DocumentChecklistWizard({
   useEffect(() => {
     const key = `${country}-${visaType}`
     const reqs = documentRequirements[key] || documentRequirements['USA-B1/B2']
-    setRequirements(reqs)
+    setRequirements(reqs || null)
   }, [country, visaType])
 
   useEffect(() => {
@@ -386,7 +386,11 @@ export function DocumentChecklistWizard({
     
     // Auto-check when uploaded
     
-    setCheckedDocuments(prev => new Set([...prev, docId]))
+    setCheckedDocuments(prev => {
+      const newSet = new Set(prev)
+      newSet.add(docId)
+      return newSet
+    })
     
     notifySuccess('Upload realizado', `${file.name} foi carregado com sucesso`)
   }
@@ -753,7 +757,7 @@ export function DocumentChecklistWizard({
                       {isUploaded && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <FileText className="h-4 w-4" />
-                          <span>{uploadedDocuments[document.id].name}</span>
+                          <span>{uploadedDocuments[document.id]?.name || 'Arquivo carregado'}</span>
                         </div>
                       )}
                     </div>

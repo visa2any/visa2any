@@ -29,7 +29,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   
   // Buscar configuração para a rota
   
-  const config = RATE_LIMIT_CONFIG[pathname] || RATE_LIMIT_CONFIG.default
+  const config = (RATE_LIMIT_CONFIG as Record<string, any>)[pathname] || RATE_LIMIT_CONFIG.default
   
   const now = Date.now()
   const entry = rateLimit.get(key)
@@ -48,6 +48,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
     })
     
     return {
+      success: true,
       limit: config.limit,
       remaining: config.limit - 1,
       reset: now + config.windowMs
@@ -57,6 +58,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   if (entry.count >= config.limit) {
     // Limite excedido
     return {
+      success: false,
       limit: config.limit,
       remaining: 0,
       reset: entry.resetTime,
@@ -70,6 +72,7 @@ export function applyRateLimit(request: NextRequest, identifier?: string): {
   rateLimit.set(key, entry)
   
   return {
+    success: true,
     limit: config.limit,
     remaining: config.limit - entry.count,
     reset: entry.resetTime
@@ -83,7 +86,7 @@ function getClientIP(request: NextRequest): string {
   const cfConnectingIp = request.headers.get('cf-connecting-ip')
   
   if (cfConnectingIp) return cfConnectingIp
-  if (forwarded) return forwarded.split(',')[0].trim()
+  if (forwarded) return forwarded.split(',')[0]?.trim() || 'unknown'
   if (realIp) return realIp
   
   return request.ip || 'unknown'
@@ -94,11 +97,12 @@ function cleanupExpiredEntries() {
   const now = Date.now()
   const keysToDelete: string[] = []
   
-  for (const [key, entry] of rateLimit.entries()) {
+  // Convert Map to array before iterating
+  Array.from(rateLimit.entries()).forEach(([key, entry]) => {
     if (now > entry.resetTime) {
       keysToDelete.push(key)
     }
-  }
+  })
   
   keysToDelete.forEach(key => rateLimit.delete(key))
   

@@ -4,15 +4,16 @@ export interface AffiliateLink {
   originalUrl: string
   affiliateUrl: string
   referralCode: string
-  campaign?: string
-  source?: string
+  campaign?: string | undefined
+  source?: string | undefined
 }
 
 export interface TrackingParams {
-  ref: string          // Código de referência do afiliado,  campaign?: string    // Nome da campanha
-  source?: string      // Origem do tráfego (instagram, facebook, email, etc)
-  medium?: string      // Meio (social, email, paid, etc)
-  content?: string     // Conteúdo específico
+  ref: string          // Código de referência do afiliado
+  campaign?: string | undefined    // Nome da campanha
+  source?: string | undefined      // Origem do tráfego (instagram, facebook, email, etc)
+  medium?: string | undefined      // Meio (social, email, paid, etc)
+  content?: string | undefined     // Conteúdo específico
 }
 
 /**
@@ -50,8 +51,8 @@ export function generateAffiliateLink(
     originalUrl: new URL(targetPath, baseUrl).toString(),
     affiliateUrl: trackingUrl.toString(),
     referralCode: params.ref,
-    campaign: params.campaign,
-    source: params.source
+    campaign: params.campaign || undefined,
+    source: params.source || undefined
   }
 }
 
@@ -147,10 +148,18 @@ export async function trackConversion(
       })
     })
 
-    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json() as { success: boolean; error?: string }
     return data
   } catch (error) {
     console.error('Erro ao registrar conversão:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
   }
 }
 
@@ -220,7 +229,8 @@ export function validateReferralCode(code: string): boolean {
 export function generatePromotionalText(
   context: 'instagram' | 'facebook' | 'email' | 'whatsapp' | 'blog',
   referralCode: string,
-  affiliateLink: string
+  affiliateLink: string,
+  customText?: string
 ): string {
   const templates = {
     instagram: `🌍 Quer realizar seu sonho de morar no exterior? 
@@ -299,6 +309,11 @@ Para saber mais e agendar sua consultoria, acesse: ${affiliateLink}
 Use o código ${referralCode} e garante condições especiais!`
   }
 
+  if (customText) {
+    return customText
+      .replace('{referralCode}', referralCode)
+      .replace('{affiliateLink}', affiliateLink)
+  }
   return templates[context] || templates.blog
 }
 

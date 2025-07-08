@@ -126,6 +126,7 @@ class CostEffectiveSolutions {
       const instructions = this.generateClientInstructions(request, trackingId)
 
       return {
+        success: true,
         method: 'manual_assisted',
         estimatedTime: estimatedTime,
         cost,
@@ -135,6 +136,7 @@ class CostEffectiveSolutions {
 
     } catch (error) {
       return {
+        success: false,
         method: 'manual_assisted',
         estimatedTime: '',
         cost: 0,
@@ -163,7 +165,7 @@ class CostEffectiveSolutions {
       country,
       url: this.getConsulateURL(country),
       checkInterval: this.getOptimalInterval(country), // em minutos
-      lastCheck: undefined
+      lastCheck: ''
     }))
 
     // Iniciar monitoramento em background
@@ -236,6 +238,7 @@ class CostEffectiveSolutions {
     ]
 
     return {
+      success: true,
       botInfo: {
         token: botToken,
         channels,
@@ -281,6 +284,7 @@ Confiabilidade: 70%
     ]
 
     return {
+      success: true,
       emailConfig: {
         providers,
         keywords,
@@ -356,6 +360,7 @@ ROI: Altíssimo (quase gratuito)
     const cost = request.serviceLevel === 'express' ? 75 : 35
 
     return {
+      success: true,
       workflow,
       totalTime,
       cost

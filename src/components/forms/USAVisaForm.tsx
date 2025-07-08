@@ -4,9 +4,16 @@ import React, { useState } from 'react'
 import { 
   User, Mail, Phone, MapPin, Calendar, Building, Briefcase, 
   GraduationCap, Heart, Plane, DollarSign, FileText, Globe,
-  Check, AlertTriangle, Info, ChevronRight, Flag, Users
+  Check, AlertTriangle, Info, ChevronRight, Flag, Users,
+  type LucideProps
 } from 'lucide-react'
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
+
+interface Step {
+  id: number
+  title: string
+  icon: React.ForwardRefExoticComponent<LucideProps & React.RefAttributes<SVGSVGElement>>
+}
 
 interface USAFormData {
   // Personal Information
@@ -168,7 +175,7 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
     { value: 'U', label: 'U (Vítimas de Crime)', desc: 'Vítimas de certos crimes' }
   ]
 
-  const steps = [
+  const steps: Step[] = [
     { id: 1, title: 'Informações Pessoais', icon: User },
     { id: 2, title: 'Contato & Endereço', icon: MapPin },
     { id: 3, title: 'Informações de Viagem', icon: Plane },
@@ -176,6 +183,8 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
     { id: 5, title: 'Questões de Segurança', icon: AlertTriangle },
     { id: 6, title: 'Documentos', icon: FileText }
   ]
+  const safeSteps = steps ?? []
+  const currentStepData = safeSteps[currentStep - 1] ?? { id: 0, title: '', icon: Info }
 
   const updateFormData = (section: keyof USAFormData, field: string, value: any) => {
     setFormData(prev => ({
@@ -188,13 +197,13 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
   }
 
   const nextStep = () => {
-    if (currentStep < steps.length) {
+    if (steps && currentStep < steps.length) {
       setCurrentStep(currentStep + 1)
     }
   }
 
   const prevStep = () => {
-    if (currentStep > 1) {
+    if (steps && currentStep > 1) {
       setCurrentStep(currentStep - 1)
     }
   }
@@ -805,7 +814,7 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
       {/* Progress Steps */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
+          {steps?.map((step, index) => (
             <div key={step.id} className="flex flex-col items-center">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                 currentStep >= step.id 
@@ -837,8 +846,8 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
-            {React.createElement(steps[currentStep - 1].icon, { className: "h-5 w-5 text-blue-600" })}
-            <span>{steps[currentStep - 1].title}</span>
+          {currentStepData?.icon && React.createElement(currentStepData.icon, { className: "h-5 w-5 text-blue-600" })}
+          <span>{currentStepData?.title || ''}</span>
           </h2>
         </div>
 
@@ -855,7 +864,7 @@ export function USAVisaForm({ onSubmit, initialData }: USAVisaFormProps) {
           <span>Anterior</span>
         </button>
 
-        {currentStep === steps.length ? (
+        {steps && currentStep === steps.length ? (
           <button
             onClick={handleSubmit}
             className="flex items-center space-x-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"

@@ -3,6 +3,19 @@
 import { useEffect } from 'react'
 import { useNotifications } from '@/components/NotificationSystem'
 
+interface Notification {
+  type: 'success' | 'error' | 'warning' | 'info'
+  title: string
+  message: string
+  actionUrl: string
+  actionLabel: string
+}
+
+interface SystemNotificationResponse {
+  success: boolean
+  notifications: Notification[]
+}
+
 export function useSystemNotifications() {
   const { addNotification } = useNotifications()
 
@@ -17,10 +30,14 @@ export function useSystemNotifications() {
       })
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json() as SystemNotificationResponse
         if (data.success && data.notifications) {
-          data.notifications.forEach((notification: any) => {
-            addNotification(notification)
+          data.notifications.forEach(notification => {
+            try {
+              addNotification(notification)
+            } catch (err) {
+              console.error('Failed to add notification:', notification, err)
+            }
           })
         }
       }
@@ -80,44 +97,48 @@ export function useSystemNotifications() {
 
   return {
     // Utility functions for common notification types
-    notifySuccess: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
-      addNotification({
-        type: 'success',
+    notifySuccess: (title: string, message: string, actionUrl = '', actionLabel = '') => {
+      const notification = {
+        type: 'success' as const,
         title,
         message,
         actionUrl,
         actionLabel
-      })
+      }
+      addNotification(notification)
     },
 
-    notifyError: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
-      addNotification({
-        type: 'error',
+    notifyError: (title: string, message: string, actionUrl = '', actionLabel = '') => {
+      const notification = {
+        type: 'error' as const,
         title,
         message,
         actionUrl,
         actionLabel
-      })
+      }
+      addNotification(notification)
     },
 
-    notifyWarning: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
-      addNotification({
-        type: 'warning',
+    notifyWarning: (title: string, message: string, actionUrl = '', actionLabel = '') => {
+      const notification = {
+        type: 'warning' as const,
         title,
         message,
         actionUrl,
         actionLabel
-      })
+      }
+      addNotification(notification)
     },
 
-    notifyInfo: (title: string, message: string, actionUrl?: string, actionLabel?: string) => {
-      addNotification({
-        type: 'info',
+    notifyInfo: (title: string, message: string, actionUrl = '', actionLabel = '') => {
+      const notification = {
+        type: 'info' as const,
         title,
         message,
         actionUrl,
         actionLabel
-      })
+      }
+      addNotification(notification)
     },
 
     // Function to trigger global notification from anywhere
@@ -128,8 +149,13 @@ export function useSystemNotifications() {
       actionUrl?: string
       actionLabel?: string
     }) => {
+      const normalizedNotification = {
+        ...notification,
+        actionUrl: notification.actionUrl || '',
+        actionLabel: notification.actionLabel || ''
+      }
       window.dispatchEvent(new CustomEvent('visa2any:notification', {
-        detail: notification
+        detail: normalizedNotification
       }))
     }
   }

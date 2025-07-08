@@ -43,14 +43,16 @@ export function rateLimit(
     rateStore.set(key, newEntry)
     
     return {
+      success: true,
       remaining: config.maxRequests - 1,
-      resetTime: newEntry.resetTime
+      resetTime: now + config.windowMs
     }
   }
   
   if (entry.count >= config.maxRequests) {
     // Limite excedido
     return {
+      success: false,
       remaining: 0,
       resetTime: entry.resetTime
     }
@@ -62,6 +64,7 @@ export function rateLimit(
   rateStore.set(key, entry)
   
   return {
+    success: true,
     remaining: config.maxRequests - entry.count,
     resetTime: entry.resetTime
   }
@@ -73,7 +76,7 @@ function getClientIP(request: NextRequest): string {
   const ip = request.headers.get('x-vercel-forwarded-for')
   
   if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim()
+    return forwardedFor?.split(',')[0]?.trim() || 'unknown'
   }
   
   if (realIP) {
@@ -89,11 +92,11 @@ function getClientIP(request: NextRequest): string {
 
 function cleanupExpiredEntries() {
   const now = Date.now()
-  for (const [key, entry] of rateStore.entries()) {
+  Array.from(rateStore.entries()).forEach(([key, entry]) => {
     if (now > entry.resetTime) {
       rateStore.delete(key)
     }
-  }
+  })
 }
 
 export function createRateLimitResponse(resetTime: number) {

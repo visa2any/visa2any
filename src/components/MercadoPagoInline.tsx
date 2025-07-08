@@ -51,44 +51,46 @@ export default function MercadoPagoInline({
   const scriptRef = useRef<HTMLScriptElement | null>(null)
   const initializationRef = useRef<boolean>(false)
 
-  useEffect(() => {
-    // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick
-    ABORTAR
-    if (isCreatingBrick) {
-      console.log('🛑 JÁ CRIANDO BRICK EM OUTRO LUGAR - ABORTANDO')
-      setLoading(false)
-      return
-    }
-    
-    // Verificar se já existe brick no DOM
-    
-    const container = document.getElementById(CONTAINER_ID)
-    if (container && container.children.length > 0) {
-      console.log('🛑 BRICK JÁ EXISTE NO DOM - REUTILIZANDO')
-      setLoading(false)
-      return
-    }
-    
-    // Verificar contador global
-    
-    if (brickCount > 0) {
-      console.log('🛑 BRICK COUNT > 0 - JÁ EXISTE BRICK')
-      setLoading(false)
-      return
-    }
-    
-    console.log('🚀 PRIMEIRA INICIALIZAÇÃO - CRIANDO BRICK')
-    isCreatingBrick = true
-    brickCount++
-    initializationRef.current = true
-    setInitialized(true)
-    loadMercadoPagoSDK()
-    
+    useEffect(() => {
+      const initialize = () => {
+        // VERIFICAÇÃO CRÍTICA: Se já estamos criando um brick
+        if (isCreatingBrick) {
+          console.log('MercadoPago: Brick creation already in progress')
+          setLoading(false)
+          return
+        }
+      
+        // Verificar se já existe brick no DOM
+        const container = document.getElementById(CONTAINER_ID)
+        if (container && container.children.length > 0) {
+          console.log('MercadoPago: Reusing existing brick in DOM')
+          setLoading(false)
+          return
+        }
+      
+        // Verificar contador global
+        if (brickCount > 0) {
+          console.log('MercadoPago: Brick already exists')
+          setLoading(false)
+          return
+        }
+      
+        console.log('MercadoPago: Initializing payment brick')
+        isCreatingBrick = true
+        brickCount++
+        initializationRef.current = true
+        setInitialized(true)
+        loadMercadoPagoSDK()
+      }
+
+      initialize()
+
     return () => {
-      console.log('🧹 Desmontando componente')
-      initializationRef.current = false
-      // NÃO resetar isCreatingBrick nem brickCount    }
-  }, [preferenceId])
+      console.log('🧹 Desmontando componente');
+      initializationRef.current = false;
+      // NÃO resetar isCreatingBrick nem brickCount
+    };
+  }, [preferenceId]);
 
   const loadMercadoPagoSDK = () => {
     // Verificar se o SDK já está carregado
@@ -124,13 +126,11 @@ export default function MercadoPagoInline({
 
   const initializeMercadoPago = async () => {
     try {
-      console.log('🔥 INICIANDO CRIAÇÃO DO BRICK - CONTROLE RADICAL')
+      console.log('MercadoPago: Starting brick creation')
       
       // VERIFICAÇÃO FINAL: Se não estamos criando
-      
-      abortar
       if (!isCreatingBrick) {
-        console.log('🛑 NÃO ESTAMOS CRIANDO BRICK - ABORTANDO')
+        console.log('MercadoPago: Brick creation aborted - not in creation state')
         return
       }
       
@@ -159,7 +159,7 @@ export default function MercadoPagoInline({
         return
       }
       
-      console.log('🎯 Criando Payment Brick - ÚNICO')
+      console.log('MercadoPago: Creating payment brick')
       
       const bricks = mp.bricks()
       
@@ -325,11 +325,11 @@ export default function MercadoPagoInline({
       const brick = await bricks.create('payment', CONTAINER_ID, settings)
       setBrickInstance(brick)
       
-      console.log('🎉 BRICK ÚNICO CRIADO COM SUCESSO!')
+      console.log('MercadoPago: Payment brick created successfully')
       
     } catch (error) {
-      console.error('❌ Erro ao inicializar MercadoPago Payment Bricks:', error)
-      setError('Erro ao carregar formulário de pagamento. Use a alternativa abaixo.')
+      console.error('MercadoPago: Error initializing payment brick:', error)
+      setError('Error loading payment form. Please try again or use the alternative option below.')
       setLoading(false)
       isCreatingBrick = false
       if (onError) onError(error)
@@ -347,7 +347,8 @@ export default function MercadoPagoInline({
     const applyGridLayout = () => {
       // Encontrar qualquer container que contenha métodos de pagamento
       const methodContainers = container.querySelectorAll('div')
-      methodContainers.forEach((div) => {
+      methodContainers.forEach((divElement) => {
+        const div = divElement as HTMLElement
         const children = div.children
         if (children.length >= 3 && children.length <= 6) {
           // Provavelmente é o container dos métodos
@@ -363,7 +364,8 @@ export default function MercadoPagoInline({
       // Estilizar métodos individuais com visual premium
 
       const paymentMethods = container.querySelectorAll('div[role="button"], div[tabindex], button, [onclick], .mp-payment-method, .cho-payment-method')
-      paymentMethods.forEach((method, index) => {
+      paymentMethods.forEach((methodElement, index) => {
+        const method = methodElement as HTMLElement
         const text = method.textContent?.toLowerCase() || ''
         
         // Identificar tipo de pagamento e personalizar

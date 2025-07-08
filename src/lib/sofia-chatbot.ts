@@ -68,7 +68,8 @@ export async function generateSofiaResponse(
     neutral: "Olá! 👋 Obrigada pelo comentário! Se tiver alguma dúvida sobre imigração, estamos aqui para ajudar. Acesse nossos materiais gratuitos! 📚"
   }
   
-  const content = responses[analysisResult.sentiment] || responses.neutral
+  const sentiment = analysisResult.sentiment as keyof typeof responses
+  const content = responses[sentiment] || responses.neutral
   
   return {
     content,
@@ -144,7 +145,8 @@ export async function generateBlogPost(topic: string): Promise<{
     }
   }
   
-  return templates[topic] || templates['visto-americano']
+  const validTopic = topic as keyof typeof templates
+  return templates[validTopic] || templates['visto-americano']
 }
 
 // Função alias para compatibilidade com código existente

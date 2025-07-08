@@ -6,16 +6,26 @@ import {
   Eye, Download, Trash2, RefreshCw, Brain, Sparkles
 } from 'lucide-react'
 
-interface Document {
+export type DocumentStatus = 'uploading' | 'analyzing' | 'valid' | 'invalid' | 'needs_review'
+
+interface BaseDocument {
   id: string
   name: string
   type: string
   size: number
-  status: 'uploading' | 'analyzing' | 'valid' | 'invalid' | 'needs_review'
+  uploadDate: Date
+  url: string
+  status: DocumentStatus
   aiScore?: number
   feedback?: string
-  url?: string
-  uploadDate: Date
+}
+
+export type Document = BaseDocument
+
+function isProcessedDocument(doc: Document): boolean {
+  return (doc.status === 'valid' || doc.status === 'invalid' || doc.status === 'needs_review') &&
+         typeof doc.aiScore === 'number' && 
+         typeof doc.feedback === 'string';
 }
 
 interface DocumentUploadProps {
@@ -48,7 +58,24 @@ export default function DocumentUpload({
   existingDocuments = [],
   maxFiles = 20
 }: DocumentUploadProps) {
-  const [documents, setDocuments] = useState<Document[]>(existingDocuments)
+  const [documents, setDocuments] = useState<Document[]>(existingDocuments.map(doc => {
+    const baseDoc = {
+      ...doc,
+      url: doc.url ?? '#'
+    };
+    
+    if (doc.status === 'valid' || doc.status === 'invalid' || doc.status === 'needs_review') {
+              return {
+                ...baseDoc,
+                aiScore: doc.aiScore ?? 0,
+                feedback: doc.feedback ?? ''
+              };
+            }
+            if (doc.status === 'analyzing') {
+              return baseDoc;
+            }
+            return baseDoc;
+  }));
   const [isDragging, setIsDragging] = useState(false)
   const [selectedType, setSelectedType] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -85,7 +112,8 @@ export default function DocumentUpload({
         type: type || selectedType || 'other',
         size: file.size,
         status: 'uploading',
-        uploadDate: new Date()
+        uploadDate: new Date(),
+        url: '#'
       }
 
       newDocuments.push(document)
@@ -100,9 +128,17 @@ export default function DocumentUpload({
         // Simulate upload progress
         await new Promise(resolve => setTimeout(resolve, 1000))
         
-        setDocuments(prev => prev.map(d => 
-          d.id === doc.id ? { ...d, status: 'analyzing' } : d
-        ))
+          setDocuments(prev => prev.map(d => {
+            if (d.id === doc.id) {
+              const { aiScore, feedback, ...rest } = d;
+              return {
+                ...rest,
+                status: 'analyzing',
+                url: files[0] ? URL.createObjectURL(files[0]) : '#'
+              }
+            }
+            return d
+          }))
 
         // Simulate AI analysis
 
@@ -115,20 +151,40 @@ export default function DocumentUpload({
         const feedback = generateAIFeedback(doc.type, aiScore)
         const status = aiScore >= 90 ? 'valid' : aiScore >= 75 ? 'needs_review' : 'invalid'
 
-        setDocuments(prev => prev.map(d => 
-          d.id === doc.id ? { 
-            ...d, 
-            status,
-            aiScore,
-            feedback,
-            url: files[0] ? URL.createObjectURL(files[0]) : undefined
-          } : d
-        ))
+          setDocuments(prev => prev.map(d => {
+            if (d.id === doc.id) {
+              return {
+                id: d.id,
+                name: d.name,
+                type: d.type,
+                size: d.size,
+                status,
+                uploadDate: d.uploadDate,
+                url: files[0] ? URL.createObjectURL(files[0]) : '#',
+                aiScore,
+                feedback
+              }
+            }
+            return d
+          }))
         
       } catch (error) {
-        setDocuments(prev => prev.map(d => 
-          d.id === doc.id ? { ...d, status: 'invalid', feedback: 'Erro no upload' } : d
-        ))
+          setDocuments(prev => prev.map(d => {
+            if (d.id === doc.id) {
+              return {
+                id: d.id,
+                name: d.name,
+                type: d.type,
+                size: d.size,
+                status: 'invalid',
+                uploadDate: new Date(),
+                url: d.url,
+                aiScore: 0,
+                feedback: 'Erro no upload'
+              };
+            }
+            return d;
+          }))
       }
     }
     
@@ -181,29 +237,49 @@ export default function DocumentUpload({
     onDocumentsChange(updatedDocs)
   }
 
-  const reanalyzeDocument = async (id: string) => {
-    setDocuments(prev => prev.map(d => 
-      d.id === id ? { ...d, status: 'analyzing' } : d
-    ))
+    const reanalyzeDocument = async (id: string) => {
+      setDocuments(prev => prev.map(d => {
+        if (d.id === id) {
+          return {
+            id: d.id,
+            name: d.name,
+            type: d.type,
+            size: d.size,
+            status: 'analyzing',
+            uploadDate: new Date(),
+            url: d.url
+          };
+        }
+        return d;
+      }));
 
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const newScore = Math.floor(Math.random() * 30) + 70
-    const newFeedback = generateAIFeedback(
-      documents.find(d => d.id === id)?.type || 'other', 
-      newScore
-    )
-    const newStatus = newScore >= 90 ? 'valid' : newScore >= 75 ? 'needs_review' : 'invalid'
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const doc = documents.find(d => d.id === id);
+      if (!doc) return;
+      
+      const docType = doc.type || 'other';
+      const newScore = Math.floor(Math.random() * 30) + 70;
+      const newFeedback = generateAIFeedback(docType, newScore);
+      const newStatus = newScore >= 90 ? 'valid' : newScore >= 75 ? 'needs_review' : 'invalid';
 
-    setDocuments(prev => prev.map(d => 
-      d.id === id ? { 
-        ...d, 
-        status: newStatus,
-        aiScore: newScore,
-        feedback: newFeedback
-      } : d
-    ))
-  }
+      setDocuments(prev => prev.map(d => {
+        if (d.id === id) {
+          return {
+            id: d.id,
+            name: d.name,
+            type: d.type,
+            size: d.size,
+            status: newStatus,
+            uploadDate: new Date(),
+            url: d.url,
+            aiScore: newScore,
+            feedback: newFeedback
+          };
+        }
+        return d;
+      }));
+    }
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes'
@@ -416,29 +492,29 @@ export default function DocumentUpload({
                             <span>{doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString() : 'Data não disponível'}</span>
                           </div>
 
-                          {doc.aiScore && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <Sparkles className="h-4 w-4 text-purple-500" />
-                              <span className="text-sm font-medium text-purple-600">
-                                IA Score: {doc.aiScore}/100
-                              </span>
-                              <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-32">
-                                <div 
-                                  className={`h-2 rounded-full transition-all duration-500 ${
-                                    doc.aiScore >= 90 ? 'bg-green-500' :
-                                    doc.aiScore >= 75 ? 'bg-yellow-500' : 'bg-red-500'
-                                  }`}
-                                  style={{ width: `${doc.aiScore}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          )}
+          {isProcessedDocument(doc) && doc.aiScore !== undefined && doc.feedback !== undefined && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                <span className="text-sm font-medium text-purple-600">
+                  IA Score: {doc.aiScore}/100
+                </span>
+                <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-32">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      doc.aiScore >= 90 ? 'bg-green-500' :
+                      doc.aiScore >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${doc.aiScore}%` }}
+                  ></div>
+                </div>
+              </div>
 
-                          {doc.feedback && (
-                            <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700">
-                              <strong>💬 Feedback da IA:</strong> {doc.feedback}
-                            </div>
-                          )}
+              <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700">
+                <strong>💬 Feedback da IA:</strong> {doc.feedback}
+              </div>
+            </>
+          )}
                         </div>
                       </div>
 

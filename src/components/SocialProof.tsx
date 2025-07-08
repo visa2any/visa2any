@@ -113,21 +113,21 @@ export default function SocialProof() {
       const flags = ['🇺🇸', '🇨🇦', '🇦🇺', '🇬🇧', '🇫🇷', '🇩🇪']
       const types: ('approval' | 'consultation' | 'signup')[] = ['approval', 'consultation', 'signup']
       
-      const randomName = names[Math.floor(Math.random() * names.length)]
-      const randomCountry = countries[Math.floor(Math.random() * countries.length)]
-      const randomFlag = flags[Math.floor(Math.random() * flags.length)]
-      const randomType = types[Math.floor(Math.random() * types.length)]
+      const randomName = names[Math.floor(Math.random() * names.length)] || 'Cliente'
+      const randomCountry = countries[Math.floor(Math.random() * countries.length)] || 'País'
+      const randomFlag = flags[Math.floor(Math.random() * flags.length)] || '🌎'
+      const randomType = types[Math.floor(Math.random() * types.length)] || 'approval'
       
       let message = ''
       switch (randomType) {
         case 'approval':
-          message = `${randomName} ${randomName.slice(-1)}. acabou de ter seu visto aprovado! 🎉`
+          message = `${randomName} ${randomName?.slice(-1) ?? ''}. acabou de ter seu visto aprovado! 🎉`
           break
         case 'consultation':
-          message = `${randomName} ${randomName.slice(-1)}. agendou consultoria gratuita`
+          message = `${randomName} ${randomName?.slice(-1) ?? ''}. agendou consultoria gratuita`
           break
         case 'signup':
-          message = `${randomName} ${randomName.slice(-1)}. se cadastrou na plataforma`
+          message = `${randomName} ${randomName?.slice(-1) ?? ''}. se cadastrou na plataforma`
           break
       }
 
@@ -143,7 +143,8 @@ export default function SocialProof() {
       setNotifications(prev => [newNotification, ...prev.slice(0, 9)])
     }
 
-    const statsInterval = setInterval(updateStats, 30000) // 30 segundos,    const notificationInterval = setInterval(addNotification, 15000) // 15 segundos
+    const statsInterval = setInterval(updateStats, 30000) // 30 segundos
+    const notificationIntervalRef = setInterval(addNotification, 15000) // 15 segundos
 
     // Inicializa com notificações de exemplo
 
@@ -151,7 +152,9 @@ export default function SocialProof() {
 
     return () => {
       clearInterval(statsInterval)
-      clearInterval(notificationInterval)
+      if (notificationIntervalRef) {
+        clearInterval(notificationIntervalRef)
+      }
     }
   }, [mounted])
 
@@ -167,6 +170,7 @@ export default function SocialProof() {
 
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [notifications, currentNotification])
 
   const getNotificationIcon = (type: string) => {

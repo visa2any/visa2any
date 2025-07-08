@@ -132,7 +132,7 @@ export function calculateCommission(
   return {
     rate: rule.rate,
     amount,
-    bonus: rule.bonus
+    ...(rule.bonus ? { bonus: rule.bonus } : {})
   }
 }
 
@@ -195,7 +195,7 @@ export async function evaluateTierPromotion(affiliateId: string): Promise<{
       currentTier: affiliate.tier,
       recommendedTier,
       shouldPromote,
-      requirements
+      ...(requirements ? { requirements } : {})
     }
 
   } catch (error) {
@@ -225,8 +225,8 @@ export async function promoteTier(
 
     console.log(`Afiliado ${affiliateId} promovido para ${newTier}. Motivo: ${reason || 'Automático'}`)
 
-    // TODO: Enviar notificação para o afiliado,    // await sendTierPromotionNotification(affiliateId
- newTier)
+    // TODO: Enviar notificação para o afiliado
+    // await sendTierPromotionNotification(affiliateId, newTier)
 
   } catch (error) {
     console.error('Erro ao promover tier:', error)
@@ -393,10 +393,13 @@ export async function processMonthlyBonuses(month: number, year: number): Promis
           await prisma.affiliateCommission.create({
             data: {
               affiliateId: affiliate.id,
-              referralId: '', // Usar ID especial para bônus,              amount: bonus.bonusAmount,
+              referralId: 'BONUS-' + month + '-' + year,
+              amount: bonus.bonusAmount,
               status: 'APPROVED',
-              type: 'SUBSCRIPTION', // Tipo genérico para bônus,              description: `Bônus mensal - ${month}/${year}: ${bonus.reason}`,
-              dueDate: new Date(year, month, 15) // Pagamento no 15º do mês seguinte            }
+              type: 'SUBSCRIPTION', // Using SUBSCRIPTION as fallback for bonus records
+              description: `Bônus mensal - ${month}/${year}: ${bonus.reason}`,
+              dueDate: new Date(year, month, 15) // Pagamento no 15º do mês seguinte
+            }
           })
 
           // Atualizar saldos do afiliado

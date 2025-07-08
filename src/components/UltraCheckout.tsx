@@ -152,6 +152,7 @@ export default function UltraCheckout({
       const timeoutId = setTimeout(autoSave, 1000)
       return () => clearTimeout(timeoutId)
     }
+    return undefined
   }, [customerData, autoSave])
 
   // Upsells inteligentes e categorizados
@@ -241,7 +242,7 @@ export default function UltraCheckout({
   }
 
   useEffect(() => {
-    const hasRequiredFields = customerData.name && customerData.email && customerData.phone && customerData.terms
+    const hasRequiredFields = Boolean(customerData.name && customerData.email && customerData.phone && customerData.terms)
     const hasNoErrors = Object.values(formErrors).every(error => !error)
     setIsFormValid(hasRequiredFields && hasNoErrors)
   }, [customerData, formErrors])
