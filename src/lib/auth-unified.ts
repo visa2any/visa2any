@@ -304,17 +304,11 @@ export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSUL
     const user = await verifyUnifiedAuth(request)
     
     if (!user) {
-      return {
-        error: 'Não autorizado',
-        status: 401
-      }
+      return createUnifiedAuthError('Não autorizado', 401)
     }
 
     if (!allowedTypes.includes(user.type)) {
-      return {
-        error: 'Tipo de usuário não autorizado',
-        status: 403
-      }
+      return createUnifiedAuthError('Tipo de usuário não autorizado', 403)
     }
 
     return {
@@ -326,9 +320,16 @@ export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSUL
 
 // Helper para criar responses de erro de auth
 export function createUnifiedAuthError(message: string, status: number = 401) {
-  return Response.json(
-    { status }
-  )
+  return new Response(JSON.stringify({
+    success: false,
+    error: message,
+    status
+  }), {
+    status,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 }
 
 // Verificar se é admin
