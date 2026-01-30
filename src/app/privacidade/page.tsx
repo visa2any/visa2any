@@ -2,7 +2,7 @@
 export default function PrivacidadePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      
+
       <div className="page-content py-16">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -59,7 +59,7 @@ export default function PrivacidadePage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">4. Segurança dos Dados</h2>
               <p className="text-gray-600 leading-relaxed">
-                Implementamos medidas técnicas e organizacionais apropriadas para proteger seus dados contra 
+                Implementamos medidas técnicas e organizacionais apropriadas para proteger seus dados contra
                 acesso não autorizado, alteração, divulgação ou destruição, incluindo:
               </p>
               <ul className="list-disc list-inside text-gray-600 space-y-2 mt-4">
@@ -88,7 +88,7 @@ export default function PrivacidadePage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">6. Retenção de Dados</h2>
               <p className="text-gray-600 leading-relaxed">
-                Mantemos seus dados pelo tempo necessário para cumprir as finalidades para as quais foram coletados, 
+                Mantemos seus dados pelo tempo necessário para cumprir as finalidades para as quais foram coletados,
                 respeitando prazos legais e regulamentares aplicáveis aos serviços de consultoria e documentação.
               </p>
             </section>
@@ -96,7 +96,7 @@ export default function PrivacidadePage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">7. Cookies</h2>
               <p className="text-gray-600 leading-relaxed">
-                Utilizamos cookies para melhorar sua experiência em nosso site, analisar o tráfego e personalizar 
+                Utilizamos cookies para melhorar sua experiência em nosso site, analisar o tráfego e personalizar
                 conteúdo. Você pode gerenciar suas preferências de cookies através das configurações do seu navegador.
               </p>
             </section>
@@ -104,22 +104,22 @@ export default function PrivacidadePage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">8. Contato do Encarregado de Dados</h2>
               <p className="text-gray-600 leading-relaxed">
-                Para exercer seus direitos ou esclarecer dúvidas sobre esta política, entre em contato com nosso 
-                Encarregado de Proteção de Dados através do email: <strong>privacidade@visa2any.com</strong>
+                Para exercer seus direitos ou esclarecer dúvidas sobre esta política, entre em contato com nosso
+                Encarregado de Proteção de Dados através do email: <strong>visa2any@gmail.com</strong>
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold mb-4">9. Alterações nesta Política</h2>
               <p className="text-gray-600 leading-relaxed">
-                Esta política pode ser atualizada periodicamente. Notificaremos sobre mudanças significativas 
+                Esta política pode ser atualizada periodicamente. Notificaremos sobre mudanças significativas
                 através dos nossos canais de comunicação.
               </p>
             </section>
           </div>
         </div>
       </div>
-      
+
     </div>
   )
 }

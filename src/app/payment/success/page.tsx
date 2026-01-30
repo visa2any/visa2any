@@ -17,11 +17,11 @@ function SuccessContent() {
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-green-600" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           🎉 Pagamento Aprovado!
         </h1>
-        
+
         <p className="text-gray-600 mb-6">
           Seu pagamento foi processado com sucesso! Você receberá a confirmação por email em alguns minutos.
         </p>
@@ -38,7 +38,7 @@ function SuccessContent() {
             <Mail className="w-5 h-5 mr-2" />
             <span className="text-sm">Email de confirmação enviado</span>
           </div>
-          
+
           <div className="flex items-center justify-center text-blue-600 bg-blue-50 rounded-lg p-3">
             <MessageCircle className="w-5 h-5 mr-2" />
             <span className="text-sm">WhatsApp de boas-vindas enviado</span>
@@ -53,7 +53,7 @@ function SuccessContent() {
             Acessar Área do Cliente
             <ArrowRight className="w-5 h-5 ml-2" />
           </Link>
-          
+
           <Link
             href="/"
             className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors block"
@@ -65,7 +65,7 @@ function SuccessContent() {
         <div className="mt-6 text-xs text-gray-500">
           <p>Dúvidas? Entre em contato:</p>
           <p>📱 WhatsApp: 11-5194-4717</p>
-          <p>📧 Email: info@visa2any.com</p>
+          <p>📧 Email: visa2any@gmail.com</p>
         </div>
       </div>
     </div>

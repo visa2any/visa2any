@@ -6,29 +6,32 @@ import { getPayment, mapPaymentStatus, processWebhook } from '@/lib/mercadopago'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Log do webhook recebido
     console.log('🔔 Webhook MercadoPago recebido:', JSON.stringify(body, null, 2))
 
     const webhookResult = processWebhook(body)
-    
+
     if (!webhookResult.success) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )}
+      )
+    }
 
     // Processar apenas webhooks de pagamento
     if (webhookResult.type !== 'payment') {
-      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })}
-    
+      return NextResponse.json({ status: 'ignored', reason: 'not a payment event' })
+    }
+
     const paymentId = webhookResult.payment_id
-    
+
     if (!paymentId) {
       return NextResponse.json(
         { error: 'ID do pagamento não encontrado' },
         { status: 400 }
-      )}
+      )
+    }
 
     // Buscar informações do pagamento no MercadoPago
     const mpPaymentResult = await getPayment(paymentId)
@@ -38,8 +41,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Erro interno do servidor' },
         { status: 500 }
-      )}
-    
+      )
+    }
+
     const mpPayment = mpPaymentResult.payment
 
     if (!mpPayment) {
@@ -56,8 +60,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Encontrar pagamento no nosso banco pelo transactionId
-    const payment = await prisma.payment.findFirst({
+    // Encontrar pagamento no nosso banco
+    // 1. Tentar pelo transactionId (caso já tenha sido atualizado antes)
+    let payment = await prisma.payment.findFirst({
       where: {
         transactionId: mpPayment.id.toString()
       },
@@ -65,13 +70,27 @@ export async function POST(request: NextRequest) {
         client: true
       }
     })
-    
+
+    // 2. Se não encontrou, tentar pelo external_reference (que deve ser nosso ID)
+    if (!payment && mpPayment.external_reference) {
+      console.log(`Pagamento não encontrado por transactionId. Tentando external_reference: ${mpPayment.external_reference}`)
+      payment = await prisma.payment.findUnique({
+        where: {
+          id: mpPayment.external_reference
+        },
+        include: {
+          client: true
+        }
+      })
+    }
+
     if (!payment) {
-      console.error('Pagamento não encontrado no banco:', mpPayment.id)
+      console.error('Pagamento não encontrado no banco (TransactionId ou ExternalRef):', mpPayment.id, mpPayment.external_reference)
       return NextResponse.json(
         { error: 'Pagamento não encontrado' },
         { status: 404 }
-      )}
+      )
+    }
 
     // Mapear status do MercadoPago para nosso sistema
     const newStatus = mapPaymentStatus(mpPayment.status || 'pending')
@@ -105,12 +124,12 @@ export async function POST(request: NextRequest) {
     if (newStatus === 'COMPLETED' && !wasCompleted) {
       await processPaymentSuccess(updatedPayment);
     }
-    
+
     return NextResponse.json({ success: true });
 
   } catch (error) {
     console.error('Erro ao processar webhook MercadoPago:', error);
-    
+
     // Log do erro
     await prisma.automationLog.create({
       data: {
@@ -123,7 +142,7 @@ export async function POST(request: NextRequest) {
         },
         success: false
       }
-    }).catch(() => {}); // Não falhar se log não funcionar
+    }).catch(() => { }); // Não falhar se log não funcionar
 
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
@@ -138,7 +157,7 @@ async function processPaymentSuccess(payment: any) {
     // 1. Atualizar status do cliente
     await prisma.client.update({
       where: { id: payment.clientId },
-      data: { 
+      data: {
         status: 'IN_PROCESS'
       }
     });
@@ -187,15 +206,15 @@ async function processPaymentSuccess(payment: any) {
 
     // 4. Criar consultoria se aplicável
     const consultationTypes = ['consultoria-express', 'servico-vip'];
-    
+
     if (consultationTypes.some(type => payment.productId.includes(type))) {
       const existingConsultation = await prisma.consultation.findFirst({
-        where: { 
+        where: {
           clientId: payment.clientId,
           status: { in: ['SCHEDULED', 'IN_PROGRESS'] }
         }
       });
-      
+
       if (!existingConsultation) {
         await prisma.consultation.create({
           data: {
@@ -225,7 +244,7 @@ async function processPaymentSuccess(payment: any) {
 
   } catch (error) {
     console.error('Erro ao processar automações do pagamento:', error);
-    
+
     await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS_ERROR',
@@ -237,7 +256,7 @@ async function processPaymentSuccess(payment: any) {
         },
         success: false
       }
-    }).catch(() => {});
+    }).catch(() => { });
   }
 }
 

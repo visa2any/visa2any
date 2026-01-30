@@ -18,7 +18,7 @@ export default function Footer() {
             </Button>
           </a>
         </div>
-        
+
         <div className="grid lg:grid-cols-6 md:grid-cols-3 gap-8">
           {/* Empresa */}
           <div className="lg:col-span-2">
@@ -27,10 +27,10 @@ export default function Footer() {
               <span className="text-2xl font-bold">Visa2Any</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              🏆 <strong>Referência em assessoria internacional</strong> desde 2009. 
+              🏆 <strong>Referência em assessoria internacional</strong> desde 2009.
               Tecnologia IA + expertise humana para aprovar seu visto.
             </p>
-            
+
             {/* Métricas de autoridade */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="text-center bg-white/5 rounded-lg p-3">
@@ -42,10 +42,10 @@ export default function Footer() {
                 <div className="text-xs text-gray-400">Taxa Sucesso</div>
               </div>
             </div>
-            
+
             {/* Redes sociais otimizadas */}
             <div className="flex space-x-3">
-              <a href="https://wa.me/5511519447117" target="_blank" className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-700 transition-colors group">
+              <a href="https://wa.me/551151971375" target="_blank" className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-700 transition-colors group">
                 <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a href="https://instagram.com/visa2any" target="_blank" className="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-pink-700 transition-colors group">
@@ -56,7 +56,7 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          
+
           {/* Serviços */}
           <div>
             <h3 className="text-lg font-semibold mb-6 text-blue-400">🛠️ Serviços</h3>
@@ -68,7 +68,7 @@ export default function Footer() {
               <li><a href="/assessoria-juridica" className="hover:text-white transition-colors hover:underline">⚖️ Assessoria Jurídica</a></li>
             </ul>
           </div>
-          
+
           {/* Documentação */}
           <div>
             <h3 className="text-lg font-semibold mb-6 text-purple-400">📄 Documentação</h3>
@@ -80,7 +80,7 @@ export default function Footer() {
               <li><a href="/sobre" className="hover:text-white transition-colors hover:underline">ℹ️ Sobre Nós</a></li>
             </ul>
           </div>
-          
+
           {/* Programa de Afiliados */}
           <div>
             <h3 className="text-lg font-semibold mb-6 text-yellow-400">💰 Parceiros</h3>
@@ -98,21 +98,21 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-6 text-green-400">📞 Suporte & FAQ</h3>
             <ul className="space-y-4 text-gray-300">
               <li>
-                <a href="https://wa.me/5511519447117" target="_blank" className="flex items-center gap-2 hover:text-green-400 transition-colors group">
+                <a href="https://wa.me/551151971375" target="_blank" className="flex items-center gap-2 hover:text-green-400 transition-colors group">
                   <MessageCircle className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   <span className="font-medium">WhatsApp 24/7</span>
                 </a>
               </li>
               <li>
-                <a href="tel:+5511519447117" className="flex items-center gap-2 hover:text-blue-400 transition-colors group">
+                <a href="tel:+551151971375" className="flex items-center gap-2 hover:text-blue-400 transition-colors group">
                   <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   <span className="font-medium">Telefone</span>
                 </a>
               </li>
               <li>
-                <a href="mailto:info@visa2any.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors group">
+                <a href="mailto:visa2any@gmail.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors group">
                   <span className="text-sm">📧</span>
-                  <span>info@visa2any.com</span>
+                  <span>visa2any@gmail.com</span>
                 </a>
               </li>
               <li>
@@ -127,7 +127,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        
+
         {/* Links legais e copyright */}
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -144,7 +144,7 @@ export default function Footer() {
               © 2024-2025 Visa2Any. Todos os direitos reservados.
             </div>
           </div>
-          
+
           {/* Certificações */}
           <div className="mt-6 text-center">
             <div className="flex justify-center items-center gap-6 text-xs text-gray-500">

@@ -4,7 +4,7 @@ import { MessageCircle, Phone, Mail, MapPin, Clock, Globe } from 'lucide-react'
 export default function ContatoPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      
+
       <div className="page-content py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -18,7 +18,7 @@ export default function ContatoPage() {
             {/* Informações de Contato */}
             <div>
               <h2 className="text-2xl font-bold mb-6">Fale Conosco</h2>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -27,8 +27,8 @@ export default function ContatoPage() {
                   <div>
                     <h3 className="font-bold text-lg mb-2">WhatsApp</h3>
                     <p className="text-gray-600 mb-2">Atendimento 24/7 para emergências</p>
-                    <a 
-                      href="https://wa.me/5511519447117" 
+                    <a
+                      href="https://wa.me/5511519447117"
                       target="_blank"
                       className="text-green-600 hover:text-green-700 font-semibold"
                     >
@@ -44,11 +44,11 @@ export default function ContatoPage() {
                   <div>
                     <h3 className="font-bold text-lg mb-2">Email</h3>
                     <p className="text-gray-600 mb-2">Resposta em até 2 horas</p>
-                    <a 
-                      href="mailto:contato@visa2any.com" 
+                    <a
+                      href="mailto:visa2any@gmail.com"
                       className="text-blue-600 hover:text-blue-700 font-semibold"
                     >
-                      contato@visa2any.com
+                      visa2any@gmail.com
                     </a>
                   </div>
                 </div>
@@ -85,14 +85,14 @@ export default function ContatoPage() {
             {/* Formulário de Contato */}
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold mb-6">Envie sua Mensagem</h2>
-              
+
               <form className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Nome Completo
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Seu nome completo"
                   />
@@ -102,8 +102,8 @@ export default function ContatoPage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email
                   </label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="seu@email.com"
                   />
@@ -113,8 +113,8 @@ export default function ContatoPage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Telefone/WhatsApp
                   </label>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="(11) 99999-9999"
                   />
@@ -138,7 +138,7 @@ export default function ContatoPage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Mensagem
                   </label>
-                  <textarea 
+                  <textarea
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Descreva como podemos ajudá-lo..."
@@ -155,23 +155,23 @@ export default function ContatoPage() {
           {/* FAQ Rápido */}
           <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
             <h2 className="text-2xl font-bold mb-6 text-center">Perguntas Frequentes</h2>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-bold text-lg mb-2">Quanto tempo demora o processo?</h3>
                 <p className="text-gray-600">Varia por país, mas em média 4-12 semanas para documentação completa.</p>
               </div>
-              
+
               <div>
                 <h3 className="font-bold text-lg mb-2">Oferecem garantia?</h3>
                 <p className="text-gray-600">Sim, garantia de aprovação ou reembolso integral em nossos pacotes premium.</p>
               </div>
-              
+
               <div>
                 <h3 className="font-bold text-lg mb-2">Atendem emergências?</h3>
                 <p className="text-gray-600">Sim, temos serviços expressos e atendimento 24/7 via WhatsApp para urgências.</p>
               </div>
-              
+
               <div>
                 <h3 className="font-bold text-lg mb-2">Primeira consulta é gratuita?</h3>
                 <p className="text-gray-600">Sim, análise inicial de 15 minutos totalmente gratuita e sem compromisso.</p>
@@ -180,7 +180,7 @@ export default function ContatoPage() {
           </div>
         </div>
       </div>
-      
+
     </div>
   )
 }

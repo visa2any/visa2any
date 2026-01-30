@@ -77,7 +77,7 @@ export default function RootLayout({
         <ConditionalLayout>
           {children}
         </ConditionalLayout>
-        
+
         {/* Analytics Scripts */}
         <Script id="gtag-base" strategy="afterInteractive">
           {`
@@ -86,7 +86,7 @@ export default function RootLayout({
             gtag('js', new Date());
           `}
         </Script>
-        
+
         {/* Schema.org Organization + Service */}
         <Script id="organization-schema" type="application/ld+json">
           {`
@@ -104,7 +104,7 @@ export default function RootLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+55-11-9999-9999",
+                "telephone": "+55-11-5197-1375",
                 "contactType": "customer service",
                 "availableLanguage": ["Portuguese", "English"]
               },
@@ -116,7 +116,7 @@ export default function RootLayout({
             }
           `}
         </Script>
-        
+
         {/* Schema.org Service */}
         <Script id="service-schema" type="application/ld+json">
           {`
@@ -161,7 +161,7 @@ export default function RootLayout({
             }
           `}
         </Script>
-        
+
         {/* Schema.org FAQPage */}
         <Script id="faq-schema" type="application/ld+json">
           {`

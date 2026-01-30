@@ -1,0 +1,1 @@
+﻿{"error":"Test execution failed","details":"\nInvalid `prisma.client.upsert()` invocation:\n\n\nerror: Environment variable not found: DATABASE_URL.\n  -->  schema.prisma:9\n   | \n 8 |   provider = \"sqlite\"\n 9 |   url      = env(\"DATABASE_URL\")\n   | \n\nValidation Error Count: 1"}

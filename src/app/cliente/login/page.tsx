@@ -41,13 +41,13 @@ export default function CustomerLogin() {
         localStorage.setItem('customer-token', 'demo-token-123')
         localStorage.setItem('customer', JSON.stringify(mockCustomerData))
       }
-      
+
       console.log('✅ Login de demonstração realizado com sucesso')
-      
+
       // Redirecionar para o dashboard
-      
+
       router.push('/cliente')
-      
+
     } catch (error) {
       console.error('Erro na autenticação:', error)
       setError('Erro de conexão. Tente novamente.')
@@ -251,7 +251,7 @@ export default function CustomerLogin() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Precisa de ajuda? {' '}
-            <a href="mailto:suporte@visa2any.com" className="text-blue-600 hover:text-blue-500">
+            <a href="mailto:visa2any@gmail.com" className="text-blue-600 hover:text-blue-500">
               Entre em contato
             </a>
           </p>

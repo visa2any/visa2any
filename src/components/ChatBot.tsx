@@ -157,7 +157,7 @@ export default function ChatBot() {
     },
     {
       id: 'australia',
-      text: '🇦🇺 Austrália', 
+      text: '🇦🇺 Austrália',
       action: () => handleCountrySelection('Austrália')
     },
     {
@@ -200,7 +200,7 @@ export default function ChatBot() {
           action: () => handleAIConsultation()
         },
         {
-          id: 'human-consultation', 
+          id: 'human-consultation',
           text: '👨‍💼 Consultoria Humana - Agendada',
           action: () => handleHumanConsultation()
         }
@@ -273,12 +273,12 @@ export default function ChatBot() {
         {
           id: 'whatsapp',
           text: '📱 Enviar WhatsApp',
-          action: () => window.open('https://wa.me/5511999999999?text=Olá! Vim do site da Visa2Any e gostaria de falar com um especialista sobre vistos.', '_blank')
+          action: () => window.open('https://wa.me/551151971375?text=Olá! Vim do site da Visa2Any e gostaria de falar com um especialista sobre vistos.', '_blank')
         },
         {
           id: 'phone',
           text: '📞 Ligação',
-          action: () => window.open('tel:+5511999999999')
+          action: () => window.open('tel:+551151971375')
         }
       ]
     )
@@ -297,7 +297,7 @@ export default function ChatBot() {
   const handleCountrySelection = (country: string) => {
     setUserData(prev => ({ ...prev, country }))
     addUserMessage(country)
-    
+
     const visaType = userData.visaType || 'este tipo de visto'
     addBotMessage(
       `Perfeito! ${country} é um destino muito procurado para ${visaType}. ` +
@@ -335,7 +335,7 @@ export default function ChatBot() {
     addUserMessage('Quero mais informações')
     const country = userData.country || 'este país'
     const visaType = userData.visaType || 'este visto'
-    
+
     addBotMessage(
       `📋 **Informações sobre ${visaType} para ${country}:**\n\n` +
       `✅ **Taxa de aprovação:** 98%\n` +
@@ -352,7 +352,7 @@ export default function ChatBot() {
         {
           id: 'whatsapp-info',
           text: '📱 Receber por WhatsApp',
-          action: () => window.open('https://wa.me/5511999999999?text=Quero receber informações sobre vistos e assessoria internacional.', '_blank')
+          action: () => window.open('https://wa.me/551151971375?text=Quero receber informações sobre vistos e assessoria internacional.', '_blank')
         }
       ]
     )
@@ -360,9 +360,9 @@ export default function ChatBot() {
 
   const getIntelligentResponse = (message: string) => {
     const lowerMessage = message.toLowerCase()
-    
+
     // Análise de sentimento e intenção
-    
+
     const keywords = {
       pricing: ['preço', 'valor', 'custo', 'quanto', 'custa', 'barato', 'caro', 'investimento', 'pagar'],
       time: ['tempo', 'prazo', 'demora', 'rapidez', 'quanto tempo', 'quando', 'urgente', 'rápido'],
@@ -379,7 +379,7 @@ export default function ChatBot() {
 
     let intent = 'general'
     let confidence = 0
-    
+
     for (const [key, words] of Object.entries(keywords)) {
       const matches = words.filter(word => lowerMessage.includes(word)).length
       const score = matches / words.length
@@ -395,11 +395,11 @@ export default function ChatBot() {
       case 'pricing':
         return {
           text: "💰 **Nossos preços são transparentes e competitivos:**\n\n" +
-                "🆓 **Análise Gratuita** - Começe sem gastar nada\n" +
-                "📄 **Relatório Premium** - R$ 97 a R$ 497 (varia por país)\n" +
-                "👨‍💼 **Consultoria 1:1** - R$ 297 a R$ 797\n" +
-                "👑 **Serviço VIP** - R$ 1.497 a R$ 4.997\n\n" +
-                "💡 O preço varia conforme país e complexidade. Quer uma cotação específica?",
+            "🆓 **Análise Gratuita** - Começe sem gastar nada\n" +
+            "📄 **Relatório Premium** - R$ 97 a R$ 497 (varia por país)\n" +
+            "👨‍💼 **Consultoria 1:1** - R$ 297 a R$ 797\n" +
+            "👑 **Serviço VIP** - R$ 1.497 a R$ 4.997\n\n" +
+            "💡 O preço varia conforme país e complexidade. Quer uma cotação específica?",
           options: [
             { id: 'pricing-calc', text: '🧮 Calcular meu preço', action: () => window.open('/precos', '_blank') },
             { id: 'free-analysis', text: '🆓 Começar grátis', action: () => window.open('/consultoria-ia', '_blank') }
@@ -409,12 +409,12 @@ export default function ChatBot() {
       case 'time':
         return {
           text: "⏰ **Nossos prazos otimizados:**\n\n" +
-                "🚀 **Análise IA**: 15 minutos\n" +
-                "📋 **Relatório Premium**: Imediato\n" +
-                "👨‍💼 **Consultoria**: Agendamento em 24h\n" +
-                "📄 **Prep. Documentos**: 7-15 dias\n" +
-                "🏛️ **Processamento Oficial**: 15-45 dias (gov.)\n\n" +
-                "💡 Processos urgentes têm prioridade no serviço VIP!",
+            "🚀 **Análise IA**: 15 minutos\n" +
+            "📋 **Relatório Premium**: Imediato\n" +
+            "👨‍💼 **Consultoria**: Agendamento em 24h\n" +
+            "📄 **Prep. Documentos**: 7-15 dias\n" +
+            "🏛️ **Processamento Oficial**: 15-45 dias (gov.)\n\n" +
+            "💡 Processos urgentes têm prioridade no serviço VIP!",
           options: [
             { id: 'urgent-service', text: '🚨 Serviço Urgente', action: () => handleVipService() },
             { id: 'normal-timeline', text: '📅 Timeline Normal', action: () => handleConsultationRequest() }
@@ -424,10 +424,10 @@ export default function ChatBot() {
       case 'documents':
         return {
           text: "📋 **Documentos variam por país e tipo de visto:**\n\n" +
-                "🇺🇸 **EUA**: Passaporte, DS-160, foto, comprovantes financeiros\n" +
-                "🇨🇦 **Canadá**: Passaporte, formulários, biometria, exames\n" +
-                "🇵🇹 **Portugal**: Passaporte, PB4, comprovantes, seguro\n\n" +
-                "📊 Nossa análise identifica EXATAMENTE quais você precisa!",
+            "🇺🇸 **EUA**: Passaporte, DS-160, foto, comprovantes financeiros\n" +
+            "🇨🇦 **Canadá**: Passaporte, formulários, biometria, exames\n" +
+            "🇵🇹 **Portugal**: Passaporte, PB4, comprovantes, seguro\n\n" +
+            "📊 Nossa análise identifica EXATAMENTE quais você precisa!",
           options: [
             { id: 'doc-analysis', text: '📋 Ver meus documentos', action: () => handleEligibilityCheck() },
             { id: 'doc-templates', text: '📄 Templates gratuitos', action: () => handleDownloadGuide() }
@@ -438,11 +438,11 @@ export default function ChatBot() {
         const country = detectCountry(lowerMessage)
         return {
           text: `🌍 **${country || 'País de interesse'}:**\n\n` +
-                "✅ Temos especialistas para todos os destinos\n" +
-                "📊 Taxa de aprovação média: 95%\n" +
-                "🎯 Estratégias personalizadas por país\n" +
-                "📞 Consultores nativos disponíveis\n\n" +
-                "Quer saber sua elegibilidade específica?",
+            "✅ Temos especialistas para todos os destinos\n" +
+            "📊 Taxa de aprovação média: 95%\n" +
+            "🎯 Estratégias personalizadas por país\n" +
+            "📞 Consultores nativos disponíveis\n\n" +
+            "Quer saber sua elegibilidade específica?",
           options: [
             { id: 'country-analysis', text: `🎯 Analisar para ${country}`, action: () => handleEligibilityCheck() },
             { id: 'country-info', text: '📚 Informações detalhadas', action: () => handleMoreInfo() }
@@ -452,11 +452,11 @@ export default function ChatBot() {
       case 'success':
         return {
           text: "🏆 **Nossa taxa de sucesso é excepcional:**\n\n" +
-                "✅ **95% de aprovação geral**\n" +
-                "🇺🇸 EUA: 92% | 🇨🇦 Canadá: 97% | 🇵🇹 Portugal: 98%\n" +
-                "🎯 **+10.000 vistos aprovados**\n" +
-                "⭐ 4.9/5 estrelas de satisfação\n\n" +
-                "Nossa metodologia comprovada maximiza suas chances!",
+            "✅ **95% de aprovação geral**\n" +
+            "🇺🇸 EUA: 92% | 🇨🇦 Canadá: 97% | 🇵🇹 Portugal: 98%\n" +
+            "🎯 **+10.000 vistos aprovados**\n" +
+            "⭐ 4.9/5 estrelas de satisfação\n\n" +
+            "Nossa metodologia comprovada maximiza suas chances!",
           options: [
             { id: 'testimonials', text: '💬 Ver depoimentos', action: () => window.open('/#depoimentos', '_blank') },
             { id: 'start-process', text: '🚀 Começar agora', action: () => handleEligibilityCheck() }
@@ -466,11 +466,11 @@ export default function ChatBot() {
       case 'difficulty':
         return {
           text: "😰 **Casos complexos são nossa especialidade:**\n\n" +
-                "🔧 Perfis desafiadores: Nossa expertise\n" +
-                "📈 Estratégias de fortalecimento\n" +
-                "🎯 Abordagens alternativas\n" +
-                "👨‍💼 Consultores senior especializados\n\n" +
-                "📞 Não desista! Vamos encontrar uma solução juntos.",
+            "🔧 Perfis desafiadores: Nossa expertise\n" +
+            "📈 Estratégias de fortalecimento\n" +
+            "🎯 Abordagens alternativas\n" +
+            "👨‍💼 Consultores senior especializados\n\n" +
+            "📞 Não desista! Vamos encontrar uma solução juntos.",
           options: [
             { id: 'complex-case', text: '🆘 Caso complexo', action: () => handleComplexCase() },
             { id: 'specialist-call', text: '📞 Falar com especialista', action: () => handleHumanAgent() }
@@ -480,25 +480,25 @@ export default function ChatBot() {
       case 'urgent':
         return {
           text: "🚨 **Casos urgentes - Serviço Expresso:**\n\n" +
-                "⚡ Prioridade máxima\n" +
-                "📞 Atendimento imediato\n" +
-                "🏃‍♂️ Processamento acelerado\n" +
-                "📋 Documentação expressa\n\n" +
-                "💡 Serviço VIP garante máxima agilidade!",
+            "⚡ Prioridade máxima\n" +
+            "📞 Atendimento imediato\n" +
+            "🏃‍♂️ Processamento acelerado\n" +
+            "📋 Documentação expressa\n\n" +
+            "💡 Serviço VIP garante máxima agilidade!",
           options: [
             { id: 'urgent-vip', text: '🚨 Serviço VIP Urgente', action: () => handleVipService() },
-            { id: 'urgent-call', text: '📞 Ligar agora', action: () => window.open('tel:+5511999999999') }
+            { id: 'urgent-call', text: '📞 Ligar agora', action: () => window.open('tel:+551151971375') }
           ]
         }
 
       case 'help':
         return {
           text: "🤝 **Estou aqui para te guiar:**\n\n" +
-                "1️⃣ **Primeiro**: Análise gratuita (15min)\n" +
-                "2️⃣ **Segundo**: Relatório personalizado\n" +
-                "3️⃣ **Terceiro**: Consultoria especializada\n" +
-                "4️⃣ **Quarto**: Execução completa\n\n" +
-                "📞 Ou fale direto com um humano!",
+            "1️⃣ **Primeiro**: Análise gratuita (15min)\n" +
+            "2️⃣ **Segundo**: Relatório personalizado\n" +
+            "3️⃣ **Terceiro**: Consultoria especializada\n" +
+            "4️⃣ **Quarto**: Execução completa\n\n" +
+            "📞 Ou fale direto com um humano!",
           options: [
             { id: 'step-by-step', text: '👣 Guia passo a passo', action: () => handleStepByStep() },
             { id: 'human-help', text: '🙋‍♂️ Falar com humano', action: () => handleHumanAgent() }
@@ -508,12 +508,12 @@ export default function ChatBot() {
       default:
         return {
           text: "🤖 **Sou Sofia, sua assistente de imigração!**\n\n" +
-                "Posso te ajudar com:\n" +
-                "🌍 Informações sobre qualquer país\n" +
-                "📋 Análise de elegibilidade\n" +
-                "💰 Cotações personalizadas\n" +
-                "📅 Agendamento de consultorias\n\n" +
-                "O que você gostaria de saber?",
+            "Posso te ajudar com:\n" +
+            "🌍 Informações sobre qualquer país\n" +
+            "📋 Análise de elegibilidade\n" +
+            "💰 Cotações personalizadas\n" +
+            "📅 Agendamento de consultorias\n\n" +
+            "O que você gostaria de saber?",
           options: getWelcomeOptions()
         }
     }
@@ -529,7 +529,7 @@ export default function ChatBot() {
       'frança': 'França', 'france': 'França',
       'italia': 'Itália', 'italy': 'Itália'
     }
-    
+
     for (const [key, value] of Object.entries(countries)) {
       if (message.includes(key)) return value
     }
@@ -548,7 +548,7 @@ export default function ChatBot() {
       "📞 Conectando com especialista VIP...",
       [
         { id: 'vip-pricing', text: '💎 Ver preços VIP', action: () => window.open('/precos', '_blank') },
-        { id: 'vip-call', text: '📞 Ligar para VIP', action: () => window.open('tel:+5511999999999') }
+        { id: 'vip-call', text: '📞 Ligar para VIP', action: () => window.open('tel:+551151971375') }
       ]
     )
   }
@@ -591,9 +591,9 @@ export default function ChatBot() {
 
     addUserMessage(inputValue)
     const message = inputValue.toLowerCase()
-    
+
     // Processamento inteligente baseado no step atual
-    
+
     if (currentStep === 'collect-name' || currentStep === 'collect-name-consultation' || currentStep === 'collect-name-analysis') {
       setUserData(prev => ({ ...prev, name: inputValue }))
       addBotMessage(
@@ -697,11 +697,10 @@ export default function ChatBot() {
                 className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-2xl ${
-                    message.isBot
+                  className={`max-w-[80%] p-3 rounded-2xl ${message.isBot
                       ? 'bg-gray-100 text-gray-800'
                       : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                  }`}
+                    }`}
                 >
                   {message.isBot && (
                     <div className="flex items-center mb-1">
@@ -710,7 +709,7 @@ export default function ChatBot() {
                     </div>
                   )}
                   <div className="whitespace-pre-line">{message.text}</div>
-                  
+
                   {/* Options */}
                   {message.options && (
                     <div className="mt-3 space-y-2">
@@ -728,7 +727,7 @@ export default function ChatBot() {
                 </div>
               </div>
             ))}
-            
+
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
@@ -738,14 +737,14 @@ export default function ChatBot() {
                     <span className="text-xs font-medium mr-2">Sofia</span>
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 

@@ -14,11 +14,11 @@ export default function SimpleFooter() {
               <span className="text-xl font-bold">Visa2Any</span>
             </div>
             <p className="text-gray-300 text-sm">
-              Referência em assessoria internacional desde 2009. 
+              Referência em assessoria internacional desde 2009.
               Tecnologia + expertise para aprovar seu visto.
             </p>
           </div>
-          
+
           {/* Links principais */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Serviços</h3>
@@ -28,13 +28,13 @@ export default function SimpleFooter() {
               <li><a href="/precos" className="hover:text-white transition-colors">Preços</a></li>
             </ul>
           </div>
-          
+
           {/* Contato */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contato</h3>
             <ul className="space-y-2 text-gray-300 text-sm">
               <li>WhatsApp: (11) 5194-47170</li>
-              <li>Email: contato@visa2any.com</li>
+              <li>Email: visa2any@gmail.com</li>
               <li className="flex items-center gap-1">
                 <Shield className="h-4 w-4" />
                 Checkout Seguro
@@ -42,7 +42,7 @@ export default function SimpleFooter() {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
           © 2024 Visa2Any. Todos os direitos reservados.
         </div>

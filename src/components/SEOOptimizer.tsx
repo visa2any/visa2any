@@ -24,7 +24,7 @@ interface SEOConfig {
 
 export function generateSEOMetadata(config: SEOConfig): Metadata {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'
-  
+
   return {
     title: config.title,
     description: config.description,
@@ -88,11 +88,11 @@ export const organizationSchema = {
   '@type': 'Organization',
   name: 'Visa2Any',
   url: 'https://visa2any.com',
-    logo: 'https://visa2any.com/logo.png',
-    description: 'Plataforma líder em assessoria de vistos, imigração e relocação internacional',
+  logo: 'https://visa2any.com/logo.png',
+  description: 'Plataforma líder em assessoria de vistos, imigração e relocação internacional',
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+55-11-99999-9999',
+    telephone: '+55-11-5197-1375',
     contactType: 'customer service',
     availableLanguage: ['Portuguese', 'English']
   },
@@ -188,7 +188,7 @@ export const faqSchema = {
   ]
 }
 
-export const breadcrumbSchema = (items: Array<{name: string, url: string}>) => ({
+export const breadcrumbSchema = (items: Array<{ name: string, url: string }>) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: items.map((item, index) => ({

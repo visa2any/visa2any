@@ -16,11 +16,11 @@ function FailureContent() {
         <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <XCircle className="w-10 h-10 text-red-600" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           ❌ Pagamento Não Aprovado
         </h1>
-        
+
         <p className="text-gray-600 mb-6">
           Ops! Seu pagamento não pôde ser processado. Isso pode acontecer por diversos motivos.
         </p>
@@ -44,7 +44,7 @@ function FailureContent() {
             <RefreshCw className="w-5 h-5 mr-2" />
             Tentar Novamente
           </Link>
-          
+
           <a
             href="https://wa.me/5511519447117?text=Olá! Tive problema no pagamento e gostaria de ajuda"
             target="_blank"
@@ -54,7 +54,7 @@ function FailureContent() {
             <MessageCircle className="w-5 h-5 mr-2" />
             Falar no WhatsApp
           </a>
-          
+
           <Link
             href="/"
             className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center"
@@ -68,7 +68,7 @@ function FailureContent() {
           <p><strong>💡 Dica:</strong> Experimente usar PIX para pagamento instantâneo!</p>
           <div className="mt-3">
             <p>📱 WhatsApp: (11) 5194-4717</p>
-            <p>📧 Email: info@visa2any.com</p>
+            <p>📧 Email: visa2any@gmail.com</p>
           </div>
         </div>
       </div>

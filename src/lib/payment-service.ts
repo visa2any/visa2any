@@ -3,6 +3,7 @@
 
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import type { PaymentCreateData } from 'mercadopago/dist/clients/payment/create/types'
+import { prisma } from '@/lib/prisma'
 
 interface PaymentRequest {
   trackingId: string
@@ -31,7 +32,7 @@ interface PaymentResponse {
 
 class PaymentService {
   private mercadoPago: MercadoPagoConfig
-  
+
   constructor() {
     // Configurar Mercado Pago
     this.mercadoPago = new MercadoPagoConfig({
@@ -47,7 +48,7 @@ class PaymentService {
   async createPixPayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
       const payment = new Payment(this.mercadoPago)
-      
+
       const paymentData = {
         transaction_amount: request.amount,
         description: request.description,
@@ -70,38 +71,40 @@ class PaymentService {
       }
 
       const result = await payment.create({ body: paymentData })
-      
+
       if (result.status === 'pending') {
         // Salvar no banco de dados
-          const record = {
-            trackingId: request.trackingId,
-            paymentId: result.id!.toString(),
-            amount: request.amount,
-            status: 'pending' as const,
-            ...(result.point_of_interaction?.transaction_data?.qr_code && { 
-              pixCode: result.point_of_interaction.transaction_data.qr_code 
-            }),
-            ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
-              pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
-            }),
-            expiresAt: this.calculateExpirationDate()
-          }
-          await this.savePaymentRecord(record)
+        const record = {
+          trackingId: request.trackingId,
+          paymentId: result.id!.toString(),
+          amount: request.amount,
+          status: 'pending' as const,
+          ...(result.point_of_interaction?.transaction_data?.qr_code && {
+            pixCode: result.point_of_interaction.transaction_data.qr_code
+          }),
+          ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
+            pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
+          }),
+          expiresAt: this.calculateExpirationDate(),
+          email: request.customerInfo.email,
+          clientName: request.customerInfo.name
+        }
+        await this.savePaymentRecord(record)
 
-          const expiresAt = this.calculateExpirationDate()
-          const response: PaymentResponse = {
-            success: true,
-            paymentId: result.id!.toString(),
-            status: 'pending',
-            ...(result.point_of_interaction?.transaction_data?.qr_code && {
-              pixCode: result.point_of_interaction.transaction_data.qr_code
-            }),
-            ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
-              pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
-            }),
-            expiresAt: expiresAt.toISOString()
-          }
-          return response
+        const expiresAt = this.calculateExpirationDate()
+        const response: PaymentResponse = {
+          success: true,
+          paymentId: result.id!.toString(),
+          status: 'pending',
+          ...(result.point_of_interaction?.transaction_data?.qr_code && {
+            pixCode: result.point_of_interaction.transaction_data.qr_code
+          }),
+          ...(result.point_of_interaction?.transaction_data?.qr_code_base64 && {
+            pixQrCode: result.point_of_interaction.transaction_data.qr_code_base64
+          }),
+          expiresAt: expiresAt.toISOString()
+        }
+        return response
       } else {
         return {
           success: false,
@@ -128,7 +131,7 @@ class PaymentService {
   }): Promise<PaymentResponse> {
     try {
       const payment = new Payment(this.mercadoPago)
-      
+
       const paymentData = {
         transaction_amount: request.amount,
         token: request.cardToken,
@@ -147,13 +150,15 @@ class PaymentService {
       }
 
       const result = await payment.create({ body: paymentData })
-      
+
       await this.savePaymentRecord({
         trackingId: request.trackingId,
         paymentId: result.id!.toString(),
         amount: request.amount,
         status: result.status as any || 'pending',
-        expiresAt: this.calculateExpirationDate()
+        expiresAt: this.calculateExpirationDate(),
+        email: request.customerInfo.email,
+        clientName: request.customerInfo.name || 'Cliente Cartão' // Nome pode não estar direto no customerInfo do request de cartao dependendo da interface, mas assumindo padrao
       })
 
       const response: PaymentResponse = {
@@ -234,7 +239,7 @@ class PaymentService {
     expiresAt?: string
   }> {
     const pricing = this.calculateServicePrice(serviceLevel)
-    
+
     const paymentRequest: PaymentRequest = {
       trackingId,
       amount: pricing.amount,
@@ -245,10 +250,10 @@ class PaymentService {
     }
 
     const pixPayment = await this.createPixPayment(paymentRequest)
-    
+
     if (pixPayment.success) {
       const paymentUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/payment/${trackingId}`
-      
+
       const response = {
         success: true,
         paymentUrl,
@@ -275,17 +280,85 @@ class PaymentService {
     pixCode?: string
     pixQrCode?: string
     expiresAt?: Date
+    email?: string
+    clientName?: string
   }) {
-    // Simulação de salvar no banco de dados
-    console.log('Salvando registro de pagamento:', data)
+    try {
+      // Encontrar ou criar cliente
+      let clientId = ''
+      if (data.email) {
+        let client = await prisma.client.findUnique({
+          where: { email: data.email }
+        })
+
+        if (!client) {
+          client = await prisma.client.create({
+            data: {
+              name: data.clientName || 'Cliente Checkout',
+              email: data.email,
+              status: 'LEAD',
+              source: 'payment_service'
+            }
+          })
+        }
+        clientId = client.id
+      }
+
+      if (!clientId) {
+        console.warn('Não foi possível vincular pagamento a um cliente: email não fornecido')
+        return
+      }
+
+      // Criar registro de pagamento
+      await prisma.payment.create({
+        data: {
+          // Se trackingId for um CUID válido, usar como ID? Não, trackingId é external_reference
+          // Vamos deixar o ID ser gerado automaticamente
+          transactionId: data.paymentId, // ID do Mercado Pago
+          amount: data.amount,
+          currency: 'BRL',
+          status: data.status === 'approved' ? 'COMPLETED' :
+            data.status === 'pending' ? 'PENDING' :
+              data.status === 'rejected' ? 'FAILED' : 'PENDING',
+          paymentMethod: data.pixCode ? 'PIX' : 'CREDIT_CARD',
+          clientId: clientId,
+          description: `Pagamento via Serviço (Tracking: ${data.trackingId})`,
+          dueDate: data.expiresAt
+        }
+      })
+
+      console.log('✅ Registro de pagamento salvo no banco')
+    } catch (error) {
+      console.error('Erro ao salvar pagamento no banco:', error)
+    }
   }
 
   private async updatePaymentStatus(
-    paymentId: string, 
+    paymentId: string,
     status: 'pending' | 'approved' | 'rejected' | 'cancelled'
   ) {
-    // Simulação de atualizar no banco de dados
-    console.log(`Atualizando status do pagamento ${paymentId} para ${status}`)
+    try {
+      const dbStatus = status === 'approved' ? 'COMPLETED' :
+        status === 'pending' ? 'PENDING' :
+          status === 'rejected' ? 'FAILED' : 'PENDING'
+
+      // Tentar encontrar pelo transactionId (Mercado Pago ID)
+      const payment = await prisma.payment.findFirst({
+        where: { transactionId: paymentId }
+      })
+
+      if (payment) {
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: { status: dbStatus }
+        })
+        console.log(`✅ Status do pagamento ${paymentId} atualizado para ${dbStatus}`)
+      } else {
+        console.warn(`Pagamento ${paymentId} não encontrado no banco para atualização`)
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status do pagamento:', error)
+    }
   }
 
   private calculateExpirationDate(): Date {
@@ -296,18 +369,18 @@ class PaymentService {
 
   async testIntegration(): Promise<{ success: boolean; mercadoPagoStatus: string; environment: string; }> {
     try {
-        // Simples verificação de conectividade
-        return {
-            success: true,
-            mercadoPagoStatus: 'ok',
-            environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
-        };
+      // Simples verificação de conectividade
+      return {
+        success: true,
+        mercadoPagoStatus: 'ok',
+        environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+      };
     } catch (error) {
-        return {
-            success: false,
-            mercadoPagoStatus: 'error',
-            environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
-        };
+      return {
+        success: false,
+        mercadoPagoStatus: 'error',
+        environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+      };
     }
   }
 }

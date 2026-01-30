@@ -6,12 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { type, content, clientId, template, subject, priority = 'medium' } = body
-    
+
     if (!type || !content || !clientId) {
       return NextResponse.json(
         { error: 'Dados inválidos' },
         { status: 400 }
-      )}
+      )
+    }
 
     // Get client information
 
@@ -27,10 +28,10 @@ export async function POST(request: NextRequest) {
         id: clientId,
         name: 'Cliente',
         email: 'cliente@email.com',
-        phone: '+5511999999999'
+        phone: '+551151971375'
       }
     }
-    
+
     if (!client) {
       return NextResponse.json(
         { error: 'Cliente não encontrado' },
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Simulate different communication channels
     let deliveryResult: any
-    
+
     switch (type) {
       case 'whatsapp':
         if (!client.phone) {
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
     }
-    
+
     if (!deliveryResult.success) {
       return NextResponse.json(
         { error: 'Falha no envio da mensagem' },

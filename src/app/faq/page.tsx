@@ -43,7 +43,7 @@ export default function FAQPage() {
           answer: "O tempo varia conforme o país e tipo de visto. Estados Unidos (B1/B2): 2-8 semanas após entrevista. Canadá (Express Entry): 6-12 meses para todo o processo. Portugal (D7): 3-6 meses. Austrália (Work/Study): 4-12 semanas. Reino Unido (Visitor): 3-6 semanas."
         },
         {
-          id: "q2", 
+          id: "q2",
           question: "Vocês garantem a aprovação do visto?",
           answer: "Sim! Oferecemos garantia de aprovação em nossos pacotes premium. Taxa de sucesso: 91.2% (muito acima da média do mercado). Garantia de reembolso: 100% se negado por falha em nossos serviços."
         },
@@ -70,7 +70,7 @@ export default function FAQPage() {
       ]
     },
     {
-      category: "Cidadania e Imigração", 
+      category: "Cidadania e Imigração",
       icon: "🏛️",
       questions: [
         {
@@ -102,7 +102,7 @@ export default function FAQPage() {
     },
     {
       category: "Documentação e Tradução",
-      icon: "📋", 
+      icon: "📋",
       questions: [
         {
           id: "q12",
@@ -136,7 +136,7 @@ export default function FAQPage() {
       icon: "💰",
       questions: [
         {
-          id: "q17", 
+          id: "q17",
           question: "Quais são as formas de pagamento aceitas?",
           answer: "Cartão de crédito: Visa, Mastercard, Elo, parcelamento até 12x. Transferências: PIX (instantâneo), TED/DOC, boleto. Pagamentos internacionais: PayPal, Wise, transferência bancária internacional. Transparência total: Sem taxas ocultas, impostos já inclusos."
         },
@@ -439,12 +439,12 @@ export default function FAQPage() {
 
   const filteredFAQ = faqData.map(category => ({
     ...category,
-    questions: category.questions.filter(q => 
+    questions: category.questions.filter(q =>
       (selectedCategory === 'all' || category.category === selectedCategory) &&
-      (searchTerm === '' || 
-       q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       q.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       category.category.toLowerCase().includes(searchTerm.toLowerCase())
+      (searchTerm === '' ||
+        q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        category.category.toLowerCase().includes(searchTerm.toLowerCase())
       )
     )
   })).filter(category => category.questions.length > 0)
@@ -454,7 +454,7 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      
+
       <div className="page-content py-16">
         <div className="max-w-7xl mx-auto px-4">
           {/* Hero Header */}
@@ -467,10 +467,10 @@ export default function FAQPage() {
               <span className="block text-blue-600">FAQ Completo</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-              Mais de {totalQuestions} respostas detalhadas sobre imigração, vistos, cidadania e todos nossos serviços especializados. 
+              Mais de {totalQuestions} respostas detalhadas sobre imigração, vistos, cidadania e todos nossos serviços especializados.
               Encontre tudo que precisa saber para sua jornada internacional.
             </p>
-            
+
             {/* Stats Pills */}
             {showStats && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto mb-12">
@@ -506,7 +506,7 @@ export default function FAQPage() {
                   />
                 </div>
               </div>
-              
+
               {/* Category Filter */}
               <div className="lg:w-80">
                 <select
@@ -523,7 +523,7 @@ export default function FAQPage() {
                 </select>
               </div>
             </div>
-            
+
             {/* Search Results Info */}
             {(searchTerm || selectedCategory !== 'all') && (
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
@@ -590,11 +590,11 @@ export default function FAQPage() {
                     </span>
                   </h2>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {category.questions.map((faq) => {
                     const isOpen = openItems[faq.id] || false
-                    
+
                     return (
                       <div key={faq.id} className="p-6 hover:bg-gray-50 transition-colors">
                         <button
@@ -617,7 +617,7 @@ export default function FAQPage() {
                             )}
                           </div>
                         </button>
-                        
+
                         {isOpen && (
                           <div className="mt-6 ml-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
                             <div className="flex items-start gap-3">
@@ -661,30 +661,30 @@ export default function FAQPage() {
                 Ainda tem dúvidas?
               </h2>
               <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                Nossa equipe de especialistas está disponível 24/7 para esclarecer todas suas questões. 
+                Nossa equipe de especialistas está disponível 24/7 para esclarecer todas suas questões.
                 Mais de 15.000 clientes satisfeitos confiam em nossos serviços.
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a 
-                  href="https://wa.me/5511519447117" 
+                <a
+                  href="https://wa.me/551151971375"
                   target="_blank"
                   className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <MessageCircle className="h-6 w-6" />
                   WhatsApp Direto
                 </a>
-                
-                <a 
+
+                <a
                   href="/consultoria-ia"
                   className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <Zap className="h-6 w-6" />
                   IA Consultoria Grátis
                 </a>
-                
-                <a 
-                  href="tel:+5511519447117"
+
+                <a
+                  href="tel:+551151971375"
                   className="bg-white/20 hover:bg-white/30 backdrop-blur text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <Phone className="h-6 w-6" />
@@ -710,7 +710,7 @@ export default function FAQPage() {
           </div>
         </div>
       </div>
-      
+
     </div>
   )
 }

@@ -26,11 +26,11 @@ function PendingContent() {
         <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <Clock className="w-10 h-10 text-yellow-600" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           ⏳ Pagamento Pendente
         </h1>
-        
+
         <p className="text-gray-600 mb-6">
           Seu pagamento está sendo processado. Isso é normal para alguns métodos de pagamento.
         </p>
@@ -74,14 +74,14 @@ function PendingContent() {
             <MessageCircle className="w-5 h-5 mr-2" />
             Verificar Status no WhatsApp
           </a>
-          
+
           <Link
             href="/cliente"
             className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors block"
           >
             Acessar Área do Cliente
           </Link>
-          
+
           <Link
             href="/"
             className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center"
@@ -96,7 +96,7 @@ function PendingContent() {
           <p>Enviaremos atualizações sobre seu pagamento</p>
           <div className="mt-2">
             <p>📱 WhatsApp: (11) 5194-4717</p>
-            <p>📧 Email: info@visa2any.com</p>
+            <p>📧 Email: visa2any@gmail.com</p>
           </div>
         </div>
       </div>

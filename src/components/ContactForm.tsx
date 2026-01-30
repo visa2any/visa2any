@@ -15,26 +15,15 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
-      // Mapear serviço para tipo de visto
-      const serviceToVisaType: Record<string, string> = {
-        'visto-turismo': 'turismo',
-        'visto-trabalho': 'trabalho',
-        'visto-estudo': 'estudo',
-        'imigracao': 'trabalho',
-        'cidadania': 'familia',
-        'relocacao': 'trabalho',
-        'outros': 'turismo'
-      }
-
       // Criar conta do cliente automaticamente (integração unificada)
-
       const accountData = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        targetCountry: 'A definir', // Será atualizado baseado no serviço,        nationality: 'Brasileira', // Padrão
+        targetCountry: 'A definir', // Será atualizado baseado no serviço
+        nationality: 'Brasileira', // Padrão
         source: 'contact_form',
         product: `Contato via formulário - ${formData.service}`,
         amount: 0
@@ -122,7 +111,7 @@ Deseja acessar seu portal agora?`)) {
             <h3 className="text-2xl font-semibold text-gray-900 mb-8">
               Fale Conosco
             </h3>
-            
+
             <div className="space-y-6">
               <div className="flex items-start">
                 <div className="bg-blue-100 p-3 rounded-lg mr-4">
@@ -130,22 +119,22 @@ Deseja acessar seu portal agora?`)) {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Telefone</h4>
-                  <p className="text-gray-600">+55 (11) 9999-9999</p>
+                  <p className="text-gray-600">+55 (11) 5197-1375</p>
                   <p className="text-sm text-gray-500">Segunda à Sexta, 8h às 18h</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start">
                 <div className="bg-green-100 p-3 rounded-lg mr-4">
                   <Mail className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Email</h4>
-                  <p className="text-gray-600">contato@visa2any.com</p>
+                  <p className="text-gray-600">visa2any@gmail.com</p>
                   <p className="text-sm text-gray-500">Resposta em até 24h</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start">
                 <div className="bg-purple-100 p-3 rounded-lg mr-4">
                   <MapPin className="h-6 w-6 text-purple-600" />
@@ -156,7 +145,7 @@ Deseja acessar seu portal agora?`)) {
                   <p className="text-sm text-gray-500">Clientes no Brasil e no mundo</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start">
                 <div className="bg-orange-100 p-3 rounded-lg mr-4">
                   <Clock className="h-6 w-6 text-orange-600" />
@@ -185,7 +174,7 @@ Deseja acessar seu portal agora?`)) {
             <h3 className="text-2xl font-semibold text-gray-900 mb-6">
               Envie sua Mensagem
             </h3>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -202,7 +191,7 @@ Deseja acessar seu portal agora?`)) {
                   placeholder="Seu nome completo"
                 />
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,7 +208,7 @@ Deseja acessar seu portal agora?`)) {
                     placeholder="seu@email.com"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                     Telefone
@@ -231,11 +220,11 @@ Deseja acessar seu portal agora?`)) {
                     value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="(11) 99999-9999"
+                    placeholder="(11) 5197-1375"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
                   Serviço de Interesse
@@ -257,7 +246,7 @@ Deseja acessar seu portal agora?`)) {
                   <option value="outros">Outros</option>
                 </select>
               </div>
-              
+
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
                   Mensagem *
@@ -273,14 +262,14 @@ Deseja acessar seu portal agora?`)) {
                   placeholder="Conte-nos sobre seus objetivos e como podemos ajudar..."
                 />
               </div>
-              
+
               <Button type="submit" className="w-full btn-gradient">
                 <Send className="mr-2 h-5 w-5" />
                 Enviar Mensagem
               </Button>
-              
+
               <p className="text-xs text-gray-500 text-center">
-                Ao enviar este formulário, você concorda com nossa política de privacidade e 
+                Ao enviar este formulário, você concorda com nossa política de privacidade e
                 aceita receber comunicações da Visa2Any.
               </p>
             </form>

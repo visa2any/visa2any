@@ -29,7 +29,7 @@ Ou me chame no WhatsApp: {whatsappLink}
 Att,
 Ana Silva
 Consultora Sênior Visa2Any
-📱 +55 11 99999-9999`},
+📱 +55 11 5197-1375`},
     {
       delay: 60, // 1 hora depois se não respondeu
       subject: '⏰ {name}, restam apenas algumas horas...',
@@ -179,13 +179,14 @@ Mais de 10.000 pessoas já evitaram reprovações com esse material!
 Dica #3 chega em breve...
 
 Equipe Visa2Any`}
-  ]}
+  ]
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { sequence, clientId, email, name, category, responses, destinationCountry, urgency, budget } = body
-    
+
     if (!sequence || !email || !name) {
       return NextResponse.json({
         error: 'Dados obrigatórios faltando'
@@ -193,7 +194,7 @@ export async function POST(request: NextRequest) {
     }
 
     const templates = EMAIL_TEMPLATES[sequence as keyof typeof EMAIL_TEMPLATES]
-    
+
     if (!templates) {
       return NextResponse.json({
         error: 'Sequência de email não encontrada'
@@ -214,7 +215,8 @@ export async function POST(request: NextRequest) {
         destinationCountry,
         score,
         urgency,
-        budget})
+        budget
+      })
 
       const processedBody = processTemplate(template.template, {
         name,
@@ -240,7 +242,7 @@ export async function POST(request: NextRequest) {
         sequence,
         clientId,
         templateIndex: templates.indexOf(template)
-    })
+      })
     }
 
     return NextResponse.json({
@@ -296,7 +298,8 @@ function calculateScoreFromResponses(responses: any): number {
     }
     score += urgencyScores[responses.urgency] || 3
   }
-  return Math.min(score, 100)}
+  return Math.min(score, 100)
+}
 
 async function scheduleEmail(emailData: {
   to: string,
@@ -305,7 +308,8 @@ async function scheduleEmail(emailData: {
   sendAt: Date,
   sequence: string
   clientId?: string,
-  templateIndex: number}) {
+  templateIndex: number
+}) {
   try {
     // Em produção usar serviço de queue como Bull/Redis
     // Por enquanto simular agendamento
@@ -344,7 +348,8 @@ async function sendEmailNow(emailData: {
   subject: string,
   body: string,
   sequence: string
-  clientId?: string}) {
+  clientId?: string
+}) {
   try {
     // Usar serviço de email (Resend, SendGrid, etc.)
     console.log(`Enviando email imediato para ${emailData.to}`)

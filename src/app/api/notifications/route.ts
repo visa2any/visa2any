@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, data } = body
-    
+
     switch (action) {
       case 'send_booking_created':
         // Notificar criação de agendamento
@@ -14,88 +14,99 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { error: 'Campos trackingId, customerName e customerEmail são obrigatórios' },
             { status: 400 }
-          )}
-        
+          )
+        }
+
         const bookingResult = await notificationService.sendBookingCreated(data)
-        
+
         return NextResponse.json({
           success: bookingResult.whatsappSent || bookingResult.emailSent,
           notifications: {
             whatsapp: bookingResult.whatsappSent ? 'Enviado' : 'Falhou',
-            email: bookingResult.emailSent ? 'Enviado' : 'Falhou'},
+            email: bookingResult.emailSent ? 'Enviado' : 'Falhou'
+          },
           errors: bookingResult.errors,
-          message: 'Notificações de agendamento enviadas'})
-        
+          message: 'Notificações de agendamento enviadas'
+        })
+
       case 'send_payment_link':
         // Enviar link de pagamento
         const { trackingId, paymentUrl, pixCode } = data
-        
+
         if (!trackingId || !paymentUrl) {
           return NextResponse.json(
             { error: 'Campos trackingId e paymentUrl são obrigatórios' },
             { status: 400 }
-          )}
-        
+          )
+        }
+
         const paymentSent = await notificationService.sendPaymentLink(trackingId, paymentUrl, pixCode)
-        
+
         return NextResponse.json({
           success: paymentSent,
           notification: paymentSent ? 'Link de pagamento enviado via WhatsApp' : 'Falha ao enviar',
           sharing: {
             whatsapp: `https://wa.me/?text=💳 Link de pagamento: ${paymentUrl}`,
             telegram: `https://t.me/share/url?url=${paymentUrl}`,
-            email: `mailto:?subject=Link de Pagamento&body=Pague seu agendamento: ${paymentUrl}`}})
-        
+            email: `mailto:?subject=Link de Pagamento&body=Pague seu agendamento: ${paymentUrl}`
+          }
+        })
+
       case 'send_payment_confirmation':
         // Confirmar pagamento
         const confirmationSent = await notificationService.sendPaymentConfirmation(data.trackingId)
-        
+
         return NextResponse.json({
           success: confirmationSent,
-          message: confirmationSent ? 
-            'Confirmação de pagamento enviada' : 
-            'Falha ao enviar confirmação'})
-        
+          message: confirmationSent ?
+            'Confirmação de pagamento enviada' :
+            'Falha ao enviar confirmação'
+        })
+
       case 'send_booking_update':
         // Atualização de status
         const { trackingId: updateTrackingId, status } = data
-        
+
         if (!updateTrackingId || !status) {
           return NextResponse.json(
             { error: 'Campos trackingId e status são obrigatórios' },
             { status: 400 }
-          )}
-        
+          )
+        }
+
         const updateSent = await notificationService.sendBookingUpdate(updateTrackingId, status)
-        
+
         return NextResponse.json({
           success: updateSent,
-          message: updateSent ? 
-            `Atualização '${status}' enviada` : 
-            'Falha ao enviar atualização'})
-        
+          message: updateSent ?
+            `Atualização '${status}' enviada` :
+            'Falha ao enviar atualização'
+        })
+
       case 'send_booking_completed':
         // Agendamento concluído
         const { trackingId: completedTrackingId, appointmentDetails } = data
-        
+
         if (!completedTrackingId || !appointmentDetails) {
           return NextResponse.json(
             { error: 'Campos trackingId e appointmentDetails são obrigatórios' },
             { status: 400 }
-          )}
-        
+          )
+        }
+
         const completedSent = await notificationService.sendBookingCompleted(
           completedTrackingId,
           appointmentDetails
         )
-        
+
         return NextResponse.json({
           success: completedSent,
-          message: completedSent ? 
-            'Confirmação de agendamento enviada' : 
+          message: completedSent ?
+            'Confirmação de agendamento enviada' :
             'Falha ao enviar confirmação final',
-          celebration: '🎉 Agendamento concluído com sucesso!'})
-        
+          celebration: '🎉 Agendamento concluído com sucesso!'
+        })
+
       default:
         return NextResponse.json(
           { error: 'Action deve ser: send_booking_created, send_payment_link, send_payment_confirmation, send_booking_update, ou send_booking_completed' },
@@ -122,7 +133,7 @@ export async function GET(request: NextRequest) {
       case 'config':
         // Verificar configuração
         const config = await notificationService.testConfiguration()
-        
+
         return NextResponse.json({
           success: true,
           configuration: {
@@ -148,22 +159,22 @@ export async function GET(request: NextRequest) {
             }
           }
         })
-        
+
       case 'test':
         // Enviar notificação de teste
         const testData: NotificationData = {
           trackingId: `TEST-${Date.now()}`,
           customerName: 'Cliente Teste',
           customerEmail: 'teste@email.com',
-          customerPhone: '+5511999999999',
+          phone: '+551151971375',
           serviceLevel: 'premium',
           country: 'usa',
           visaType: 'tourist',
           amount: 45.00
         }
-        
+
         const testResult = await notificationService.sendBookingCreated(testData)
-        
+
         return NextResponse.json({
           success: testResult.whatsappSent || testResult.emailSent,
           test: {
@@ -173,7 +184,7 @@ export async function GET(request: NextRequest) {
           },
           message: 'Teste de notificação executado'
         })
-        
+
       case 'templates':
         // Listar templates disponíveis
         return NextResponse.json({
@@ -221,7 +232,7 @@ export async function GET(request: NextRequest) {
           },
           customization: 'Templates podem ser personalizados no código'
         })
-        
+
       case 'stats':
         // Estatísticas de notificações (simulado)
         return NextResponse.json({
@@ -246,7 +257,7 @@ export async function GET(request: NextRequest) {
             bestPerformingChannel: 'Email'
           }
         })
-        
+
       default:
         return NextResponse.json(
           { error: 'Action deve ser: config, test, templates, ou stats' },

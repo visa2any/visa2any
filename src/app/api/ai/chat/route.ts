@@ -108,13 +108,13 @@ export async function GET(request: NextRequest) {
 // Processar mensagem com Sofia IA
 async function processSofiaMessage(message: string, clientContext: any, context: any) {
   const clientName = clientContext?.name || 'Cliente'
-  
+
   // Detectar intenção da mensagem
   const intent = detectIntent(message)
-  
+
   // Gerar resposta baseada na intenção
   const response = await generateSofiaResponse(intent, message, clientContext, context)
-  
+
   return {
     ...response,
     conversationId: context.conversationId,
@@ -127,28 +127,28 @@ async function processSofiaMessage(message: string, clientContext: any, context:
 function detectIntent(message: string) {
   const messageLower = message.toLowerCase()
   const intents = getSofiaIntents()
-  
+
   let bestMatch = { type: 'unknown', confidence: 0 }
-  
+
   for (const [type, intent] of Object.entries(intents)) {
     // Verificar keywords
-    const keywordMatches = intent.keywords.filter(keyword => 
+    const keywordMatches = intent.keywords.filter(keyword =>
       messageLower.includes(keyword)
     ).length
-    
+
     // Verificar patterns
     const patternMatches = intent.patterns.filter(pattern => {
       const regex = new RegExp(pattern, 'i')
       return regex.test(message)
     }).length
-    
+
     const confidence = (keywordMatches * 0.3) + (patternMatches * 0.7)
-    
+
     if (confidence > bestMatch.confidence) {
       bestMatch = { type, confidence }
     }
   }
-  
+
   return bestMatch
 }
 
@@ -156,7 +156,7 @@ function detectIntent(message: string) {
 async function generateSofiaResponse(intent: any, message: string, clientContext: any, context: any) {
   const clientName = clientContext?.name || 'Cliente'
   const country = extractCountryFromMessage(message)
-  
+
   switch (intent.type) {
     case 'greeting':
       return {
@@ -179,7 +179,7 @@ Me conte o que você precisa!`,
         ],
         actions: []
       }
-    
+
     case 'eligibility_question':
       if (country) {
         return await getEligibilityResponse(country, clientName, clientContext)
@@ -211,7 +211,7 @@ Me conte mais sobre seu objetivo e eu farei uma análise personalizada!`,
         ],
         actions: []
       }
-    
+
     case 'documents_question':
       if (country) {
         return await getDocumentsResponse(country, clientName)
@@ -241,7 +241,7 @@ Assim posso te dar a lista exata dos documentos necessários!`,
         ],
         actions: []
       }
-    
+
     case 'cost_question':
       return {
         message: `Entendo sua preocupação com os custos, ${clientName}! 💰
@@ -275,7 +275,7 @@ Os custos variam muito dependendo do país e tipo de visto:
           label: 'Agendar Consultoria Gratuita'
         }]
       }
-    
+
     case 'timeline_question':
       return {
         message: `Ótima pergunta sobre prazos, ${clientName}! ⏰
@@ -309,15 +309,15 @@ Os prazos variam por país e tipo de visto:
           label: 'Ver Vagas Disponíveis'
         }]
       }
-    
+
     case 'contact_human':
       return {
         message: `Perfeito, ${clientName}! 🤝 Entendo que você quer falar com um especialista humano.
 
 📞 **Opções de contato:**
-- **WhatsApp:** +55 11 99999-9999
-- **Telefone:** +55 11 99999-9999
-- **Email:** contato@visa2any.com
+- **WhatsApp:** +55 11 5197-1375
+- **Telefone:** +55 11 5197-1375
+- **Email:** visa2any@gmail.com
 
 ⏰ **Horário de atendimento:**
 - Segunda a Sexta: 9h às 18h
@@ -335,7 +335,7 @@ Os prazos variam por país e tipo de visto:
           label: 'Falar Agora Mesmo'
         }]
       }
-    
+
     case 'complaint':
       return {
         message: `Sinto muito pelo problema, ${clientName}! 😔 
@@ -348,8 +348,8 @@ Vou escalar isso imediatamente para nossa equipe de suporte.
 - Consultor Sênior
 
 📞 **Contato direto:**
-- WhatsApp: +55 11 99999-9999
-- Email: urgente@visa2any.com
+- WhatsApp: +55 11 5197-1375
+- Email: visa2any@gmail.com
 
 💡 **Enquanto isso:**
 Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução.`,
@@ -364,7 +364,7 @@ Pode me dar mais detalhes sobre o problema? Assim posso já adiantar a solução
           label: 'Falar com Gerente Agora'
         }]
       }
-    
+
     default:
       return {
         message: `Entendi ${clientName}! Embora eu não tenha certeza total sobre isso, posso te ajudar com:
@@ -393,14 +393,14 @@ Posso reformular isso para uma dessas áreas? Ou prefere falar diretamente com u
 // Obter resposta sobre documentos por país
 async function getDocumentsResponse(country: string, clientName: string) {
   const countryLower = country.toLowerCase()
-  
+
   const requirements = await prisma.visaRequirement.findFirst({
     where: {
       country: { contains: countryLower },
       isActive: true
     }
   })
-  
+
   if (requirements && requirements.requiredDocuments) {
     const docs = requirements.requiredDocuments as any[];
     const docList = docs.map(doc => `- ${doc.name} (${doc.required ? 'Obrigatório' : 'Opcional'})`).join('\n');
@@ -438,9 +438,9 @@ async function getDocumentsResponse(country: string, clientName: string) {
 // Obter resposta sobre elegibilidade
 async function getEligibilityResponse(country: string, clientName: string, clientContext: any) {
   const score = clientContext?.score || 0
-  
+
   let message = `Olá ${clientName}! Vou analisar sua elegibilidade para ${country}.\n\n`
-  
+
   if (score >= 70) {
     message += `🎉 **Excelente!** Sua pontuação atual é ${score}/100\n\nVocê tem grandes chances de aprovação! Recomendo iniciar o processo o quanto antes.`
   } else if (score >= 50) {
@@ -448,9 +448,9 @@ async function getEligibilityResponse(country: string, clientName: string, clien
   } else {
     message += `⚠️ **Atenção!** Sua pontuação atual é ${score}/100\n\nPrecisamos trabalhar para melhorar seu perfil. Mas não desanime, temos estratégias específicas!`
   }
-  
+
   message += `\n\n💡 **Próximos passos:**\n- Agendar consultoria personalizada\n- Analisar pontos de melhoria\n- Criar estratégia de aplicação`
-  
+
   return {
     message,
     suggestions: [
@@ -476,7 +476,7 @@ function getGenericDocuments(country: string): string {
 - Exame médico
 - Antecedentes criminais
 - Comprovante financeiro`,
-    
+
     'austrália': `- Passaporte válido
 - Skills Assessment da sua profissão
 - Teste de inglês (IELTS)
@@ -484,21 +484,21 @@ function getGenericDocuments(country: string): string {
 - Experiência profissional
 - Exame médico
 - Antecedentes criminais`,
-    
+
     'portugal': `- Passaporte válido
 - Comprovativo de rendimentos
 - Atestado médico
 - Registo criminal
 - Comprovativo de alojamento
 - Seguro de saúde`,
-    
+
     'estados unidos': `- Passaporte válido
 - Formulários específicos (I-140, etc)
 - Evidências de habilidade extraordinária
 - Cartas de recomendação
 - Histórico profissional detalhado`
   }
-  
+
   return genericDocs[country] || `- Passaporte válido
 - Documentos educacionais
 - Experiência profissional
@@ -510,16 +510,16 @@ function getGenericDocuments(country: string): string {
 function extractCountryFromMessage(message: string): string | null {
   const countries = ['canadá', 'canada', 'austrália', 'australia', 'portugal', 'estados unidos', 'eua', 'usa']
   const messageLower = message.toLowerCase()
-  
+
   for (const country of countries) {
     if (messageLower.includes(country)) {
-      return country === 'canada' ? 'canadá' : 
-             country === 'australia' ? 'austrália' :
-             country === 'eua' || country === 'usa' ? 'estados unidos' : 
-             country
+      return country === 'canada' ? 'canadá' :
+        country === 'australia' ? 'austrália' :
+          country === 'eua' || country === 'usa' ? 'estados unidos' :
+            country
     }
   }
-  
+
   return null
 }
 
@@ -535,7 +535,7 @@ function getStatusLabel(status: string): string {
     'APPROVED': 'Aprovado',
     'COMPLETED': 'Concluído'
   }
-  
+
   return labels[status] || status
 }
 
@@ -551,32 +551,32 @@ function getSofiaIntents() {
       keywords: ['olá', 'oi', 'hello', 'hi', 'bom dia', 'boa tarde', 'boa noite'],
       patterns: ['^(olá|oi|hello|hi)']
     },
-    
+
     eligibility_question: {
       keywords: ['elegibilidade', 'elegível', 'posso', 'consigo', 'chances', 'probabilidade', 'qualificado'],
       patterns: ['posso.*visto', 'consigo.*imigrar', 'tenho.*chances']
     },
-    
+
     documents_question: {
       keywords: ['documentos', 'papéis', 'preciso', 'necessário', 'documentação'],
       patterns: ['que documentos', 'preciso.*documento', 'documentos.*necessário']
     },
-    
+
     cost_question: {
       keywords: ['custa', 'preço', 'valor', 'quanto', 'custo', 'investimento', 'taxa'],
       patterns: ['quanto.*custa', 'qual.*preço', 'valor.*processo']
     },
-    
+
     timeline_question: {
       keywords: ['tempo', 'demora', 'duração', 'prazo', 'quanto tempo', 'timeline'],
       patterns: ['quanto.*tempo', 'tempo.*demora', 'prazo.*processo']
     },
-    
+
     contact_human: {
       keywords: ['humano', 'pessoa', 'especialista', 'consultor', 'atendente', 'falar'],
       patterns: ['falar.*humano', 'pessoa.*real', 'especialista.*humano']
     },
-    
+
     complaint: {
       keywords: ['problema', 'reclamação', 'erro', 'ruim', 'insatisfeito', 'demora', 'lento'],
       patterns: ['tenho.*problema', 'não.*funcionando', 'muito.*demora']

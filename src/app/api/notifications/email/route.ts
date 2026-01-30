@@ -9,7 +9,8 @@ const sendEmailSchema = z.object({
   message: z.string().min(1, 'Mensagem é obrigatória').optional(),
   template: z.string().optional(),
   clientId: z.string().optional(),
-  variables: z.record(z.any()).optional()})
+  variables: z.record(z.any()).optional()
+})
 
 // Templates de email prontos
 const EMAIL_TEMPLATES = {
@@ -42,7 +43,7 @@ const EMAIL_TEMPLATES = {
         <div style="text-align: center; padding: 20px; border-top: 1px solid #eee; margin-top: 30px;">
           <p style="color: #666; margin: 0;">
             <strong>Visa2Any</strong> - Sua jornada internacional começa aqui<br>
-            <small>contato@visa2any.com | (11) 5194-4717</small>
+            <small>visa2any@gmail.com | (11) 5197-1375</small>
           </p>
         </div>
       </div>
@@ -69,7 +70,7 @@ const EMAIL_TEMPLATES = {
         <div style="text-align: center; padding: 20px; border-top: 1px solid #eee; margin-top: 30px;">
           <p style="color: #666; margin: 0;">
             <strong>Visa2Any</strong><br>
-            <small>contato@visa2any.com | (11) 5194-4717</small>
+            <small>visa2any@gmail.com | (11) 5194-4717</small>
           </p>
         </div>
       </div>
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
         }
       }
     })
-    
+
     return NextResponse.json({
       data: {
         messageId: emailResult.messageId,
@@ -142,14 +143,14 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           error: 'Dados inválidos',
           details: error.errors
         },
         { status: 400 }
       )
     }
-    
+
     console.error('Erro ao enviar email:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
@@ -163,7 +164,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
   // Usar SMTP Hostinger (já configurado)
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     try {
-      const nodemailer = require('nodemailer')
+      const { default: nodemailer } = await import('nodemailer')
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587'),
@@ -173,16 +174,16 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
           pass: process.env.SMTP_PASS
         }
       })
-      
+
       const result = await transporter.sendMail({
-        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'info@visa2any.com'}>`,
+        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'visa2any@gmail.com'}>`,
         to: to,
         subject: subject,
         html: html
       })
-      
+
       console.log('✅ Email enviado via Hostinger:', result.messageId)
-      
+
       return {
         success: true,
         messageId: result.messageId,
@@ -208,7 +209,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
             subject: subject
           }],
           from: {
-            email: process.env.FROM_EMAIL || 'info@visa2any.com',
+            email: process.env.FROM_EMAIL || 'visa2any@gmail.com',
             name: process.env.FROM_NAME || 'Visa2Any'
           },
           content: [{
@@ -217,7 +218,7 @@ async function sendEmailWithProvider({ to, subject, html }: { to: string, subjec
           }]
         })
       })
-      
+
       if (response.ok) {
         return {
           success: true,

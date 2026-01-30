@@ -39,12 +39,12 @@ class NotificationService {
     apiUrl: process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0',
     token: process.env.WHATSAPP_TOKEN || '',
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
-    businessPhone: process.env.WHATSAPP_BUSINESS_PHONE || '+5511999999999'
+    businessPhone: process.env.WHATSAPP_BUSINESS_PHONE || '+551151971375'
   }
 
   private readonly emailConfig = {
     apiKey: process.env.SENDGRID_API_KEY || process.env.RESEND_API_KEY || '',
-    fromEmail: process.env.FROM_EMAIL || 'noreply@visa2any.com',
+    fromEmail: process.env.FROM_EMAIL || 'visa2any@gmail.com',
     fromName: 'Visa2Any',
     provider: process.env.SENDGRID_API_KEY ? 'sendgrid' : 'resend'
   }
@@ -65,7 +65,7 @@ class NotificationService {
       // WhatsApp
       const whatsappMessage = this.generateBookingCreatedWhatsApp(data)
       whatsappSent = await this.sendWhatsApp(whatsappMessage)
-      
+
       if (!whatsappSent) {
         errors.push('Falha ao enviar WhatsApp')
       }
@@ -77,7 +77,7 @@ class NotificationService {
       // Email
       const emailMessage = this.generateBookingCreatedEmail(data)
       emailSent = await this.sendEmail(emailMessage)
-      
+
       if (!emailSent) {
         errors.push('Falha ao enviar email')
       }
@@ -93,7 +93,7 @@ class NotificationService {
     try {
       // Buscar dados do agendamento
       const bookingData = await this.getBookingData(trackingId)
-      
+
       if (!bookingData) {
         console.error('Dados do agendamento não encontrados para confirmação de pagamento:', trackingId)
         return false
@@ -133,7 +133,7 @@ class NotificationService {
       if (!bookingData) return false
 
       const updates = this.getStatusMessage(status)
-      
+
       const whatsappMessage: WhatsAppMessage = {
         to: bookingData.customerPhone,
         message: `📋 *Atualização do Agendamento*\n\n🎯 Tracking: ${trackingId}\n${updates.icon} ${updates.title}\n\n${updates.description}${details ? `\n\nDetalhes: ${details}` : ''}\n\n${updates.nextSteps}\n\n_Visa2Any_`,
@@ -173,7 +173,7 @@ class NotificationService {
 
       return whatsappSent || emailSent
 
-    } catch (error)      {
+    } catch (error) {
       console.error('Erro ao enviar confirmação final:', error)
       return false
     }
@@ -259,9 +259,9 @@ class NotificationService {
   }
 
   private async sendViaSendGrid(message: EmailMessage): Promise<boolean> {
-    const sgMail = require('@sendgrid/mail')
+    const { default: sgMail } = await import('@sendgrid/mail')
     sgMail.setApiKey(this.emailConfig.apiKey)
-    
+
     const msg = {
       to: message.to,
       from: {
@@ -283,7 +283,7 @@ class NotificationService {
   }
 
   private async sendViaResend(message: EmailMessage): Promise<boolean> {
-    const { Resend } = require('resend')
+    const { Resend } = await import('resend')
     const resend = new Resend(this.emailConfig.apiKey)
 
     try {
@@ -367,7 +367,7 @@ class NotificationService {
   private generatePaymentConfirmedEmailTemplate(data: NotificationData): string {
     return `<p>Olá ${data.customerName},</p><p>Seu pagamento no valor de R$ ${data.amount} foi confirmado com sucesso!</p><p>Já iniciamos o processo de busca e agendamento para seu visto. Em breve, você receberá novas atualizações.</p><p><strong>Tracking ID:</strong> ${data.trackingId}</p><p>Obrigado,<br>Equipe Visa2Any</p>`
   }
-  
+
   private generateBookingCompletedEmailTemplate(data: NotificationData, appointmentDetails: any): string {
     return `<p>Olá ${data.customerName},</p>
             <p><strong>Ótima notícia! Seu agendamento foi confirmado com sucesso!</strong></p>
@@ -397,7 +397,7 @@ class NotificationService {
   }> {
     const whatsappConfigured = !!(this.whatsappConfig.token && this.whatsappConfig.phoneNumberId)
     const emailConfigured = !!this.emailConfig.apiKey
-    
+
     return {
       whatsapp: {
         configured: whatsappConfigured,
