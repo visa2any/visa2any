@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
           trackingId: `TEST-${Date.now()}`,
           customerName: 'Cliente Teste',
           customerEmail: 'teste@email.com',
-          phone: '+551151971375',
+          customerPhone: '+551151971375',
           serviceLevel: 'premium',
           country: 'usa',
           visaType: 'tourist',
