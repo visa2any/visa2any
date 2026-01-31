@@ -41,21 +41,31 @@ export default function ConsultoriasPage() {
   // Load consultations from customer data
   useEffect(() => {
     if (customer?.consultations) {
-      const formattedConsultations: Consultation[] = customer.consultations.map((c: any) => ({
-        id: c.id,
-        type: c.type || 'HUMAN_CONSULTATION',
-        title: getConsultationTitle(c.type),
-        date: c.scheduledAt ? new Date(c.scheduledAt).toLocaleDateString('pt-BR') :
-          c.completedAt ? new Date(c.completedAt).toLocaleDateString('pt-BR') : 'A definir',
-        time: c.scheduledAt ? new Date(c.scheduledAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : undefined,
-        status: mapConsultationStatus(c.status),
-        consultant: c.consultantName || 'Especialista Visa2Any',
-        duration: c.duration ? `${c.duration} min` : '30 min',
-        description: c.recommendation || c.notes || getDefaultDescription(c.type),
-        result: c.result ? (typeof c.result === 'string' ? c.result : JSON.stringify(c.result)) : undefined,
-        score: c.score,
-        meeting_link: c.meetingLink
-      }))
+      const formattedConsultations: Consultation[] = customer.consultations.map((c: any) => {
+        const consultation: any = {
+          id: c.id,
+          type: c.type || 'HUMAN_CONSULTATION',
+          title: getConsultationTitle(c.type),
+          date: c.scheduledAt ? new Date(c.scheduledAt).toLocaleDateString('pt-BR') :
+            c.completedAt ? new Date(c.completedAt).toLocaleDateString('pt-BR') : 'A definir',
+          status: mapConsultationStatus(c.status),
+          consultant: c.consultantName || 'Especialista Visa2Any',
+          duration: c.duration ? `${c.duration} min` : '30 min',
+          description: c.recommendation || c.notes || getDefaultDescription(c.type),
+          score: c.score,
+          meeting_link: c.meetingLink
+        }
+
+        if (c.scheduledAt) {
+          consultation.time = new Date(c.scheduledAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        }
+
+        if (c.result) {
+          consultation.result = typeof c.result === 'string' ? c.result : JSON.stringify(c.result)
+        }
+
+        return consultation as Consultation
+      })
       setConsultations(formattedConsultations)
     } else {
       // No consultations yet - empty state
@@ -283,8 +293,8 @@ export default function ConsultoriasPage() {
               <button
                 onClick={() => setSelectedTab('scheduled')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'scheduled'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Agendadas ({consultations.filter(c => c.status === 'scheduled').length})
@@ -292,8 +302,8 @@ export default function ConsultoriasPage() {
               <button
                 onClick={() => setSelectedTab('completed')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'completed'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Concluídas ({consultations.filter(c => c.status === 'completed').length})
@@ -301,8 +311,8 @@ export default function ConsultoriasPage() {
               <button
                 onClick={() => setSelectedTab('available')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'available'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Disponíveis ({availableServices.length})
