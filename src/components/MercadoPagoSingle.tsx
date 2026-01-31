@@ -193,11 +193,16 @@ export default function MercadoPagoSingle({
                   onSuccess?.(result)
                 }
               } else {
-                setError(result.error || 'Erro ao processar pagamento')
+                // Mostrar erro detalhado
+                const errorMsg = result.error || 'Erro ao processar pagamento'
+                const errorCode = result.code ? ` (${result.code})` : ''
+                const errorDetails = result.details ? `: ${result.details}` : ''
+                console.error('❌ API Error:', result)
+                setError(`${errorMsg}${errorCode}${errorDetails}`)
               }
             } catch (error) {
               console.error('❌ Erro:', error)
-              setError('Erro de comunicação')
+              setError('Erro de comunicação com o servidor')
             }
           },
           onError: (error: PaymentBrickError) => {
