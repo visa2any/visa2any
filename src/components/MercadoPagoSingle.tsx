@@ -165,6 +165,9 @@ export default function MercadoPagoSingle({
           onSubmit: async ({ selectedPaymentMethod, formData }: PaymentBrickCallbackParams) => {
             console.log('💳 Pagamento enviado:', { selectedPaymentMethod, formData })
 
+            // DEBUG: Mostrar alert para usuário ver se o token está lá
+            alert('DEBUG - Enviando: ' + JSON.stringify(formData, null, 2))
+
             try {
               const response = await fetch('/api/payments/process-payment', {
                 method: 'POST',
