@@ -5,33 +5,43 @@ import { prisma } from '@/lib/prisma'
 // Configurar MercadoPago
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
 if (!accessToken) {
-  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')}
+  console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado')
+}
 
 const client = new MercadoPagoConfig({
-  accessToken: accessToken!})
+  accessToken: accessToken!
+})
 
 const payment = new Payment(client)
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log('💳 Processando pagamento com token:', JSON.stringify(body, null, 2))
+    console.log('💳 Processando pagamento (DEBUG FULL):', JSON.stringify(body, null, 2))
+    console.log('🔍 Flattened keys:', Object.keys(body))
+    console.log('🔍 FormData check:', body.formData ? JSON.stringify(body.formData, null, 2) : 'No formData')
 
     // Validar dados obrigatórios do MercadoPago
     if (!body.token) {
       return NextResponse.json({
         error: 'Token do cartão é obrigatório',
-        code: 'MISSING_TOKEN'}, { status: 400 })}
-    
+        code: 'MISSING_TOKEN'
+      }, { status: 400 })
+    }
+
     if (!body.payer?.email) {
       return NextResponse.json({
         error: 'Email do comprador é obrigatório',
-        code: 'MISSING_PAYER_EMAIL'}, { status: 400 })}
-    
+        code: 'MISSING_PAYER_EMAIL'
+      }, { status: 400 })
+    }
+
     if (!body.transaction_amount || body.transaction_amount <= 0) {
       return NextResponse.json({
         error: 'Valor da transação deve ser maior que zero',
-        code: 'INVALID_AMOUNT'}, { status: 400 })}
+        code: 'INVALID_AMOUNT'
+      }, { status: 400 })
+    }
 
     // Validar clientId obrigatório para salvar pagamento
     if (!body.clientId) {
@@ -42,9 +52,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Obter IP do cliente
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                    request.headers.get('x-real-ip') || 
-                    '127.0.0.1'
+    const clientIP = request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      '127.0.0.1'
 
     // Preparar dados do pagamento com todos os campos obrigatórios e recomendados
     const payer: any = {
@@ -94,15 +104,15 @@ export async function POST(request: NextRequest) {
     const paymentData = {
       // Token do cartão (obrigatório)
       token: body.token,
-      
+
       // Dados básicos da transação
       transaction_amount: Number(body.transaction_amount),
       installments: Number(body.installments) || 1,
       payment_method_id: body.payment_method_id || 'credit_card',
-      
+
       // Emissor do cartão (recomendado)
       issuer_id: body.issuer_id,
-      
+
       // Dados completos do pagador (obrigatórios e recomendados)
       payer,
 
@@ -111,16 +121,16 @@ export async function POST(request: NextRequest) {
 
       // Referência externa (obrigatório para conciliação)
       external_reference: body.external_reference || `visa2any-${Date.now()}`,
-      
+
       // Descrição na fatura do cartão (recomendado)
       statement_descriptor: 'VISA2ANY',
-      
+
       // URL de notificação webhook (obrigatório)
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
-      
+
       // Modo binário para aprovação imediata (boas práticas)
       binary_mode: body.binary_mode || true,
-      
+
       // Captura automática (boas práticas)
       capture: body.capture !== false,
 
@@ -135,12 +145,12 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }
     }
-    
+
     console.log('📋 Dados do pagamento preparados:', JSON.stringify(paymentData, null, 2))
 
     // Processar pagamento no MercadoPago
     const result = await payment.create({ body: paymentData })
-    
+
     console.log('✅ Resposta do MercadoPago:', JSON.stringify(result, null, 2))
 
     // Salvar pagamento no banco de dados
@@ -157,7 +167,7 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date()
         }
       })
-      
+
       console.log('✅ Pagamento salvo no banco de dados')
     } catch (dbError) {
       console.error('⚠️ Erro ao salvar no banco:', dbError)
@@ -177,7 +187,7 @@ export async function POST(request: NextRequest) {
         external_reference: result.external_reference,
         date_created: result.date_created,
         date_approved: result.date_approved,
-        
+
         // Para cartão de crédito
         card: result.card ? {
           first_six_digits: result.card.first_six_digits,
@@ -187,27 +197,27 @@ export async function POST(request: NextRequest) {
 
         // Para outros métodos (PIX, boleto, etc)
         point_of_interaction: result.point_of_interaction,
-        
+
         // Dados de fees
         fee_details: result.fee_details,
-        
+
         // Informações de segurança (apenas em desenvolvimento)
         ...(process.env.NODE_ENV === 'development' && {
           raw_response: result
         })
       }
     }
-    
+
     return NextResponse.json(response)
 
   } catch (error) {
     console.error('❌ Erro ao processar pagamento:', error)
     console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
-    
+
     // Análise do tipo de erro do MercadoPago
     let errorCode = 'PAYMENT_ERROR'
     let errorMessage = 'Erro ao processar pagamento'
-    
+
     if (error instanceof Error) {
       // Erros comuns do MercadoPago
       if (error.message.includes('invalid_token')) {
@@ -226,7 +236,7 @@ export async function POST(request: NextRequest) {
         errorMessage = error.message
       }
     }
-    
+
     return NextResponse.json({
       success: false,
       error: errorMessage,
