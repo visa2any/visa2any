@@ -179,9 +179,12 @@ export default function MercadoPagoSingle({
               })
 
               const result = await response.json()
-              console.log('📊 Resultado:', result)
+              console.log('📊 Resultado completo:', JSON.stringify(result, null, 2))
+              console.log('📊 response.ok:', response.ok)
+              console.log('📊 response.status:', response.status)
 
               if (result.success) {
+                console.log('✅ Pagamento aprovado! Redirecionando...')
                 if (selectedPaymentMethod === 'pix' || selectedPaymentMethod === 'bank_transfer') {
                   setPaymentResult(result)
                   setShowPixCode(true)
@@ -190,7 +193,13 @@ export default function MercadoPagoSingle({
                   // Iniciar verificação automática de pagamento
                   startPaymentVerification(result.payment_id)
                 } else {
+                  // Chamar callback de sucesso
                   onSuccess?.(result)
+                  // Garantir redirecionamento mesmo se onSuccess não redirecionar
+                  if (!onSuccess) {
+                    console.log('🔄 onSuccess não definido, redirecionando manualmente')
+                    window.location.href = '/payment/success'
+                  }
                 }
               } else {
                 // Mostrar erro detalhado
@@ -201,8 +210,8 @@ export default function MercadoPagoSingle({
                 setError(`${errorMsg}${errorCode}${errorDetails}`)
               }
             } catch (error) {
-              console.error('❌ Erro:', error)
-              setError('Erro de comunicação com o servidor')
+              console.error('❌ Erro de rede/fetch:', error)
+              setError('Erro de comunicação com o servidor. Verifique sua conexão.')
             }
           },
           onError: (error: PaymentBrickError) => {
