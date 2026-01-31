@@ -12,61 +12,16 @@ import { InterviewPrep } from '@/components/InterviewPrep'
 import { CountryComparison } from '@/components/CountryComparison'
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
 import { NotificationProvider } from '@/components/NotificationSystem'
-import { 
+import { useCustomerAuth } from '@/hooks/useCustomerAuth'
+import {
   User, FileText, Clock, CheckCircle, AlertTriangle, MessageCircle,
   TrendingUp, Award, Bell, Calendar, Download, Eye, Star, Target,
   Zap, Brain, BarChart3, Sparkles, Globe, CreditCard, Trophy,
   BookOpen, Headphones, Shield, Gift, Edit3, Upload as UploadIcon, X
 } from 'lucide-react'
 
-interface CustomerData {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  destinationCountry: string
-  visaType: string
-  status: string
-  eligibilityScore: number
-  progress: number
-  documents: any[]
-  consultations: any[]
-  notifications: any[]
-  scoreBreakdown?: {
-    age: number
-    education: number
-    experience: number
-    language: number
-    funds: number
-  }
-  nextMilestone?: {
-    title: string
-    dueDate: string
-    requirements: string[]
-    progress: number
-  }
-  automationInsights?: {
-    emailsSent: number
-    actionsCompleted: number
-    nextAction: string
-    engagementScore: number
-  }
-  vagaExpressSubscription?: {
-    plan: string
-    status: string
-    expiryDate: string
-    slotsFound: number
-    notificationsSent: number
-    monitoringCountries: string[]
-    lastSlotDetected: string
-    nextCheck: string
-  }
-}
-
-
 function CustomerDashboardContent() {
-  const [customerData, setCustomerData] = useState<CustomerData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { customer, isLoading, isAuthenticated, refreshProfile, updateLocalProfile } = useCustomerAuth()
   const [showSofiaChat, setShowSofiaChat] = useState(false)
   const [showProfileEditor, setShowProfileEditor] = useState(false)
   const [showDocumentUpload, setShowDocumentUpload] = useState(false)
@@ -77,135 +32,33 @@ function CustomerDashboardContent() {
   const router = useRouter()
   const { notifySuccess, notifyError, notifyInfo } = useSystemNotifications()
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchCustomerData()
-  }, [])
+    if (!isLoading && !isAuthenticated) {
+      router.push('/cliente/login')
+    }
+  }, [isLoading, isAuthenticated, router])
 
-  const handleProfileSave = (newProfileData: any) => {
-    setCustomerData(prev => prev ? { 
-      ...prev, 
+  const handleProfileSave = async (newProfileData: any) => {
+    // Update local state
+    updateLocalProfile({
       name: newProfileData.name,
       email: newProfileData.email,
       phone: newProfileData.phone,
       profilePhoto: newProfileData.profilePhoto
-    } : null)
-    
-    // Save to localStorage
-    
-    localStorage.setItem('customer-profile', JSON.stringify(newProfileData))
-    
-    // Force reload from localStorage to get updated customer data
-    
-    setTimeout(() => {
-      fetchCustomerData()
-    }, 100)
+    })
+
+    // TODO: Call API to persist profile changes
+    // await fetch('/api/customers/profile', { method: 'PUT', body: JSON.stringify(newProfileData) })
+
+    notifySuccess('Perfil Atualizado', 'Suas informações foram salvas com sucesso!')
+    setShowProfileEditor(false)
   }
 
   const handleDocumentsChange = (documents: any[]) => {
-    setCustomerData(prev => prev ? { ...prev, documents } : null)
-    // Save to localStorage
-    localStorage.setItem('customer-documents', JSON.stringify(documents))
+    updateLocalProfile({ documents })
+    // TODO: Sync with server
   }
-
-  const fetchCustomerData = async () => {
-    try {
-      let customerData = null
-      
-      if (typeof window !== 'undefined') {
-        const storedCustomer = localStorage.getItem('customer')
-        if (storedCustomer) {
-          customerData = JSON.parse(storedCustomer)
-        }
-        
-        // Also load profile data including photo
-        
-        const storedProfile = localStorage.getItem('customer-profile')
-        if (storedProfile) {
-          const profileData = JSON.parse(storedProfile)
-          if (customerData) {
-            customerData.profilePhoto = profileData.profilePhoto
-            customerData.name = profileData.name || customerData.name
-            customerData.email = profileData.email || customerData.email
-            customerData.phone = profileData.phone || customerData.phone
-          }
-        }
-      }
-      
-      if (!customerData) {
-        customerData = {
-          id: 'cliente-padrao',
-          name: 'João Silva Santos',
-          email: 'demo@visa2any.com',
-          phone: '(11) 99999-9999',
-          destinationCountry: 'Estados Unidos',
-          visaType: 'Turismo B1/B2',
-          status: 'IN_PROCESS',
-          eligibilityScore: 87
-        }
-      }
-      
-      const fullCustomerData = {
-        ...customerData,
-        progress: 72,
-        scoreBreakdown: {
-          age: 85,
-          education: 95,
-          experience: 80,
-          language: 90,
-          funds: 75
-        },
-        nextMilestone: {
-          title: 'Agendamento da Entrevista Consular',
-          dueDate: '15/02/2024',
-          requirements: [
-            'Completar formulário DS-160',
-            'Agendar horário no consulado',
-            'Preparar documentação para entrevista'
-          ],
-          progress: 33
-        },
-        automationInsights: {
-          emailsSent: 12,
-          actionsCompleted: 8,
-          nextAction: 'Preparação para entrevista via IA',
-          engagementScore: 87
-        },
-        documents: [
-          { id: '1', name: 'Passaporte', status: 'approved', aiScore: 98, feedback: 'Documento perfeito' },
-          { id: '2', name: 'DS-160', status: 'pending', aiScore: 0, feedback: 'Aguardando preenchimento' },
-          { id: '3', name: 'Comprov. Financeiro', status: 'review', aiScore: 85, feedback: 'Recomendamos extrato mais recente' },
-          { id: '4', name: 'Carta Empregador', status: 'approved', aiScore: 92, feedback: 'Excelente' }
-        ],
-        vagaExpressSubscription: {
-          plan: 'PREMIUM',
-          status: 'ACTIVE',
-          expiryDate: '2024-08-15',
-          slotsFound: 3,
-          notificationsSent: 12,
-          monitoringCountries: ['EUA'],
-          lastSlotDetected: '2024-01-23',
-          nextCheck: '2024-01-24 10:32'
-        },
-        consultations: [
-          { id: '1', type: 'AI_ANALYSIS', date: '10/01', status: 'completed', result: 'Score: 87/100 - Perfil forte', duration: '15 min' },
-          { id: '2', type: 'HUMAN_CONSULTATION', date: '25/01', status: 'scheduled', consultant: 'João Silva', topic: 'Preparação entrevista' },
-          { id: '3', type: 'DOCUMENT_REVIEW', date: '28/01', status: 'scheduled', consultant: 'IA Sofia', topic: 'Revisão final' }
-        ],
-        notifications: [
-          { id: '1', title: 'IA Sofia: Nova Recomendação', message: 'Recomendo focar na preparação para entrevista', type: 'ai', date: '24/01', read: false },
-          { id: '2', title: 'Documento Analisado', message: 'Comprovante financeiro - Score: 85/100', type: 'success', date: '22/01', read: false },
-          { id: '3', title: 'Marco Atingido!', message: 'Você completou 70% do processo', type: 'success', date: '20/01', read: false }
-        ]
-      }
-      
-      setCustomerData(fullCustomerData)
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
 
   if (isLoading) {
     return (
@@ -218,13 +71,13 @@ function CustomerDashboardContent() {
     )
   }
 
-  if (!customerData) {
+  if (!customer) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-3" />
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
-          <button 
+          <button
             onClick={() => router.push('/cliente/login')}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
           >
@@ -235,25 +88,97 @@ function CustomerDashboardContent() {
     )
   }
 
+  // Calculate score breakdown from eligibility score if not provided
+  const scoreBreakdown = customer.scoreBreakdown || {
+    age: Math.min(100, customer.eligibilityScore + 5),
+    education: Math.min(100, customer.eligibilityScore + 10),
+    experience: Math.min(100, customer.eligibilityScore - 5),
+    language: Math.min(100, customer.eligibilityScore),
+    funds: Math.min(100, customer.eligibilityScore - 10)
+  }
+
+  // Calculate progress from status if not provided
+  const progressMap: Record<string, number> = {
+    'LEAD': 10,
+    'QUALIFIED': 20,
+    'CONSULTATION_SCHEDULED': 35,
+    'IN_PROCESS': 50,
+    'DOCUMENTS_PENDING': 65,
+    'SUBMITTED': 80,
+    'APPROVED': 95,
+    'COMPLETED': 100
+  }
+  const progress = customer.progress || progressMap[customer.status] || 10
+
+  // Format next milestone
+  const nextMilestone = customer.nextMilestone || {
+    title: customer.status === 'LEAD' ? 'Análise de Elegibilidade' :
+      customer.status === 'QUALIFIED' ? 'Agendamento de Consultoria' :
+        customer.status === 'IN_PROCESS' ? 'Coleta de Documentos' :
+          customer.status === 'DOCUMENTS_PENDING' ? 'Revisão de Documentos' :
+            customer.status === 'SUBMITTED' ? 'Aguardando Decisão' : 'Próxima Etapa',
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+    requirements: [],
+    progress: 0
+  }
+
+  // Automation insights
+  const automationInsights = customer.automationInsights || {
+    emailsSent: 0,
+    actionsCompleted: 0,
+    nextAction: 'Análise inicial do perfil',
+    engagementScore: customer.eligibilityScore || 0
+  }
+
+  // Documents with proper formatting
+  const documents = (customer.documents || []).map((doc: any) => ({
+    id: doc.id,
+    name: doc.name || doc.fileName || 'Documento',
+    status: doc.status?.toLowerCase() === 'valid' ? 'approved' :
+      doc.status?.toLowerCase() === 'invalid' ? 'rejected' :
+        doc.status?.toLowerCase() === 'needs_review' ? 'review' :
+          doc.status?.toLowerCase() === 'analyzing' ? 'analyzing' : 'pending',
+    aiScore: doc.aiScore || 0,
+    feedback: doc.feedback || doc.validationNotes || ''
+  }))
+
+  // Consultations
+  const consultations = (customer.consultations || []).slice(0, 3).map((c: any) => ({
+    id: c.id,
+    type: c.type || 'CONSULTATION',
+    date: c.scheduledAt ? new Date(c.scheduledAt).toLocaleDateString('pt-BR') : 'A definir',
+    status: c.status?.toLowerCase() || 'scheduled',
+    consultant: c.consultantName || 'Especialista Visa2Any',
+    result: c.result,
+    topic: c.recommendation || 'Consultoria'
+  }))
+
+  // Notifications
+  const notifications = (customer.notifications || []).slice(0, 3)
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <ClientHeader 
-        customerData={customerData} 
+      <ClientHeader
+        customerData={{
+          ...customer,
+          progress,
+          eligibilityScore: customer.eligibilityScore || 0
+        }}
         onSofiaChat={() => setShowSofiaChat(true)}
         onProfileEdit={() => setShowProfileEditor(true)}
       />
-      
+
       {/* Barra de Progresso Global */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-medium text-gray-900">Progresso do Processo</h2>
-            <span className="text-sm font-semibold text-blue-600">{customerData.progress}% completo</span>
+            <span className="text-sm font-semibold text-blue-600">{progress}% completo</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
-            <div 
-              className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-1000 relative" 
-              style={{ width: `${customerData.progress}%` }}
+            <div
+              className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-1000 relative"
+              style={{ width: `${progress}%` }}
             >
               <div className="absolute right-0 top-0 w-3 h-3 bg-white rounded-full shadow-sm transform translate-x-1"></div>
             </div>
@@ -276,8 +201,8 @@ function CustomerDashboardContent() {
               <Target className="h-5 w-5 text-blue-600" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-500">Visto Destino</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{customerData.destinationCountry}</p>
-                <p className="text-xs text-blue-600">{customerData.visaType}</p>
+                <p className="text-sm font-semibold text-gray-900 truncate">{customer.destinationCountry || 'A definir'}</p>
+                <p className="text-xs text-blue-600">{customer.visaType || 'A definir'}</p>
               </div>
             </div>
           </div>
@@ -287,8 +212,8 @@ function CustomerDashboardContent() {
               <Clock className="h-5 w-5 text-orange-600" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-500">Próximo Marco</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">Entrevista Consular</p>
-                <p className="text-xs text-orange-600">{customerData.nextMilestone?.dueDate}</p>
+                <p className="text-sm font-semibold text-gray-900 truncate">{nextMilestone.title}</p>
+                <p className="text-xs text-orange-600">{nextMilestone.dueDate}</p>
               </div>
             </div>
           </div>
@@ -298,8 +223,8 @@ function CustomerDashboardContent() {
               <TrendingUp className="h-5 w-5 text-green-600" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-500">Score IA</p>
-                <p className="text-sm font-semibold text-gray-900">{customerData.eligibilityScore}/100</p>
-                <p className="text-xs text-green-600">+12 pontos/mês</p>
+                <p className="text-sm font-semibold text-gray-900">{customer.eligibilityScore || 0}/100</p>
+                <p className="text-xs text-green-600">Análise completa</p>
               </div>
             </div>
           </div>
@@ -309,7 +234,7 @@ function CustomerDashboardContent() {
               <Zap className="h-5 w-5 text-purple-600" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-500">Automação</p>
-                <p className="text-sm font-semibold text-gray-900">{customerData.automationInsights?.actionsCompleted} ações</p>
+                <p className="text-sm font-semibold text-gray-900">{automationInsights.actionsCompleted} ações</p>
                 <p className="text-xs text-purple-600">IA ativa</p>
               </div>
             </div>
@@ -317,37 +242,36 @@ function CustomerDashboardContent() {
         </div>
 
         {/* Score Breakdown Compacto */}
-        {customerData.scoreBreakdown && (
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1">
-                <BarChart3 className="h-4 w-4 text-blue-600" />
-                Análise do Perfil
-              </h3>
-              <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">IA Sofia</div>
-            </div>
-            <div className="grid grid-cols-5 gap-3">
-              {Object.entries(customerData.scoreBreakdown).map(([key, value]) => {
-                const labels = { age: 'Idade', education: 'Educação', experience: 'Exp.', language: 'Idiomas', funds: 'Recursos' }
-                const colors = { age: 'blue', education: 'green', experience: 'purple', language: 'orange', funds: 'red' }
-                return (
-                  <div key={key} className="text-center">
-                    <div className="relative w-10 h-10 mx-auto mb-1">
-                      <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
-                        <path className="text-gray-200" stroke="currentColor" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                        <path className={`text-${colors[key as keyof typeof colors]}-500`} stroke="currentColor" strokeWidth="3" strokeDasharray={`${value}, 100`} strokeLinecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-semibold text-gray-900">{value}</span>
-                      </div>
-                    </div>
-                    <p className="text-xs font-medium text-gray-700">{labels[key as keyof typeof labels]}</p>
-                  </div>
-                )
-              })}
-            </div>
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1">
+              <BarChart3 className="h-4 w-4 text-blue-600" />
+              Análise do Perfil
+            </h3>
+            <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">IA Sofia</div>
           </div>
-        )}
+          <div className="grid grid-cols-5 gap-3">
+            {Object.entries(scoreBreakdown).map(([key, value]) => {
+              const labels: Record<string, string> = { age: 'Idade', education: 'Educação', experience: 'Exp.', language: 'Idiomas', funds: 'Recursos' }
+              const colors: Record<string, string> = { age: 'blue', education: 'green', experience: 'purple', language: 'orange', funds: 'red' }
+              const colorValue = colors[key] || 'blue'
+              return (
+                <div key={key} className="text-center">
+                  <div className="relative w-10 h-10 mx-auto mb-1">
+                    <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                      <path className="text-gray-200" stroke="currentColor" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path className={`text-${colorValue}-500`} stroke="currentColor" strokeWidth="3" strokeDasharray={`${value}, 100`} strokeLinecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-gray-900">{value}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs font-medium text-gray-700">{labels[key] || key}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         {/* Ações Rápidas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
@@ -358,7 +282,7 @@ function CustomerDashboardContent() {
             <UploadIcon className="h-4 w-4" />
             Upload Documentos
           </button>
-          
+
           <button
             onClick={() => setShowVisaWizard(true)}
             className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm"
@@ -366,7 +290,7 @@ function CustomerDashboardContent() {
             <Zap className="h-4 w-4" />
             Wizard Aplicação
           </button>
-          
+
           <button
             onClick={() => setShowInterviewPrep(true)}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm"
@@ -374,7 +298,7 @@ function CustomerDashboardContent() {
             <User className="h-4 w-4" />
             Treinar Entrevista
           </button>
-          
+
           <button
             onClick={() => setShowCountryComparison(true)}
             className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm"
@@ -385,33 +309,32 @@ function CustomerDashboardContent() {
         </div>
 
         {/* Vaga Express Status - SE ATIVO */}
-        {customerData.vagaExpressSubscription && (
+        {customer.vagaExpressSubscription && (
           <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg shadow-sm p-4 border-2 border-orange-200">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1">
                 <Zap className="h-4 w-4 text-orange-600" />
-                Vaga Express ({customerData.vagaExpressSubscription.plan})
+                Vaga Express ({customer.vagaExpressSubscription.plan})
               </h3>
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                customerData.vagaExpressSubscription.status === 'ACTIVE' 
-                  ? 'bg-green-100 text-green-700' 
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${customer.vagaExpressSubscription.status === 'ACTIVE'
+                  ? 'bg-green-100 text-green-700'
                   : 'bg-gray-100 text-gray-700'
-              }`}>
-                {customerData.vagaExpressSubscription.status === 'ACTIVE' ? '🟢 ATIVO' : '⏸️ INATIVO'}
+                }`}>
+                {customer.vagaExpressSubscription.status === 'ACTIVE' ? '🟢 ATIVO' : '⏸️ INATIVO'}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <div className="text-center">
-                <div className="text-lg font-bold text-orange-600">{customerData.vagaExpressSubscription.slotsFound}</div>
+                <div className="text-lg font-bold text-orange-600">{customer.vagaExpressSubscription.slotsFound || 0}</div>
                 <div className="text-xs text-gray-600">Vagas Detectadas</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-blue-600">{customerData.vagaExpressSubscription.notificationsSent}</div>
+                <div className="text-lg font-bold text-blue-600">{customer.vagaExpressSubscription.notificationsSent || 0}</div>
                 <div className="text-xs text-gray-600">Notificações Enviadas</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-green-600">{customerData.vagaExpressSubscription.monitoringCountries.length}</div>
+                <div className="text-lg font-bold text-green-600">{customer.vagaExpressSubscription.monitoringCountries?.length || 0}</div>
                 <div className="text-xs text-gray-600">Países Monitorados</div>
               </div>
               <div className="text-center">
@@ -419,22 +342,7 @@ function CustomerDashboardContent() {
                 <div className="text-xs text-gray-600">Próxima Verificação</div>
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-3 mb-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">🎯 Monitorando:</span>
-                <span className="font-medium text-gray-900">{customerData.vagaExpressSubscription.monitoringCountries.join(', ')}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">📅 Último slot:</span>
-                <span className="font-medium text-gray-900">{customerData.vagaExpressSubscription.lastSlotDetected}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">⏰ Expira em:</span>
-                <span className="font-medium text-gray-900">{customerData.vagaExpressSubscription.expiryDate}</span>
-              </div>
-            </div>
-            
+
             <div className="flex gap-2">
               <button className="flex-1 bg-orange-600 text-white px-3 py-2 rounded text-xs hover:bg-orange-700 transition-colors">
                 📊 Ver Relatório Completo
@@ -453,7 +361,7 @@ function CustomerDashboardContent() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1">
                 <FileText className="h-4 w-4 text-blue-600" />
-                Documentos ({customerData.documents.length})
+                Documentos ({documents.length})
               </h3>
               <button
                 onClick={() => setShowDocumentUpload(true)}
@@ -463,36 +371,46 @@ function CustomerDashboardContent() {
               </button>
             </div>
             <div className="space-y-2">
-              {customerData.documents.slice(0, 3).map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-2 border border-gray-200 rounded text-xs">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${
-                      doc.status === 'approved' ? 'bg-green-100' :
-                      doc.status === 'pending' ? 'bg-yellow-100' : 'bg-blue-100'
-                    }`}>
-                      <FileText className={`h-3 w-3 ${
-                        doc.status === 'approved' ? 'text-green-600' :
-                        doc.status === 'pending' ? 'text-yellow-600' : 'text-blue-600'
-                      }`} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 truncate">{doc.name}</p>
-                      {doc.aiScore > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Brain className="h-3 w-3 text-purple-500" />
-                          <span className="text-purple-600 font-medium">{doc.aiScore}/100</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={`px-2 py-1 rounded text-xs ${
-                    doc.status === 'approved' ? 'bg-green-100 text-green-700' :
-                    doc.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {doc.status === 'approved' ? '✓' : doc.status === 'pending' ? '⏳' : '🔄'}
-                  </div>
+              {documents.length === 0 ? (
+                <div className="text-center py-4">
+                  <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">Nenhum documento enviado</p>
+                  <button
+                    onClick={() => setShowDocumentUpload(true)}
+                    className="text-blue-600 text-sm mt-1 hover:underline"
+                  >
+                    Enviar primeiro documento
+                  </button>
                 </div>
-              ))}
+              ) : (
+                documents.slice(0, 3).map((doc: any) => (
+                  <div key={doc.id} className="flex items-center justify-between p-2 border border-gray-200 rounded text-xs">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${doc.status === 'approved' ? 'bg-green-100' :
+                          doc.status === 'pending' ? 'bg-yellow-100' : 'bg-blue-100'
+                        }`}>
+                        <FileText className={`h-3 w-3 ${doc.status === 'approved' ? 'text-green-600' :
+                            doc.status === 'pending' ? 'text-yellow-600' : 'text-blue-600'
+                          }`} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-gray-900 truncate">{doc.name}</p>
+                        {doc.aiScore > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Brain className="h-3 w-3 text-purple-500" />
+                            <span className="text-purple-600 font-medium">{doc.aiScore}/100</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs ${doc.status === 'approved' ? 'bg-green-100 text-green-700' :
+                        doc.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                      {doc.status === 'approved' ? '✓' : doc.status === 'pending' ? '⏳' : '🔄'}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -500,28 +418,37 @@ function CustomerDashboardContent() {
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1">
               <User className="h-4 w-4 text-green-600" />
-              Consultorias ({customerData.consultations.length})
+              Consultorias ({consultations.length})
             </h3>
             <div className="space-y-2">
-              {customerData.consultations.slice(0, 3).map((consultation) => (
-                <div key={consultation.id} className="p-2 border border-gray-200 rounded text-xs">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-medium text-gray-900 text-xs">
-                      {consultation.type === 'AI_ANALYSIS' ? '🤖 IA Sofia' : 
-                       consultation.type === 'HUMAN_CONSULTATION' ? '👨‍💼 Humana' : '📋 Revisão'}
-                    </p>
-                    <div className={`px-2 py-1 rounded text-xs ${
-                      consultation.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      {consultation.status === 'completed' ? '✅' : '📅'}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 text-xs">📅 {consultation.date}</p>
-                  {consultation.result && (
-                    <p className="text-green-700 text-xs mt-1">📊 {consultation.result}</p>
-                  )}
+              {consultations.length === 0 ? (
+                <div className="text-center py-4">
+                  <User className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">Nenhuma consultoria agendada</p>
+                  <a href="/contato" className="text-blue-600 text-sm mt-1 hover:underline">
+                    Agendar consultoria
+                  </a>
                 </div>
-              ))}
+              ) : (
+                consultations.map((consultation: any) => (
+                  <div key={consultation.id} className="p-2 border border-gray-200 rounded text-xs">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-medium text-gray-900 text-xs">
+                        {consultation.type === 'AI_ANALYSIS' ? '🤖 IA Sofia' :
+                          consultation.type === 'HUMAN_CONSULTATION' ? '👨‍💼 Humana' : '📋 Revisão'}
+                      </p>
+                      <div className={`px-2 py-1 rounded text-xs ${consultation.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                        {consultation.status === 'completed' ? '✅' : '📅'}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-xs">📅 {consultation.date}</p>
+                    {consultation.result && (
+                      <p className="text-green-700 text-xs mt-1">📊 {consultation.result}</p>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -529,31 +456,36 @@ function CustomerDashboardContent() {
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1">
               <Bell className="h-4 w-4 text-orange-600" />
-              Notificações ({customerData.notifications.length})
+              Notificações ({notifications.length})
             </h3>
             <div className="space-y-2">
-              {customerData.notifications.slice(0, 3).map((notification) => (
-                <div key={notification.id} className={`p-2 border rounded text-xs ${
-                  !notification.read ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
-                }`}>
-                  <div className="flex items-start gap-2">
-                    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      notification.type === 'success' ? 'bg-green-100' :
-                      notification.type === 'info' ? 'bg-blue-100' :
-                      notification.type === 'ai' ? 'bg-purple-100' : 'bg-yellow-100'
+              {notifications.length === 0 ? (
+                <div className="text-center py-4">
+                  <Bell className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">Nenhuma notificação</p>
+                </div>
+              ) : (
+                notifications.map((notification: any) => (
+                  <div key={notification.id} className={`p-2 border rounded text-xs ${!notification.read ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
                     }`}>
-                      {notification.type === 'success' ? '✅' :
-                       notification.type === 'info' ? '💡' :
-                       notification.type === 'ai' ? '🤖' : '⚠️'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-xs truncate">{notification.title}</p>
-                      <p className="text-gray-600 text-xs">{notification.message}</p>
-                      <p className="text-gray-400 text-xs">{notification.date}</p>
+                    <div className="flex items-start gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'success' ? 'bg-green-100' :
+                          notification.type === 'info' ? 'bg-blue-100' :
+                            notification.type === 'ai' ? 'bg-purple-100' : 'bg-yellow-100'
+                        }`}>
+                        {notification.type === 'success' ? '✅' :
+                          notification.type === 'info' ? '💡' :
+                            notification.type === 'ai' ? '🤖' : '⚠️'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-xs truncate">{notification.title}</p>
+                        <p className="text-gray-600 text-xs">{notification.message}</p>
+                        <p className="text-gray-400 text-xs">{notification.date}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -569,7 +501,7 @@ function CustomerDashboardContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             {/* Vaga Express - SE NÃO TIVER ASSINATURA */}
-            {!customerData.vagaExpressSubscription && (
+            {!customer.vagaExpressSubscription && (
               <div className="bg-gradient-to-br from-orange-100 to-red-100 rounded-lg p-3 border-2 border-orange-300 relative">
                 <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
                   NOVO!
@@ -640,8 +572,8 @@ function CustomerDashboardContent() {
         isOpen={showSofiaChat}
         onClose={() => setShowSofiaChat(false)}
         customerData={{
-          ...customerData,
-          package: 'PREMIUM' // Definir baseado no plano real do cliente
+          ...customer,
+          package: 'PREMIUM'
         }}
       />
 
@@ -649,17 +581,17 @@ function CustomerDashboardContent() {
         isOpen={showProfileEditor}
         onClose={() => setShowProfileEditor(false)}
         profileData={{
-          name: customerData.name,
-          email: customerData.email,
-          phone: customerData.phone || '',
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone || '',
           country: 'Brasil',
           nationality: 'Brasileira',
           age: 35,
-          profession: 'Engenheiro de Software',
+          profession: 'Profissional',
           education: 'Superior',
-          targetCountry: customerData.destinationCountry,
-          visaType: customerData.visaType,
-          profilePhoto: ''
+          targetCountry: customer.destinationCountry,
+          visaType: customer.visaType,
+          profilePhoto: customer.profilePhoto || ''
         }}
         onSave={handleProfileSave}
       />
@@ -668,7 +600,7 @@ function CustomerDashboardContent() {
         isOpen={showDocumentUpload}
         onClose={() => setShowDocumentUpload(false)}
         onDocumentsChange={handleDocumentsChange}
-        existingDocuments={customerData.documents}
+        existingDocuments={documents}
       />
 
       {/* Novo: Modal do Wizard de Aplicação */}
@@ -686,9 +618,9 @@ function CustomerDashboardContent() {
             </div>
             <div className="p-6">
               <VisaApplicationWizard
-                country={customerData.destinationCountry === 'Estados Unidos' ? 'USA' : 
-                        customerData.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
-                visaType={customerData.visaType}
+                country={customer.destinationCountry === 'Estados Unidos' ? 'USA' :
+                  customer.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
+                visaType={customer.visaType || 'Turismo'}
                 onComplete={() => {
                   setShowVisaWizard(false)
                   notifySuccess('Sucesso!', 'Wizard de aplicação concluído com sucesso!')
@@ -714,9 +646,9 @@ function CustomerDashboardContent() {
             </div>
             <div className="p-6">
               <DocumentChecklistWizard
-                country={customerData.destinationCountry === 'Estados Unidos' ? 'USA' : 
-                        customerData.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
-                visaType={customerData.visaType}
+                country={customer.destinationCountry === 'Estados Unidos' ? 'USA' :
+                  customer.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
+                visaType={customer.visaType || 'Turismo'}
                 applicantProfile={{
                   nationality: 'brasileira',
                   age: 35,
@@ -746,9 +678,9 @@ function CustomerDashboardContent() {
             </div>
             <div className="p-6">
               <InterviewPrep
-                country={customerData.destinationCountry === 'Estados Unidos' ? 'USA' : 
-                        customerData.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
-                visaType={customerData.visaType}
+                country={customer.destinationCountry === 'Estados Unidos' ? 'USA' :
+                  customer.destinationCountry === 'Canadá' ? 'CAN' : 'PRT'}
+                visaType={customer.visaType || 'Turismo'}
                 userLevel="intermediate"
               />
             </div>

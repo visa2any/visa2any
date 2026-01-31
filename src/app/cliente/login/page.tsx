@@ -1,60 +1,65 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, Globe, Lock, Mail, ArrowRight, CheckCircle, Shield, Clock } from 'lucide-react'
+import { Eye, EyeOff, Globe, Lock, Mail, ArrowRight, CheckCircle, Shield, Clock, User, Phone } from 'lucide-react'
+import { useCustomerAuth } from '@/hooks/useCustomerAuth'
 
 export default function CustomerLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const [isRegisterMode, setIsRegisterMode] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [localError, setLocalError] = useState('')
+
   const router = useRouter()
+  const { login, register, isLoading, isAuthenticated, error } = useCustomerAuth()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/cliente')
+    }
+  }, [isAuthenticated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    setLocalError('')
 
-    // BYPASS TEMPORÁRIO PARA DEMONSTRAÇÃO,    // Simular login bem-sucedido com dados de exemplo
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simular delay de API,      
-      const mockCustomerData = {
-        id: 'cliente-demo-1',
-        name: name || 'Cliente Demonstração',
-        email: email,
-        phone: phone || '(11) 99999-9999',
-        status: 'IN_PROCESS',
-        destinationCountry: 'Estados Unidos',
-        visaType: 'Turismo B1/B2',
-        eligibilityScore: 85
-      }
+    // Basic validation
+    if (!email || !password) {
+      setLocalError('Por favor, preencha todos os campos')
+      return
+    }
 
-      // Salvar dados no localStorage
+    if (isRegisterMode && (!name || !phone)) {
+      setLocalError('Por favor, preencha todos os campos')
+      return
+    }
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('customer-token', 'demo-token-123')
-        localStorage.setItem('customer', JSON.stringify(mockCustomerData))
-      }
+    if (password.length < 8) {
+      setLocalError('A senha deve ter no mínimo 8 caracteres')
+      return
+    }
 
-      console.log('✅ Login de demonstração realizado com sucesso')
+    let success = false
 
-      // Redirecionar para o dashboard
+    if (isRegisterMode) {
+      success = await register(name, email, password, phone)
+    } else {
+      success = await login(email, password)
+    }
 
+    if (success) {
+      console.log('✅ Autenticação realizada com sucesso')
       router.push('/cliente')
-
-    } catch (error) {
-      console.error('Erro na autenticação:', error)
-      setError('Erro de conexão. Tente novamente.')
-    } finally {
-      setIsLoading(false)
     }
   }
+
+  const displayError = localError || error
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -76,29 +81,53 @@ export default function CustomerLogin() {
 
         {/* Login/Register Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          {error && (
+          {displayError && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800 text-sm font-medium">❌ {error}</p>
+              <p className="text-red-800 text-sm font-medium">❌ {displayError}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {isRegisterMode && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nome Completo
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required={isRegisterMode}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="Seu nome completo"
-                />
-              </div>
+              <>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Nome Completo
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required={isRegisterMode}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      placeholder="Seu nome completo"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    Telefone/WhatsApp
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required={isRegisterMode}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      placeholder="(11) 99999-9999"
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             <div>
@@ -120,24 +149,6 @@ export default function CustomerLogin() {
                 />
               </div>
             </div>
-
-            {isRegisterMode && (
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Telefone/WhatsApp
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  required={isRegisterMode}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-            )}
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -192,7 +203,7 @@ export default function CustomerLogin() {
             <Button
               type="submit"
               disabled={isLoading || !email || !password || (isRegisterMode && (!name || !phone))}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
@@ -216,7 +227,7 @@ export default function CustomerLogin() {
             <button
               onClick={() => {
                 setIsRegisterMode(!isRegisterMode)
-                setError('')
+                setLocalError('')
                 setEmail('')
                 setPassword('')
                 setName('')

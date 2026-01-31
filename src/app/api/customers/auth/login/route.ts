@@ -7,42 +7,40 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { email, password } = body
-    
+
     if (!email || !password) {
       return NextResponse.json({
         error: 'Email e senha são obrigatórios'
       }, { status: 400 })
     }
 
-    // Buscar cliente por email
+    // Buscar cliente por email (com todos os campos necessários)
     const customer = await prisma.client.findUnique({
       where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        status: true,
-        targetCountry: true,
-        visaType: true,
-        score: true,
+      include: {
         consultations: {
           take: 1,
           orderBy: { createdAt: 'desc' }
         }
       }
     })
-    
+
     if (!customer) {
       return NextResponse.json({
         error: 'Credenciais inválidas'
       }, { status: 401 })
     }
 
-    // Verificar senha - como não há campo password no modelo Client, vamos usar uma verificação alternativa
-    // Por enquanto, vamos aceitar qualquer senha para clientes (implementar autenticação real depois)
-    const passwordMatch = true // TODO: Implementar autenticação real para clientes
-    
+    // Verificar se o cliente tem senha cadastrada
+    if (!customer.password) {
+      return NextResponse.json({
+        error: 'Conta ainda não possui senha. Por favor, faça o registro ou entre em contato com o suporte.'
+      }, { status: 401 })
+    }
+
+    // Verificar senha usando bcrypt
+    const passwordMatch = await bcrypt.compare(password, customer.password)
+
     if (!passwordMatch) {
       return NextResponse.json({
         error: 'Credenciais inválidas'
@@ -57,10 +55,10 @@ export async function POST(request: NextRequest) {
         error: 'Erro de configuração do servidor'
       }, { status: 500 })
     }
-    
+
     const token = jwt.sign(
-      { 
-        customerId: customer.id, 
+      {
+        customerId: customer.id,
         email: customer.email,
         type: 'customer'
       },
@@ -92,7 +90,7 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 dias
       path: '/'
     })
-    
+
     return response
 
   } catch (error) {

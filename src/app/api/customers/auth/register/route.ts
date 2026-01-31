@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, email, password, phone } = body
-    
+
     if (!name || !email || !password) {
       return NextResponse.json({
         error: 'Nome, email e senha são obrigatórios'
@@ -16,8 +16,9 @@ export async function POST(request: NextRequest) {
 
     // Verificar se já existe cliente com este email
     const existingCustomer = await prisma.client.findUnique({
-      where: { email }})
-    
+      where: { email }
+    })
+
     if (existingCustomer) {
       return NextResponse.json({
         error: 'Já existe uma conta com este email'
@@ -27,14 +28,17 @@ export async function POST(request: NextRequest) {
     // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Criar novo cliente
+    // Criar novo cliente COM a senha hasheada
     const customer = await prisma.client.create({
       data: {
         name,
         email,
+        password: hashedPassword, // Armazenar a senha hasheada!
         phone: phone || null,
         status: 'LEAD',
-        score: 0}})
+        score: 0
+      }
+    })
 
     // Gerar token JWT
     const jwtSecret = process.env.JWT_SECRET
@@ -44,12 +48,13 @@ export async function POST(request: NextRequest) {
         error: 'Erro de configuração do servidor'
       }, { status: 500 })
     }
-    
+
     const token = jwt.sign(
-      { 
-        customerId: customer.id, 
+      {
+        customerId: customer.id,
         email: customer.email,
-        type: 'customer'},
+        type: 'customer'
+      },
       jwtSecret,
       { expiresIn: '7d' }
     )
@@ -66,8 +71,10 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         phone: customer.phone,
         status: customer.status,
-        eligibilityScore: customer.score},
-      token})
+        eligibilityScore: customer.score
+      },
+      token
+    })
 
     // Definir cookie httpOnly
     response.cookies.set('customer-token', token, {
@@ -75,8 +82,9 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'})
-    
+      path: '/'
+    })
+
     return response
 
   } catch (error) {

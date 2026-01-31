@@ -1,9 +1,7 @@
-import { ReactNode } from 'react'
+'use client'
 
-export const metadata = {
-  title: 'Portal do Cliente - Visa2Any',
-  description: 'Acompanhe o progresso da sua jornada internacional no portal exclusivo Visa2Any.'
-}
+import { ReactNode } from 'react'
+import { CustomerAuthProvider } from '@/hooks/useCustomerAuth'
 
 interface CustomerLayoutProps {
   children: ReactNode
@@ -11,8 +9,10 @@ interface CustomerLayoutProps {
 
 export default function CustomerLayout({ children }: CustomerLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {children}
-    </div>
+    <CustomerAuthProvider>
+      <div className="min-h-screen bg-gray-50">
+        {children}
+      </div>
+    </CustomerAuthProvider>
   )
 }

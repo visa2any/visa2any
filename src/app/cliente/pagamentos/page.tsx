@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import ClientHeader from '@/components/ClientHeader'
-import { 
-  CreditCard, DollarSign, Calendar, CheckCircle, Clock, 
+import { useCustomerAuth } from '@/hooks/useCustomerAuth'
+import {
+  CreditCard, DollarSign, Calendar, CheckCircle, Clock,
   AlertTriangle, Download, Receipt, Shield, Zap, Crown
 } from 'lucide-react'
 
@@ -16,7 +18,7 @@ interface Payment {
   status: 'paid' | 'pending' | 'failed' | 'refunded'
   method: string
   invoice_url?: string
-  service_type: 'consultation' | 'document_review' | 'premium_plan' | 'government_fee'
+  service_type: 'consultation' | 'document_review' | 'premium_plan' | 'government_fee' | 'other'
 }
 
 interface Package {
@@ -29,115 +31,55 @@ interface Package {
   features: string[]
 }
 
-interface CustomerData {
-  id: string
-  name: string
-  email: string
-  eligibilityScore: number
-  automationInsights?: {
-    engagementScore: number
-  }
-}
-
 export default function PagamentosPage() {
-  const [customerData, setCustomerData] = useState<CustomerData | null>(null)
+  const { customer, isLoading, isAuthenticated } = useCustomerAuth()
   const [payments, setPayments] = useState<Payment[]>([])
-  const [packageDataData, setPackageData] = useState<Package | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [packageData, setPackageData] = useState<Package | null>(null)
   const [selectedTab, setSelectedTab] = useState<'payments' | 'subscription' | 'plans'>('payments')
+  const router = useRouter()
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = () => {
-    try {
-      // Load customer data
-      const storedCustomer = localStorage.getItem('customer')
-      if (storedCustomer) {
-        setCustomerData(JSON.parse(storedCustomer))
-      } else {
-        setCustomerData({
-          id: 'cliente-padrao',
-          name: 'João Silva Santos',
-          email: 'demo@visa2any.com',
-          eligibilityScore: 87,
-          automationInsights: {
-            engagementScore: 87
-          }
-        })
-      }
-
-      // Load payments
-
-      setPayments([
-        {
-          id: '1',
-          description: 'Plano Premium - Janeiro 2024',
-          amount: 599,
-          currency: 'BRL',
-          date: '2024-01-15',
-          status: 'paid',
-          method: 'Cartão de Crédito **** 1234',
-          invoice_url: '#',
-          service_type: 'premium_plan'
-        },
-        {
-          id: '2',
-          description: 'Consultoria Especializada - Preparação Entrevista',
-          amount: 299,
-          currency: 'BRL',
-          date: '2024-01-10',
-          status: 'paid',
-          method: 'PIX',
-          invoice_url: '#',
-          service_type: 'consultation'
-        },
-        {
-          id: '3',
-          description: 'Taxa Consular - Visto Americano',
-          amount: 185,
-          currency: 'USD',
-          date: '2024-01-08',
-          status: 'pending',
-          method: 'Cartão de Crédito **** 1234',
-          service_type: 'government_fee'
-        },
-        {
-          id: '4',
-          description: 'Revisão de Documentos IA',
-          amount: 149,
-          currency: 'BRL',
-          date: '2024-01-05',
-          status: 'paid',
-          method: 'Boleto Bancário',
-          invoice_url: '#',
-          service_type: 'document_review'
-        }
-      ])
-
-      // Load packageData
-
-      setPackageData({
-        id: 'sub_1',
-        package: 'Premium',
-        price: 599,
-        billing_cycle: 'monthly',
-        status: 'active',
-        next_billing: '2024-02-15',
-        features: [
-          'Consultoria 60min/mês',
-          'Revisão ilimitada de documentos',
-          'Acompanhamento personalizado',
-          'Suporte prioritário',
-          'Análise IA avançada'
-        ]
-      })
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-    } finally {
-      setIsLoading(false)
+    if (!isLoading && !isAuthenticated) {
+      router.push('/cliente/login')
     }
+  }, [isLoading, isAuthenticated, router])
+
+  // Load payments from customer data
+  useEffect(() => {
+    if (customer?.payments) {
+      const formattedPayments: Payment[] = customer.payments.map((p: any) => ({
+        id: p.id,
+        description: p.description || 'Pagamento de serviço',
+        amount: p.amount || 0,
+        currency: p.currency || 'BRL',
+        date: p.paidDate || p.dueDate || p.createdAt || new Date().toISOString(),
+        status: mapPaymentStatus(p.status),
+        method: p.paymentMethod || 'Cartão de Crédito',
+        invoice_url: p.invoiceUrl || p.invoice_url,
+        service_type: p.serviceType || 'other'
+      }))
+      setPayments(formattedPayments)
+    } else {
+      setPayments([])
+    }
+
+    // TODO: Fetch subscription/package data from API when available
+    // For now, we'll leave packageData as null if no subscription exists
+    setPackageData(null)
+  }, [customer])
+
+  const mapPaymentStatus = (status: string): 'paid' | 'pending' | 'failed' | 'refunded' => {
+    const statusMap: Record<string, 'paid' | 'pending' | 'failed' | 'refunded'> = {
+      'COMPLETED': 'paid',
+      'PAID': 'paid',
+      'PENDING': 'pending',
+      'PROCESSING': 'pending',
+      'FAILED': 'failed',
+      'REFUNDED': 'refunded',
+      'CANCELLED': 'failed'
+    }
+    return statusMap[status?.toUpperCase()] || 'pending'
   }
 
   const getStatusColor = (status: string) => {
@@ -167,9 +109,19 @@ export default function PagamentosPage() {
     return `R$ ${amount.toFixed(2)}`
   }
 
+  const formatDate = (dateString: string): string => {
+    try {
+      return new Date(dateString).toLocaleDateString('pt-BR')
+    } catch {
+      return dateString
+    }
+  }
+
   const totalPaid = payments
     .filter(p => p.status === 'paid')
     .reduce((sum, p) => sum + (p.currency === 'USD' ? p.amount * 5.2 : p.amount), 0)
+
+  const pendingCount = payments.filter(p => p.status === 'pending').length
 
   if (isLoading) {
     return (
@@ -182,24 +134,38 @@ export default function PagamentosPage() {
     )
   }
 
-  if (!customerData) {
+  if (!customer) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <CreditCard className="h-12 w-12 text-red-500 mx-auto mb-3" />
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
+          <button
+            onClick={() => router.push('/cliente/login')}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+          >
+            Fazer Login Novamente
+          </button>
         </div>
       </div>
     )
   }
 
+  const customerForHeader = {
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    eligibilityScore: customer.eligibilityScore || 0,
+    automationInsights: customer.automationInsights
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <ClientHeader 
-        customerData={customerData} 
-        onSofiaChat={() => {}} 
+      <ClientHeader
+        customerData={customerForHeader}
+        onSofiaChat={() => { }}
       />
-      
+
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
@@ -230,7 +196,9 @@ export default function PagamentosPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Plano Atual</p>
-                <p className="text-2xl font-bold text-blue-600">Premium</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {packageData?.package || 'Básico'}
+                </p>
               </div>
               <Crown className="h-8 w-8 text-blue-500" />
             </div>
@@ -240,9 +208,7 @@ export default function PagamentosPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pendentes</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {payments.filter(p => p.status === 'pending').length}
-                </p>
+                <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
               </div>
               <Clock className="h-8 w-8 text-yellow-500" />
             </div>
@@ -251,10 +217,10 @@ export default function PagamentosPage() {
           <div className="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Próximo Pagamento</p>
-                <p className="text-2xl font-bold text-purple-600">25 dias</p>
+                <p className="text-sm text-gray-600">Transações</p>
+                <p className="text-2xl font-bold text-purple-600">{payments.length}</p>
               </div>
-              <Calendar className="h-8 w-8 text-purple-500" />
+              <Receipt className="h-8 w-8 text-purple-500" />
             </div>
           </div>
         </div>
@@ -265,31 +231,28 @@ export default function PagamentosPage() {
             <nav className="flex space-x-8">
               <button
                 onClick={() => setSelectedTab('payments')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
-                  selectedTab === 'payments'
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'payments'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Histórico de Pagamentos
               </button>
               <button
                 onClick={() => setSelectedTab('subscription')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
-                  selectedTab === 'subscription'
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'subscription'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Minha Assinatura
               </button>
               <button
                 onClick={() => setSelectedTab('plans')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
-                  selectedTab === 'plans'
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'plans'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Pacotes Disponíveis
               </button>
@@ -302,128 +265,144 @@ export default function PagamentosPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Histórico de Transações</h3>
-                  <button className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm">
-                    <Download className="h-4 w-4" />
-                    Exportar Relatório
-                  </button>
+                  {payments.length > 0 && (
+                    <button className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm">
+                      <Download className="h-4 w-4" />
+                      Exportar Relatório
+                    </button>
+                  )}
                 </div>
 
-                {payments.map((payment) => (
-                  <div key={payment.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-start gap-4 flex-1">
-                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Receipt className="h-5 w-5 text-gray-600" />
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-medium text-gray-900">{payment.description}</h4>
-                            <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${getStatusColor(payment.status)}`}>
-                              {getStatusIcon(payment.status)}
-                              {payment.status === 'paid' ? 'Pago' :
-                               payment.status === 'pending' ? 'Pendente' :
-                               payment.status === 'failed' ? 'Falhou' : 'Reembolsado'}
+                {payments.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum pagamento encontrado</h3>
+                    <p className="text-gray-600">Seus pagamentos aparecerão aqui</p>
+                  </div>
+                ) : (
+                  payments.map((payment) => (
+                    <div key={payment.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <Receipt className="h-5 w-5 text-gray-600" />
+                          </div>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-medium text-gray-900">{payment.description}</h4>
+                              <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${getStatusColor(payment.status)}`}>
+                                {getStatusIcon(payment.status)}
+                                {payment.status === 'paid' ? 'Pago' :
+                                  payment.status === 'pending' ? 'Pendente' :
+                                    payment.status === 'failed' ? 'Falhou' : 'Reembolsado'}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-6 text-sm text-gray-500 mb-2">
+                              <span>{formatCurrency(payment.amount, payment.currency)}</span>
+                              <span>{payment.method}</span>
+                              <span>{formatDate(payment.date)}</span>
                             </div>
                           </div>
-                          
-                          <div className="flex items-center gap-6 text-sm text-gray-500 mb-2">
-                            <span>{formatCurrency(payment.amount, payment.currency)}</span>
-                            <span>{payment.method}</span>
-                            <span>{new Date(payment.date).toLocaleDateString()}</span>
-                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {payment.invoice_url && payment.status === 'paid' && (
+                            <button
+                              onClick={() => window.open(payment.invoice_url, '_blank')}
+                              className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                              title="Download Comprovante"
+                            >
+                              <Download className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          {payment.status === 'pending' && (
+                            <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                              Pagar Agora
+                            </button>
+                          )}
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {payment.invoice_url && payment.status === 'paid' && (
-                          <button
-                            onClick={() => window.open(payment.invoice_url, '_blank')}
-                            className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                            title="Download Comprovante"
-                          >
-                            <Download className="h-4 w-4" />
-                          </button>
-                        )}
-                        
-                        {payment.status === 'pending' && (
-                          <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
-                            Pagar Agora
-                          </button>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
 
-            {selectedTab === 'subscription' && packageDataData && (
+            {selectedTab === 'subscription' && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <Crown className="h-6 w-6 text-white" />
+                {packageData ? (
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                          <Crown className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">Plano {packageData.package}</h3>
+                          <p className="text-blue-600">
+                            {formatCurrency(packageData.price, 'BRL')} / {packageData.billing_cycle === 'monthly' ? 'mês' : 'ano'}
+                          </p>
+                        </div>
                       </div>
+                      <div className={`px-4 py-2 rounded-full text-sm font-medium ${packageData.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                        {packageData.status === 'active' ? 'Ativo' : 'Inativo'}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">Plano {packageDataData.package}</h3>
-                        <p className="text-blue-600">
-                          {formatCurrency(packageDataData.price, 'BRL')} / {packageDataData.billing_cycle === 'monthly' ? 'mês' : 'ano'}
-                        </p>
+                        <h4 className="font-semibold text-gray-900 mb-3">Recursos Incluídos:</h4>
+                        <ul className="space-y-2">
+                          {packageData.features.map((feature, index) => (
+                            <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </div>
-                    <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      packageDataData.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {packageDataData.status === 'active' ? 'Ativo' : 'Inativo'}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Recursos Incluídos:</h4>
-                      <ul className="space-y-2">
-                        {packageDataData.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Informações da Assinatura:</h4>
-                      <div className="space-y-2 text-sm text-gray-700">
-                        <div className="flex justify-between">
-                          <span>Próximo pagamento:</span>
-                          <span className="font-medium">{new Date(packageDataData.next_billing).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Ciclo de cobrança:</span>
-                          <span className="font-medium">{packageDataData.billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Método de pagamento:</span>
-                          <span className="font-medium">Cartão **** 1234</span>
+
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-3">Informações da Assinatura:</h4>
+                        <div className="space-y-2 text-sm text-gray-700">
+                          <div className="flex justify-between">
+                            <span>Próximo pagamento:</span>
+                            <span className="font-medium">{formatDate(packageData.next_billing)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Ciclo de cobrança:</span>
+                            <span className="font-medium">{packageData.billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Alterar Pacote
+                      </button>
+                      <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancelar Assinatura
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="flex gap-3 mt-6">
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                      Alterar Pacote
-                    </button>
-                    <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      Cancelar Assinatura
-                    </button>
-                    <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      Atualizar Pagamento
+                ) : (
+                  <div className="text-center py-12">
+                    <Crown className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma assinatura ativa</h3>
+                    <p className="text-gray-600 mb-4">Escolha um pacote para acelerar seu processo</p>
+                    <button
+                      onClick={() => setSelectedTab('plans')}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Ver Pacotes Disponíveis
                     </button>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -442,7 +421,7 @@ export default function PagamentosPage() {
                       <div className="text-3xl font-bold text-gray-900 mb-1">R$ 299</div>
                       <p className="text-gray-600 text-sm">por mês</p>
                     </div>
-                    
+
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -461,9 +440,9 @@ export default function PagamentosPage() {
                         Suporte por email
                       </li>
                     </ul>
-                    
+
                     <button className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                      Pacote Atual
+                      Selecionar
                     </button>
                   </div>
 
@@ -474,13 +453,13 @@ export default function PagamentosPage() {
                         Mais Popular
                       </span>
                     </div>
-                    
+
                     <div className="text-center mb-6">
                       <h4 className="text-xl font-bold text-gray-900 mb-2">Premium</h4>
                       <div className="text-3xl font-bold text-blue-600 mb-1">R$ 599</div>
                       <p className="text-gray-600 text-sm">por mês</p>
                     </div>
-                    
+
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -503,9 +482,9 @@ export default function PagamentosPage() {
                         Suporte prioritário
                       </li>
                     </ul>
-                    
+
                     <button className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                      Pacote Ativo
+                      Selecionar
                     </button>
                   </div>
 
@@ -516,7 +495,7 @@ export default function PagamentosPage() {
                       <div className="text-3xl font-bold text-purple-600 mb-1">R$ 1.299</div>
                       <p className="text-gray-600 text-sm">por mês</p>
                     </div>
-                    
+
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -539,9 +518,9 @@ export default function PagamentosPage() {
                         Suporte 24/7
                       </li>
                     </ul>
-                    
+
                     <button className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors">
-                      Fazer Upgrade
+                      Selecionar
                     </button>
                   </div>
                 </div>

@@ -44,6 +44,7 @@ model Client {
   id           String       @id @default(cuid())
   name         String
   email        String       @unique
+  password     String?      // Senha para acesso ao portal do cliente
   phone        String?
   country      String?
   nationality  String?
