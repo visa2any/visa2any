@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
 
     // Validar dados obrigatórios do MercadoPago
     if (!body.token) {
+      console.error('❌ ERRO CRÍTICO: Token faltando. Recebido:', JSON.stringify(body))
       return NextResponse.json({
         error: 'Token do cartão é obrigatório',
-        code: 'MISSING_TOKEN'
+        code: 'MISSING_TOKEN',
+        debug_received_body: body // Retorna o que recebeu para debug no frontend
       }, { status: 400 })
     }
 
