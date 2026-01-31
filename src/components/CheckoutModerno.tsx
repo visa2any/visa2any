@@ -31,7 +31,7 @@ interface CheckoutModernoProps {
   supportsQuantity?: boolean
   showGroupDiscount?: boolean
   products?: Product[]
-  
+
   // Interface legacy (para backward compatibility)
   productId?: string
   productName?: string
@@ -131,16 +131,16 @@ const loadFormData = (): SavedCheckoutData | null => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (!saved) return null
-    
+
     const data: SavedCheckoutData = JSON.parse(saved)
-    
+
     // Verificar se os dados não estão muito antigos (7 dias)
     const daysSaved = (Date.now() - data.savedAt) / (1000 * 60 * 60 * 24)
     if (daysSaved > 7) {
       localStorage.removeItem(STORAGE_KEY)
       return null
     }
-    
+
     return data
   } catch (error) {
     console.log('Não foi possível carregar dados salvos:', error)
@@ -183,11 +183,11 @@ const PRODUCT_DATA: Record<string, any> = {
 export default function CheckoutModerno(props: CheckoutModernoProps) {
   // Detect if using new interface (with products array) or legacy interface
   const isNewInterface = !!(props.products && props.products.length > 0)
-  
+
   // Extract props based on interface type
   const {
     title,
-    subtitle, 
+    subtitle,
     ctaText = "Contratar Agora",
     supportsQuantity = true,
     showGroupDiscount = true,
@@ -203,7 +203,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     features = [],
     variant = 'default'
   } = props
-  
+
   // Use first product for calculations if new interface
   // otherwise use legacy props
   const currentProduct = isNewInterface ? products[0] : {
@@ -233,7 +233,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     newsletter: true,
     contractAccepted: false
   })
-  
+
   // Carregar dados salvos apenas no cliente (após hidratação)
   useEffect(() => {
     const savedData = loadFormData()
@@ -263,7 +263,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   } | null>(null)
 
   const productData = PRODUCT_DATA[currentProduct?.id || ''] || {}
-  
+
   // Auto-save dos dados do formulário
   useEffect(() => {
     // Só salva se pelo menos o nome ou email estiver preenchido
@@ -273,7 +273,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         saveFormData(customerData, currentAdults, currentChildren)
         setIsSaving(false)
       }, 1000) // Debounce de 1 segundo
-      
+
       return () => {
         clearTimeout(timeoutId)
         setIsSaving(false)
@@ -285,19 +285,19 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
   // Preços base
   const getBaseAdultPrice = () => currentProduct?.originalPrice || currentProduct?.currentPrice || 0
   const getBaseChildPrice = () => (currentProduct as any)?.childPrice || (currentProduct?.originalPrice || currentProduct?.currentPrice || 0)
-  
+
   // Preços finais com desconto
   const getFinalAdultPrice = () => {
     const basePrice = getBaseAdultPrice()
     // 15% desconto APENAS se 4+ adultos
     return currentAdults >= 4 ? Math.round(basePrice * 0.85) : basePrice
   }
-  
+
   const getFinalChildPrice = () => {
     // Crianças SEMPRE têm 30% desconto do preço base
     return Math.round(getBaseChildPrice() * 0.7)
   }
-  
+
   // Cálculo das economias
   const getAdultGroupSavings = () => {
     // Sempre calcular se tem 4+ adultos
@@ -307,7 +307,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     const discountedTotal = currentAdults * getFinalAdultPrice()
     return originalTotal - discountedTotal
   }
-  
+
   const getChildrenSavings = () => {
     // Sempre calcular se tem crianças
     // independente do supportsQuantity para display
@@ -316,23 +316,23 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     const discountedTotal = currentChildren * getFinalChildPrice()
     return originalTotal - discountedTotal
   }
-  
+
   // Total final calculado
   const calculateCurrentTotal = () => {
     // Se não suporta quantidade usar preço base
     if (!supportsQuantity) {
       return price
     }
-    
+
     const adultTotal = currentAdults * getFinalAdultPrice()
     const childTotal = currentChildren * getFinalChildPrice()
     return adultTotal + childTotal
   }
-  
+
   const getCurrentSavings = () => {
     return getAdultGroupSavings() + getChildrenSavings()
   }
-  
+
   const currentTotal = calculateCurrentTotal()
   const currentSavings = getCurrentSavings()
 
@@ -341,7 +341,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     const cleanCPF = cpf.replace(/\D/g, '')
     if (cleanCPF.length !== 11) return false
     if (/^(\d)\1{10}$/.test(cleanCPF)) return false // CPFs com números repetidos
-    
+
     // Validação dos dígitos verificadores
     let sum = 0
     for (let i = 0; i < 9; i++) {
@@ -350,7 +350,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     let remainder = (sum * 10) % 11
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cleanCPF[9] as string)) return false
-    
+
     sum = 0
     for (let i = 0; i < 10; i++) {
       sum += parseInt(cleanCPF[i] as string) * (11 - i)
@@ -358,7 +358,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     remainder = (sum * 10) % 11
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cleanCPF[10] as string)) return false
-    
+
     return true
   }
 
@@ -397,28 +397,43 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     if (field === 'cpf' && typeof value === 'string') {
       value = formatCPF(value)
     }
-    
+
     setCustomerData(prev => ({ ...prev, [field]: value }))
-    
+
     if (typeof value === 'string') {
       const error = validateField(field, value)
       setFormErrors(prev => ({ ...prev, [field]: error }))
     }
   }
 
-  const isFormValid = customerData.name && customerData.email && customerData.phone && customerData.cpf && 
-                     customerData.terms && customerData.contractAccepted && 
-                     Object.values(formErrors).every(error => !error)
+  // Debug logging to identify validation issues
+  useEffect(() => {
+    console.log('🔍 Form Validation Debug:', {
+      name: !!customerData.name,
+      email: !!customerData.email,
+      phone: !!customerData.phone,
+      cpf: !!customerData.cpf,
+      terms: customerData.terms,
+      contractAccepted: customerData.contractAccepted,
+      formErrors: formErrors,
+      hasNoErrors: Object.values(formErrors).every(error => !error),
+      customerData: customerData
+    })
+  }, [customerData, formErrors])
+
+  const isFormValid = customerData.name && customerData.email && customerData.phone && customerData.cpf &&
+    customerData.terms && customerData.contractAccepted &&
+    Object.values(formErrors).every(error => !error)
 
   const handleSubmit = async () => {
     if (!isFormValid) return
-    
+
     setIsProcessing(true)
-    
+
     try {
       // Combinar código do país + número de telefone
       const fullPhone = `${customerData.phoneCountry} ${customerData.phone}`
-      
+
       const orderData = {
         ...customerData,
         fullPhone,
@@ -427,9 +442,9 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         adults: adults,
         children: children
       }
-      
+
       // Criar pagamento no MercadoPago
-      
+
       const paymentResponse = await fetch('/api/payments/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -460,17 +475,17 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
           external_reference: `${currentProduct?.id || ''}-${Date.now()}`
         })
       })
-      
+
       const paymentData = await paymentResponse.json()
-      
+
       if (paymentData.success && paymentData.preference_id) {
-        
+
         // Configurar dados para checkout inline
         setPaymentData({
           preferenceId: paymentData.preference_id,
           publicKey: paymentData.public_key
         })
-        
+
         // Mostrar checkout inline
         setShowInlineCheckout(true)
         return
@@ -479,7 +494,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         alert(`Erro ao processar pagamento: ${paymentData.error || 'Erro desconhecido'}. Tente novamente.`)
         return
       }
-      
+
       // Se for produto Vaga Express processar com integração
       if (currentProduct?.id?.includes('vaga-express')) {
         console.log('Processando pedido Vaga Express:', orderData)
@@ -509,7 +524,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         })
 
         const result = await response.json()
-        
+
         if (result.success) {
           console.log('Pedido Vaga Express processado:', result)
           // Redirecionar com informações específicas do Vaga Express
@@ -522,18 +537,18 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
         // Produtos normais - fluxo original
         window.location.href = `/success?product=${currentProduct?.id || ''}&checkout=moderno`
       }
-      
+
     } catch (error) {
       console.error('❌ Erro ao processar:', error)
-      
+
       let errorMessage = 'Erro ao processar pedido. Tente novamente.'
-      
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
         errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.'
       } else if (error instanceof Error) {
         errorMessage = `Erro: ${error.message}`
       }
-      
+
       alert(errorMessage)
     } finally {
       setIsProcessing(false)
@@ -575,7 +590,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      
+
       {/* Header simplificado temporário */}
       <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -587,7 +602,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                 <span className="text-2xl font-bold text-gray-900">Visa2Any</span>
               </div>
             </Link>
-            
+
             <div className="flex items-center text-sm text-gray-600">
               <Shield className="h-4 w-4 mr-1 text-green-500" />
               Checkout Seguro
@@ -598,10 +613,10 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Conteúdo Principal */}
           <div className="lg:col-span-2 space-y-8">
-            
+
             {/* Product Overview */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-start justify-between mb-6">
@@ -613,7 +628,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   )}
                   <h1 className="text-3xl font-bold text-gray-900 mb-3">{title || currentProduct?.name || ''}</h1>
                   <p className="text-gray-600 mb-4">{subtitle || currentProduct?.description || ''}</p>
-                  
+
                   {/* Trust indicators */}
                   <div className="flex items-center gap-6 text-sm text-gray-600">
                     <div className="flex items-center">
@@ -626,7 +641,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   {(currentAdults > 1 || currentChildren > 0 || getAdultGroupSavings() > 0 || getChildrenSavings() > 0) && (
                     <div className="text-sm text-gray-500 line-through mb-1">
@@ -683,7 +698,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                 <p className="text-gray-600">
                   Preencha para ativar seu monitoramento
                 </p>
-                
+
                 {/* Indicador de salvamento */}
                 {isSaving && (
                   <div className="absolute top-0 right-0 flex items-center text-xs text-gray-500">
@@ -747,16 +762,15 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       required
                       value={customerData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                        formErrors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${formErrors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                       placeholder="Seu nome completo"
                     />
                     {formErrors.name && (
                       <p className="text-red-600 text-sm mt-1">{formErrors.name}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                       <Mail className="h-4 w-4 mr-2" />
@@ -767,16 +781,15 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       required
                       value={customerData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                        formErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${formErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                       placeholder="seu@email.com"
                     />
                     {formErrors.email && (
                       <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                       <Phone className="h-4 w-4 mr-2" />
@@ -799,9 +812,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                         required
                         value={customerData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                          formErrors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${formErrors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                         placeholder={PHONE_COUNTRIES.find(c => c.code === customerData.phoneCountry)?.format || '(11) 99999-9999'}
                       />
                     </div>
@@ -812,7 +824,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       📱 Formato: {PHONE_COUNTRIES.find(c => c.code === customerData.phoneCountry)?.format || '(11) 99999-9999'}
                     </p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                       <FileText className="h-4 w-4 mr-2" />
@@ -823,9 +835,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       required
                       value={customerData.cpf}
                       onChange={(e) => handleInputChange('cpf', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                        formErrors.cpf ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${formErrors.cpf ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                       placeholder="000.000.000-00"
                       maxLength={14}
                     />
@@ -836,7 +847,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       📄 Necessário para assinatura do contrato
                     </p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                       <MapPin className="h-4 w-4 mr-2" />
@@ -870,7 +881,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                     <p className="text-sm text-gray-600 mb-6">
                       Selecione a quantidade para ver os descontos automáticos aplicados
                     </p>
-                    
+
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Adultos */}
                       <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -887,7 +898,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           >
                             <Minus className="h-4 w-4 text-gray-600" />
                           </button>
-                          
+
                           <div className="text-center">
                             <div className="text-2xl font-bold text-gray-900">{currentAdults}</div>
                             <div className="text-sm text-gray-600">
@@ -915,7 +926,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                               )}
                             </div>
                           </div>
-                          
+
                           <button
                             type="button"
                             onClick={() => setCurrentAdults(currentAdults + 1)}
@@ -925,7 +936,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           </button>
                         </div>
                       </div>
-                      
+
                       {/* Crianças */}
                       <div className="bg-white rounded-lg p-4 border border-gray-200">
                         <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
@@ -941,7 +952,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           >
                             <Minus className="h-4 w-4 text-gray-600" />
                           </button>
-                          
+
                           <div className="text-center">
                             <div className="text-2xl font-bold text-gray-900">{currentChildren}</div>
                             <div className="text-sm text-gray-600">
@@ -967,7 +978,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                               )}
                             </div>
                           </div>
-                          
+
                           <button
                             type="button"
                             onClick={() => setCurrentChildren(currentChildren + 1)}
@@ -978,7 +989,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Resumo dos Descontos em Tempo Real */}
                     <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
                       {/* Linha de Adultos */}
@@ -1003,7 +1014,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Linha de Crianças */}
                       {currentChildren > 0 && (
                         <div className="flex justify-between items-center mb-2">
@@ -1020,7 +1031,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Linha de Descontos Aplicados */}
                       {(getAdultGroupSavings() > 0 || getChildrenSavings() > 0) && (
                         <div className="border-t pt-2 mt-2">
@@ -1034,7 +1045,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                               </span>
                             </div>
                           )}
-                          
+
                           {getChildrenSavings() > 0 && (
                             <div className="flex justify-between items-center mb-1">
                               <span className="text-sm text-green-600">
@@ -1047,7 +1058,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                           )}
                         </div>
                       )}
-                      
+
                       {/* Total Final */}
                       <div className="border-t pt-3 mt-3">
                         <div className="flex justify-between items-center">
@@ -1094,7 +1105,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       . Entendo que o Vaga Express monitora consulados e me notifica sobre vagas.
                     </label>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <input
                       type="checkbox"
@@ -1107,7 +1118,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                       Quero receber dicas sobre vistos e novidades por email
                     </label>
                   </div>
-                  
+
                   {/* Contrato de Prestação */}
                   <div className="border-t pt-4">
                     <div className="flex items-start">
@@ -1146,14 +1157,13 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                 </div>
 
                 {/* Botão de finalizar */}
-                <button 
+                <button
                   type="submit"
                   disabled={!isFormValid || isProcessing}
-                  className={`w-full py-4 text-lg font-bold rounded-xl transition-all duration-300 ${
-                    isFormValid 
+                  className={`w-full py-4 text-lg font-bold rounded-xl transition-all duration-300 ${isFormValid
                       ? `bg-gradient-to-r ${productData.badgeColor} hover:shadow-lg transform hover:scale-[1.02]`
                       : 'bg-gray-300 cursor-not-allowed'
-                  } text-white`}
+                    } text-white`}
                 >
                   {isProcessing ? (
                     <div className="flex items-center justify-center">
@@ -1167,7 +1177,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                     </div>
                   )}
                 </button>
-                
+
               </form>
             </div>
           </div>
@@ -1179,7 +1189,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                 <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
                 Resumo do Pedido
               </h3>
-              
+
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-start pb-4 border-b border-gray-100">
                   <div className="flex-1">
@@ -1209,7 +1219,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="border-t pt-6 mb-6">
                 <div className="flex justify-between items-center text-2xl font-bold">
                   <span>Total</span>
@@ -1219,7 +1229,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   💳 Em até 12x de R$ {(currentTotal / 12).toFixed(2).replace('.', ',')} sem juros
                 </div>
               </div>
-              
+
               {/* Trust signals */}
               <div className="space-y-3 mb-6">
                 <div className="flex items-center text-sm text-gray-600">
@@ -1235,7 +1245,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   Ativação em até 30 minutos
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4">
                 <div className="text-sm text-blue-800">
                   <strong>💳 Formas de pagamento:</strong><br />
@@ -1246,14 +1256,14 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Modal do Contrato */}
       {showContract && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
             <ServiceContract
-              serviceType={currentProduct?.variant === 'premium' ? 'relatorio-premium' : 
-                          currentProduct?.variant === 'consultation' ? 'consultoria-express' : 'assessoria-vip'}
+              serviceType={currentProduct?.variant === 'premium' ? 'relatorio-premium' :
+                currentProduct?.variant === 'consultation' ? 'consultoria-express' : 'assessoria-vip'}
               clientName={customerData.name}
               clientEmail={customerData.email}
               clientCPF={customerData.cpf}
@@ -1269,7 +1279,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
           </div>
         </div>
       )}
-      
+
     </div>
   )
 }
