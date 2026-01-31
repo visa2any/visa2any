@@ -142,7 +142,7 @@ function CustomerDashboardContent() {
     feedback: doc.feedback || doc.validationNotes || '',
     size: doc.size || 0,
     type: doc.type || 'application/pdf',
-    uploadDate: doc.createdAt ? new Date(doc.createdAt).toISOString() : new Date().toISOString(),
+    uploadDate: doc.createdAt ? new Date(doc.createdAt) : new Date(),
     url: doc.url || ''
   }))
 
