@@ -84,23 +84,23 @@ export async function POST(request: NextRequest) {
 
     // Preparar dados do pagamento com todos os campos obrigatórios e recomendados
     const payer: any = {
-      email: body.payer.email,
-      first_name: body.payer.first_name,
-      last_name: body.payer.last_name,
-      identification: body.payer.identification
+      email: data.payer.email,
+      first_name: data.payer.first_name,
+      last_name: data.payer.last_name,
+      identification: data.payer.identification
     };
-    if (body.payer.phone) payer.phone = body.payer.phone;
-    if (body.payer.address) payer.address = body.payer.address;
+    if (data.payer.phone) payer.phone = data.payer.phone;
+    if (data.payer.address) payer.address = data.payer.address;
 
     // Montar payer para additional_info sem phone undefined
     const additionalInfoPayer: any = {
-      email: body.payer.email,
-      first_name: body.payer.first_name,
-      last_name: body.payer.last_name,
-      identification: body.payer.identification
+      email: data.payer.email,
+      first_name: data.payer.first_name,
+      last_name: data.payer.last_name,
+      identification: data.payer.identification
     };
-    if (body.payer.phone) additionalInfoPayer.phone = body.payer.phone;
-    if (body.payer.address) additionalInfoPayer.address = body.payer.address;
+    if (data.payer.phone) additionalInfoPayer.phone = data.payer.phone;
+    if (data.payer.address) additionalInfoPayer.address = data.payer.address;
 
     const additionalInfo: any = {
       items: body.additional_info?.items || [
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
           currency: result.currency_id || 'BRL',
           status: (result.status as any) || 'pending',
           paymentMethod: result.payment_method?.id || 'unknown',
-          clientId: body.clientId,
+          clientId: clientId, // Usar variável resolvida
           createdAt: new Date(),
           updatedAt: new Date()
         }
