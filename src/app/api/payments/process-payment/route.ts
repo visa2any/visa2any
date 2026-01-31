@@ -57,24 +57,16 @@ export async function POST(request: NextRequest) {
     let clientId = data.clientId
     if (!clientId) {
       console.log('⚠️ ClientId não fornecido. Buscando por email:', data.payer.email)
-      const client = await prisma.client.findUnique({
+      const dbClient = await prisma.client.findUnique({
         where: { email: data.payer.email }
       })
-      if (client) {
-        clientId = client.id
+      if (dbClient) {
+        clientId = dbClient.id
         console.log('✅ Cliente encontrado:', clientId)
       } else {
-        // Opcional: Criar cliente se não existir? Ou retornar erro?
-        // Por segurança, vamos tentar encontrar ou falhar.
-        // Mas como o checkout já cria, deve existir.
+        console.log('⚠️ Cliente não encontrado no banco, continuando sem clientId')
+        // Não falhar - permitir pagamento mesmo sem cliente cadastrado
       }
-    }
-
-    if (!clientId) {
-      return NextResponse.json({
-        error: 'ID do cliente é obrigatório e não foi encontrado',
-        code: 'MISSING_CLIENT_ID'
-      }, { status: 400 });
     }
 
     // Obter IP do cliente
@@ -82,122 +74,115 @@ export async function POST(request: NextRequest) {
       request.headers.get('x-real-ip') ||
       '127.0.0.1'
 
-    // Preparar dados do pagamento com todos os campos obrigatórios e recomendados
-    const payer: any = {
-      email: data.payer.email,
-      first_name: data.payer.first_name,
-      last_name: data.payer.last_name,
-      identification: data.payer.identification
-    };
-    if (data.payer.phone) payer.phone = data.payer.phone;
-    if (data.payer.address) payer.address = data.payer.address;
-
-    // Montar payer para additional_info sem phone undefined
-    const additionalInfoPayer: any = {
-      email: data.payer.email,
-      first_name: data.payer.first_name,
-      last_name: data.payer.last_name,
-      identification: data.payer.identification
-    };
-    if (data.payer.phone) additionalInfoPayer.phone = data.payer.phone;
-    if (data.payer.address) additionalInfoPayer.address = data.payer.address;
-
-    const additionalInfo: any = {
-      items: data.additional_info?.items || [
-        {
-          id: `visa2any-${Date.now()}`,
-          title: 'Consultoria Express - Visa2Any',
-          description: 'Consultoria personalizada para processo de visto',
-          category_id: 'services',
-          quantity: 1,
-          unit_price: Number(data.transaction_amount)
-        }
-      ],
-      payer: additionalInfoPayer
-    };
-    if (data.payer.address) {
-      additionalInfo.shipments = {
-        receiver_address: {
-          street_name: data.payer.address.street_name || '',
-          street_number: data.payer.address.street_number || '',
-          zip_code: data.payer.address.zip_code?.replace(/\D/g, '') || '',
-          city_name: data.payer.address.city || '',
-          state_name: data.payer.address.federal_unit || ''
-        }
-      };
-    }
-
-    const paymentData = {
+    // Preparar dados do pagamento com todos os campos obrigatórios
+    const paymentData: any = {
       // Token do cartão (obrigatório)
       token: data.token,
 
-      // Dados básicos da transação
+      // Dados básicos da transação (obrigatórios)
       transaction_amount: Number(data.transaction_amount),
       installments: Number(data.installments) || 1,
-      payment_method_id: data.payment_method_id || 'credit_card',
+      payment_method_id: data.payment_method_id,
 
-      // Emissor do cartão (recomendado)
-      issuer_id: data.issuer_id,
+      // Descrição (obrigatório para processamento)
+      description: 'Consultoria Express - Visa2Any',
 
-      // Dados completos do pagador (obrigatórios e recomendados)
-      payer,
+      // Emissor do cartão (converter para número se existir)
+      ...(data.issuer_id && { issuer_id: Number(data.issuer_id) }),
 
-      // Informações dos itens (recomendado para melhor aprovação)
-      additional_info: additionalInfo,
+      // Dados do pagador (obrigatório)
+      payer: {
+        email: data.payer.email,
+        ...(data.payer.identification && { identification: data.payer.identification }),
+        ...(data.payer.first_name && { first_name: data.payer.first_name }),
+        ...(data.payer.last_name && { last_name: data.payer.last_name })
+      },
 
-      // Referência externa (obrigatório para conciliação)
-      external_reference: data.external_reference || `visa2any-${Date.now()}`,
+      // Referência externa para conciliação
+      external_reference: `visa2any-${Date.now()}`,
 
-      // Descrição na fatura do cartão (recomendado)
+      // Descrição na fatura do cartão
       statement_descriptor: 'VISA2ANY',
 
-      // URL de notificação webhook (obrigatório)
+      // URL de notificação webhook
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
 
-      // Modo binário para aprovação imediata (boas práticas)
-      binary_mode: data.binary_mode || true,
+      // Modo binário para aprovação imediata
+      binary_mode: true,
 
-      // Captura automática (boas práticas)
-      capture: data.capture !== false,
+      // Captura automática
+      capture: true,
 
-      // Metadata para análise de fraude
+      // Metadata
       metadata: {
         platform: 'visa2any',
-        version: '1.0',
-        device_id: data.device_id || '', // Device ID (obrigatório)
-        ip_address: clientIP,
-        user_agent: data.metadata?.user_agent || '',
-        session_id: data.external_reference || `session-${Date.now()}`,
-        timestamp: new Date().toISOString()
+        ip_address: clientIP
       }
     }
 
     console.log('📋 Dados do pagamento preparados:', JSON.stringify(paymentData, null, 2))
 
     // Processar pagamento no MercadoPago
-    const result = await payment.create({ body: paymentData })
-
-    console.log('✅ Resposta do MercadoPago:', JSON.stringify(result, null, 2))
-
-    // Salvar pagamento no banco de dados
+    let result
     try {
-      await prisma.payment.create({
-        data: {
-          id: `mp_${result.id}`,
-          amount: Number(result.transaction_amount),
-          currency: result.currency_id || 'BRL',
-          status: (result.status as any) || 'pending',
-          paymentMethod: result.payment_method?.id || 'unknown',
-          clientId: clientId, // Usar variável resolvida
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      })
+      result = await payment.create({ body: paymentData })
+      console.log('✅ Resposta do MercadoPago:', JSON.stringify(result, null, 2))
+    } catch (mpError: any) {
+      // Capturar erro específico do Mercado Pago
+      console.error('❌ Erro do MercadoPago API:', mpError)
+      console.error('❌ Erro completo (stringify):', JSON.stringify(mpError, null, 2))
 
-      console.log('✅ Pagamento salvo no banco de dados')
-    } catch (dbError) {
-      console.error('⚠️ Erro ao salvar no banco:', dbError)
-      // Não falhar o pagamento por erro de DB
+      // O SDK do MercadoPago pode retornar erros em diferentes formatos
+      let mpErrorMessage = 'Erro da API do Mercado Pago'
+      let mpErrorCode = 'MERCADOPAGO_API_ERROR'
+      let mpErrorDetails = ''
+
+      if (mpError?.cause) {
+        // Erro do SDK v2 geralmente tem 'cause' com array de erros
+        mpErrorDetails = JSON.stringify(mpError.cause)
+        if (Array.isArray(mpError.cause) && mpError.cause.length > 0) {
+          const firstCause = mpError.cause[0]
+          mpErrorMessage = firstCause.description || firstCause.message || mpErrorMessage
+          mpErrorCode = firstCause.code || mpErrorCode
+        }
+      } else if (mpError?.message) {
+        mpErrorMessage = mpError.message
+      } else if (typeof mpError === 'string') {
+        mpErrorMessage = mpError
+      }
+
+      return NextResponse.json({
+        success: false,
+        error: mpErrorMessage,
+        code: mpErrorCode,
+        details: mpErrorDetails || JSON.stringify(mpError),
+        debug: {
+          paymentDataSent: paymentData,
+          rawError: String(mpError)
+        }
+      }, { status: 400 })
+    }
+
+    // Salvar pagamento no banco de dados (se tivermos clientId)
+    if (clientId) {
+      try {
+        await prisma.payment.create({
+          data: {
+            id: `mp_${result.id}`,
+            amount: Number(result.transaction_amount),
+            currency: result.currency_id || 'BRL',
+            status: (result.status as any) || 'pending',
+            paymentMethod: result.payment_method?.id || 'unknown',
+            clientId: clientId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        })
+        console.log('✅ Pagamento salvo no banco de dados')
+      } catch (dbError) {
+        console.error('⚠️ Erro ao salvar no banco:', dbError)
+        // Não falhar o pagamento por erro de DB
+      }
     }
 
     // Preparar resposta
@@ -225,55 +210,38 @@ export async function POST(request: NextRequest) {
         point_of_interaction: result.point_of_interaction,
 
         // Dados de fees
-        fee_details: result.fee_details,
-
-        // Informações de segurança (apenas em desenvolvimento)
-        ...(process.env.NODE_ENV === 'development' && {
-          raw_response: result
-        })
+        fee_details: result.fee_details
       }
     }
 
     return NextResponse.json(response)
 
-  } catch (error) {
-    console.error('❌ Erro ao processar pagamento:', error)
-    console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
+  } catch (error: any) {
+    console.error('❌ Erro geral ao processar pagamento:', error)
+    console.error('❌ Tipo do erro:', typeof error)
+    console.error('❌ Erro stringify:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
 
-    // Análise do tipo de erro do MercadoPago
-    let errorCode = 'PAYMENT_ERROR'
+    // Tentar extrair informação útil do erro
     let errorMessage = 'Erro ao processar pagamento'
+    let errorCode = 'PAYMENT_ERROR'
+    let errorDetails = ''
 
     if (error instanceof Error) {
-      // Erros comuns do MercadoPago
-      if (error.message.includes('invalid_token')) {
-        errorCode = 'INVALID_TOKEN'
-        errorMessage = 'Token do cartão inválido'
-      } else if (error.message.includes('card_not_found')) {
-        errorCode = 'CARD_NOT_FOUND'
-        errorMessage = 'Cartão não encontrado'
-      } else if (error.message.includes('insufficient_amount')) {
-        errorCode = 'INSUFFICIENT_AMOUNT'
-        errorMessage = 'Valor insuficiente'
-      } else if (error.message.includes('cc_rejected')) {
-        errorCode = 'CARD_REJECTED'
-        errorMessage = 'Cartão rejeitado'
-      } else {
-        errorMessage = error.message
-      }
+      errorMessage = error.message || errorMessage
+      errorDetails = error.stack || ''
+    } else if (typeof error === 'object' && error !== null) {
+      errorDetails = JSON.stringify(error)
+      if (error.message) errorMessage = error.message
+      if (error.code) errorCode = error.code
+    } else if (typeof error === 'string') {
+      errorMessage = error
     }
 
     return NextResponse.json({
       success: false,
       error: errorMessage,
       code: errorCode,
-      details: error instanceof Error ? error.message : 'Erro desconhecido',
-      ...(process.env.NODE_ENV === 'development' && {
-        debug: {
-          errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-          stack: error instanceof Error ? error.stack : 'No stack trace'
-        }
-      })
+      details: errorDetails
     }, { status: 500 })
   }
 }
