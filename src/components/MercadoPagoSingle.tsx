@@ -132,7 +132,8 @@ export default function MercadoPagoSingle({
 
       brickInstance = await bricks.create('payment', CONTAINER_ID, {
         initialization: {
-          amount: amount,
+          preferenceId: preferenceId,
+          amount: amount, // Backup/Fallbacks (embora preferenceId tenha prioridade)
           payer: {
             firstName: customerData.name.split(' ')[0] || 'Cliente',
             lastName: customerData.name.split(' ').slice(1).join(' ') || 'Visa2Any',
@@ -439,8 +440,8 @@ export default function MercadoPagoSingle({
             <button
               onClick={copyPixCode}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${copied
-                  ? 'bg-green-500 text-white'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                ? 'bg-green-500 text-white'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
             >
               {copied ? (
