@@ -111,7 +111,7 @@ export default function ChatBot() {
     },
     {
       id: 'consultation',
-      text: '💬 Agendar consultoria gratuita',
+      text: '💬 Iniciar pré-análise',
       action: () => handleConsultationRequest()
     },
     {
@@ -190,9 +190,9 @@ export default function ChatBot() {
   }
 
   const handleConsultationRequest = () => {
-    addUserMessage('Agendar consultoria gratuita')
+    addUserMessage('Iniciar pré-análise')
     addBotMessage(
-      "Excelente! Oferecemos dois tipos de consultoria gratuita:",
+      "Excelente! Oferecemos dois tipos de consultoria inicial:",
       [
         {
           id: 'ai-consultation',
@@ -302,11 +302,11 @@ export default function ChatBot() {
     addBotMessage(
       `Perfeito! ${country} é um destino muito procurado para ${visaType}. ` +
       `Nossa taxa de aprovação para ${country} é de 98%! ` +
-      `Gostaria de uma análise gratuita do seu perfil agora mesmo?`,
+      `Gostaria de uma pré-análise do seu perfil agora mesmo?`,
       [
         {
           id: 'free-analysis',
-          text: '✅ Sim, quero análise gratuita',
+          text: '✅ Sim, quero pré-análise',
           action: () => handleFreeAnalysis()
         },
         {
@@ -324,7 +324,7 @@ export default function ChatBot() {
   }
 
   const handleFreeAnalysis = () => {
-    addUserMessage('Sim, quero análise gratuita')
+    addUserMessage('Sim, quero pré-análise')
     addBotMessage(
       "Fantástico! Para fazer sua análise personalizada, preciso de alguns dados. Qual seu nome completo?"
     )
@@ -342,7 +342,7 @@ export default function ChatBot() {
       `⏱️ **Tempo de processamento:** 15-30 dias\n` +
       `📄 **Documentos necessários:** Análise personalizada\n` +
       `💰 **Investimento:** A partir de R$ 2.500\n\n` +
-      `Gostaria de agendar uma consultoria gratuita para discutir seu caso específico?`,
+      `Gostaria de agendar uma pré-análise para discutir seu caso específico?`,
       [
         {
           id: 'schedule-now',
@@ -395,14 +395,14 @@ export default function ChatBot() {
       case 'pricing':
         return {
           text: "💰 **Nossos preços são transparentes e competitivos:**\n\n" +
-            "🆓 **Análise Gratuita** - Começe sem gastar nada\n" +
+            "🤖 **Pré-Análise** - R$ 29,90\n" +
             "📄 **Relatório Premium** - R$ 97 a R$ 497 (varia por país)\n" +
             "👨‍💼 **Consultoria 1:1** - R$ 297 a R$ 797\n" +
             "👑 **Serviço VIP** - R$ 1.497 a R$ 4.997\n\n" +
             "💡 O preço varia conforme país e complexidade. Quer uma cotação específica?",
           options: [
             { id: 'pricing-calc', text: '🧮 Calcular meu preço', action: () => window.open('/precos', '_blank') },
-            { id: 'free-analysis', text: '🆓 Começar grátis', action: () => window.open('/consultoria-ia', '_blank') }
+            { id: 'free-analysis', text: '🚀 Começar Pré-Análise', action: () => window.open('/consultoria-ia', '_blank') }
           ]
         }
 
@@ -494,7 +494,7 @@ export default function ChatBot() {
       case 'help':
         return {
           text: "🤝 **Estou aqui para te guiar:**\n\n" +
-            "1️⃣ **Primeiro**: Análise gratuita (15min)\n" +
+            "1️⃣ **Primeiro**: Pré-Análise (15min)\n" +
             "2️⃣ **Segundo**: Relatório personalizado\n" +
             "3️⃣ **Terceiro**: Consultoria especializada\n" +
             "4️⃣ **Quarto**: Execução completa\n\n" +
@@ -573,7 +573,7 @@ export default function ChatBot() {
     addUserMessage('Guia passo a passo')
     addBotMessage(
       "👣 **Seu caminho para o visto:**\n\n" +
-      "🆓 **PASSO 1**: Análise gratuita (15min)\n" +
+      "🤖 **PASSO 1**: Pré-Análise (15min)\n" +
       "📄 **PASSO 2**: Relatório premium detalhado\n" +
       "👨‍💼 **PASSO 3**: Consultoria especializada\n" +
       "📋 **PASSO 4**: Preparação documentos\n" +
@@ -611,7 +611,7 @@ export default function ChatBot() {
       addBotMessage(
         `Excelente, ${userData.name}! Tenho todos os dados necessários. ` +
         `Um especialista entrará em contato em até 2 horas. ` +
-        `Enquanto isso, que tal agendar sua consultoria gratuita?`,
+        `Enquanto isso, que tal iniciar sua pré-análise?`,
         [
           {
             id: 'schedule-consultation',
@@ -698,8 +698,8 @@ export default function ChatBot() {
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-2xl ${message.isBot
-                      ? 'bg-gray-100 text-gray-800'
-                      : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                    ? 'bg-gray-100 text-gray-800'
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
                     }`}
                 >
                   {message.isBot && (

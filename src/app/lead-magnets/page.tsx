@@ -47,7 +47,7 @@ const LEAD_MAGNETS: LeadMagnet[] = [
       'Organizado por tipo de visto',
       'Templates e exemplos',
       'Dicas de formatação',
-      'Atualizações gratuitas por 1 ano'
+      'Atualizações inclusas por 1 ano'
     ],
     file: '/downloads/checklist-documentos-por-pais.pdf'
   },
@@ -129,7 +129,7 @@ export default function LeadMagnetsPage() {
     }
 
     setDownloading(true)
-    
+
     try {
       // Capturar lead
       await fetch('/api/leads/capture', {
@@ -153,9 +153,9 @@ export default function LeadMagnetsPage() {
         // Em produção
         // servir arquivo real
         console.log(`Downloading: ${magnet.file}`)
-        
+
         // Trigger email automático
-        
+
         await fetch('/api/notifications/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -171,9 +171,9 @@ export default function LeadMagnetsPage() {
         })
 
         setDownloadComplete(true)
-        
+
         // Reset form
-        
+
         setTimeout(() => {
           setSelectedMagnet(null)
           setEmail('')
@@ -191,26 +191,26 @@ export default function LeadMagnetsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      
+
       {/* Breadcrumb */}
       <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-20 pb-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb />
         </div>
       </div>
-      
+
       {/* Hero Section */}
       <section className="pt-4 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              🎁 Materiais <span className="text-blue-600">Gratuitos</span> Exclusivos
+              🎁 Materiais <span className="text-blue-600">Exclusivos</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Baixe nossos guias, checklists e ferramentas que já ajudaram 10.000+ brasileiros 
-              a conseguirem seus vistos. <strong>100% gratuito, sem pegadinha!</strong>
+              Baixe nossos guias, checklists e ferramentas que já ajudaram 10.000+ brasileiros
+              a conseguirem seus vistos. <strong>Disponível para download imediato!</strong>
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
@@ -257,7 +257,7 @@ export default function LeadMagnetsPage() {
                     ⭐ Exclusivo
                   </div>
                 )}
-                
+
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-6 h-full border border-gray-200 hover:border-blue-300">
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
@@ -269,21 +269,21 @@ export default function LeadMagnetsPage() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {magnet.title}
                   </h3>
-                  
+
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     {magnet.description}
                   </p>
-                  
+
                   <div className="bg-gray-50 rounded-lg p-3 mb-4">
                     <p className="text-xs text-gray-600 italic">
                       📋 <strong>Prévia:</strong> {magnet.preview}
                     </p>
                   </div>
-                  
+
                   <div className="mb-6">
                     <h4 className="font-semibold text-gray-900 mb-2 text-sm">O que você vai receber:</h4>
                     <ul className="space-y-1">
@@ -300,13 +300,13 @@ export default function LeadMagnetsPage() {
                       )}
                     </ul>
                   </div>
-                  
+
                   <Button
                     onClick={() => setSelectedMagnet(magnet.id)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Baixar Grátis Agora
+                    Baixar Agora
                   </Button>
                 </div>
               </div>
@@ -341,9 +341,9 @@ export default function LeadMagnetsPage() {
                     Quase lá! 🚀
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Preencha os dados abaixo para receber o material gratuitamente:
+                    Preencha os dados abaixo para receber o material:
                   </p>
-                  
+
                   <div className="space-y-4">
                     <input
                       type="text"
@@ -360,14 +360,14 @@ export default function LeadMagnetsPage() {
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
-                  
+
                   <div className="text-xs text-gray-500 mt-4 mb-6">
                     ✅ Seus dados estão seguros. Usamos apenas para enviar o material e dicas valiosas sobre vistos.
                   </div>
                 </>
               )}
             </div>
-            
+
             {!downloadComplete && (
               <div className="flex gap-3">
                 <Button
@@ -407,7 +407,7 @@ export default function LeadMagnetsPage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
             Por que nossos materiais são diferentes? 🤔
           </h2>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-blue-50 rounded-xl p-6">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -418,7 +418,7 @@ export default function LeadMagnetsPage() {
                 Analisamos 50.000+ aplicações reais para criar conteúdo que realmente funciona na prática.
               </p>
             </div>
-            
+
             <div className="bg-green-50 rounded-xl p-6">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-6 w-6 text-green-600" />
@@ -428,7 +428,7 @@ export default function LeadMagnetsPage() {
                 Monitoramos mudanças nas leis de imigração e atualizamos nossos materiais mensalmente.
               </p>
             </div>
-            
+
             <div className="bg-purple-50 rounded-xl p-6">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Star className="h-6 w-6 text-purple-600" />
@@ -449,7 +449,7 @@ export default function LeadMagnetsPage() {
             Pronto para acelerar seu processo? 🚀
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Se você gostou dos materiais gratuitos, imagine o que conseguimos fazer 
+            Se você gostou dos nossos materiais, imagine o que conseguimos fazer
             com nossa consultoria personalizada!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -461,7 +461,7 @@ export default function LeadMagnetsPage() {
             </a>
             <a href="/assessment">
               <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
-                Análise Gratuita
+                Pré-Análise
               </Button>
             </a>
           </div>

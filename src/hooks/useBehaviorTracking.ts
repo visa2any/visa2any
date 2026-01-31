@@ -43,7 +43,7 @@ export const useBehaviorTracking = (userId?: string) => {
       cooldown: 60,
       priority: 1
     },
-    
+
     {
       id: 'pricing_hesitation',
       name: 'Hesitação em Preços',
@@ -52,7 +52,7 @@ export const useBehaviorTracking = (userId?: string) => {
         const timeOnPricing = events
           .filter(e => e.type === 'time_spent' && e.data.page === 'pricing')
           .reduce((total, e) => total + e.data.duration, 0)
-        
+
         return pricingViews >= 3 || timeOnPricing > 120000 // 2 minutes
       },
       action: () => {
@@ -114,9 +114,9 @@ export const useBehaviorTracking = (userId?: string) => {
       data,
       timestamp: Date.now()
     }
-    
+
     setEvents(prev => [...prev.slice(-50), event]) // Keep last 50 events
-    
+
     // Send to backend for persistent tracking
     if (userId) {
       fetch('/api/automation/behavioral-triggers', {
@@ -131,20 +131,20 @@ export const useBehaviorTracking = (userId?: string) => {
 
   const checkTriggers = () => {
     const now = Date.now()
-    
+
     triggers
       .filter(trigger => {
         // Check cooldown
         if (trigger.lastTriggered && (now - trigger.lastTriggered) < trigger.cooldown * 60 * 1000) {
           return false
         }
-        
+
         // Check if already active
-        
+
         if (activeTriggers.includes(trigger.id)) {
           return false
         }
-        
+
         return trigger.condition(events, { userId })
       })
       .sort((a, b) => a.priority - b.priority)
@@ -153,11 +153,11 @@ export const useBehaviorTracking = (userId?: string) => {
         trigger.lastTriggered = now
         setActiveTriggers(prev => [...prev, trigger.id])
         trigger.action({ userId })
-        
+
         console.log(`🤖 Automação executada: ${trigger.name}`)
-        
+
         // Disparar evento customizado para integrar com upsells
-        
+
         window.dispatchEvent(new CustomEvent('behaviorTrigger', {
           detail: { triggerId: trigger.id, triggerName: trigger.name, userId }
         }))
@@ -168,9 +168,9 @@ export const useBehaviorTracking = (userId?: string) => {
 
   useEffect(() => {
     // Track page view
-    trackEvent('page_view', { 
+    trackEvent('page_view', {
       page: window.location.pathname,
-      referrer: document.referrer 
+      referrer: document.referrer
     })
 
     // Track scroll depth
@@ -179,7 +179,7 @@ export const useBehaviorTracking = (userId?: string) => {
       const scrollPercent = Math.round(
         (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
       )
-      
+
       if (scrollPercent > scrollDepth.current + 25) {
         scrollDepth.current = scrollPercent
         trackEvent('scroll', { depth: scrollPercent })
@@ -197,9 +197,9 @@ export const useBehaviorTracking = (userId?: string) => {
     // Track time spent
 
     const timeTracker = setInterval(() => {
-      trackEvent('time_spent', { 
+      trackEvent('time_spent', {
         page: window.location.pathname,
-        duration: Date.now() - pageStartTime.current 
+        duration: Date.now() - pageStartTime.current
       })
     }, 30000) // Every 30 seconds
 
@@ -238,12 +238,12 @@ const showExitIntentModal = () => {
         <div class="text-6xl mb-4">✋</div>
         <h3 class="text-2xl font-bold text-gray-900 mb-4">Espere! Não vá embora!</h3>
         <p class="text-gray-600 mb-6">
-          Comece sua análise gratuita agora e descubra suas chances de aprovação em apenas 15 minutos.
+          Comece sua pré-análise agora e descubra suas chances de aprovação em apenas 15 minutos.
         </p>
         <div class="space-y-3">
           <button onclick="window.open('/consultoria-ia', '_blank'); document.getElementById('exit-intent-modal').remove()" 
                   class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700">
-            🚀 Começar Análise Gratuita
+            🚀 Começar Pré-Análise
           </button>
           <button onclick="document.getElementById('exit-intent-modal').remove()" 
                   class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50">
@@ -254,9 +254,9 @@ const showExitIntentModal = () => {
     </div>
   `
   document.body.appendChild(modal)
-  
+
   // Auto remove after 10 seconds
-  
+
   setTimeout(() => {
     const existingModal = document.getElementById('exit-intent-modal')
     if (existingModal) existingModal.remove()
@@ -287,7 +287,7 @@ const showPricingAssistant = () => {
     </div>
   `
   document.body.appendChild(assistant)
-  
+
   setTimeout(() => {
     const existing = document.getElementById('pricing-assistant')
     if (existing) existing.remove()
@@ -316,7 +316,7 @@ const showEngagementBooster = () => {
     </div>
   `
   document.body.appendChild(booster)
-  
+
   setTimeout(() => {
     const existing = document.getElementById('engagement-booster')
     if (existing) existing.remove()
@@ -345,7 +345,7 @@ const showFormAssistant = () => {
     </div>
   `
   document.body.appendChild(assistant)
-  
+
   setTimeout(() => {
     const existing = document.getElementById('form-assistant')
     if (existing) existing.remove()
@@ -378,7 +378,7 @@ const showSuccessCelebration = () => {
     </div>
   `
   document.body.appendChild(celebration)
-  
+
   setTimeout(() => {
     const existing = document.getElementById('success-celebration')
     if (existing) existing.remove()

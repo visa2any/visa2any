@@ -26,7 +26,7 @@ export default function FAQPage() {
   ]
 
   const quickLinks = [
-    { title: "Consultoria IA Gratuita", url: "/consultoria-ia", icon: Zap, description: "Análise em 15 minutos" },
+    { title: "Pré-Análise com IA", url: "/consultoria-ia", icon: Zap, description: "Análise em 15 minutos" },
     { title: "Preços Transparentes", url: "/precos", icon: DollarSign, description: "Sem custos ocultos" },
     { title: "Nossos Serviços", url: "/servicos", icon: FileText, description: "Todos os tipos de visto" },
     { title: "Contato Direto", url: "/contato", icon: MessageCircle, description: "Suporte especializado" }
@@ -50,7 +50,7 @@ export default function FAQPage() {
         {
           id: "q3",
           question: "Qual a diferença entre a IA Consultoria e consultoria tradicional?",
-          answer: "IA Consultoria (Gratuita): Análise automatizada em 15 minutos, algoritmos avançados identificam melhores opções. Consultoria Tradicional (Paga): Análise humana especializada e detalhada, estratégia personalizada completa, acompanhamento durante todo o processo."
+          answer: "Pré-Análise (Automatizada): Análise automatizada em 15 minutos por R$ 29,90, algorítmos avançados identificam melhores opções. Consultoria Tradicional (Paga): Análise humana especializada e detalhada, estratégia personalizada completa, acompanhamento durante todo o processo."
         },
         {
           id: "q4",
@@ -205,7 +205,7 @@ export default function FAQPage() {
         {
           id: "q28",
           question: "Austrália aceita profissionais da minha área?",
-          answer: "Verificamos na lista oficial de ocupações (MLTSSL/STSOL): +400 profissões qualificadas, TI/Engenharia/Saúde em alta demanda, processo de reconhecimento por área, teste de inglês obrigatório, avaliação de skills. Consulta gratuita para verificação."
+          answer: "Verificamos na lista oficial de ocupações (MLTSSL/STSOL): +400 profissões qualificadas, TI/Engenharia/Saúde em alta demanda, processo de reconhecimento por área, teste de inglês obrigatório, avaliação de skills. Consulte nossa pré-análise e verificação."
         }
       ]
     },
@@ -680,7 +680,7 @@ export default function FAQPage() {
                   className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-8 py-4 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <Zap className="h-6 w-6" />
-                  IA Consultoria Grátis
+                  Pré-Análise com IA
                 </a>
 
                 <a

@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  Star, 
-  TrendingUp, 
-  Target, 
-  Globe, 
+import {
+  CheckCircle,
+  ArrowRight,
+  Star,
+  TrendingUp,
+  Target,
+  Globe,
   Clock,
   Award,
   AlertTriangle,
@@ -95,8 +95,8 @@ const QUALIFICATION_STEPS: QualificationStep[] = [
         text: 'Qual país é seu destino principal?',
         type: 'select',
         options: [
-          'Estados Unidos', 'Canadá', 'Austrália', 'Portugal', 'Alemanha', 
-          'Reino Unido', 'França', 'Holanda', 'Irlanda', 'Suécia', 
+          'Estados Unidos', 'Canadá', 'Austrália', 'Portugal', 'Alemanha',
+          'Reino Unido', 'França', 'Holanda', 'Irlanda', 'Suécia',
           'Nova Zelândia', 'Chile', 'Uruguai', 'Outro'
         ],
         required: true,
@@ -118,7 +118,7 @@ const QUALIFICATION_STEPS: QualificationStep[] = [
         text: 'Em quanto tempo você precisa estar no destino?',
         type: 'select',
         options: [
-          'Até 6 meses', '6 meses a 1 ano', '1 a 2 anos', 
+          'Até 6 meses', '6 meses a 1 ano', '1 a 2 anos',
           '2 a 5 anos', 'Sem pressa específica'
         ],
         required: true,
@@ -164,7 +164,7 @@ const QUALIFICATION_STEPS: QualificationStep[] = [
         text: 'Quantos anos de experiência profissional você tem?',
         type: 'select',
         options: [
-          'Menos de 1 ano', '1-3 anos', '3-5 anos', 
+          'Menos de 1 ano', '1-3 anos', '3-5 anos',
           '5-10 anos', 'Mais de 10 anos'
         ],
         required: true,
@@ -443,7 +443,7 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
     } else if (score >= 50 || (score >= 40 && hasGoodProfile)) {
       category = 'warm'
       priority = 'medium'
-      nextAction = 'Email personalizado + Oferecer análise IA gratuita'
+      nextAction = 'Email personalizado + Oferecer pré-análise IA'
     } else {
       category = 'cold'
       priority = 'low'
@@ -544,14 +544,13 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
           <div className="text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Seu Score de Elegibilidade</h3>
             <div className="text-5xl font-bold text-blue-600 mb-2">{leadScore}/100</div>
-            <div className={`inline-flex px-4 py-2 rounded-full text-sm font-semibold ${
-              leadData.category === 'hot' ? 'bg-red-100 text-red-800' :
+            <div className={`inline-flex px-4 py-2 rounded-full text-sm font-semibold ${leadData.category === 'hot' ? 'bg-red-100 text-red-800' :
               leadData.category === 'warm' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-blue-100 text-blue-800'
-            }`}>
+                'bg-blue-100 text-blue-800'
+              }`}>
               {leadData.category === 'hot' ? '🔥 Perfil Excelente' :
-               leadData.category === 'warm' ? '⚡ Bom Potencial' :
-               '💙 Potencial a Desenvolver'}
+                leadData.category === 'warm' ? '⚡ Bom Potencial' :
+                  '💙 Potencial a Desenvolver'}
             </div>
           </div>
         </div>
@@ -562,9 +561,9 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <h4 className="font-semibold text-red-900 mb-2">🚀 Recomendação Especial</h4>
               <p className="text-red-700 text-sm">
-                Seu perfil é EXCELENTE! Você tem grandes chances de sucesso. 
-                Nossa equipe vai entrar em contato nas próximas 2 horas para 
-                agendar uma consultoria premium gratuita.
+                Seu perfil é EXCELENTE! Você tem grandes chances de sucesso.
+                Nossa equipe vai entrar em contato nas próximas 2 horas para
+                agendar uma consultoria premium.
               </p>
             </div>
           )}
@@ -573,8 +572,8 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <h4 className="font-semibold text-yellow-900 mb-2">⚡ Ótimo Potencial</h4>
               <p className="text-yellow-700 text-sm">
-                Você tem um bom perfil! Com nossa estratégia personalizada, 
-                suas chances aumentam significativamente. Vamos te enviar 
+                Você tem um bom perfil! Com nossa estratégia personalizada,
+                suas chances aumentam significativamente. Vamos te enviar
                 uma análise detalhada por email.
               </p>
             </div>
@@ -584,8 +583,8 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h4 className="font-semibold text-blue-900 mb-2">💙 Vamos te Preparar</h4>
               <p className="text-blue-700 text-sm">
-                Seu perfil tem potencial! Vamos te ajudar a melhorar suas 
-                chances com nossos materiais gratuitos e estratégias 
+                Seu perfil tem potencial! Vamos te ajudar a melhorar suas
+                chances com nossos materiais exclusivos e estratégias
                 personalizadas.
               </p>
             </div>
@@ -595,18 +594,18 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
         {/* Next Steps */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Próximos Passos:</h3>
-          
+
           {leadData.category === 'hot' && (
             <div className="grid md:grid-cols-2 gap-4">
-              <Button 
+              <Button
                 className="bg-red-600 hover:bg-red-700 text-white"
                 onClick={() => window.location.href = '/precos'}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Agendar Consultoria VIP
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="border-red-600 text-red-600 hover:bg-red-50"
                 onClick={() => window.location.href = '/lead-magnets'}
               >
@@ -618,34 +617,34 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
 
           {leadData.category === 'warm' && (
             <div className="grid md:grid-cols-2 gap-4">
-              <Button 
+              <Button
                 className="bg-yellow-600 hover:bg-yellow-700 text-white"
                 onClick={() => window.location.href = '/consultoria-ia'}
               >
                 <Target className="h-4 w-4 mr-2" />
-                Análise IA Gratuita
+                Pré-Análise IA
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-yellow-600 text-yellow-600 hover:bg-yellow-50"
                 onClick={() => window.location.href = '/lead-magnets'}
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Materiais Gratuitos
+                Materiais Exclusivos
               </Button>
             </div>
           )}
 
           {leadData.category === 'cold' && (
             <div className="grid md:grid-cols-2 gap-4">
-              <Button 
+              <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => window.location.href = '/lead-magnets'}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Guias Gratuitos
+                Guias Exclusivos
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="border-blue-600 text-blue-600 hover:bg-blue-50"
                 onClick={() => window.location.href = '/blog'}
@@ -676,15 +675,15 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
             Etapa {currentStep + 1} de {QUALIFICATION_STEPS.length}
           </div>
         </div>
-        
+
         {/* Progress Bar */}
         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-          <div 
+          <div
             className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        
+
         <div className="text-center">
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             {currentStepData.title}
@@ -708,11 +707,10 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
                   <button
                     key={option}
                     onClick={() => handleAnswer(question.id, option)}
-                    className={`p-4 text-left border-2 rounded-lg transition-all ${
-                      responses[question.id] === option
-                        ? 'border-blue-500 bg-blue-50 text-blue-900'
-                        : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                    }`}
+                    className={`p-4 text-left border-2 rounded-lg transition-all ${responses[question.id] === option
+                      ? 'border-blue-500 bg-blue-50 text-blue-900'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      }`}
                   >
                     {option}
                   </button>
@@ -725,7 +723,7 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
                 {question.options?.map((option) => {
                   const currentValues = responses[question.id] || []
                   const isSelected = currentValues.includes(option)
-                  
+
                   return (
                     <button
                       key={option}
@@ -735,15 +733,13 @@ export default function LeadQualification({ onComplete, className = '' }: LeadQu
                           : [...currentValues, option]
                         handleAnswer(question.id, newValues)
                       }}
-                      className={`p-4 text-left border-2 rounded-lg transition-all flex items-center ${
-                        isSelected
-                          ? 'border-blue-500 bg-blue-50 text-blue-900'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                      }`}
+                      className={`p-4 text-left border-2 rounded-lg transition-all flex items-center ${isSelected
+                        ? 'border-blue-500 bg-blue-50 text-blue-900'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                        }`}
                     >
-                      <div className={`w-5 h-5 rounded border-2 mr-3 flex items-center justify-center ${
-                        isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
-                      }`}>
+                      <div className={`w-5 h-5 rounded border-2 mr-3 flex items-center justify-center ${isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                        }`}>
                         {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
                       </div>
                       {option}

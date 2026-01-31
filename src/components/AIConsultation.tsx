@@ -196,9 +196,9 @@ export default function AIConsultation() {
   const handleAnswer = (answer: string | number) => {
     const currentQuestion = consultationQuestions[currentStep]
     if (!currentQuestion) return
-    
+
     addUserMessage(answer.toString())
-    
+
     setUserProfile(prev => ({
       ...prev,
       [currentQuestion.field]: answer
@@ -213,9 +213,9 @@ export default function AIConsultation() {
         nextStep++
         continue
       }
-      
+
       // Verificar se a pergunta deve ser mostrada
-      
+
       if (nextQuestion.showIf) {
         const conditionValue = userProfile[nextQuestion.showIf as keyof UserProfile]
         if (Array.isArray(nextQuestion.showValue)) {
@@ -246,9 +246,9 @@ export default function AIConsultation() {
 
   const generateConsultationResult = () => {
     const profile = userProfile as UserProfile
-    
+
     // Algoritmo de análise (simplificado)
-    
+
     let score = 50 // Base score
     let complexityLevel: 'simple' | 'moderate' | 'complex' = 'simple'
     let needsHuman = false
@@ -291,7 +291,7 @@ export default function AIConsultation() {
         score += 5 // Outros têm menos facilidades
       }
     }
-    
+
     if (profile.country === 'Canadá') {
       // Redução por restrições 2024/2025
       score -= 5
@@ -299,19 +299,19 @@ export default function AIConsultation() {
       if (profile.french === 'Fluente') score += 20
       else if (profile.french === 'Avançado') score += 15
       else if (profile.french === 'Intermediário') score += 10
-      
+
       // Setores prioritários
-      
+
       if (profile.sector && ['Saúde (médico, enfermeiro, etc)', 'Trades (eletricitista, encanador, etc)'].includes(profile.sector)) {
         score += 15
       }
     }
-    
+
     if (profile.country === 'Alemanha') {
       score += 10 // Chancenkarte facilitando entrada
       if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
     }
-    
+
     if (profile.country === 'Estados Unidos') {
       // Diferenciações por nacionalidade
       if (profile.nationality === 'Brasileira') {
@@ -325,9 +325,9 @@ export default function AIConsultation() {
       }
       warnings.push('Processos mais rigorosos em 2025 - varia por nacionalidade')
     }
-    
+
     // Análise de idade
-    
+
     if (profile.age >= 25 && profile.age <= 35) score += 10
     else if (profile.age >= 18 && profile.age <= 45) score += 5
     else warnings.push('Idade pode ser um fator limitante para alguns programas')
@@ -401,16 +401,16 @@ export default function AIConsultation() {
     }
 
     setConsultationResult(result)
-    
+
     // Apresentar resultado
-    
+
     addAIMessage(
       `✅ Análise concluída, ${profile.name}! Seu score para ${profile.country} é ${Math.min(score, 100)}%. ${recommendation}`
     )
 
     setTimeout(() => {
       addAIMessage(
-        `📋 Esta foi sua pré-análise gratuita. Para um relatório completo com documentos e estratégia detalhada, veja as opções abaixo dos resultados.`
+        `📋 Esta foi sua pré-análise. Para um relatório completo com documentos e estratégia detalhada, veja as opções abaixo dos resultados.`
       )
     }, 2000)
   }
@@ -431,12 +431,12 @@ export default function AIConsultation() {
             <Bot className="h-8 w-8 text-white" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">
-            🤖 Análise IA Gratuita
+            🤖 Pré-Análise com IA
           </h3>
           <p className="text-lg text-gray-600 mb-6">
             <strong>10 minutos</strong> de análise inteligente do seu perfil de imigração
           </p>
-          
+
           <div className="bg-white p-4 rounded-xl mb-6">
             <h4 className="font-semibold text-gray-900 mb-3">✨ O que você receberá:</h4>
             <div className="space-y-2 text-sm text-left">
@@ -459,16 +459,16 @@ export default function AIConsultation() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={startConsultation}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 w-full"
           >
             <Bot className="mr-2 h-5 w-5" />
-            Começar Análise Gratuita
+            Iniciar Pré-Análise
           </Button>
-          
+
           <p className="text-xs text-gray-500 mt-3">
-            ✅ 100% gratuito • ⚡ Resultado em 10min • 🛡️ Dados seguros
+            ✅ De R$ 49,00 por R$ 29,90 • ⚡ Resultado em 10min • 🛡️ Dados seguros
           </p>
         </div>
       </div>
@@ -492,7 +492,7 @@ export default function AIConsultation() {
             <div className="text-sm text-blue-100">tempo restante</div>
           </div>
         </div>
-        
+
         {/* Progress Bar */}
         <div className="mt-4">
           <div className="flex justify-between items-center mb-2">
@@ -500,7 +500,7 @@ export default function AIConsultation() {
             <span className="text-sm">{Math.round((currentStep / consultationQuestions.length) * 100)}%</span>
           </div>
           <div className="w-full bg-blue-700/30 rounded-full h-2">
-            <div 
+            <div
               className="bg-white h-2 rounded-full transition-all duration-300"
               style={{ width: `${(currentStep / consultationQuestions.length) * 100}%` }}
             />
@@ -516,11 +516,10 @@ export default function AIConsultation() {
             className={`flex ${message.isAI ? 'justify-start' : 'justify-end'}`}
           >
             <div
-              className={`max-w-[85%] p-3 rounded-xl ${
-                message.isAI
+              className={`max-w-[85%] p-3 rounded-xl ${message.isAI
                   ? 'bg-white text-gray-800 shadow-sm border'
                   : 'bg-blue-600 text-white'
-              }`}
+                }`}
             >
               {message.isAI && (
                 <div className="flex items-center mb-2">
@@ -534,7 +533,7 @@ export default function AIConsultation() {
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
           <div className="flex justify-start">
             <div className="bg-white p-3 rounded-xl shadow-sm border">
@@ -545,14 +544,14 @@ export default function AIConsultation() {
                 <span className="text-xs font-medium text-blue-600 mr-3">Sofia está pensando</span>
                 <div className="flex space-x-1">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></div>
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -564,13 +563,13 @@ export default function AIConsultation() {
               Pergunta {currentStep + 1} de {consultationQuestions.length}
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / consultationQuestions.length) * 100}%` }}
               />
             </div>
           </div>
-          
+
           {currentQuestion?.type === 'select' && (
             <div className="grid gap-2">
               {currentQuestion.options?.map((option) => (
@@ -584,7 +583,7 @@ export default function AIConsultation() {
               ))}
             </div>
           )}
-          
+
           {currentQuestion?.type === 'text' && (
             <div className="space-y-3">
               <input
@@ -598,7 +597,7 @@ export default function AIConsultation() {
                   }
                 }}
               />
-              <Button 
+              <Button
                 onClick={() => {
                   const input = document.querySelector('input') as HTMLInputElement
                   if (input.value.trim()) {
@@ -649,7 +648,7 @@ export default function AIConsultation() {
 
             <div className="text-center space-y-4">
               <h4 className="text-lg font-bold text-gray-900">🚀 Próximos passos:</h4>
-              
+
               <div className="grid md:grid-cols-2 gap-3">
                 <button
                   onClick={() => window.open('/checkout?product=relatorio-premium', '_blank')}
@@ -658,7 +657,7 @@ export default function AIConsultation() {
                   <div className="text-lg font-bold mb-1">📊 Relatório Completo</div>
                   <div className="text-sm opacity-90">R$ 97 - PDF detalhado</div>
                 </button>
-                
+
                 <button
                   onClick={() => window.open('/checkout?product=consultoria-express', '_blank')}
                   className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg transition-colors"
@@ -667,7 +666,7 @@ export default function AIConsultation() {
                   <div className="text-sm opacity-90">R$ 297 - 60min especialista</div>
                 </button>
               </div>
-              
+
               <button
                 onClick={() => setIsActive(false)}
                 className="text-gray-600 hover:text-gray-800 underline text-sm mt-4"

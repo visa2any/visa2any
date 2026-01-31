@@ -17,7 +17,7 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
             <h3 className="font-bold text-lg">💰 Ganhe com Indicações</h3>
             <p className="text-sm text-yellow-100">Até 30% de comissão</p>
           </div>
-          <Button 
+          <Button
             onClick={() => window.open('/afiliados', '_blank')}
             className="bg-orange-600 text-white hover:bg-orange-700 font-bold"
           >
@@ -39,11 +39,11 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
           <p className="text-gray-600 text-sm mb-4">
             Indique a Visa2Any e ganhe até <strong>30% de comissão</strong> em cada venda
           </p>
-          
+
           <div className="space-y-2 mb-4">
             <div className="flex items-center text-sm text-gray-700">
               <Star className="h-4 w-4 text-yellow-500 mr-2" />
-              <span>Material promocional grátis</span>
+              <span>Material promocional incluso</span>
             </div>
             <div className="flex items-center text-sm text-gray-700">
               <TrendingUp className="h-4 w-4 text-green-500 mr-2" />
@@ -54,8 +54,8 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
               <span>Suporte dedicado</span>
             </div>
           </div>
-          
-          <Button 
+
+          <Button
             onClick={() => window.open('/afiliados', '_blank')}
             className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
           >
@@ -77,25 +77,25 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
               <Gift className="h-5 w-5" />
               <span className="font-semibold">Programa de Parceria</span>
             </div>
-            
+
             <h2 className="text-3xl font-bold mb-4">
               💰 Ganhe Dinheiro Indicando a Visa2Any
             </h2>
-            
+
             <p className="text-xl text-yellow-100 mb-6">
-              Transforme sua rede em renda! Ganhe até <strong>30% de comissão</strong> 
+              Transforme sua rede em renda! Ganhe até <strong>30% de comissão</strong>
               em cada cliente que você indicar.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
+              <Button
                 onClick={() => window.open('/afiliados', '_blank')}
                 className="bg-orange-600 text-white hover:bg-orange-700 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
               >
                 <DollarSign className="mr-2 h-5 w-5" />
                 COMEÇAR A GANHAR
               </Button>
-              <Button 
+              <Button
                 onClick={() => window.open('/afiliados/portal', '_blank')}
                 className="border-2 border-white text-white hover:bg-orange-600 hover:text-white hover:border-orange-600 font-bold px-8 py-4 text-lg rounded-xl bg-transparent"
               >
@@ -103,10 +103,10 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
               </Button>
             </div>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
             <h3 className="text-xl font-bold mb-4 text-center">🎯 Vantagens do Programa</h3>
-            
+
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
                   <div className="text-sm text-yellow-100">R$ 50 a R$ 500+ por indicação</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                   <TrendingUp className="h-5 w-5" />
@@ -127,7 +127,7 @@ export default function AffiliateBanner({ variant = 'full', className = '' }: Af
                   <div className="text-sm text-yellow-100">Banners, vídeos e textos prontos</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
                   <Users className="h-5 w-5" />

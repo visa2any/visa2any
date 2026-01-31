@@ -20,9 +20,9 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3) // Mock notifications count
   const [showNotifications, setShowNotifications] = useState(false)
-  
+
   // Páginas que não precisam verificar autenticação
-  
+
   const publicPages = ['/checkout-wizard', '/checkout-moderno', '/payment', '/']
   const [notificationsList, setNotificationsList] = useState([
     {
@@ -34,7 +34,7 @@ export default function Header() {
       read: false
     },
     {
-      id: '2', 
+      id: '2',
       type: 'info',
       title: 'Nova atualização disponível',
       message: 'Mudanças nas regras de visto americano - confira',
@@ -57,14 +57,14 @@ export default function Header() {
     // Não verificar autenticação em páginas públicas para evitar erros desnecessários
     const isPublicPage = publicPages.some(page => pathname.startsWith(page))
     if (isPublicPage) return
-    
+
     const checkAuth = async () => {
       try {
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           cache: 'no-cache'
         })
-        
+
         if (response.ok) {
           const data = await response.json()
           if (data.user) {
@@ -79,28 +79,28 @@ export default function Header() {
         setUser(null)
       }
     }
-    
+
     // Initial check
-    
+
     checkAuth()
-    
+
     // Listen for login events
-    
+
     const handleUserLogin = () => {
       setTimeout(checkAuth, 100) // Small delay to ensure cookie is set
     }
-    
+
     const handleStorageChange = () => {
       checkAuth()
     }
-    
+
     // Add event listeners
-    
+
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('user-login', handleUserLogin)
-    
+
     // Cleanup
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('user-login', handleUserLogin)
@@ -119,16 +119,16 @@ export default function Header() {
   }
 
   const markNotificationAsRead = (notificationId: string) => {
-    setNotificationsList(prev => 
-      prev.map(notif => 
-        notif.id === notificationId 
+    setNotificationsList(prev =>
+      prev.map(notif =>
+        notif.id === notificationId
           ? { ...notif, read: true }
           : notif
       )
     )
-    
+
     // Update unread count
-    
+
     const unreadCount = notificationsList.filter(n => !n.read && n.id !== notificationId).length
     setNotifications(unreadCount)
   }
@@ -154,7 +154,7 @@ export default function Header() {
             <Globe className="h-8 w-8 text-blue-600 mr-3" />
             <span className="text-2xl font-bold text-gray-900">Visa2Any</span>
           </a>
-          
+
           {/* Desktop Navigation - ALINHADO À DIREITA */}
           <nav className="hidden lg:flex items-center space-x-6 ml-auto">
             {/* Serviços de Imigração */}
@@ -167,8 +167,8 @@ export default function Header() {
                 <div className="p-4 space-y-2">
                   <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide px-4 mb-2">🌟 Consultoria & Vistos</div>
                   <a href="/consultoria-ia" className="block px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors">
-                    <div className="font-semibold text-gray-900">🤖 IA Consultoria</div>
-                    <div className="text-sm text-gray-600">Análise de elegibilidade gratuita</div>
+                    <div className="font-semibold text-gray-900">🤖 Pré-Análise IA</div>
+                    <div className="text-sm text-gray-600">Pré-análise profissional com IA</div>
                   </a>
                   <a href="/vaga-express" className="block px-4 py-3 rounded-lg hover:bg-orange-50 transition-colors">
                     <div className="font-semibold text-gray-900">⚡ Vaga Express</div>
@@ -211,19 +211,19 @@ export default function Header() {
                 </div>
               </div>
             </div>
-            
+
             {/* Páginas principais */}
             <a href="/precos" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Preços</a>
             <a href="/sobre" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Sobre</a>
             <a href="/blog" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Blog</a>
             <a href="/afiliados" className="text-yellow-600 hover:text-yellow-700 transition-colors font-bold">💰 Afiliados</a>
-            
+
             {/* User Profile or Login */}
             {user ? (
               <div className="flex items-center gap-3">
                 {/* Notifications Bell */}
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setShowNotifications(!showNotifications)}
                     className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                   >
@@ -244,15 +244,14 @@ export default function Header() {
                           <span className="text-sm text-gray-500">{notifications} novas</span>
                         </div>
                       </div>
-                      
+
                       <div className="max-h-80 overflow-y-auto">
                         {notificationsList.length > 0 ? (
                           notificationsList.map((notification) => (
-                            <div 
+                            <div
                               key={notification.id}
-                              className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                                !notification.read ? 'bg-blue-50' : ''
-                              }`}
+                              className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''
+                                }`}
                               onClick={() => markNotificationAsRead(notification.id)}
                             >
                               <div className="flex items-start gap-3">
@@ -261,9 +260,8 @@ export default function Header() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between mb-1">
-                                    <p className={`text-sm font-medium ${
-                                      !notification.read ? 'text-gray-900' : 'text-gray-700'
-                                    }`}>
+                                    <p className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'
+                                      }`}>
                                       {notification.title}
                                     </p>
                                     {!notification.read && (
@@ -287,7 +285,7 @@ export default function Header() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="p-3 border-t border-gray-100">
                         <button className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium">
                           Ver todas as notificações
@@ -305,8 +303,8 @@ export default function Header() {
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
                       {user.avatar ? (
-                        <Image 
-                          src={user.avatar} 
+                        <Image
+                          src={user.avatar}
                           alt={user.name}
                           width={32}
                           height={32}
@@ -330,8 +328,8 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
                             {user.avatar ? (
-                              <Image 
-                                src={user.avatar} 
+                              <Image
+                                src={user.avatar}
                                 alt={user.name}
                                 width={48}
                                 height={48}
@@ -350,7 +348,7 @@ export default function Header() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="p-2">
                         <a href="/cliente" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
                           <User className="h-4 w-4 text-gray-500" />
@@ -365,7 +363,7 @@ export default function Header() {
                           <span className="text-sm text-gray-700">Meus Processos</span>
                         </a>
                         <div className="border-t border-gray-100 my-2"></div>
-                        <button 
+                        <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors text-red-600"
                         >
@@ -378,8 +376,8 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-              <a 
-                href="/cliente/login" 
+              <a
+                href="/cliente/login"
                 className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg"
               >
                 <LogIn className="h-4 w-4" />
@@ -387,7 +385,7 @@ export default function Header() {
               </a>
             )}
           </nav>
-          
+
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2"
@@ -400,7 +398,7 @@ export default function Header() {
             )}
           </button>
         </div>
-        
+
         {/* Mobile Menu Otimizado */}
         {isMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 py-4 bg-white/95 backdrop-blur-sm">
@@ -408,76 +406,76 @@ export default function Header() {
               {/* Serviços principais */}
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide px-2">Serviços</div>
-                <a 
-                  href="/consultoria-ia" 
+                <a
+                  href="/consultoria-ia"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">🤖</span>
-                  IA Consultoria
+                  Pré-Análise IA
                 </a>
-                <a 
-                  href="/vaga-express" 
+                <a
+                  href="/vaga-express"
                   className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">⚡</span>
                   Vaga Express
                 </a>
-                
+
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2 pt-2">Documentação</div>
-                <a 
-                  href="/certidoes" 
+                <a
+                  href="/certidoes"
                   className="flex items-center gap-2 text-gray-700 hover:text-green-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">📜</span>
                   Certidões
                 </a>
-                <a 
-                  href="/traducao" 
+                <a
+                  href="/traducao"
                   className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">🌐</span>
                   Tradução
                 </a>
-                <a 
-                  href="/apostilamento" 
+                <a
+                  href="/apostilamento"
                   className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">✅</span>
                   Apostilamento
                 </a>
-                <a 
-                  href="/antecedentes" 
+                <a
+                  href="/antecedentes"
                   className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">🛡️</span>
                   Antecedentes
                 </a>
-                
+
                 <div className="text-xs font-semibold text-purple-600 uppercase tracking-wide px-2 pt-2">Imigração & Pacotes</div>
-                <a 
-                  href="/assessoria-juridica" 
+                <a
+                  href="/assessoria-juridica"
                   className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">⚖️</span>
                   Assessoria Jurídica
                 </a>
-                <a 
-                  href="/kit-emigracao" 
+                <a
+                  href="/kit-emigracao"
                   className="flex items-center gap-2 text-gray-700 hover:text-yellow-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-lg">📋</span>
                   Kit Emigração
                 </a>
-                <a 
-                  href="/precos" 
+                <a
+                  href="/precos"
                   className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors px-2 py-1"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -485,36 +483,36 @@ export default function Header() {
                   Pacotes Premium
                 </a>
               </div>
-              
+
               <div className="border-t border-gray-200 pt-3 space-y-2">
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2">Empresa</div>
-                <a 
-                  href="/sobre" 
+                <a
+                  href="/sobre"
                   className="text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Sobre Nós
                 </a>
-                <a 
-                  href="/blog" 
+                <a
+                  href="/blog"
                   className="text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Blog
                 </a>
-                <a 
-                  href="/afiliados" 
+                <a
+                  href="/afiliados"
                   className="text-yellow-600 hover:text-yellow-700 transition-colors px-2 py-1 block font-bold"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   💰 Programa de Afiliados
                 </a>
               </div>
-              
+
               {/* Área Cliente */}
               <div className="border-t border-gray-200 pt-3 space-y-2">
-                <a 
-                  href="/cliente/login" 
+                <a
+                  href="/cliente/login"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg"
                   onClick={() => setIsMenuOpen(false)}
                 >

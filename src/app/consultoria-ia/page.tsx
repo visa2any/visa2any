@@ -4,12 +4,12 @@ import FloatingAffiliateBanner from '@/components/FloatingAffiliateBanner'
 import { generateSEOMetadata } from '@/components/SEOOptimizer'
 
 export const metadata = generateSEOMetadata({
-  title: 'Consultoria IA Gratuita - Análise de Elegibilidade para Imigração | Visa2Any',
-  description: 'Consultoria gratuita de 30 minutos com nossa IA especializada. Receba análise completa de elegibilidade, documentos necessários e estratégia personalizada para sua imigração.',
-  keywords: ['consultoria IA', 'elegibilidade imigração', 'análise gratuita', 'inteligência artificial visto', 'consultoria online'],
+  title: 'Pré-Análise com IA - Análise de Elegibilidade para Imigração | Visa2Any',
+  description: 'Pré-análise profissional com nossa IA especializada. Receba análise completa de elegibilidade, documentos necessários e estratégia personalizada para sua imigração.',
+  keywords: ['consultoria IA', 'elegibilidade imigração', 'pré-análise', 'inteligência artificial visto', 'consultoria online'],
   openGraph: {
-    title: 'Consultoria IA Gratuita - 30 Minutos de Análise Especializada',
-    description: 'Nossa IA Sofia analisa seu perfil e fornece relatório completo sobre suas chances de imigração. 100% gratuito e instantâneo.',
+    title: 'Pré-Análise com IA - Análise Especializada e Rápida',
+    description: 'Nossa IA Sofia analisa seu perfil e fornece relatório completo sobre suas chances de imigração. Apenas R$ 29,90 e instantâneo.',
     type: 'website'
   }
 })
@@ -17,45 +17,45 @@ export const metadata = generateSEOMetadata({
 export default function ConsultoriaIAPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      
+
       {/* Breadcrumb */}
       <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-20 pb-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb />
         </div>
       </div>
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-16 pt-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              <span className="text-blue-600">Pré-Análise</span> Gratuita com IA
+              <span className="text-blue-600">Pré-Análise</span> com IA
             </h1>
             <p className="text-2xl text-gray-600 mb-8 max-w-4xl mx-auto">
-              15 minutos de análise inicial com nossa IA Sofia. 
+              15 minutos de análise inicial com nossa IA Sofia.
               Receba uma visão geral das suas chances de imigração.
             </p>
-            
+
             <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="text-3xl mb-3">🤖</div>
                 <h3 className="font-semibold text-gray-900 mb-2">IA Especializada</h3>
                 <p className="text-sm text-gray-600">Algoritmo treinado com 10,000+ casos</p>
               </div>
-              
+
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="text-3xl mb-3">⏱️</div>
                 <h3 className="font-semibold text-gray-900 mb-2">15 Minutos</h3>
                 <p className="text-sm text-gray-600">Pré-análise rápida e eficiente</p>
               </div>
-              
+
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="text-3xl mb-3">📊</div>
                 <h3 className="font-semibold text-gray-900 mb-2">Score Preciso</h3>
                 <p className="text-sm text-gray-600">95% de precisão em predições</p>
               </div>
-              
+
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="text-3xl mb-3">📋</div>
                 <h3 className="font-semibold text-gray-900 mb-2">Relatório PDF</h3>
@@ -81,11 +81,11 @@ export default function ConsultoriaIAPage() {
               Por que nossa IA é diferente?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Sofia foi treinada especificamente para casos de imigração brasileira, 
+              Sofia foi treinada especificamente para casos de imigração brasileira,
               com dados reais e atualizações constantes das leis internacionais.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -93,29 +93,29 @@ export default function ConsultoriaIAPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Inteligência Especializada</h3>
               <p className="text-gray-600">
-                Treinada com casos reais de imigração brasileira para 50+ países, 
+                Treinada com casos reais de imigração brasileira para 50+ países,
                 com atualizações constantes das mudanças nas leis.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">⚡</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Análise Instantânea</h3>
               <p className="text-gray-600">
-                Processamento em tempo real de mais de 50 variáveis do seu perfil, 
+                Processamento em tempo real de mais de 50 variáveis do seu perfil,
                 fornecendo resultados precisos em minutos.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">🎯</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Recomendações Práticas</h3>
               <p className="text-gray-600">
-                Não apenas análise, mas um plano de ação detalhado com próximos passos 
+                Não apenas análise, mas um plano de ação detalhado com próximos passos
                 e estratégias personalizadas para seu perfil.
               </p>
             </div>
@@ -130,7 +130,7 @@ export default function ConsultoriaIAPage() {
             Caso Complexo?
           </h2>
           <p className="text-xl text-orange-100 mb-8">
-            Se nossa IA identificar que seu caso precisa de atenção especializada, 
+            Se nossa IA identificar que seu caso precisa de atenção especializada,
             você será automaticamente direcionado para consultoria com nossos especialistas humanos.
           </p>
           <div className="grid md:grid-cols-2 gap-6">
@@ -158,23 +158,23 @@ export default function ConsultoriaIAPage() {
               Dados que Comprovam nossa Eficácia
             </h2>
           </div>
-          
+
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
               <div className="text-sm text-gray-600">Precisão da IA</div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="text-3xl font-bold text-green-600 mb-2">10,000+</div>
               <div className="text-sm text-gray-600">Casos Analisados</div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="text-3xl font-bold text-purple-600 mb-2">50+</div>
               <div className="text-sm text-gray-600">Países Cobertos</div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="text-3xl font-bold text-orange-600 mb-2">24/7</div>
               <div className="text-sm text-gray-600">Disponível</div>
@@ -182,7 +182,7 @@ export default function ConsultoriaIAPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Banner Flutuante de Afiliados */}
       <FloatingAffiliateBanner />
     </div>

@@ -179,10 +179,10 @@ export const faqSchema = {
     },
     {
       '@type': 'Question',
-      name: 'A consultoria inicial é realmente gratuita?',
+      name: 'Qual o valor da consulta inicial?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sim, oferecemos consultoria inicial 100% gratuita para analisar seu perfil e orientar sobre o melhor caminho.'
+        text: 'Nossa pré-análise com IA custa R$ 29,90 para analisar seu perfil detalhadamente.'
       }
     }
   ]

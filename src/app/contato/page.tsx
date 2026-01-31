@@ -59,7 +59,7 @@ export default function ContatoPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg mb-2">Consultoria Online</h3>
-                    <p className="text-gray-600 mb-2">Análise gratuita em 15 minutos</p>
+                    <p className="text-gray-600 mb-2">Pré-Análise Profissional em 15 minutos</p>
                     <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                       Agendar Consulta
                     </Button>
@@ -173,8 +173,8 @@ export default function ContatoPage() {
               </div>
 
               <div>
-                <h3 className="font-bold text-lg mb-2">Primeira consulta é gratuita?</h3>
-                <p className="text-gray-600">Sim, análise inicial de 15 minutos totalmente gratuita e sem compromisso.</p>
+                <h3 className="font-bold text-lg mb-2">Qual o valor da consulta inicial?</h3>
+                <p className="text-gray-600">Nossa Pré-Análise Profissional com IA custa R$ 29,90 e analisa todo seu perfil em profundidade.</p>
               </div>
             </div>
           </div>
