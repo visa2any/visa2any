@@ -79,7 +79,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    // Not authenticated
                     return null
                 }
                 throw new Error('Failed to fetch profile')
@@ -93,7 +92,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
-    // Check authentication on mount
     useEffect(() => {
         const checkAuth = async () => {
             setIsLoading(true)
@@ -132,10 +130,8 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                 return false
             }
 
-            // Store customer data
             setCustomer(data.customer)
 
-            // Also store in localStorage for quick access (non-sensitive data only)
             if (typeof window !== 'undefined') {
                 localStorage.setItem('customer', JSON.stringify(data.customer))
             }
@@ -171,7 +167,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                 return false
             }
 
-            // Store customer data
             setCustomer(data.customer)
 
             if (typeof window !== 'undefined') {
@@ -249,7 +244,6 @@ export function useCustomerAuth() {
     return context
 }
 
-// Higher-order component for protected routes
 export function withCustomerAuth<P extends object>(
     WrappedComponent: React.ComponentType<P>
 ): React.FC<P> {
@@ -271,7 +265,7 @@ export function withCustomerAuth<P extends object>(
                         < p className = "text-gray-600 mt-3 text-sm" > Verificando autenticação...</p>
                             </div>
                             </div>
-      )
+            )
         }
 
         if (!isAuthenticated) {
