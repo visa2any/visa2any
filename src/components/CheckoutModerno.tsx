@@ -478,7 +478,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
 
       const paymentData = await paymentResponse.json()
 
-      if (paymentData.success && paymentData.preference_id) {
+      if (paymentData.preference_id) {
 
         // Configurar dados para checkout inline
         setPaymentData({
