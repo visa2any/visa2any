@@ -215,7 +215,7 @@ export default function ConsultoriasPage() {
     name: customer.name,
     email: customer.email,
     eligibilityScore: customer.eligibilityScore || 0,
-    automationInsights: customer.automationInsights
+    ...(customer.automationInsights ? { automationInsights: customer.automationInsights } : {})
   }
 
   return (
