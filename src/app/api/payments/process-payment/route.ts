@@ -103,41 +103,41 @@ export async function POST(request: NextRequest) {
     if (data.payer.address) additionalInfoPayer.address = data.payer.address;
 
     const additionalInfo: any = {
-      items: body.additional_info?.items || [
+      items: data.additional_info?.items || [
         {
           id: `visa2any-${Date.now()}`,
           title: 'Consultoria Express - Visa2Any',
           description: 'Consultoria personalizada para processo de visto',
           category_id: 'services',
           quantity: 1,
-          unit_price: Number(body.transaction_amount)
+          unit_price: Number(data.transaction_amount)
         }
       ],
       payer: additionalInfoPayer
     };
-    if (body.payer.address) {
+    if (data.payer.address) {
       additionalInfo.shipments = {
         receiver_address: {
-          street_name: body.payer.address.street_name || '',
-          street_number: body.payer.address.street_number || '',
-          zip_code: body.payer.address.zip_code?.replace(/\D/g, '') || '',
-          city_name: body.payer.address.city || '',
-          state_name: body.payer.address.federal_unit || ''
+          street_name: data.payer.address.street_name || '',
+          street_number: data.payer.address.street_number || '',
+          zip_code: data.payer.address.zip_code?.replace(/\D/g, '') || '',
+          city_name: data.payer.address.city || '',
+          state_name: data.payer.address.federal_unit || ''
         }
       };
     }
 
     const paymentData = {
       // Token do cartão (obrigatório)
-      token: body.token,
+      token: data.token,
 
       // Dados básicos da transação
-      transaction_amount: Number(body.transaction_amount),
-      installments: Number(body.installments) || 1,
-      payment_method_id: body.payment_method_id || 'credit_card',
+      transaction_amount: Number(data.transaction_amount),
+      installments: Number(data.installments) || 1,
+      payment_method_id: data.payment_method_id || 'credit_card',
 
       // Emissor do cartão (recomendado)
-      issuer_id: body.issuer_id,
+      issuer_id: data.issuer_id,
 
       // Dados completos do pagador (obrigatórios e recomendados)
       payer,
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       additional_info: additionalInfo,
 
       // Referência externa (obrigatório para conciliação)
-      external_reference: body.external_reference || `visa2any-${Date.now()}`,
+      external_reference: data.external_reference || `visa2any-${Date.now()}`,
 
       // Descrição na fatura do cartão (recomendado)
       statement_descriptor: 'VISA2ANY',
@@ -155,19 +155,19 @@ export async function POST(request: NextRequest) {
       notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook/mercadopago`,
 
       // Modo binário para aprovação imediata (boas práticas)
-      binary_mode: body.binary_mode || true,
+      binary_mode: data.binary_mode || true,
 
       // Captura automática (boas práticas)
-      capture: body.capture !== false,
+      capture: data.capture !== false,
 
       // Metadata para análise de fraude
       metadata: {
         platform: 'visa2any',
         version: '1.0',
-        device_id: body.device_id || '', // Device ID (obrigatório)
+        device_id: data.device_id || '', // Device ID (obrigatório)
         ip_address: clientIP,
-        user_agent: body.metadata?.user_agent || '',
-        session_id: body.external_reference || `session-${Date.now()}`,
+        user_agent: data.metadata?.user_agent || '',
+        session_id: data.external_reference || `session-${Date.now()}`,
         timestamp: new Date().toISOString()
       }
     }
