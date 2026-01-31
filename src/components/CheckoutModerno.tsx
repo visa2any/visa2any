@@ -1161,8 +1161,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   type="submit"
                   disabled={!isFormValid || isProcessing}
                   className={`w-full py-4 text-lg font-bold rounded-xl transition-all duration-300 ${isFormValid
-                      ? `bg-gradient-to-r ${productData.badgeColor} hover:shadow-lg transform hover:scale-[1.02]`
-                      : 'bg-gray-300 cursor-not-allowed'
+                    ? `bg-gradient-to-r ${productData.badgeColor || 'from-blue-600 to-purple-600'} hover:shadow-lg transform hover:scale-[1.02]`
+                    : 'bg-gray-300 cursor-not-allowed'
                     } text-white`}
                 >
                   {isProcessing ? (

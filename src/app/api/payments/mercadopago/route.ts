@@ -122,10 +122,16 @@ export async function POST(request: NextRequest) {
       }
       clientId = client.id
     } catch (clientError) {
-      console.error('Erro ao gerenciar cliente:', clientError)
+      console.error('❌ Erro ao gerenciar cliente:', clientError)
+      console.error('📧 Email tentado:', body.customer?.email)
+      console.error('👤 Nome tentado:', body.customer?.name)
+      console.error('📞 Phone tentado:', body.customer?.phone)
       // Fallback
       return NextResponse.json(
-        { error: 'Erro ao processar dados do cliente' },
+        {
+          error: 'Erro ao processar dados do cliente',
+          details: clientError instanceof Error ? clientError.message : String(clientError)
+        },
         { status: 500 }
       )
     }
