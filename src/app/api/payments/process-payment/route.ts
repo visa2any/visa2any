@@ -164,6 +164,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Salvar pagamento no banco de dados (se tivermos clientId)
+    // NOTE: Salvamos mesmo se for rejeitado, para ter histórico
     if (clientId) {
       try {
         await prisma.payment.create({
@@ -185,7 +186,46 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Preparar resposta
+    // Verificação explícita de status (CRITICAL FIX)
+    // Se o status for rejected ou cancelled, retornamos ERRO para o frontend
+    if (result.status === 'rejected' || result.status === 'cancelled') {
+      let errorMessage = 'Pagamento recusado pelo banco.';
+      const statusDetail = result.status_detail;
+
+      // Mapeamento de erros comuns
+      switch (statusDetail) {
+        case 'cc_rejected_bad_filled_card_number': errorMessage = 'Número do cartão incorreto.'; break;
+        case 'cc_rejected_bad_filled_date': errorMessage = 'Data de validade incorreta.'; break;
+        case 'cc_rejected_bad_filled_other': errorMessage = 'Verifique os dados do cartão.'; break;
+        case 'cc_rejected_bad_filled_security_code': errorMessage = 'CVV incorreto.'; break;
+        case 'cc_rejected_blacklist': errorMessage = 'Pagamento não processado por segurança.'; break;
+        case 'cc_rejected_call_for_authorize': errorMessage = 'Autorize o pagamento com seu banco.'; break;
+        case 'cc_rejected_card_disabled': errorMessage = 'Ligue para o banco para habilitar o cartão.'; break;
+        case 'cc_rejected_card_error': errorMessage = 'Não conseguimos processar o pagamento.'; break;
+        case 'cc_rejected_duplicated_payment': errorMessage = 'Você já fez um pagamento com esse valor.'; break;
+        case 'cc_rejected_high_risk': errorMessage = 'Pagamento recusado por análise de risco.'; break;
+        case 'cc_rejected_insufficient_amount': errorMessage = 'Saldo insuficiente.'; break;
+        case 'cc_rejected_invalid_installments': errorMessage = 'Número de parcelas inválido.'; break;
+        case 'cc_rejected_max_attempts': errorMessage = 'Você atingiu o limite de tentativas.'; break;
+        case 'cc_rejected_other_reason': errorMessage = 'Pagamento recusado pelo banco emissor.'; break;
+      }
+
+      console.log('❌ Pagamento REJEITADO:', statusDetail, errorMessage)
+
+      return NextResponse.json({
+        success: false,
+        error: errorMessage,
+        code: 'PAYMENT_REJECTED',
+        details: statusDetail,
+        payment: {
+          id: result.id,
+          status: result.status,
+          status_detail: result.status_detail
+        }
+      }, { status: 400 }) // Retornar 400 para que o frontend mostre o erro
+    }
+
+    // Preparar resposta de sucesso real
     const response = {
       success: true,
       payment: {
@@ -210,7 +250,12 @@ export async function POST(request: NextRequest) {
         point_of_interaction: result.point_of_interaction,
 
         // Dados de fees
-        fee_details: result.fee_details
+        fee_details: result.fee_details,
+
+        // Debug
+        ...(process.env.NODE_ENV === 'development' && {
+          raw_response: result
+        })
       }
     }
 
