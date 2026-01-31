@@ -30,7 +30,10 @@ export async function POST(request: NextRequest) {
     console.log('🔄 Dados normalizados:', JSON.stringify(data, null, 2))
 
     // Validar dados obrigatórios do MercadoPago
-    if (!data.token) {
+    // FIX: Token só é obrigatório para Cartões. PIX e Boleto não têm token.
+    const isOfflineMethod = ['pix', 'bolbradesco', 'pec', 'account_money'].includes(data.payment_method_id) || data.payment_method_id?.includes('ticket');
+    
+    if (!isOfflineMethod && !data.token) {
       console.error('❌ ERRO CRÍTICO: Token faltando. Recebido:', JSON.stringify(body))
       return NextResponse.json({
         error: 'Token do cartão é obrigatório',
