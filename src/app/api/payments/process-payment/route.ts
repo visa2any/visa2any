@@ -21,34 +21,58 @@ export async function POST(request: NextRequest) {
     console.log('🔍 Flattened keys:', Object.keys(body))
     console.log('🔍 FormData check:', body.formData ? JSON.stringify(body.formData, null, 2) : 'No formData')
 
+    // 1. Normalizar dados (Flatten formData se existir)
+    const data = {
+      ...body,
+      ...(body.formData || {})
+    }
+
+    console.log('🔄 Dados normalizados:', JSON.stringify(data, null, 2))
+
     // Validar dados obrigatórios do MercadoPago
-    if (!body.token) {
+    if (!data.token) {
       console.error('❌ ERRO CRÍTICO: Token faltando. Recebido:', JSON.stringify(body))
       return NextResponse.json({
         error: 'Token do cartão é obrigatório',
         code: 'MISSING_TOKEN',
-        debug_received_body: body // Retorna o que recebeu para debug no frontend
+        debug_normalized_data: data
       }, { status: 400 })
     }
 
-    if (!body.payer?.email) {
+    if (!data.payer?.email) {
       return NextResponse.json({
         error: 'Email do comprador é obrigatório',
         code: 'MISSING_PAYER_EMAIL'
       }, { status: 400 })
     }
 
-    if (!body.transaction_amount || body.transaction_amount <= 0) {
+    if (!data.transaction_amount || data.transaction_amount <= 0) {
       return NextResponse.json({
         error: 'Valor da transação deve ser maior que zero',
         code: 'INVALID_AMOUNT'
       }, { status: 400 })
     }
 
-    // Validar clientId obrigatório para salvar pagamento
-    if (!body.clientId) {
+    // 2. Garantir Client ID (Buscar por email se não vier)
+    let clientId = data.clientId
+    if (!clientId) {
+      console.log('⚠️ ClientId não fornecido. Buscando por email:', data.payer.email)
+      const client = await prisma.client.findUnique({
+        where: { email: data.payer.email }
+      })
+      if (client) {
+        clientId = client.id
+        console.log('✅ Cliente encontrado:', clientId)
+      } else {
+        // Opcional: Criar cliente se não existir? Ou retornar erro?
+        // Por segurança, vamos tentar encontrar ou falhar.
+        // Mas como o checkout já cria, deve existir.
+      }
+    }
+
+    if (!clientId) {
       return NextResponse.json({
-        error: 'ID do cliente é obrigatório',
+        error: 'ID do cliente é obrigatório e não foi encontrado',
         code: 'MISSING_CLIENT_ID'
       }, { status: 400 });
     }
