@@ -151,8 +151,7 @@ export default function MercadoPagoSingle({
             creditCard: 'all',
             debitCard: 'all',
             ticket: 'all',
-            bankTransfer: 'all',
-            mercadoPago: 'none'
+            bankTransfer: 'all'
           }
         },
         callbacks: {
