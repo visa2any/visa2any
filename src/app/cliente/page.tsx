@@ -134,10 +134,10 @@ function CustomerDashboardContent() {
   const documents = (customer.documents || []).map((doc: any) => ({
     id: doc.id,
     name: doc.name || doc.fileName || 'Documento',
-    status: doc.status?.toLowerCase() === 'valid' ? 'approved' :
-      doc.status?.toLowerCase() === 'invalid' ? 'rejected' :
-        doc.status?.toLowerCase() === 'needs_review' ? 'review' :
-          doc.status?.toLowerCase() === 'analyzing' ? 'analyzing' : 'pending',
+    status: (doc.status?.toLowerCase() === 'valid' ? 'valid' :
+      doc.status?.toLowerCase() === 'invalid' ? 'invalid' :
+        doc.status?.toLowerCase() === 'needs_review' ? 'needs_review' :
+          doc.status?.toLowerCase() === 'analyzing' ? 'analyzing' : 'needs_review') as any,
     aiScore: doc.aiScore || 0,
     feedback: doc.feedback || doc.validationNotes || '',
     size: doc.size || 0,
