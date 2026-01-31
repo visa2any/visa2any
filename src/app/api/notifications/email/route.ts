@@ -159,38 +159,51 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Função para enviar email usando SMTP Hostinger configurado
+// Função para enviar email usando SMTP (Default: Gmail)
 async function sendEmailWithProvider({ to, subject, html }: { to: string, subject: string, html: string }) {
-  // Usar SMTP Hostinger (já configurado)
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  // 1. Tentar Nodemailer (SMTP) - Otimizado para Gmail
+  const smtpPass = process.env.SMTP_PASS
+  if (smtpPass) {
     try {
       const { default: nodemailer } = await import('nodemailer')
+
+      const host = process.env.SMTP_HOST || 'smtp.gmail.com'
+      const port = parseInt(process.env.SMTP_PORT || '465')
+      const user = process.env.SMTP_USER || process.env.FROM_EMAIL || 'visa2any@gmail.com'
+      const secure = process.env.SMTP_SECURE === 'true' || port === 465
+
+      console.log(`📧 Configurando SMTP (Notificações): ${host}:${port} User: ${user}`)
+
       const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
+        host,
+        port,
+        secure,
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
+          user,
+          pass: smtpPass
+        },
+        tls: { rejectUnauthorized: true }
       })
 
       const result = await transporter.sendMail({
-        from: `${process.env.FROM_NAME || 'Visa2Any'} <${process.env.FROM_EMAIL || 'visa2any@gmail.com'}>`,
+        from: `"${process.env.FROM_NAME || 'Visa2Any'}" <${user}>`,
         to: to,
         subject: subject,
         html: html
       })
 
-      console.log('✅ Email enviado via Hostinger:', result.messageId)
+      console.log('✅ Email enviado via SMTP:', result.messageId)
 
       return {
         success: true,
         messageId: result.messageId,
-        provider: 'hostinger_smtp'
+        provider: 'smtp'
       }
-    } catch (error) {
-      console.error('❌ Erro SMTP Hostinger:', error)
+    } catch (error: any) {
+      console.error('❌ Erro SMTP:', error)
+      if (error.code === 'EAUTH') {
+        console.error('💡 DICA: Para Gmail, use Senha de App: https://myaccount.google.com/apppasswords')
+      }
     }
   }
 

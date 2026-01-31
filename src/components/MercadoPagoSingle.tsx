@@ -366,6 +366,8 @@ export default function MercadoPagoSingle({
         body: JSON.stringify({
           type: 'email',
           clientId: 'payment-' + Date.now(),
+          email: customerData.email, // Explicitly pass email
+          name: customerData.name,   // Explicitly pass name
           subject: 'Código PIX - Visa2Any',
           content: `
             <h2>🎯 Código PIX Gerado</h2>

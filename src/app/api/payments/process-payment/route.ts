@@ -29,10 +29,16 @@ export async function POST(request: NextRequest) {
 
     console.log('🔄 Dados normalizados:', JSON.stringify(data, null, 2))
 
+    // FIX: Garantir que payment_method_id exista (usar selectedPaymentMethod como fallback)
+    if (!data.payment_method_id && data.selectedPaymentMethod) {
+      console.log('⚠️ payment_method_id hi ausente, usando selectedPaymentMethod:', data.selectedPaymentMethod)
+      data.payment_method_id = data.selectedPaymentMethod
+    }
+
     // Validar dados obrigatórios do MercadoPago
     // FIX: Token só é obrigatório para Cartões. PIX e Boleto não têm token.
     const isOfflineMethod = ['pix', 'bolbradesco', 'pec', 'account_money'].includes(data.payment_method_id) || data.payment_method_id?.includes('ticket');
-    
+
     if (!isOfflineMethod && !data.token) {
       console.error('❌ ERRO CRÍTICO: Token faltando. Recebido:', JSON.stringify(body))
       return NextResponse.json({
@@ -259,8 +265,16 @@ export async function POST(request: NextRequest) {
         ...(process.env.NODE_ENV === 'development' && {
           raw_response: result
         })
-      }
+      },
+      // Convenience fields for Frontend (PIX/Ticket)
+      qr_code: result.point_of_interaction?.transaction_data?.qr_code,
+      qr_code_base64: result.point_of_interaction?.transaction_data?.qr_code_base64,
+      ticket_url: result.point_of_interaction?.transaction_data?.ticket_url,
+      status: result.status,
+      status_detail: result.status_detail,
+      payment_id: result.id
     }
+
 
     return NextResponse.json(response)
 
