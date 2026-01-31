@@ -323,7 +323,7 @@ class PaymentService {
           paymentMethod: data.pixCode ? 'PIX' : 'CREDIT_CARD',
           clientId: clientId,
           description: `Pagamento via Serviço (Tracking: ${data.trackingId})`,
-          dueDate: data.expiresAt
+          ...(data.expiresAt ? { dueDate: data.expiresAt } : {})
         }
       })
 
