@@ -139,7 +139,11 @@ function CustomerDashboardContent() {
         doc.status?.toLowerCase() === 'needs_review' ? 'review' :
           doc.status?.toLowerCase() === 'analyzing' ? 'analyzing' : 'pending',
     aiScore: doc.aiScore || 0,
-    feedback: doc.feedback || doc.validationNotes || ''
+    feedback: doc.feedback || doc.validationNotes || '',
+    size: doc.size || 0,
+    type: doc.type || 'application/pdf',
+    uploadDate: doc.createdAt ? new Date(doc.createdAt).toISOString() : new Date().toISOString(),
+    url: doc.url || ''
   }))
 
   // Consultations
@@ -160,9 +164,11 @@ function CustomerDashboardContent() {
     <div className="min-h-screen bg-gray-50">
       <ClientHeader
         customerData={{
-          ...customer,
-          progress,
-          eligibilityScore: customer.eligibilityScore || 0
+          name: customer.name,
+          email: customer.email,
+          eligibilityScore: customer.eligibilityScore || 0,
+          ...(customer.profilePhoto ? { profilePhoto: customer.profilePhoto } : {}),
+          ...(customer.automationInsights ? { automationInsights: customer.automationInsights } : {})
         }}
         onSofiaChat={() => setShowSofiaChat(true)}
         onProfileEdit={() => setShowProfileEditor(true)}
@@ -317,8 +323,8 @@ function CustomerDashboardContent() {
                 Vaga Express ({customer.vagaExpressSubscription.plan})
               </h3>
               <div className={`px-2 py-1 rounded-full text-xs font-medium ${customer.vagaExpressSubscription.status === 'ACTIVE'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-gray-100 text-gray-700'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-gray-100 text-gray-700'
                 }`}>
                 {customer.vagaExpressSubscription.status === 'ACTIVE' ? '🟢 ATIVO' : '⏸️ INATIVO'}
               </div>
@@ -387,10 +393,10 @@ function CustomerDashboardContent() {
                   <div key={doc.id} className="flex items-center justify-between p-2 border border-gray-200 rounded text-xs">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${doc.status === 'approved' ? 'bg-green-100' :
-                          doc.status === 'pending' ? 'bg-yellow-100' : 'bg-blue-100'
+                        doc.status === 'pending' ? 'bg-yellow-100' : 'bg-blue-100'
                         }`}>
                         <FileText className={`h-3 w-3 ${doc.status === 'approved' ? 'text-green-600' :
-                            doc.status === 'pending' ? 'text-yellow-600' : 'text-blue-600'
+                          doc.status === 'pending' ? 'text-yellow-600' : 'text-blue-600'
                           }`} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -404,7 +410,7 @@ function CustomerDashboardContent() {
                       </div>
                     </div>
                     <div className={`px-2 py-1 rounded text-xs ${doc.status === 'approved' ? 'bg-green-100 text-green-700' :
-                        doc.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
+                      doc.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
                       }`}>
                       {doc.status === 'approved' ? '✓' : doc.status === 'pending' ? '⏳' : '🔄'}
                     </div>
@@ -470,8 +476,8 @@ function CustomerDashboardContent() {
                     }`}>
                     <div className="flex items-start gap-2">
                       <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'success' ? 'bg-green-100' :
-                          notification.type === 'info' ? 'bg-blue-100' :
-                            notification.type === 'ai' ? 'bg-purple-100' : 'bg-yellow-100'
+                        notification.type === 'info' ? 'bg-blue-100' :
+                          notification.type === 'ai' ? 'bg-purple-100' : 'bg-yellow-100'
                         }`}>
                         {notification.type === 'success' ? '✅' :
                           notification.type === 'info' ? '💡' :
