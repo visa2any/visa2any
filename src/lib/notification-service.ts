@@ -292,7 +292,7 @@ class NotificationService {
         to: message.to,
         subject: message.subject,
         html: message.html,
-        attachments: message.attachments
+        ...(message.attachments ? { attachments: message.attachments } : {})
       })
       return true
     } catch (error) {
