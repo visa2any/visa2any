@@ -166,7 +166,7 @@ export default function DocumentosPage() {
     name: customer.name,
     email: customer.email,
     eligibilityScore: customer.eligibilityScore || 0,
-    automationInsights: customer.automationInsights
+    ...(customer.automationInsights ? { automationInsights: customer.automationInsights } : {})
   }
 
   // Calculate stats
@@ -312,7 +312,7 @@ export default function DocumentosPage() {
                             <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-32">
                               <div
                                 className={`h-2 rounded-full transition-all duration-500 ${doc.aiScore >= 90 ? 'bg-green-500' :
-                                    doc.aiScore >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+                                  doc.aiScore >= 75 ? 'bg-yellow-500' : 'bg-red-500'
                                   }`}
                                 style={{ width: `${doc.aiScore}%` }}
                               ></div>

@@ -156,7 +156,7 @@ export default function PagamentosPage() {
     name: customer.name,
     email: customer.email,
     eligibilityScore: customer.eligibilityScore || 0,
-    automationInsights: customer.automationInsights
+    ...(customer.automationInsights ? { automationInsights: customer.automationInsights } : {})
   }
 
   return (
@@ -232,8 +232,8 @@ export default function PagamentosPage() {
               <button
                 onClick={() => setSelectedTab('payments')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'payments'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Histórico de Pagamentos
@@ -241,8 +241,8 @@ export default function PagamentosPage() {
               <button
                 onClick={() => setSelectedTab('subscription')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'subscription'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Minha Assinatura
@@ -250,8 +250,8 @@ export default function PagamentosPage() {
               <button
                 onClick={() => setSelectedTab('plans')}
                 className={`py-4 px-6 border-b-2 font-medium text-sm ${selectedTab === 'plans'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Pacotes Disponíveis
