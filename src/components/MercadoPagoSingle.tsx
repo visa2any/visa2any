@@ -133,13 +133,6 @@ export default function MercadoPagoSingle({
       brickInstance = await bricks.create('payment', CONTAINER_ID, {
         initialization: {
           preferenceId: preferenceId,
-          amount: amount, // Backup/Fallbacks (embora preferenceId tenha prioridade)
-          payer: {
-            firstName: customerData.name.split(' ')[0] || 'Cliente',
-            lastName: customerData.name.split(' ').slice(1).join(' ') || 'Visa2Any',
-            email: customerData.email,
-            entityType: 'individual'
-          }
         },
         customization: {
           visual: {
