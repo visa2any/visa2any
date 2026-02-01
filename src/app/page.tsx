@@ -8,23 +8,23 @@ import SimpleCheckout from '@/components/SimpleCheckout'
 import { ArrowRight, Globe, Shield, Clock, CheckCircle, Star, Users, MapPin, Calculator, Calendar, CreditCard, Zap, MessageCircle, Phone } from 'lucide-react'
 
 // Lazy load componentes pesados
-const ContactForm = dynamic(() => import('@/components/ContactForm'), { 
+const ContactForm = dynamic(() => import('@/components/ContactForm'), {
   ssr: false,
   loading: () => <div className="min-h-96 bg-gray-50 animate-pulse rounded-lg"></div>
 })
-const ServiceCard = dynamic(() => import('@/components/ServiceCard'), { 
+const ServiceCard = dynamic(() => import('@/components/ServiceCard'), {
   ssr: false,
   loading: () => <div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-24 bg-gray-200 rounded"></div></div>
 })
-const ChatBot = dynamic(() => import('@/components/ChatBot'), { 
+const ChatBot = dynamic(() => import('@/components/ChatBot'), {
   ssr: false,
   loading: () => null
 })
-const EligibilityCalculator = dynamic(() => import('@/components/EligibilityCalculator'), { 
+const EligibilityCalculator = dynamic(() => import('@/components/EligibilityCalculator'), {
   ssr: false,
   loading: () => <div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-96 bg-gray-200 rounded"></div></div>
 })
-const SmartScheduler = dynamic(() => import('@/components/SmartScheduler'), { 
+const SmartScheduler = dynamic(() => import('@/components/SmartScheduler'), {
   ssr: false,
   loading: () => <div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-96 bg-gray-200 rounded"></div></div>
 })
@@ -32,13 +32,13 @@ const SmartScheduler = dynamic(() => import('@/components/SmartScheduler'), {
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      
+
       {/* Banner Países Premium - SCROLL AUTOMÁTICO */}
       <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 pt-20 md:pt-24 pb-6 overflow-hidden">
         {/* Background Pattern Sofisticado */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_49%,rgba(255,255,255,0.05)_51%,transparent_52%)] bg-[length:20px_20px]"></div>
-        
+
         {/* Título Elegante */}
         <div className="relative z-20 text-center mb-6">
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3">
@@ -50,13 +50,13 @@ export default function HomePage() {
             <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse shadow-lg shadow-blue-400/50"></div>
           </div>
         </div>
-        
+
         {/* Container do Slider */}
         <div className="relative z-10 overflow-hidden">
           {/* Gradientes de fade nas bordas */}
           <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-slate-900 to-transparent z-10"></div>
           <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-indigo-900 to-transparent z-10"></div>
-          
+
           {/* Slider automático - SUAVE */}
           <div className="flex animate-smooth-scroll whitespace-nowrap">
             {/* Primeira sequência de países */}
@@ -68,7 +68,7 @@ export default function HomePage() {
                   <div className="text-blue-200 text-sm">B1/B2, H1B, EB-5</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇨🇦</span>
                 <div className="text-left">
@@ -76,7 +76,7 @@ export default function HomePage() {
                   <div className="text-green-200 text-sm">Express Entry, Study</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇵🇹</span>
                 <div className="text-left">
@@ -84,7 +84,7 @@ export default function HomePage() {
                   <div className="text-yellow-200 text-sm">D7, Golden Visa, D1</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇦🇺</span>
                 <div className="text-left">
@@ -92,7 +92,7 @@ export default function HomePage() {
                   <div className="text-purple-200 text-sm">Work, Study, Investment</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇬🇧</span>
                 <div className="text-left">
@@ -100,7 +100,7 @@ export default function HomePage() {
                   <div className="text-red-200 text-sm">Visitor, Work, Study</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇯🇵</span>
                 <div className="text-left">
@@ -108,7 +108,7 @@ export default function HomePage() {
                   <div className="text-indigo-200 text-sm">Work, Study, Tourist</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇳🇿</span>
                 <div className="text-left">
@@ -117,7 +117,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Segunda sequência (duplicada para loop infinito) */}
             <div className="flex items-center gap-8 mr-8">
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
@@ -127,7 +127,7 @@ export default function HomePage() {
                   <div className="text-blue-200 text-sm">B1/B2, H1B, EB-5</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇨🇦</span>
                 <div className="text-left">
@@ -135,7 +135,7 @@ export default function HomePage() {
                   <div className="text-green-200 text-sm">Express Entry, Study</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇵🇹</span>
                 <div className="text-left">
@@ -143,7 +143,7 @@ export default function HomePage() {
                   <div className="text-yellow-200 text-sm">D7, Golden Visa, D1</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇦🇺</span>
                 <div className="text-left">
@@ -151,7 +151,7 @@ export default function HomePage() {
                   <div className="text-purple-200 text-sm">Work, Study, Investment</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇬🇧</span>
                 <div className="text-left">
@@ -159,7 +159,7 @@ export default function HomePage() {
                   <div className="text-red-200 text-sm">Visitor, Work, Study</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇯🇵</span>
                 <div className="text-left">
@@ -167,7 +167,7 @@ export default function HomePage() {
                   <div className="text-indigo-200 text-sm">Work, Study, Tourist</div>
                 </div>
               </div>
-              
+
               <div className="group flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 shadow-xl">
                 <span className="text-4xl group-hover:rotate-12 transition-transform duration-300">🇳🇿</span>
                 <div className="text-left">
@@ -178,7 +178,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        
+
         {/* CTA Elegante */}
         <div className="relative z-20 text-center mt-6">
           <a href="/precos" className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl">
@@ -186,7 +186,7 @@ export default function HomePage() {
             <ArrowRight className="h-4 w-4" />
           </a>
         </div>
-        
+
         {/* Partículas flutuantes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-ping"></div>
@@ -194,7 +194,7 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-3/4 w-3 h-3 bg-indigo-400/20 rounded-full animate-bounce"></div>
         </div>
       </div>
-      
+
       <SocialProof />
 
       {/* Hero Section - OTIMIZADO PARA CONVERSÃO */}
@@ -203,17 +203,17 @@ export default function HomePage() {
           <div className="text-center">
             {/* Urgência estratégica */}
             <div className="inline-block bg-orange-100 text-orange-800 px-6 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
-              🔥 ANÁLISE GRATUITA - ÚLTIMAS 48H COM DESCONTO
+              🔥 PRÉ-ANÁLISE IA - ÚLTIMAS 48H COM DESCONTO
             </div>
-            
+
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Descubra se Você Pode 
+              Descubra se Você Pode
               <span className="gradient-text block">Conseguir Seu Visto</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               <strong>IA Especializada analisa seu perfil em 15 minutos</strong> e mostra suas chances reais de aprovação + estratégia personalizada para cada país.
             </p>
-            
+
             {/* Social proof integrado */}
             <div className="flex flex-wrap gap-4 text-sm justify-center items-center mb-8">
               <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
@@ -225,21 +225,21 @@ export default function HomePage() {
                 <span className="text-blue-700 font-semibold">98% recomendam nossa IA</span>
               </div>
             </div>
-            
+
             {/* CTA ÚNICO E FOCADO */}
             <div className="mb-6">
               <a href="/consultoria-ia">
                 <Button className="btn-gradient text-xl px-12 py-5 shadow-2xl hover:scale-105 transition-all">
                   <Zap className="mr-3 h-6 w-6" />
-                  COMEÇAR ANÁLISE GRATUITA
+                  INICIAR PRÉ-ANÁLISE (R$ 29,90)
                 </Button>
               </a>
             </div>
-            
+
             {/* Micro-compromissos */}
             <div className="text-center space-y-2">
               <p className="text-sm text-gray-600">
-                ✅ 100% Gratuito • ⚡ 15 minutos • 🛡️ Dados protegidos
+                ✅ Apenas R$ 29,90 • ⚡ 15 minutos • 🛡️ Dados protegidos
               </p>
               <p className="text-xs text-gray-500">
                 <a href="/precos" className="text-blue-600 hover:underline">Ver todos os pacotes e preços →</a>
@@ -260,7 +260,7 @@ export default function HomePage() {
               Processo usado por <strong>8.420+ brasileiros</strong> para conseguir visto em 2024
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             <div className="text-center">
               <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -269,7 +269,7 @@ export default function HomePage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Responda 12 Perguntas</h3>
               <p className="text-gray-600">Nosso questionário inteligente coleta informações sobre seu perfil, objetivos e país de destino em apenas 3 minutos.</p>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">2️⃣</span>
@@ -277,7 +277,7 @@ export default function HomePage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-3">IA Processa Dados</h3>
               <p className="text-gray-600">Algoritmo treinado com 15+ anos de casos reais analisa seu perfil contra base de dados consulares atualizada.</p>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">3️⃣</span>
@@ -286,7 +286,7 @@ export default function HomePage() {
               <p className="text-gray-600">Score de elegibilidade + roadmap personalizado + documentação necessária direto no seu email.</p>
             </div>
           </div>
-          
+
           {/* CTA secundário */}
           <div className="text-center">
             <a href="/consultoria-ia">
@@ -307,7 +307,7 @@ export default function HomePage() {
               Acelere Seu Processo <span className="text-blue-600">Com Suporte Humano</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              <strong>Começou gratis?</strong> Veja como nossos especialistas podem acelerar sua aprovação em até <strong>300%</strong>.
+              <strong>Começou com a pré-análise?</strong> Veja como nossos especialistas podem acelerar sua aprovação em até <strong>300%</strong>.
             </p>
             {/* Prova social */}
             <div className="flex flex-wrap gap-4 text-sm justify-center items-center mb-8">
@@ -321,14 +321,15 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid lg:grid-cols-3 gap-8 mb-12">
             {/* Pacote Gratuito */}
             <div className="lg:col-span-1">
               <SimpleCheckout
                 productId="pre-analise"
-                productName="🆓 Análise Gratuita"
-                price={0}
+                productName="🤖 Pré-Análise IA"
+                price={29.90}
+                originalPrice={49.90}
                 description="Perfeita para começar"
                 features={[
                   "Análise IA em 15 minutos",
@@ -348,7 +349,7 @@ export default function HomePage() {
                 price={97}
                 description="Análise completa e detalhada"
                 features={[
-                  "Tudo do pacote gratuito",
+                  "Tudo do pacote inicial",
                   "Relatório PDF de 15+ páginas",
                   "Lista completa de documentos",
                   "Timeline personalizado",
@@ -381,7 +382,7 @@ export default function HomePage() {
 
           <div className="text-center">
             <p className="text-gray-600 mb-6">
-              🎯 <strong>Preços variam por país e complexidade.</strong> Comece grátis e faça upgrade quando precisar.
+              🎯 <strong>Preços variam por país e complexidade.</strong> Comece agora e faça upgrade quando precisar.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="/precos">
@@ -393,7 +394,7 @@ export default function HomePage() {
               <a href="/consultoria-ia">
                 <Button variant="outline" className="px-8 py-3">
                   <Zap className="mr-2 h-5 w-5" />
-                  Começar Análise Gratuita
+                  Começar Pré-Análise
                 </Button>
               </a>
             </div>
@@ -413,11 +414,11 @@ export default function HomePage() {
               Vaga Express
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              O primeiro sistema do Brasil que monitora cancelamentos consulares em tempo real. 
+              O primeiro sistema do Brasil que monitora cancelamentos consulares em tempo real.
               Adiante sua entrevista automaticamente!
             </p>
           </div>
-          
+
           <div className="grid lg:grid-cols-3 gap-8 mb-12">
             {/* Basic Plan */}
             <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-200 hover:border-orange-300 transition-all">
@@ -583,7 +584,7 @@ export default function HomePage() {
               Combinamos tecnologia de ponta com expertise humana para oferecer a melhor experiência em assessoria internacional.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="bg-blue-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
@@ -594,7 +595,7 @@ export default function HomePage() {
                 Seus documentos e informações pessoais são protegidos com os mais altos padrões de segurança digital.
               </p>
             </div>
-            
+
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="bg-green-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
                 <Clock className="h-8 w-8 text-green-600" />
@@ -604,7 +605,7 @@ export default function HomePage() {
                 Nossa tecnologia automatiza etapas burocráticas, reduzindo significativamente o tempo de processamento.
               </p>
             </div>
-            
+
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="bg-purple-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
                 <Users className="h-8 w-8 text-purple-600" />
@@ -623,13 +624,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              🎯 Teste Nossa IA <span className="text-blue-600">Gratuitamente</span>
+              🎯 Analise suas chances com <span className="text-blue-600">IA Especializada</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              <strong>Mesma tecnologia</strong> que aprovou 8.420+ vistos em 2024. 
+              <strong>Mesma tecnologia</strong> que aprovou 8.420+ vistos em 2024.
               Descubra suas chances <strong>sem compromisso</strong>.
             </p>
-            
+
             {/* Prova social para credibilidade */}
             <div className="flex justify-center items-center gap-6 mt-6 text-sm">
               <div className="flex items-center gap-2 text-green-600">
@@ -661,7 +662,7 @@ export default function HomePage() {
               <strong>3 pilares</strong> que nos tornam referência em assessoria internacional desde 2009.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <ServiceCard
               icon={Globe}
@@ -674,7 +675,7 @@ export default function HomePage() {
               ]}
               color="blue"
             />
-            
+
             <ServiceCard
               icon={Zap}
               title="Vaga Express ⚡"
@@ -687,7 +688,7 @@ export default function HomePage() {
               color="orange"
               isNew={true}
             />
-            
+
             <ServiceCard
               icon={Users}
               title="Imigração"
@@ -714,7 +715,7 @@ export default function HomePage() {
               Milhares de pessoas já realizaram seus sonhos internacionais conosco.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-xl shadow-lg">
               <div className="flex items-center mb-6">
@@ -735,7 +736,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white p-8 rounded-xl shadow-lg">
               <div className="flex items-center mb-6">
                 {[...Array(5)].map((_, i) => (
@@ -755,7 +756,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white p-8 rounded-xl shadow-lg">
               <div className="flex items-center mb-6">
                 {[...Array(5)].map((_, i) => (
@@ -802,7 +803,7 @@ export default function HomePage() {
             </div>
           </div>
           <SmartScheduler />
-          
+
           <div className="mt-12 text-center">
             <div className="bg-white rounded-2xl p-8 shadow-xl max-w-4xl mx-auto">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
@@ -838,22 +839,22 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIiAvPjwvc3ZnPg==')] opacity-20"></div>
         </div>
-        
+
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Urgência estratégica */}
           <div className="inline-block bg-red-500/20 border border-red-300/30 text-red-100 px-6 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
             ⏰ ÚLTIMAS 48H COM ANÁLISE GRATUITA + DESCONTO
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Não Deixe Seu Sonho{' '}
             <span className="text-yellow-300">Passar Mais Um Ano</span>
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            <strong>8.420 brasileiros</strong> já estão vivendo no exterior graças à nossa IA. 
+            <strong>8.420 brasileiros</strong> já estão vivendo no exterior graças à nossa IA.
             <strong>Você será o próximo?</strong>
           </p>
-          
+
           {/* Prova social final */}
           <div className="flex flex-wrap gap-4 text-sm justify-center items-center mb-10">
             <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
@@ -865,7 +866,7 @@ export default function HomePage() {
               <span className="text-white font-semibold">48h restantes com desconto</span>
             </div>
           </div>
-          
+
           {/* CTA principal gigante */}
           <div className="mb-8">
             <a href="/consultoria-ia">
@@ -876,30 +877,30 @@ export default function HomePage() {
               </Button>
             </a>
           </div>
-          
+
           {/* Garantias e micro-compromissos */}
           <div className="grid md:grid-cols-3 gap-4 text-center text-blue-100 text-sm mb-6">
             <div className="flex items-center justify-center gap-2">
               <Shield className="h-5 w-5 text-green-300" />
-              <span><strong>100% Gratuito</strong><br/>Sem cartão</span>
+              <span><strong>100% Gratuito</strong><br />Sem cartão</span>
             </div>
             <div className="flex items-center justify-center gap-2">
               <Clock className="h-5 w-5 text-yellow-300" />
-              <span><strong>15 Minutos</strong><br/>Resultado imediato</span>
+              <span><strong>15 Minutos</strong><br />Resultado imediato</span>
             </div>
             <div className="flex items-center justify-center gap-2">
               <CheckCircle className="h-5 w-5 text-blue-300" />
-              <span><strong>Dados Seguros</strong><br/>LGPD Compliance</span>
+              <span><strong>Dados Seguros</strong><br />LGPD Compliance</span>
             </div>
           </div>
-          
+
           <p className="text-blue-200 text-xs">
             Mais de 8.420 brasileiros confiaram em nossa tecnologia em 2024
           </p>
         </div>
       </section>
 
-      
+
       <ChatBot />
     </div>
   )

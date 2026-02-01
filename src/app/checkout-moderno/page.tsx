@@ -62,6 +62,7 @@ const PRODUCTS: Record<string, any> = {
   'pre-analise': {
     name: '🤖 Pré-Análise IA',
     price: 29.90,
+    originalPrice: 49.90,
     description: 'Análise Profissional com IA',
     features: [
       'Análise IA em 15 minutos',
@@ -103,9 +104,10 @@ const PRODUCTS: Record<string, any> = {
 
   // Produtos de Países (padrão base)
   'usa-free': {
-    name: '🇺🇸 EUA - Análise Gratuita',
-    price: 0,
-    description: 'Análise inicial gratuita para EUA',
+    name: '🇺🇸 EUA - Análise IA',
+    price: 29.90,
+    originalPrice: 49.90,
+    description: 'Análise inicial com IA para EUA',
     features: [
       'Análise IA especializada em EUA',
       'Score de elegibilidade',
@@ -147,9 +149,10 @@ function CheckoutContent() {
     if (productId.includes('-free')) {
       const country = productId.split('-')[0] || 'Geral'
       product = {
-        name: `${country.toUpperCase()} - Análise Gratuita`,
-        price: 0,
-        description: 'Análise inicial gratuita',
+        name: `${country.toUpperCase()} - Análise IA`,
+        price: 29.90,
+        originalPrice: 49.90,
+        description: 'Análise inicial com IA',
         features: [
           'Análise IA especializada',
           'Score de elegibilidade',
@@ -197,7 +200,7 @@ function CheckoutContent() {
   const finalAdults = product.supportsQuantity ? adults : 1
   const finalChildren = product.supportsQuantity ? children : 0
   const finalPrice = (product.supportsQuantity && totalFromUrl > 0) ? totalFromUrl : product.price
-  const originalPrice = product.supportsQuantity ? product.price : undefined
+  const originalPrice = product.originalPrice || (product.supportsQuantity ? product.price : undefined)
 
   return (
     <CheckoutModerno

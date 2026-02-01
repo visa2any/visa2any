@@ -101,7 +101,7 @@ export default function EligibilityCalculator() {
     questions.forEach(question => {
       maxScore += question.weight
       const answer = answers[question.id]
-      
+
       if (!answer) return
 
       let questionScore = 0
@@ -119,7 +119,7 @@ export default function EligibilityCalculator() {
 
         case 'visa-type':
           const visaScores: Record<string, number> = {
-            'Turismo': 9, 'Trabalho': 7, 'Estudo': 8, 
+            'Turismo': 9, 'Trabalho': 7, 'Estudo': 8,
             'Investimento': 6, 'Reunificação familiar': 8
           }
           questionScore = (visaScores[answer] || 7) / 10 * question.weight
@@ -141,7 +141,7 @@ export default function EligibilityCalculator() {
 
         case 'english-level':
           const engScores: Record<string, number> = {
-            'Básico': 5, 'Intermediário': 7, 'Avançado': 9, 
+            'Básico': 5, 'Intermediário': 7, 'Avançado': 9,
             'Fluente': 10, 'Nativo': 10
           }
           questionScore = (engScores[answer] || 5) / 10 * question.weight
@@ -181,7 +181,7 @@ export default function EligibilityCalculator() {
     })
 
     const percentage = (totalScore / maxScore) * 100
-    
+
     let level: QuizResult['level']
     let recommendations: string[] = []
     let nextSteps: string[] = []
@@ -195,7 +195,7 @@ export default function EligibilityCalculator() {
         '🏆 Candidato prioritário'
       ]
       nextSteps = [
-        'Agende consultoria VIP gratuita',
+        'Agende consultoria VIP',
         'Preparação de documentos expressa',
         'Submissão em 7 dias úteis'
       ]
@@ -208,7 +208,7 @@ export default function EligibilityCalculator() {
         '⏰ Tempo estimado: 15-20 dias'
       ]
       nextSteps = [
-        'Consultoria gratuita personalizada',
+        'Consultoria personalizada',
         'Plano de fortalecimento do perfil',
         'Preparação estratégica de documentos'
       ]
@@ -252,8 +252,8 @@ export default function EligibilityCalculator() {
           targetCountry: answers['destination'],
           visaType: answers['visa-type'],
           source: 'eligibility_calculator',
-          product: 'Análise de Elegibilidade Gratuita',
-          amount: 0
+          product: 'Análise de Elegibilidade',
+          amount: 29.90
         }
 
         const accountResponse = await fetch('/api/auth/unified/auto-create', {
@@ -264,9 +264,9 @@ export default function EligibilityCalculator() {
 
         if (accountResponse.ok) {
           const accountResult = await accountResponse.json()
-          
+
           // Salvar resultado da análise
-          
+
           const analysisData = {
             clientId: accountResult.user.id,
             score: Math.round(percentage),
@@ -381,17 +381,17 @@ export default function EligibilityCalculator() {
             </div>
             <div className="bg-white p-4 rounded-lg">
               <Download className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-              <div className="text-sm font-medium">PDF Gratuito</div>
+              <div className="text-sm font-medium">PDF do Resultado</div>
             </div>
           </div>
-          <Button 
+          <Button
             onClick={openQuiz}
             className="btn-gradient text-lg px-8 py-4"
           >
-            Começar Análise Gratuita
+            Começar Análise
           </Button>
           <p className="text-sm text-gray-500 mt-4">
-            ✅ 100% gratuito • ⚡ Resultado instantâneo • 🔒 Dados protegidos
+            ✅ R$ 29,90 • ⚡ Resultado instantâneo • 🔒 Dados protegidos
           </p>
         </div>
       </div>
@@ -454,7 +454,7 @@ export default function EligibilityCalculator() {
         {/* User Info Collection */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-xl text-white mb-6">
           <h3 className="text-xl font-semibold mb-4">
-            📄 Receba seu Relatório Detalhado GRATUITO
+            📄 Receba seu Resultado Detalhado
           </h3>
           <div className="grid md:grid-cols-3 gap-4">
             <input
@@ -480,7 +480,7 @@ export default function EligibilityCalculator() {
             />
           </div>
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <Button 
+            <Button
               className="bg-white text-blue-600 hover:bg-gray-100 flex-1"
               disabled={!userInfo.name || !userInfo.email}
               onClick={async () => {
@@ -497,7 +497,7 @@ export default function EligibilityCalculator() {
               <Download className="mr-2 h-4 w-4" />
               Baixar Relatório + Criar Conta
             </Button>
-            
+
             <Button
               id="portal-access-btn"
               onClick={() => {
@@ -511,12 +511,12 @@ export default function EligibilityCalculator() {
               👤 Acessar Meu Portal
             </Button>
           </div>
-          
+
           {userInfo.name && userInfo.email && (
             <div className="mt-4 p-3 bg-white/20 rounded-lg">
               <div className="text-center text-sm">
-                ✅ <strong>Conta será criada automaticamente</strong><br/>
-                📧 Acesso enviado para {userInfo.email}<br/>
+                ✅ <strong>Conta será criada automaticamente</strong><br />
+                📧 Acesso enviado para {userInfo.email}<br />
                 🔐 Login automático após confirmação
               </div>
             </div>
@@ -542,7 +542,7 @@ export default function EligibilityCalculator() {
                 <li>✅ Timeline personalizado</li>
                 <li>✅ Custos estimados</li>
               </ul>
-              <button 
+              <button
                 onClick={() => {
                   window.location.href = '/precos'
                 }}
@@ -566,7 +566,7 @@ export default function EligibilityCalculator() {
                 <li>✅ Plano de ação</li>
                 <li>✅ Suporte WhatsApp 30 dias</li>
               </ul>
-              <button 
+              <button
                 onClick={() => {
                   window.location.href = '/precos'
                 }}
@@ -596,7 +596,7 @@ export default function EligibilityCalculator() {
                 <li>✅ Suporte ilimitado</li>
                 <li>🛡️ Garantia retrabalho</li>
               </ul>
-              <button 
+              <button
                 onClick={() => {
                   window.location.href = '/precos'
                 }}
@@ -617,7 +617,7 @@ export default function EligibilityCalculator() {
           <Button onClick={resetQuiz} variant="outline">
             Refazer Análise
           </Button>
-          <Button 
+          <Button
             onClick={() => {
               // Mostrar ChatBot novamente e fechar quiz
               resetQuiz()
@@ -651,81 +651,80 @@ export default function EligibilityCalculator() {
         >
           <X className="h-6 w-6" />
         </button>
-        
+
         {/* Progress Bar */}
         <div className="mb-8 mt-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">Pergunta {currentStep + 1} de {questions.length}</span>
             <span className="text-sm text-gray-600">{Math.round(progress)}% completo</span>
           </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Question */}
-      <div className="mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          {currentQuestion?.question || 'Question not available'}
-      </h2>
-
-        {currentQuestion?.type === 'select' && (
-          <div className="space-y-3">
-            {currentQuestion.options?.map((option) => (
-              <button
-                key={option}
-                onClick={() => handleAnswer(currentQuestion.id, option)}
-                className={`w-full p-4 text-left border-2 rounded-lg transition-all ${
-                  answers[currentQuestion.id] === option
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {currentQuestion?.type === 'range' && (
-          <div className="space-y-4">
-            <input
-              type="range"
-              min="18"
-              max="65"
-              value={answers[currentQuestion?.id] || 25}
-              onChange={(e) => handleAnswer(currentQuestion?.id || '', parseInt(e.target.value))}
-              className="w-full"
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
             />
-            <div className="text-center">
-              <span className="text-2xl font-bold text-blue-600">
-                {answers[currentQuestion.id] || 25} anos
-              </span>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between">
-        <Button 
-          onClick={prevQuestion}
-          variant="outline"
-          disabled={currentStep === 0}
-        >
-          Anterior
-        </Button>
-        <Button 
-          onClick={nextQuestion}
-          className="btn-gradient"
-          disabled={!answers[currentQuestion?.id || '']}
-        >
-          {currentStep === questions.length - 1 ? 'Ver Resultado' : 'Próxima'}
-        </Button>
-      </div>
+        {/* Question */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {currentQuestion?.question || 'Question not available'}
+          </h2>
+
+          {currentQuestion?.type === 'select' && (
+            <div className="space-y-3">
+              {currentQuestion.options?.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => handleAnswer(currentQuestion.id, option)}
+                  className={`w-full p-4 text-left border-2 rounded-lg transition-all ${answers[currentQuestion.id] === option
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {currentQuestion?.type === 'range' && (
+            <div className="space-y-4">
+              <input
+                type="range"
+                min="18"
+                max="65"
+                value={answers[currentQuestion?.id] || 25}
+                onChange={(e) => handleAnswer(currentQuestion?.id || '', parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-center">
+                <span className="text-2xl font-bold text-blue-600">
+                  {answers[currentQuestion.id] || 25} anos
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between">
+          <Button
+            onClick={prevQuestion}
+            variant="outline"
+            disabled={currentStep === 0}
+          >
+            Anterior
+          </Button>
+          <Button
+            onClick={nextQuestion}
+            className="btn-gradient"
+            disabled={!answers[currentQuestion?.id || '']}
+          >
+            {currentStep === questions.length - 1 ? 'Ver Resultado' : 'Próxima'}
+          </Button>
+        </div>
       </div>
     </div>
   )

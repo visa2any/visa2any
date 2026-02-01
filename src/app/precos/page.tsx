@@ -600,8 +600,8 @@ export default function PrecosPage() {
                   key={key}
                   onClick={() => setSelectedCountry(key)}
                   className={`p-3 rounded-xl text-center transition-all cursor-pointer border-2 ${selectedCountry === key
-                      ? `bg-${country.color}-100 border-${country.color}-500 shadow-lg ring-2 ring-${country.color}-300`
-                      : `bg-${country.color}-50 border-${country.color}-200 hover:shadow-lg hover:border-${country.color}-300`
+                    ? `bg-${country.color}-100 border-${country.color}-500 shadow-lg ring-2 ring-${country.color}-300`
+                    : `bg-${country.color}-50 border-${country.color}-200 hover:shadow-lg hover:border-${country.color}-300`
                     }`}
                 >
                   <div className="text-2xl mb-1">{country.flag}</div>
@@ -653,10 +653,10 @@ export default function PrecosPage() {
                   key={key}
                   onClick={() => selectedCountry && setSelectedVisaType(key)}
                   className={`p-4 rounded-xl text-center transition-all border-2 ${!selectedCountry
-                      ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-50'
-                      : selectedVisaType === key
-                        ? `bg-${visaType.color}-100 border-${visaType.color}-500 shadow-lg ring-2 ring-${visaType.color}-300 cursor-pointer`
-                        : `bg-${visaType.color}-50 border-${visaType.color}-200 hover:shadow-lg hover:border-${visaType.color}-300 cursor-pointer`
+                    ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-50'
+                    : selectedVisaType === key
+                      ? `bg-${visaType.color}-100 border-${visaType.color}-500 shadow-lg ring-2 ring-${visaType.color}-300 cursor-pointer`
+                      : `bg-${visaType.color}-50 border-${visaType.color}-200 hover:shadow-lg hover:border-${visaType.color}-300 cursor-pointer`
                     }`}
                 >
                   <div className="text-2xl mb-2">{visaType.icon}</div>
@@ -827,7 +827,7 @@ export default function PrecosPage() {
               </table>
             </div>
             <p className="text-center text-sm text-gray-600 mt-4">
-              💡 <strong>Dica:</strong> Comece sempre com a análise gratuita. Você pode fazer upgrade depois!
+              💡 <strong>Dica:</strong> Comece sempre com a pré-análise. Você pode fazer upgrade depois!
             </p>
           </div>
 
