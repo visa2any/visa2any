@@ -136,7 +136,7 @@ function CheckoutContent() {
   const adults = parseInt(searchParams.get('adults') || '1')
   const children = parseInt(searchParams.get('children') || '0')
   const totalFromUrl = parseInt(searchParams.get('total') || '0')
-  const successUrl = searchParams.get('redirect') || undefined
+  const successUrl = searchParams.get('redirect') || ''
 
   let product = PRODUCTS[productId as keyof typeof PRODUCTS]
 
