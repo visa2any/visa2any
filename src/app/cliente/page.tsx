@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import ClientHeader from '@/components/ClientHeader'
 import SofiaIA from '@/components/SofiaIA'
 import ProfileEditor from '@/components/ProfileEditor'
+import ClientSettings from '@/components/ClientSettings'
 import DocumentUpload from '@/components/DocumentUpload'
 import { VisaApplicationWizard } from '@/components/wizards/VisaApplicationWizard'
 import { DocumentChecklistWizard } from '@/components/wizards/DocumentChecklistWizard'
@@ -21,9 +22,10 @@ import {
 } from 'lucide-react'
 
 function CustomerDashboardContent() {
-  const { customer, isLoading, isAuthenticated, refreshProfile, updateLocalProfile } = useCustomerAuth()
+  const { customer, isLoading, isAuthenticated, refreshProfile, updateLocalProfile, logout } = useCustomerAuth()
   const [showSofiaChat, setShowSofiaChat] = useState(false)
   const [showProfileEditor, setShowProfileEditor] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [showDocumentUpload, setShowDocumentUpload] = useState(false)
   const [showVisaWizard, setShowVisaWizard] = useState(false)
   const [showDocumentChecklist, setShowDocumentChecklist] = useState(false)
@@ -172,6 +174,8 @@ function CustomerDashboardContent() {
         }}
         onSofiaChat={() => setShowSofiaChat(true)}
         onProfileEdit={() => setShowProfileEditor(true)}
+        onSettingsClick={() => setShowSettings(true)}
+        onLogout={logout}
       />
 
       {/* Barra de Progresso Global */}
@@ -198,6 +202,44 @@ function CustomerDashboardContent() {
           </div>
         </div>
       </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+        {/* ... */}
+      </div>
+
+      {/* Modais */}
+      <SofiaIA
+        isOpen={showSofiaChat}
+        onClose={() => setShowSofiaChat(false)}
+        customerData={{
+          ...customer,
+          package: 'PREMIUM'
+        }}
+      />
+
+      <ProfileEditor
+        isOpen={showProfileEditor}
+        onClose={() => setShowProfileEditor(false)}
+        profileData={{
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone || '',
+          country: 'Brasil',
+          nationality: 'Brasileira',
+          age: 35,
+          profession: 'Profissional',
+          education: 'Superior',
+          targetCountry: customer.destinationCountry,
+          visaType: customer.visaType,
+          profilePhoto: customer.profilePhoto || ''
+        }}
+        onSave={handleProfileSave}
+      />
+
+      <ClientSettings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
         {/* Cards Principais Compactos */}

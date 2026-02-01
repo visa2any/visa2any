@@ -66,31 +66,53 @@ export default function AIConsultation() {
 
   // Persistence and Payment Check
   useEffect(() => {
-    // Check URL for payment status
-    const status = searchParams.get('status')
-    const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id')
-    const paidParam = searchParams.get('paid') === 'true'
+    // Check URL parameters for ID references
+    const cId = searchParams.get('consultationId')
+    const cClientId = searchParams.get('clientId')
+
+    // Always check server for status if we have IDs
+    if (cId && cClientId) {
+      setServerIds({ clientId: cClientId, consultationId: cId })
+      checkPaymentStatus(cId, cClientId)
+    }
 
     // Load state from local storage as backup/initial state
     const savedData = localStorage.getItem('visa2any_consultation_v1')
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData)
+        setUserProfile(parsed.profile || {})
+        // Dont automatically set result if it's supposed to be locked, 
+        // but we can restore the chat history and profile
+        setMessages(parsed.messages || [])
 
-    if ((status === 'approved' || paymentId || paidParam)) {
-      setHasPaid(true)
-
-      // If we have saved data, restore it to show the result
-      if (savedData) {
-        try {
-          const parsed = JSON.parse(savedData)
-          setUserProfile(parsed.profile || {})
-          setConsultationResult(parsed.result || null)
-          setMessages(parsed.messages || [])
+        if (parsed.timestamp && (Date.now() - parsed.timestamp < 1000 * 60 * 60 * 24)) {
           setIsActive(true)
-        } catch (e) {
-          console.error("Failed to restore state", e)
+          // Only restore result if we don't need to verify payment again (or let server override)
         }
+      } catch (e) {
+        console.error("Failed to restore state", e)
       }
     }
   }, [searchParams])
+
+  const checkPaymentStatus = async (consultId: string, cliId: string) => {
+    try {
+      const res = await fetch(`/api/ai/consultation-result?id=${consultId}&clientId=${cliId}`)
+      const data = await res.json()
+
+      if (data.isLocked === false) {
+        setHasPaid(true)
+        // Restore full result from server
+        if (data.result && data.result.generated_analysis) {
+          setConsultationResult(data.result.generated_analysis)
+        }
+        setIsActive(true) // Ensure view is active to show results
+      }
+    } catch (err) {
+      console.error("Error verifying payment:", err)
+    }
+  }
 
   // Save state locally as backup
   useEffect(() => {
@@ -301,132 +323,16 @@ export default function AIConsultation() {
     const profile = userProfile as UserProfile
     setIsSaving(true)
 
-    // --- ALGORITHM START ---
-    let score = 50 // Base score
-    let complexityLevel: 'simple' | 'moderate' | 'complex' = 'simple'
-    let needsHuman = false
-    const warnings: string[] = []
-
-    // Education
-    const educationScores: Record<string, number> = {
-      'Doutorado': 20, 'Mestrado': 18, 'Pós-graduação': 15,
-      'Superior completo': 12, 'Superior incompleto': 8,
-      'Ensino médio': 5, 'Ensino fundamental': 2
-    }
-    score += educationScores[profile.education] || 0
-
-    // Experience
-    const expScores: Record<string, number> = {
-      'Mais de 10 anos': 15, '5-10 anos': 12, '3-5 anos': 8,
-      '1-3 anos': 5, 'Menos de 1 ano': 2
-    }
-    score += expScores[profile.experience] || 0
-
-    // Language
-    const langScores: Record<string, number> = {
-      'Nativo': 15, 'Fluente': 12, 'Avançado': 8,
-      'Intermediário': 5, 'Básico': 2
-    }
-    score += langScores[profile.language] || 0
-
-    // Country/Nationality Bonues
-    if (profile.country === 'Portugal') {
-      if (profile.nationality === 'Brasileira') {
-        score += 20
-        if (profile.visaType === 'Cidadania por descendência') score += 15
-      } else {
-        score += 5
-      }
-    }
-
-    if (profile.country === 'Canadá') {
-      score -= 5
-      if (profile.french === 'Fluente') score += 20
-      else if (profile.french === 'Avançado') score += 15
-      else if (profile.french === 'Intermediário') score += 10
-    }
-
-    if (profile.country === 'Estados Unidos') {
-      if (profile.nationality === 'Brasileira') {
-        score += 5
-        if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
-          score += 15
-        }
-      }
-    }
-
-    // Age
-    if (profile.age >= 25 && profile.age <= 35) score += 10
-    else if (profile.age >= 18 && profile.age <= 45) score += 5
-    else warnings.push('Idade pode ser um fator limitante para alguns programas')
-
-    // Budget
-    const budgetScores: Record<string, number> = {
-      'Acima de R$ 500.000': 15, 'R$ 300.000 - R$ 500.000': 12,
-      'R$ 100.000 - R$ 300.000': 8, 'R$ 50.000 - R$ 100.000': 5,
-      'Até R$ 50.000': 2
-    }
-    score += budgetScores[profile.budget] || 0
-
-    // Complexity
-    if (profile.visaType === 'Refugio/Asilo' || profile.visaType === 'Outro') {
-      complexityLevel = 'complex'; needsHuman = true; warnings.push('Caso complexo requer análise especializada')
-    } else if (profile.timeline === 'Até 6 meses' || profile.family === 'Família extensa') {
-      complexityLevel = 'moderate'; if (score < 60) needsHuman = true
-    }
-    if (score < 40) { needsHuman = true; warnings.push('Perfil requer estratégia personalizada') }
-
-    // Recommendations text
-    let recommendation = ''
-    let timeline = ''
-    let cost = ''
-    let documents: string[] = []
-    let nextSteps: string[] = []
-
-    if (score >= 80) {
-      recommendation = `Excelente! Seu perfil é muito forte para ${profile.country}. Nossa metodologia maximiza suas chances de aprovação.`
-      timeline = 'Processo pode ser concluído em 6-12 meses'
-      cost = 'R$ 15.000 - R$ 30.000'
-      documents = ['Diploma apostilado', 'Comprovante de experiência', 'Teste de idioma', 'Exames médicos']
-      nextSteps = ['Teste de proficiência no idioma', 'Validação de diplomas', 'Submissão de EOI/Aplicação']
-    } else if (score >= 60) {
-      recommendation = `Bom perfil! Com nossa estratégia personalizada, suas chances aumentam significativamente.`
-      timeline = 'Preparação de 6-12 meses + processo de 12-18 meses'
-      cost = 'R$ 20.000 - R$ 40.000'
-      documents = ['Documentos acadêmicos', 'Certificações profissionais', 'Teste de idioma', 'Comprovantes financeiros']
-      nextSteps = ['Melhorar proficiência no idioma', 'Obter certificações na área', 'Plano de fortalecimento do perfil']
-    } else {
-      recommendation = `Perfil desafiador, mas nossa experiência pode fazer a diferença. Estratégia especializada recomendada.`
-      timeline = 'Preparação de 12-24 meses + processo'
-      cost = 'R$ 25.000 - R$ 50.000'
-      documents = ['Documentação completa', 'Certificações adicionais', 'Cursos de qualificação']
-      nextSteps = ['Plano de melhoria do perfil', 'Educação adicional', 'Experiência internacional']
-      needsHuman = true
-    }
-
-    const result: ConsultationResult = {
-      eligibilityScore: Math.min(score, 100),
-      recommendation,
-      timeline,
-      estimatedCost: cost,
-      requiredDocuments: documents,
-      nextSteps,
-      needsHumanConsultant: needsHuman,
-      complexityLevel,
-      warningFlags: warnings
-    }
-    // --- ALGORITHM END ---
-
     // 🚀 PERSISTENCE TO SERVER
     try {
+      // Send raw profile to server for calculation
       const response = await fetch('/api/ai/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profile: { ...profile, score: result.eligibilityScore },
+          profile: profile,
           answers: userProfile,
-          messages: messages,
-          analysisResult: result
+          messages: messages
         })
       })
 
@@ -436,19 +342,34 @@ export default function AIConsultation() {
           clientId: data.clientId,
           consultationId: data.consultationId
         })
+
+        // Use server-calculated result (preview)
+        const mockResult: ConsultationResult = {
+          eligibilityScore: data.score || 0,
+          recommendation: data.recommendation || '',
+          timeline: 'Calculado',
+          estimatedCost: 'Calculado',
+          requiredDocuments: [],
+          nextSteps: [],
+          needsHumanConsultant: false,
+          complexityLevel: 'simple',
+          warningFlags: []
+        }
+
+        setConsultationResult(mockResult)
+
+        // Presentation
+        addAIMessage(
+          `✅ Análise concluída, ${profile.name}! Seu score para ${profile.country} é ${data.score || 0}%. ${data.recommendation || ''}`
+        )
       }
     } catch (saveError) {
       console.error("Failed to save to server:", saveError)
-      // Fallback: Continue flow, customer might save later via local storage
+      // Fallback: If server fails, we're stuck. In production, show error message.
+      addAIMessage("Desculpe, tive um problema ao processar sua análise. Tente novamente.")
     } finally {
       setIsSaving(false)
-      setConsultationResult(result)
     }
-
-    // Presentation
-    addAIMessage(
-      `✅ Análise concluída, ${profile.name}! Seu score para ${profile.country} é ${Math.min(score, 100)}%. ${recommendation}`
-    )
 
     setTimeout(() => {
       addAIMessage(
@@ -687,10 +608,10 @@ export default function AIConsultation() {
                   disabled={isSaving}
                   onClick={() => {
                     if (serverIds) {
+                      // Redirect to checkout with IDs
                       window.location.href = `/checkout-moderno?product=pre-analise&clientId=${serverIds.clientId}&consultationId=${serverIds.consultationId}`
                     } else {
-                      // Fallback if save failed/pending: Generate basic link, maybe retry save in background
-                      // For now, redirect to checkout but improved flow would retry
+                      // Fallback: Generate basic link (should ideally be handled by creating a record first)
                       window.location.href = `/checkout-moderno?product=pre-analise`
                     }
                   }}

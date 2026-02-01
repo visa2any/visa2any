@@ -16,9 +16,10 @@ interface ClientHeaderProps {
   }
   onSofiaChat: () => void
   onProfileEdit?: () => void
+  onLogout?: () => void
 }
 
-export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit }: ClientHeaderProps) {
+export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit, onLogout }: ClientHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -34,7 +35,7 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
               Portal Cliente
             </span>
           </a>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <a href="/cliente" className="text-gray-700 hover:text-blue-600 transition-colors text-sm">Dashboard</a>
@@ -42,7 +43,7 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
             <a href="/cliente/consultorias" className="text-gray-700 hover:text-blue-600 transition-colors text-sm">Consultorias</a>
             <a href="/cliente/pagamentos" className="text-gray-700 hover:text-blue-600 transition-colors text-sm">Pagamentos</a>
           </nav>
-          
+
           {/* User Section */}
           <div className="flex items-center gap-3">
             {/* Sofia IA Button */}
@@ -56,12 +57,12 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
                 <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse"></div>
               )}
             </button>
-            
+
             {/* Score Badge */}
             <div className="hidden sm:flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg">
               <div className="w-12 h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-1000" 
+                <div
+                  className="h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-1000"
                   style={{ width: `${customerData?.eligibilityScore || 0}%` }}
                 ></div>
               </div>
@@ -70,19 +71,19 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
               </span>
               <Sparkles className="h-3 w-3 text-yellow-500" />
             </div>
-            
+
             {/* User Info with Profile Menu */}
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
                 onMouseEnter={() => setShowProfileMenu(true)}
                 onMouseLeave={() => setShowProfileMenu(false)}
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
                   {customerData?.profilePhoto ? (
-                    <img 
-                      src={customerData.profilePhoto} 
-                      alt="Profile" 
+                    <img
+                      src={customerData.profilePhoto}
+                      alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -94,10 +95,10 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
                   <p className="text-xs text-gray-500">{customerData?.email || 'email@exemplo.com'}</p>
                 </div>
               </div>
-              
+
               {/* Profile Dropdown Menu */}
               {showProfileMenu && (
-                <div 
+                <div
                   className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
                   onMouseEnter={() => setShowProfileMenu(true)}
                   onMouseLeave={() => setShowProfileMenu(false)}
@@ -112,19 +113,31 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
                     <User className="h-4 w-4" />
                     Editar Perfil
                   </button>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                  <button
+                    onClick={() => {
+                      onProfileEdit?.()
+                      setShowProfileMenu(false)
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
                     <Settings className="h-4 w-4" />
                     Configurações
                   </button>
                   <div className="border-t border-gray-200 my-1"></div>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                  <button
+                    onClick={() => {
+                      onLogout?.()
+                      setShowProfileMenu(false)
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
                     <LogOut className="h-4 w-4" />
                     Sair
                   </button>
                 </div>
               )}
             </div>
-            
+
             {/* Mobile Menu Button */}
             <button
               className="md:hidden p-1"
@@ -138,41 +151,47 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-3">
             <nav className="flex flex-col space-y-2">
-              <a 
-                href="/cliente" 
+              <a
+                href="/cliente"
                 className="text-gray-700 hover:text-blue-600 transition-colors text-sm py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 📊 Dashboard
               </a>
-              <a 
-                href="/cliente/documentos" 
+              <a
+                href="/cliente/documentos"
                 className="text-gray-700 hover:text-blue-600 transition-colors text-sm py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 📄 Documentos
               </a>
-              <a 
-                href="/cliente/consultorias" 
+              <a
+                href="/cliente/consultorias"
                 className="text-gray-700 hover:text-blue-600 transition-colors text-sm py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 👨‍💼 Consultorias
               </a>
-              <a 
-                href="/cliente/pagamentos" 
+              <a
+                href="/cliente/pagamentos"
                 className="text-gray-700 hover:text-blue-600 transition-colors text-sm py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 💳 Pagamentos
               </a>
               <div className="border-t border-gray-200 pt-2 mt-2">
-                <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1">
+                <button
+                  onClick={() => {
+                    onLogout?.()
+                    setIsMenuOpen(false)
+                  }}
+                  className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1"
+                >
                   <LogOut className="h-4 w-4" />
                   Sair
                 </button>

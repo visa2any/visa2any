@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { 
-  X, User, Mail, Phone, MapPin, Calendar, Briefcase, 
+import {
+  X, User, Mail, Phone, MapPin, Calendar, Briefcase,
   GraduationCap, Camera, Save, Edit3, Globe, Flag
 } from 'lucide-react'
 import { FormField } from '@/components/ui/FormField'
@@ -30,12 +30,12 @@ interface ProfileEditorProps {
 }
 
 const countries = [
-  'Brasil', 'Estados Unidos', 'Canadá', 'Portugal', 'Espanha', 
+  'Brasil', 'Estados Unidos', 'Canadá', 'Portugal', 'Espanha',
   'França', 'Alemanha', 'Reino Unido', 'Austrália', 'Nova Zelândia'
 ]
 
 const visaTypes = [
-  'Turismo/Negócios', 'Estudo/Educação', 'Trabalho/Carreira', 
+  'Turismo/Negócios', 'Estudo/Educação', 'Trabalho/Carreira',
   'Investimento/Negócios', 'Família/Relacionamento', 'Aposentadoria'
 ]
 
@@ -77,9 +77,9 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
 
       const reader = new FileReader()
       reader.onload = (e) => {
-        setFormData(prev => ({ 
-          ...prev, 
-          profilePhoto: e.target?.result as string 
+        setFormData(prev => ({
+          ...prev,
+          profilePhoto: e.target?.result as string
         }))
       }
       reader.readAsDataURL(file)
@@ -124,17 +124,17 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
     }
 
     setIsLoading(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       // Save to localStorage
-      
+
       localStorage.setItem('customer-profile', JSON.stringify(formData))
-      
+
       // Also update the main customer data with the profile photo
-      
+
       const existingCustomer = localStorage.getItem('customer')
       if (existingCustomer) {
         const customerData = JSON.parse(existingCustomer)
@@ -144,7 +144,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
         customerData.phone = formData.phone
         localStorage.setItem('customer', JSON.stringify(customerData))
       }
-      
+
       onSave(formData)
       onClose()
     } catch (error) {
@@ -159,7 +159,7 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6">
           <div className="flex items-center justify-between">
@@ -182,16 +182,16 @@ export default function ProfileEditor({ isOpen, onClose, profileData, onSave }: 
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="p-6 overflow-y-auto flex-1">
           <div className="space-y-6">
             {/* Photo Section */}
             <div className="flex flex-col items-center">
               <div className="relative">
                 <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden">
                   {formData.profilePhoto ? (
-                    <img 
-                      src={formData.profilePhoto} 
-                      alt="Profile" 
+                    <img
+                      src={formData.profilePhoto}
+                      alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
