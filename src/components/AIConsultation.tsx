@@ -51,7 +51,7 @@ export default function AIConsultation() {
   const [userProfile, setUserProfile] = useState<Partial<UserProfile>>({})
   const [isTyping, setIsTyping] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutos
-  const consultationResult, setConsultationResult] = useState<ConsultationResult | null > (null)
+  const [consultationResult, setConsultationResult] = useState<ConsultationResult | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const searchParams = useSearchParams()
