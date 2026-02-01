@@ -39,6 +39,28 @@ declare global {
   }
 }
 
+function translateErrorMessage(msg: string, details: string = ''): string {
+  const fullMsg = (msg + ' ' + details).toLowerCase()
+
+  if (fullMsg.includes('cc_rejected_high_risk')) {
+    return 'O pagamento foi recusado pelo banco emissor por motivos de segurança. Por favor, autorize a compra no app do seu banco ou tente outro cartão.'
+  }
+  if (fullMsg.includes('cc_rejected_insufficient_amount')) {
+    return 'Saldo insuficiente. Por favor, verifique seu limite ou tente outro cartão.'
+  }
+  if (fullMsg.includes('cc_rejected_bad_filled_card_number') || fullMsg.includes('cc_rejected_bad_filled_security_code')) {
+    return 'Dados do cartão incorretos. Verifique o número e o código de segurança (CVV).'
+  }
+  if (fullMsg.includes('cc_rejected_date_error')) {
+    return 'Data de validade incorreta ou cartão vencido.'
+  }
+  if (fullMsg.includes('cc_rejected_other_reason')) {
+    return 'O pagamento foi recusado pelo banco. Tente usar outro cartão.'
+  }
+
+  return msg // Fallback para mensagem original se não houver tradução
+}
+
 export default function MercadoPagoSingle({
   preferenceId,
   publicKey,
@@ -204,10 +226,15 @@ export default function MercadoPagoSingle({
               } else {
                 // Mostrar erro detalhado
                 const errorMsg = result.error || 'Erro ao processar pagamento'
-                const errorCode = result.code ? ` (${result.code})` : ''
-                const errorDetails = result.details ? `: ${result.details}` : ''
+                const errorDetails = result.details || ''
+                // Traduzir mensagem amigável
+                const friendlyError = translateErrorMessage(errorMsg, errorDetails)
+
                 console.error('❌ API Error:', result)
-                setError(`${errorMsg}${errorCode}${errorDetails}`)
+                setError(friendlyError)
+
+                // Rolar para o topo para ver o erro
+                window.scrollTo({ top: 0, behavior: 'smooth' })
               }
             } catch (error) {
               console.error('❌ Erro de rede/fetch:', error)
