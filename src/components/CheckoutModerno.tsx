@@ -32,6 +32,8 @@ interface CheckoutModernoProps {
   showGroupDiscount?: boolean
   products?: Product[]
   successUrl?: string
+  consultationId?: string
+  clientId?: string
 
   // Interface legacy (para backward compatibility)
   productId?: string
@@ -203,7 +205,10 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     children = 0,
     description = '',
     features = [],
-    variant = 'default'
+    features = [],
+    variant = 'default',
+    consultationId,
+    clientId
   } = props
 
   // Use first product for calculations if new interface
@@ -474,7 +479,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
             failure: `${window.location.origin}/payment/failure`,
             pending: `${window.location.origin}/payment/pending`
           },
-          external_reference: `${currentProduct?.id || ''}-${Date.now()}`
+          external_reference: `${currentProduct?.id || ''}-${Date.now()}`,
+          metadata: {
+            consultation_id: consultationId,
+            client_id_linked: clientId
+          }
         })
       })
 

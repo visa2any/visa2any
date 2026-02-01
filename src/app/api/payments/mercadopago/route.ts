@@ -176,7 +176,8 @@ export async function POST(request: NextRequest) {
       expiration_date_from: new Date().toISOString(),
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
       payment_methods,
-      statement_descriptor: 'VISA2ANY'
+      statement_descriptor: 'VISA2ANY',
+      metadata: body.metadata
     }
 
     console.log('📋 Dados da preferência:', JSON.stringify(preferenceData, null, 2))

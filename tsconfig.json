@@ -23,7 +23,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     // ✅ Configurações adicionais de strict mode
     "noImplicitAny": true,
@@ -40,6 +42,7 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "mcp-server"
   ]
 }

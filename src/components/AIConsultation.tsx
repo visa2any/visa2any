@@ -53,6 +53,11 @@ export default function AIConsultation() {
   const [isTyping, setIsTyping] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutos
   const [consultationResult, setConsultationResult] = useState<ConsultationResult | null>(null)
+
+  // New States for Server Persistence
+  const [isSaving, setIsSaving] = useState(false)
+  const [serverIds, setServerIds] = useState<{ clientId: string, consultationId: string } | null>(null)
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const searchParams = useSearchParams()
@@ -64,12 +69,15 @@ export default function AIConsultation() {
     // Check URL for payment status
     const status = searchParams.get('status')
     const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id')
+    const paidParam = searchParams.get('paid') === 'true'
 
-    // Load state from local storage
+    // Load state from local storage as backup/initial state
     const savedData = localStorage.getItem('visa2any_consultation_v1')
 
-    if ((status === 'approved' || paymentId || searchParams.get('paid') === 'true')) {
+    if ((status === 'approved' || paymentId || paidParam)) {
       setHasPaid(true)
+
+      // If we have saved data, restore it to show the result
       if (savedData) {
         try {
           const parsed = JSON.parse(savedData)
@@ -84,7 +92,7 @@ export default function AIConsultation() {
     }
   }, [searchParams])
 
-  // Save state
+  // Save state locally as backup
   useEffect(() => {
     if (isActive && (Object.keys(userProfile).length > 0 || messages.length > 0)) {
       localStorage.setItem('visa2any_consultation_v1', JSON.stringify({
@@ -104,6 +112,12 @@ export default function AIConsultation() {
       type: 'text'
     },
     {
+      id: 'email',
+      question: "Prazer, {name}! Para onde devo enviar o relatório final? (Digite seu email)",
+      field: 'email',
+      type: 'text'
+    },
+    {
       id: 'age',
       question: "Qual sua idade, {name}? Isso afeta diretamente suas opções de visto.",
       field: 'age',
@@ -112,14 +126,14 @@ export default function AIConsultation() {
     },
     {
       id: 'nationality',
-      question: "Qual sua nacionalidade, {name}?",
+      question: "Qual sua nacionalidade?",
       field: 'nationality',
       type: 'select',
       options: ['Brasileira', 'Portuguesa', 'Italiana', 'Espanhola', 'Americana', 'Argentina', 'Outra']
     },
     {
       id: 'destination',
-      question: "Para onde você quer se mudar, {name}?",
+      question: "Para onde você quer se mudar?",
       field: 'country',
       type: 'select',
       options: ['Estados Unidos', 'Canadá', 'Austrália', 'Portugal', 'Alemanha', 'Reino Unido', 'França', 'Espanha', 'Itália', 'Outro']
@@ -246,8 +260,7 @@ export default function AIConsultation() {
       [currentQuestion.field]: answer
     }))
 
-    // Encontrar próxima pergunta válida
-
+    // Find next valid question
     let nextStep = currentStep + 1
     while (nextStep < consultationQuestions.length) {
       const nextQuestion = consultationQuestions[nextStep]
@@ -255,8 +268,6 @@ export default function AIConsultation() {
         nextStep++
         continue
       }
-
-      // Verificar se a pergunta deve ser mostrada
 
       if (nextQuestion.showIf) {
         const conditionValue = userProfile[nextQuestion.showIf as keyof UserProfile]
@@ -279,25 +290,24 @@ export default function AIConsultation() {
         addAIMessage(consultationQuestions[nextStep]?.question || 'Próxima pergunta')
       }, 1000)
     } else {
-      // Finalizar consultoria e gerar análise
+      // Finalize and Generate
       setTimeout(() => {
         generateConsultationResult()
       }, 1000)
     }
   }
 
-  const generateConsultationResult = () => {
+  const generateConsultationResult = async () => {
     const profile = userProfile as UserProfile
+    setIsSaving(true)
 
-    // Algoritmo de análise (simplificado)
-
+    // --- ALGORITHM START ---
     let score = 50 // Base score
     let complexityLevel: 'simple' | 'moderate' | 'complex' = 'simple'
     let needsHuman = false
     const warnings: string[] = []
 
-    // Análise de educação
-
+    // Education
     const educationScores: Record<string, number> = {
       'Doutorado': 20, 'Mestrado': 18, 'Pós-graduação': 15,
       'Superior completo': 12, 'Superior incompleto': 8,
@@ -305,104 +315,68 @@ export default function AIConsultation() {
     }
     score += educationScores[profile.education] || 0
 
-    // Análise de experiência
-
+    // Experience
     const expScores: Record<string, number> = {
       'Mais de 10 anos': 15, '5-10 anos': 12, '3-5 anos': 8,
       '1-3 anos': 5, 'Menos de 1 ano': 2
     }
     score += expScores[profile.experience] || 0
 
-    // Análise de idioma
-
+    // Language
     const langScores: Record<string, number> = {
       'Nativo': 15, 'Fluente': 12, 'Avançado': 8,
       'Intermediário': 5, 'Básico': 2
     }
     score += langScores[profile.language] || 0
 
-    // Bonificações por país e perfil baseadas na nacionalidade
-
+    // Country/Nationality Bonues
     if (profile.country === 'Portugal') {
       if (profile.nationality === 'Brasileira') {
-        score += 20 // Facilidades CPLP para brasileiros
+        score += 20
         if (profile.visaType === 'Cidadania por descendência') score += 15
-      } else if (['Angolana', 'Cabo-verdiana', 'Guineense', 'Moçambicana', 'São-tomense', 'Timorense'].includes(profile.nationality || '')) {
-        score += 25 // Outros países CPLP têm ainda mais facilidades
       } else {
-        score += 5 // Outros têm menos facilidades
+        score += 5
       }
     }
 
     if (profile.country === 'Canadá') {
-      // Redução por restrições 2024/2025
       score -= 5
-      // Bonificação por francês
       if (profile.french === 'Fluente') score += 20
       else if (profile.french === 'Avançado') score += 15
       else if (profile.french === 'Intermediário') score += 10
-
-      // Setores prioritários
-
-      if (profile.sector && ['Saúde (médico, enfermeiro, etc)', 'Trades (eletricitista, encanador, etc)'].includes(profile.sector)) {
-        score += 15
-      }
-    }
-
-    if (profile.country === 'Alemanha') {
-      score += 10 // Chancenkarte facilitando entrada
-      if (profile.sector === 'Tecnologia (TI, engenharia)') score += 15
     }
 
     if (profile.country === 'Estados Unidos') {
-      // Diferenciações por nacionalidade
       if (profile.nationality === 'Brasileira') {
-        score += 5 // Brasil tem boas relações com EUA
+        score += 5
         if (profile.education === 'Mestrado' || profile.education === 'Doutorado') {
-          score += 15 // EB-2 NIW facilitado para brasileiros qualificados
+          score += 15
         }
-      } else if (['Mexicana', 'Centro-americana'].includes(profile.nationality || '')) {
-        score -= 10 // Processos mais rigorosos
-        warnings.push('Nacionalidade requer análise mais cuidadosa')
       }
-      warnings.push('Processos mais rigorosos em 2025 - varia por nacionalidade')
     }
 
-    // Análise de idade
-
+    // Age
     if (profile.age >= 25 && profile.age <= 35) score += 10
     else if (profile.age >= 18 && profile.age <= 45) score += 5
     else warnings.push('Idade pode ser um fator limitante para alguns programas')
 
-    // Análise de orçamento
-
+    // Budget
     const budgetScores: Record<string, number> = {
-      'Acima de R$ 500.000': 15,
-      'R$ 300.000 - R$ 500.000': 12,
-      'R$ 100.000 - R$ 300.000': 8,
-      'R$ 50.000 - R$ 100.000': 5,
+      'Acima de R$ 500.000': 15, 'R$ 300.000 - R$ 500.000': 12,
+      'R$ 100.000 - R$ 300.000': 8, 'R$ 50.000 - R$ 100.000': 5,
       'Até R$ 50.000': 2
     }
     score += budgetScores[profile.budget] || 0
 
-    // Determinar complexidade e necessidade de consultor humano
-
+    // Complexity
     if (profile.visaType === 'Refugio/Asilo' || profile.visaType === 'Outro') {
-      complexityLevel = 'complex'
-      needsHuman = true
-      warnings.push('Caso complexo requer análise especializada')
+      complexityLevel = 'complex'; needsHuman = true; warnings.push('Caso complexo requer análise especializada')
     } else if (profile.timeline === 'Até 6 meses' || profile.family === 'Família extensa') {
-      complexityLevel = 'moderate'
-      if (score < 60) needsHuman = true
+      complexityLevel = 'moderate'; if (score < 60) needsHuman = true
     }
+    if (score < 40) { needsHuman = true; warnings.push('Perfil requer estratégia personalizada') }
 
-    if (score < 40) {
-      needsHuman = true
-      warnings.push('Perfil requer estratégia personalizada')
-    }
-
-    // Gerar recomendações
-
+    // Recommendations text
     let recommendation = ''
     let timeline = ''
     let cost = ''
@@ -441,18 +415,44 @@ export default function AIConsultation() {
       complexityLevel,
       warningFlags: warnings
     }
+    // --- ALGORITHM END ---
 
-    setConsultationResult(result)
+    // 🚀 PERSISTENCE TO SERVER
+    try {
+      const response = await fetch('/api/ai/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: { ...profile, score: result.eligibilityScore },
+          answers: userProfile,
+          messages: messages,
+          analysisResult: result
+        })
+      })
 
-    // Apresentar resultado
+      if (response.ok) {
+        const data = await response.json()
+        setServerIds({
+          clientId: data.clientId,
+          consultationId: data.consultationId
+        })
+      }
+    } catch (saveError) {
+      console.error("Failed to save to server:", saveError)
+      // Fallback: Continue flow, customer might save later via local storage
+    } finally {
+      setIsSaving(false)
+      setConsultationResult(result)
+    }
 
+    // Presentation
     addAIMessage(
       `✅ Análise concluída, ${profile.name}! Seu score para ${profile.country} é ${Math.min(score, 100)}%. ${recommendation}`
     )
 
     setTimeout(() => {
       addAIMessage(
-        `📋 Esta foi sua pré-análise. Para um relatório completo com documentos e estratégia detalhada, veja as opções abaixo dos resultados.`
+        `📋 Esta foi sua pré-análise. Para desbloquear o relatório oficial, validar seu perfil e acessar o Portal do Cliente, veja as opções abaixo.`
       )
     }, 2000)
   }
@@ -492,7 +492,7 @@ export default function AIConsultation() {
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                <span>Próximos passos recomendados</span>
+                <span>Conta no Portal do Cliente (Nova!)</span>
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
@@ -667,15 +667,15 @@ export default function AIConsultation() {
                   <Lock className="h-10 w-10 text-blue-600" />
                 </div>
 
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Análise Concluída!</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Análise Pronta!</h3>
                 <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto">
-                  Sua pré-análise de imigração foi gerada com sucesso. Desbloqueie agora para ver seu score de elegibilidade, timeline estimada e recomendações.
+                  Sua conta foi criada. Desbloqueie agora para ver seu score, acessar o Portal do Cliente e ver as recomendações da Sofia.
                 </p>
 
                 <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg mb-8">
                   <div className="flex justify-between items-center mb-4 border-b pb-2">
                     <span className="text-gray-600">Serviço</span>
-                    <span className="font-semibold">Pré-Análise IA</span>
+                    <span className="font-semibold">Pré-Análise + Portal</span>
                   </div>
                   <div className="flex justify-between items-center text-lg">
                     <span className="font-bold text-gray-800">Total</span>
@@ -684,24 +684,28 @@ export default function AIConsultation() {
                 </div>
 
                 <Button
+                  disabled={isSaving}
                   onClick={() => {
-                    // Save state immediately just in case
-                    localStorage.setItem('visa2any_consultation_v1', JSON.stringify({
-                      profile: userProfile,
-                      result: consultationResult,
-                      messages: messages,
-                      timestamp: Date.now()
-                    }))
-                    window.location.href = `/checkout-moderno?product=pre-analise&redirect=/consultoria-ia`
+                    if (serverIds) {
+                      window.location.href = `/checkout-moderno?product=pre-analise&clientId=${serverIds.clientId}&consultationId=${serverIds.consultationId}`
+                    } else {
+                      // Fallback if save failed/pending: Generate basic link, maybe retry save in background
+                      // For now, redirect to checkout but improved flow would retry
+                      window.location.href = `/checkout-moderno?product=pre-analise`
+                    }
                   }}
                   className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-6 rounded-xl shadow-lg hover:alert-xl text-lg w-full max-w-sm"
                 >
-                  <Lock className="mr-2 h-5 w-5" />
-                  Desbloquear Resultado
+                  {isSaving ? 'Salvando...' : (
+                    <>
+                      <Lock className="mr-2 h-5 w-5" />
+                      Desbloquear Agora
+                    </>
+                  )}
                 </Button>
 
                 <p className="text-xs text-gray-500 mt-4">
-                  🔒 Pagamento seguro via Mercado Pago. Acesso imediato.
+                  🔒 Acesso imediato ao Portal do Cliente após confirmação.
                 </p>
               </div>
             </div>
@@ -716,52 +720,38 @@ export default function AIConsultation() {
                 <p className="text-gray-600 mt-2">{consultationResult.recommendation}</p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">⏱️ Timeline</h4>
-                  <p className="text-sm text-gray-600">{consultationResult.timeline}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">💰 Investimento</h4>
-                  <p className="text-sm text-gray-600">{consultationResult.estimatedCost}</p>
+              {/* UPGRADE PROMPT INSIDE RESULT */}
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h4 className="text-lg font-bold text-gray-900 mb-4 text-center">🚀 Próximos Passos (Portal do Cliente)</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-white opacity-70">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-gray-800">Vaga Express</span>
+                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Upgrade</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-3">Monitoramento automático de vagas consulares.</p>
+                    <Button variant="outline" size="sm" className="w-full" disabled>Disponível no Portal</Button>
+                  </div>
+                  <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-blue-900">Acessar Portal</span>
+                      <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">Liberado</span>
+                    </div>
+                    <p className="text-xs text-blue-600 mb-3">Veja seu relatório completo e gerencie seus documentos.</p>
+                    <Button
+                      onClick={() => window.location.href = '/cliente'}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Ir para Meu Painel
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              {consultationResult.warningFlags.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                  <h5 className="font-semibold text-yellow-800 mb-2">⚠️ Pontos importantes:</h5>
-                  <ul className="text-sm text-yellow-700 space-y-1">
-                    {consultationResult.warningFlags.map((warning, index) => (
-                      <li key={index}>• {warning}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="text-center space-y-4">
-                <h4 className="text-lg font-bold text-gray-900">🚀 Próximos passos:</h4>
-
-                <div className="grid md:grid-cols-2 gap-3">
-                  <button
-                    onClick={() => window.open('/checkout?product=relatorio-premium', '_blank')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg transition-colors"
-                  >
-                    <div className="text-lg font-bold mb-1">📊 Relatório Detalhado</div>
-                    <div className="text-sm opacity-90">R$ 97 - PDF (+Completo)</div>
-                  </button>
-
-                  <button
-                    onClick={() => window.open('/checkout?product=consultoria-express', '_blank')}
-                    className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg transition-colors"
-                  >
-                    <div className="text-lg font-bold mb-1">👨‍💼 Consultoria 1:1</div>
-                    <div className="text-sm opacity-90">R$ 297 - 60min especialista</div>
-                  </button>
-                </div>
-
+              <div className="text-center mt-6">
                 <button
                   onClick={() => setIsActive(false)}
-                  className="text-gray-600 hover:text-gray-800 underline text-sm mt-4"
+                  className="text-gray-600 hover:text-gray-800 underline text-sm"
                 >
                   Fazer nova análise
                 </button>

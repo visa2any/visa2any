@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     // Se pagamento foi aprovado e não estava aprovado antes, processar automações
     if (newStatus === 'COMPLETED' && !wasCompleted) {
-      await processPaymentSuccess(updatedPayment);
+      await processPaymentSuccess(updatedPayment, mpPayment);
     }
 
     return NextResponse.json({ success: true });
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Processar automações quando pagamento é confirmado
-async function processPaymentSuccess(payment: any) {
+async function processPaymentSuccess(payment: any, mpPaymentData?: any) {
   try {
     // 1. Atualizar status do cliente
     await prisma.client.update({
@@ -204,7 +204,7 @@ async function processPaymentSuccess(payment: any) {
       console.error('Erro ao enviar WhatsApp de confirmação:', whatsappError);
     }
 
-    // 4. Criar consultoria se aplicável
+    // 4. Criar consultoria se aplicável (Legacy Logic)
     const consultationTypes = ['consultoria-express', 'servico-vip'];
 
     if (consultationTypes.some(type => payment.productId.includes(type))) {
@@ -228,7 +228,21 @@ async function processPaymentSuccess(payment: any) {
       }
     }
 
-    // 5. Log das automações
+    // 5. UNLOCK AI CONSULTATION (New Logic)
+    if (mpPaymentData?.metadata?.consultation_id) {
+      const consultId = mpPaymentData.metadata.consultation_id;
+      console.log(`🔓 Desbloqueando consultoria IA: ${consultId}`);
+
+      await prisma.consultation.update({
+        where: { id: consultId },
+        data: {
+          status: 'COMPLETED',
+          notes: 'Desbloqueado via pagamento confirmado.'
+        }
+      }).catch(err => console.error('Erro ao desbloquear consultoria:', err));
+    }
+
+    // 6. Log das automações
     await prisma.automationLog.create({
       data: {
         type: 'PAYMENT_SUCCESS_AUTOMATIONS',
@@ -236,7 +250,8 @@ async function processPaymentSuccess(payment: any) {
         clientId: payment.clientId,
         details: {
           timestamp: new Date().toISOString(),
-          action: 'automated_action'
+          action: 'automated_action',
+          unlocked_consultation: mpPaymentData?.metadata?.consultation_id || null
         },
         success: true
       }

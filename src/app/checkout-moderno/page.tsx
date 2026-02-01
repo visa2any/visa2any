@@ -219,6 +219,8 @@ function CheckoutContent() {
       supportsQuantity={product.supportsQuantity}
       showGroupDiscount={product.supportsQuantity}
       successUrl={successUrl}
+      consultationId={searchParams.get('consultationId') || undefined}
+      clientId={searchParams.get('clientId') || undefined}
     />
   )
 }

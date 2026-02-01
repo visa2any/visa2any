@@ -228,7 +228,22 @@ export async function GET(request: NextRequest) {
       documents,
       timeline,
       payments,
-      notifications
+      notifications,
+      consultations: customer.consultations.map(c => ({
+        id: c.id,
+        type: c.type,
+        status: c.status,
+        scheduledAt: c.scheduledAt,
+        result: c.recommendation || (c.result ? 'Análise Disponível' : null),
+        score: c.score,
+        consultantName: c.consultantId ? 'Especialista' : 'IA Sofia'
+      })),
+      interactions: customer.interactions.map(i => ({
+        id: i.id,
+        type: i.type,
+        content: i.content,
+        date: i.createdAt
+      }))
     }
 
     return NextResponse.json({

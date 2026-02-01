@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { jwtVerify } from 'jose'
 import { addSecurityHeaders } from './middleware-security'
 
 // Inicializar serviços automaticamente
@@ -14,22 +15,9 @@ function initializeServicesAsync() {
   }
 }
 
-// Função para decodificar JWT sem verificar assinatura (apenas para middleware)
-function decodeJWTUnsafe(token: string) {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3) return null
-    
-    const payload = parts[1]
-    if(!payload) return null;
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
-    return decoded
-  } catch {
-    return null
-  }
-}
+// Função removida em favor de verificação segura com jose
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 🚀 Inicializar serviços automaticamente na primeira requisição
@@ -78,18 +66,18 @@ export function middleware(request: NextRequest) {
     if (process.env.NODE_ENV === 'development') {
       console.log('🔒 Verificando auth para rota admin:', pathname)
     }
-    
+
     // Verificar token de autenticação
-    
+
     const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
-    
+
     // Também verificar em outros possíveis formatos de cookie
-    
+
     const allCookies = request.headers.get('cookie') || ''
     const cookieMatch = allCookies.match(/auth-token=([^;]+)/)
     const backupToken = cookieMatch ? cookieMatch[1] : null
-    
+
     const token = authHeader?.replace('Bearer ', '') || cookieToken || backupToken
 
     if (process.env.NODE_ENV === 'development') {
@@ -108,9 +96,10 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      // Decodificar token (sem verificar assinatura - isso será feito pelas APIs)
-      const decoded = decodeJWTUnsafe(token)
-      
+      // Decodificar token e verificar assinatura com jose
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'temporary-dev-secret-123')
+      const { payload: decoded } = await jwtVerify(token, secret) as any
+
       if (!decoded || !decoded.email || !decoded.role) {
         if (process.env.NODE_ENV === 'development') {
           console.log('❌ Token malformado')
@@ -118,13 +107,13 @@ export function middleware(request: NextRequest) {
         const loginUrl = new URL('/admin/login', request.url)
         return NextResponse.redirect(loginUrl)
       }
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('✅ Token válido para usuário verificado')
       }
-      
+
       // Verificar permissões de admin
-      
+
       const adminRoles = ['ADMIN', 'MANAGER']
       if (!adminRoles.includes(decoded.role)) {
         if (process.env.NODE_ENV === 'development') {
@@ -163,7 +152,7 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/page-simple',
-    '/page-original', 
+    '/page-original',
     '/precos-novo',
     '/admin/login-simple',
     '/admin/dashboard-simple'

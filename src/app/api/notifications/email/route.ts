@@ -74,6 +74,38 @@ const EMAIL_TEMPLATES = {
           </p>
         </div>
       </div>
+    `},
+  welcome_lead: {
+    subject: '🔐 Bem-vindo ao Portal Visa2Any - Acesso',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; border-radius: 10px; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">🔐 Bem-vindo à Visa2Any!</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Sua conta segura foi criada</p>
+        </div>
+        
+        <div style="background: #e3f2fd; padding: 25px; margin: 20px 0; border-radius: 10px; border-left: 5px solid #1976d2;">
+          <h2 style="color: #1565c0; margin-top: 0;">🔑 Seus Dados de Acesso</h2>
+          <p style="margin-bottom: 5px;">Para acessar o resultado da sua consultoria e acompanhar o processo:</p>
+          <p><strong>Email:</strong> {client_email}</p>
+          <p><strong>Senha Temporária:</strong> <span style="background: #fff; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 16px; letter-spacing: 1px;">{temp_password}</span></p>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+          <p style="margin: 0;">⚠️ <strong>Importante:</strong> Recomendamos que você altere sua senha no primeiro acesso através do menu "Meu Perfil".</p>
+          <br>
+          <div style="text-align: center;">
+             <a href="{login_url}" style="background-color: #1976d2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Acessar Portal do Cliente</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px; border-top: 1px solid #eee; margin-top: 30px;">
+          <p style="color: #666; margin: 0;">
+            <strong>Visa2Any</strong><br>
+            <small>visa2any@gmail.com | (11) 5197-1375</small>
+          </p>
+        </div>
+      </div>
     `}
 }
 
