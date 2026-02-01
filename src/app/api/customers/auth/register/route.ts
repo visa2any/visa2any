@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, email, password, phone } = body
+    console.log('[Register] Payload received:', { email, name, phone })
 
     if (!name || !email || !password) {
       return NextResponse.json({
@@ -18,6 +19,7 @@ export async function POST(request: NextRequest) {
     const existingCustomer = await prisma.client.findUnique({
       where: { email }
     })
+    console.log('[Register] Existing check:', existingCustomer ? 'Found' : 'Not Found')
 
     if (existingCustomer) {
       return NextResponse.json({
@@ -27,6 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 12)
+    console.log('[Register] Password hashed')
 
     // Criar novo cliente COM a senha hasheada
     const customer = await prisma.client.create({
@@ -90,7 +93,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro no registro do cliente:', error)
     return NextResponse.json({
-      error: 'Erro interno do servidor'
+      error: 'Erro interno do servidor',
+      details: error instanceof Error ? error.message : String(error)
     }, { status: 500 })
   }
 }
