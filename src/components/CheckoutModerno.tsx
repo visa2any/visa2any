@@ -31,6 +31,7 @@ interface CheckoutModernoProps {
   supportsQuantity?: boolean
   showGroupDiscount?: boolean
   products?: Product[]
+  successUrl?: string
 
   // Interface legacy (para backward compatibility)
   productId?: string
@@ -192,6 +193,7 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     supportsQuantity = true,
     showGroupDiscount = true,
     products = [],
+    successUrl,
     // Legacy props
     productId = '',
     productName = '',
@@ -572,8 +574,8 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
           console.log('✅ Pagamento realizado com sucesso:', payment)
           // Limpar dados salvos após sucesso
           clearFormData()
-          // Redirecionar para página de sucesso
-          window.location.href = '/payment/success'
+          // Redirecionar para página de sucesso ou URL personalizada
+          window.location.href = successUrl || '/payment/success'
         }}
         onError={(error) => {
           console.error('❌ Erro no pagamento:', error)

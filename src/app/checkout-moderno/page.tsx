@@ -57,17 +57,17 @@ const PRODUCTS: Record<string, any> = {
     variant: 'vip' as const,
     supportsQuantity: true
   },
-  
+
   // Produtos da Página Principal
   'pre-analise': {
-    name: '🆓 Análise Gratuita',
-    price: 0,
-    description: 'Perfeita para começar',
+    name: '🤖 Pré-Análise IA',
+    price: 29.90,
+    description: 'Análise Profissional com IA',
     features: [
       'Análise IA em 15 minutos',
       'Score de elegibilidade',
       '3 recomendações principais',
-      'Resumo completo por email'
+      'Relatório PDF desbloqueado'
     ],
     variant: 'default' as const,
     supportsQuantity: false
@@ -136,11 +136,12 @@ function CheckoutContent() {
   const adults = parseInt(searchParams.get('adults') || '1')
   const children = parseInt(searchParams.get('children') || '0')
   const totalFromUrl = parseInt(searchParams.get('total') || '0')
-  
+  const successUrl = searchParams.get('redirect') || undefined
+
   let product = PRODUCTS[productId as keyof typeof PRODUCTS]
-  
+
   // Fallback para produtos dinâmicos (países/vistos)
-  
+
   if (!product) {
     // Tentar encontrar produto baseado em padrões
     if (productId.includes('-free')) {
@@ -214,6 +215,7 @@ function CheckoutContent() {
       ctaText="Contratar Agora"
       supportsQuantity={product.supportsQuantity}
       showGroupDiscount={product.supportsQuantity}
+      successUrl={successUrl}
     />
   )
 }
@@ -224,7 +226,7 @@ export default function CheckoutModernoPage() {
       <title>Checkout Moderno - Vaga Express | Visa2Any</title>
       <meta name="description" content="Checkout moderno e sem modais para Vaga Express. Experiência de compra otimizada e sem fricção." />
       <meta name="robots" content="noindex, nofollow" />
-      
+
       <Suspense fallback={
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
           <div className="text-center bg-white rounded-3xl p-8 shadow-lg">

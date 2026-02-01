@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Bot, User, Clock, CheckCircle, ArrowRight, Star, Globe, AlertTriangle, Phone, Video, FileText, Download } from 'lucide-react'
+import { Bot, User, Clock, CheckCircle, ArrowRight, Star, Globe, AlertTriangle, Phone, Video, FileText, Download, Lock } from 'lucide-react'
 
 interface ConsultationMessage {
   id: string
@@ -51,8 +51,49 @@ export default function AIConsultation() {
   const [userProfile, setUserProfile] = useState<Partial<UserProfile>>({})
   const [isTyping, setIsTyping] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutos
-  const [consultationResult, setConsultationResult] = useState<ConsultationResult | null>(null)
+  const consultationResult, setConsultationResult] = useState<ConsultationResult | null > (null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [hasPaid, setHasPaid] = useState(false)
+
+  // Persistence and Payment Check
+  useEffect(() => {
+    // Check URL for payment status
+    const status = searchParams.get('status')
+    const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id')
+
+    // Load state from local storage
+    const savedData = localStorage.getItem('visa2any_consultation_v1')
+
+    if ((status === 'approved' || paymentId || searchParams.get('paid') === 'true')) {
+      setHasPaid(true)
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData)
+          setUserProfile(parsed.profile || {})
+          setConsultationResult(parsed.result || null)
+          setMessages(parsed.messages || [])
+          setIsActive(true)
+        } catch (e) {
+          console.error("Failed to restore state", e)
+        }
+      }
+    }
+  }, [searchParams])
+
+  // Save state
+  useEffect(() => {
+    if (isActive && (Object.keys(userProfile).length > 0 || messages.length > 0)) {
+      localStorage.setItem('visa2any_consultation_v1', JSON.stringify({
+        profile: userProfile,
+        result: consultationResult,
+        messages: messages,
+        timestamp: Date.now()
+      }))
+    }
+  }, [userProfile, consultationResult, messages, isActive])
 
   const consultationQuestions = [
     {
@@ -517,8 +558,8 @@ export default function AIConsultation() {
           >
             <div
               className={`max-w-[85%] p-3 rounded-xl ${message.isAI
-                  ? 'bg-white text-gray-800 shadow-sm border'
-                  : 'bg-blue-600 text-white'
+                ? 'bg-white text-gray-800 shadow-sm border'
+                : 'bg-blue-600 text-white'
                 }`}
             >
               {message.isAI && (
@@ -617,64 +658,115 @@ export default function AIConsultation() {
       {/* Results Display */}
       {consultationResult && (
         <div className="border-t p-6">
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl border-2 border-green-200">
-            <div className="text-center mb-6">
-              <div className="text-5xl font-bold text-green-600 mb-2">{consultationResult.eligibilityScore}%</div>
-              <h3 className="text-xl font-bold text-gray-900">Score de Elegibilidade</h3>
-              <p className="text-gray-600 mt-2">{consultationResult.recommendation}</p>
-            </div>
+          {!hasPaid ? (
+            <div className="bg-gradient-to-br from-gray-50 to-blue-50 p-8 rounded-xl border-2 border-blue-100 text-center relative overflow-hidden">
+              <div className="absolute inset-0 backdrop-blur-[2px] bg-white/40 z-0"></div>
+              <div className="relative z-10">
+                <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Lock className="h-10 w-10 text-blue-600" />
+                </div>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">⏱️ Timeline</h4>
-                <p className="text-sm text-gray-600">{consultationResult.timeline}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">💰 Investimento</h4>
-                <p className="text-sm text-gray-600">{consultationResult.estimatedCost}</p>
-              </div>
-            </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Análise Concluída!</h3>
+                <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto">
+                  Sua pré-análise de imigração foi gerada com sucesso. Desbloqueie agora para ver seu score de elegibilidade, timeline estimada e recomendações.
+                </p>
 
-            {consultationResult.warningFlags.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <h5 className="font-semibold text-yellow-800 mb-2">⚠️ Pontos importantes:</h5>
-                <ul className="text-sm text-yellow-700 space-y-1">
-                  {consultationResult.warningFlags.map((warning, index) => (
-                    <li key={index}>• {warning}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg mb-8">
+                  <div className="flex justify-between items-center mb-4 border-b pb-2">
+                    <span className="text-gray-600">Serviço</span>
+                    <span className="font-semibold">Pré-Análise IA</span>
+                  </div>
+                  <div className="flex justify-between items-center text-lg">
+                    <span className="font-bold text-gray-800">Total</span>
+                    <span className="font-bold text-blue-600">R$ 29,90</span>
+                  </div>
+                </div>
 
-            <div className="text-center space-y-4">
-              <h4 className="text-lg font-bold text-gray-900">🚀 Próximos passos:</h4>
-
-              <div className="grid md:grid-cols-2 gap-3">
-                <button
-                  onClick={() => window.open('/checkout?product=relatorio-premium', '_blank')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg transition-colors"
+                <Button
+                  onClick={() => {
+                    // Save state immediately just in case
+                    localStorage.setItem('visa2any_consultation_v1', JSON.stringify({
+                      profile: userProfile,
+                      result: consultationResult,
+                      messages: messages,
+                      timestamp: Date.now()
+                    }))
+                    window.location.href = `/checkout-moderno?product=pre-analise&redirect=/consultoria-ia`
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-6 rounded-xl shadow-lg hover:alert-xl text-lg w-full max-w-sm"
                 >
-                  <div className="text-lg font-bold mb-1">📊 Relatório Completo</div>
-                  <div className="text-sm opacity-90">R$ 97 - PDF detalhado</div>
-                </button>
+                  <Lock className="mr-2 h-5 w-5" />
+                  Desbloquear Resultado
+                </Button>
 
-                <button
-                  onClick={() => window.open('/checkout?product=consultoria-express', '_blank')}
-                  className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg transition-colors"
-                >
-                  <div className="text-lg font-bold mb-1">👨‍💼 Consultoria 1:1</div>
-                  <div className="text-sm opacity-90">R$ 297 - 60min especialista</div>
-                </button>
+                <p className="text-xs text-gray-500 mt-4">
+                  🔒 Pagamento seguro via Mercado Pago. Acesso imediato.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl border-2 border-green-200">
+              <div className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                ✅ DESBLOQUEADO
+              </div>
+              <div className="text-center mb-6">
+                <div className="text-5xl font-bold text-green-600 mb-2">{consultationResult.eligibilityScore}%</div>
+                <h3 className="text-xl font-bold text-gray-900">Score de Elegibilidade</h3>
+                <p className="text-gray-600 mt-2">{consultationResult.recommendation}</p>
               </div>
 
-              <button
-                onClick={() => setIsActive(false)}
-                className="text-gray-600 hover:text-gray-800 underline text-sm mt-4"
-              >
-                Fazer nova análise
-              </button>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-2">⏱️ Timeline</h4>
+                  <p className="text-sm text-gray-600">{consultationResult.timeline}</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-2">💰 Investimento</h4>
+                  <p className="text-sm text-gray-600">{consultationResult.estimatedCost}</p>
+                </div>
+              </div>
+
+              {consultationResult.warningFlags.length > 0 && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                  <h5 className="font-semibold text-yellow-800 mb-2">⚠️ Pontos importantes:</h5>
+                  <ul className="text-sm text-yellow-700 space-y-1">
+                    {consultationResult.warningFlags.map((warning, index) => (
+                      <li key={index}>• {warning}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="text-center space-y-4">
+                <h4 className="text-lg font-bold text-gray-900">🚀 Próximos passos:</h4>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => window.open('/checkout?product=relatorio-premium', '_blank')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg transition-colors"
+                  >
+                    <div className="text-lg font-bold mb-1">📊 Relatório Detalhado</div>
+                    <div className="text-sm opacity-90">R$ 97 - PDF (+Completo)</div>
+                  </button>
+
+                  <button
+                    onClick={() => window.open('/checkout?product=consultoria-express', '_blank')}
+                    className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg transition-colors"
+                  >
+                    <div className="text-lg font-bold mb-1">👨‍💼 Consultoria 1:1</div>
+                    <div className="text-sm opacity-90">R$ 297 - 60min especialista</div>
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setIsActive(false)}
+                  className="text-gray-600 hover:text-gray-800 underline text-sm mt-4"
+                >
+                  Fazer nova análise
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
