@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Bot, User, Clock, CheckCircle, ArrowRight, Star, Globe, AlertTriangle, Phone, Video, FileText, Download, Lock } from 'lucide-react'
