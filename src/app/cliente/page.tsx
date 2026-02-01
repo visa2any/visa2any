@@ -174,8 +174,6 @@ function CustomerDashboardContent() {
         }}
         onSofiaChat={() => setShowSofiaChat(true)}
         onProfileEdit={() => setShowProfileEditor(true)}
-        onSettingsClick={() => setShowSettings(true)}
-        onLogout={logout}
       />
 
       {/* Barra de Progresso Global */}

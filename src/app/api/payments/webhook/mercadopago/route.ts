@@ -281,6 +281,19 @@ async function processPaymentSuccess(payment: any, mpPaymentData?: any) {
       }
     });
 
+    // 7. Notificar Admin via Telegram
+    try {
+      const { notificationService } = await import('@/lib/notification-service');
+      await notificationService.sendPaymentAlert({
+        amount: Number(payment.amount),
+        customer: payment.client.name,
+        product: getPaymentPackageName(payment.productId),
+        id: payment.id
+      });
+    } catch (e) {
+      console.error('Falha ao enviar alerta Telegram:', e);
+    }
+
   } catch (error) {
     console.error('Erro ao processar automações do pagamento:', error);
 

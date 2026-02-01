@@ -16,11 +16,9 @@ interface ClientHeaderProps {
   }
   onSofiaChat: () => void
   onProfileEdit?: () => void
-  onSettingsClick?: () => void
-  onLogout?: () => void
 }
 
-export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit, onSettingsClick, onLogout }: ClientHeaderProps) {
+export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit }: ClientHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -114,24 +112,12 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit,
                     <User className="h-4 w-4" />
                     Editar Perfil
                   </button>
-                  <button
-                    onClick={() => {
-                      onProfileEdit?.()
-                      setShowProfileMenu(false)
-                    }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                     <Settings className="h-4 w-4" />
                     Configurações
                   </button>
                   <div className="border-t border-gray-200 my-1"></div>
-                  <button
-                    onClick={() => {
-                      onLogout?.()
-                      setShowProfileMenu(false)
-                    }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                     <LogOut className="h-4 w-4" />
                     Sair
                   </button>
@@ -186,13 +172,7 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit,
                 💳 Pagamentos
               </a>
               <div className="border-t border-gray-200 pt-2 mt-2">
-                <button
-                  onClick={() => {
-                    onLogout?.()
-                    setIsMenuOpen(false)
-                  }}
-                  className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1"
-                >
+                <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1">
                   <LogOut className="h-4 w-4" />
                   Sair
                 </button>

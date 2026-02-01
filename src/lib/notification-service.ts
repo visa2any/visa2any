@@ -390,13 +390,78 @@ class NotificationService {
             <p>Atenciosamente,<br>Equipe Visa2Any</p>`
   }
 
+  private readonly telegramConfig = {
+    botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+    adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID || ''
+  }
+
+  // === ADMIN ALERTS (TELEGRAM) ===
+
+  async sendAdminAlert(topic: string, message: string, data?: any): Promise<boolean> {
+    try {
+      if (!this.telegramConfig.botToken || !this.telegramConfig.adminChatId) {
+        console.log('⚠️ Telegram Admin não configurado. Alerta:', topic)
+        return false // Silently fail in dev if not configured
+      }
+
+      const formattedMessage = `
+🔔 *${topic.toUpperCase()}*
+──────────────────
+${message}
+──────────────────
+${data ? `\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`` : ''}
+_Visa2Any System_ 🤖
+      `.trim()
+
+      return await this.sendTelegramRaw(this.telegramConfig.adminChatId, formattedMessage)
+    } catch (error) {
+      console.error('Erro ao enviar alerta admin:', error)
+      return false
+    }
+  }
+
+  async sendPaymentAlert(paymentData: { amount: number, customer: string, product: string, id: string }): Promise<boolean> {
+    return this.sendAdminAlert(
+      '💰 NOVA VENDA REALIZADA',
+      `*Cliente:* ${paymentData.customer}\n*Valor:* R$ ${paymentData.amount.toFixed(2)}\n*Produto:* ${paymentData.product}\n*ID:* ${paymentData.id}`
+    )
+  }
+
+  async sendLeadAlert(leadData: { name: string, email: string, score: number, country: string }): Promise<boolean> {
+    const icon = leadData.score >= 80 ? '🔥' : (leadData.score >= 60 ? '✨' : '⚠️')
+    return this.sendAdminAlert(
+      '👤 NOVO LEAD QUALIFICADO',
+      `${icon} *Score:* ${leadData.score}/100\n*Nome:* ${leadData.name}\n*Email:* ${leadData.email}\n*Interesse:* ${leadData.country}`
+    )
+  }
+
+  private async sendTelegramRaw(chatId: string, text: string): Promise<boolean> {
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${this.telegramConfig.botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text,
+          parse_mode: 'Markdown'
+        })
+      })
+      return response.ok
+    } catch (e) {
+      console.error('Telegram API Error:', e)
+      return false
+    }
+  }
+
   async testConfiguration(): Promise<{
     whatsapp: { configured: boolean; status: string }
     email: { configured: boolean; status: string; provider: string }
+    telegram: { configured: boolean; status: string }
     overall: boolean
   }> {
     const whatsappConfigured = !!(this.whatsappConfig.token && this.whatsappConfig.phoneNumberId)
     const emailConfigured = !!this.emailConfig.apiKey
+    const telegramConfigured = !!(this.telegramConfig.botToken && this.telegramConfig.adminChatId)
 
     return {
       whatsapp: {
@@ -408,7 +473,11 @@ class NotificationService {
         status: emailConfigured ? 'Configurado' : 'API Key não configurada',
         provider: this.emailConfig.provider
       },
-      overall: whatsappConfigured || emailConfigured
+      telegram: {
+        configured: telegramConfigured,
+        status: telegramConfigured ? 'Configurado' : 'Bot Token ou Chat ID ausente'
+      },
+      overall: whatsappConfigured || emailConfigured || telegramConfigured
     }
   }
 }

@@ -99,6 +99,16 @@ export async function POST(request: NextRequest) {
             }
         })
 
+        // 3. Notificar Admin sobre novo Lead (Assíncrono)
+        import('@/lib/notification-service').then(({ notificationService }) => {
+            notificationService.sendLeadAlert({
+                name: client.name,
+                email: client.email,
+                score: analysisResult.eligibilityScore,
+                country: client.targetCountry || 'Não informado'
+            }).catch(err => console.error('Erro notification lead:', err))
+        })
+
         return NextResponse.json({
             success: true,
             clientId: client.id,
