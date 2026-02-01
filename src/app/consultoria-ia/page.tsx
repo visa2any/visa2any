@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import AIConsultation from '@/components/AIConsultation'
 import Breadcrumb from '@/components/Breadcrumb'
 import FloatingAffiliateBanner from '@/components/FloatingAffiliateBanner'
@@ -69,7 +70,12 @@ export default function ConsultoriaIAPage() {
       {/* Main Consultation Area */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AIConsultation />
+          <Suspense fallback={<div className="text-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando assistente IA...</p>
+          </div>}>
+            <AIConsultation />
+          </Suspense>
         </div>
       </section>
 
