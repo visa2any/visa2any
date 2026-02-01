@@ -33,15 +33,15 @@ export default function SimpleCheckout({
 
   const handlePurchase = async () => {
     if (disabled) return
-    
+
     if (price === 0) {
       // Para produtos gratuitos ir direto para o formulário
       window.location.href = '/consultoria-ia'
       return
     }
-    
+
     // ✅ Redirecionar DIRETAMENTE para checkout moderno sem modal
-    
+
     const checkoutUrl = `/checkout-moderno?product=${encodeURIComponent(productId)}`
     window.location.href = checkoutUrl
     onSuccess?.()
@@ -80,7 +80,7 @@ export default function SimpleCheckout({
           </div>
         </div>
       )}
-      
+
       {variant === 'vip' && (
         <div className="absolute -top-3 right-4">
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold">
@@ -93,7 +93,7 @@ export default function SimpleCheckout({
         <h3 className="text-xl font-bold text-gray-900 mb-2">{productName}</h3>
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-3xl font-bold text-blue-600">
-            {price === 0 ? 'GRÁTIS' : `R$ ${price.toLocaleString('pt-BR')}`}
+            {price === 0 ? 'R$ 0,00' : `R$ ${price.toLocaleString('pt-BR')}`}
           </span>
           {variant === 'premium' && (
             <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -136,19 +136,18 @@ export default function SimpleCheckout({
       <Button
         onClick={handlePurchase}
         disabled={disabled || isProcessing}
-        className={`w-full py-3 text-lg font-semibold ${
-          variant === 'vip' 
+        className={`w-full py-3 text-lg font-semibold ${variant === 'vip'
             ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
             : variant === 'premium'
-            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-            : 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700'
-        } text-white`}
+              ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+              : 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700'
+          } text-white`}
       >
         {isProcessing ? (
           'Processando...'
         ) : price === 0 ? (
           <>
-            Começar Grátis <ArrowRight className="ml-2 h-5 w-5" />
+            Começar Agora <ArrowRight className="ml-2 h-5 w-5" />
           </>
         ) : (
           <>

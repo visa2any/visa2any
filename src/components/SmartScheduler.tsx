@@ -82,7 +82,7 @@ export default function SmartScheduler() {
   ]
 
   const services = [
-    'Pré-Análise IA Gratuita (15min) - Imediata',
+    'Pré-Análise IA (15min) - R$ 29,90',
     'Relatório Premium (R$ 97) - Imediato',
     'Consultoria Express (R$ 297) - 60min',
     'Assessoria VIP (R$ 1.997+) - Completa',
@@ -94,7 +94,7 @@ export default function SmartScheduler() {
     const slots: TimeSlot[] = []
     const startHour = 9
     const endHour = 18
-    
+
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute of [0, 30]) {
         const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
@@ -108,23 +108,23 @@ export default function SmartScheduler() {
         })
       }
     }
-    
+
     return slots
   }
 
   const getNext7Days = () => {
     const days = []
     const today = new Date()
-    
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(today)
       date.setDate(today.getDate() + i)
-      
+
       const dayName = date.toLocaleDateString('pt-BR', { weekday: 'short' })
       const dayNumber = date.getDate()
       const month = date.toLocaleDateString('pt-BR', { month: 'short' })
       const fullDate = date.toISOString().split('T')[0]
-      
+
       days.push({
         dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
         dayNumber,
@@ -134,7 +134,7 @@ export default function SmartScheduler() {
         isTomorrow: i === 1
       })
     }
-    
+
     return days
   }
 
@@ -174,11 +174,11 @@ export default function SmartScheduler() {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
-    return date.toLocaleDateString('pt-BR', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     })
   }
 
@@ -189,7 +189,7 @@ export default function SmartScheduler() {
     }
 
     setLoading(true)
-    
+
     try {
       // 1. Criar conta do cliente automaticamente (integração unificada)
       const accountData = {
@@ -220,7 +220,7 @@ export default function SmartScheduler() {
       // 2. Criar agendamento
 
       const scheduledDateTime = new Date(`${selectedDate}T${selectedTime}:00`)
-      
+
       const consultationResponse = await fetch('/api/consultations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -282,19 +282,17 @@ Deseja acessar seu portal agora?`)) {
       {[1, 2, 3, 4].map((step) => (
         <div key={step} className="flex items-center">
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step <= currentStep
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step <= currentStep
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 text-gray-600'
-            }`}
+              }`}
           >
             {step < currentStep ? <CheckCircle className="w-5 h-5" /> : step}
           </div>
           {step < 4 && (
             <div
-              className={`w-16 h-1 mx-2 ${
-                step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              className={`w-16 h-1 mx-2 ${step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
             />
           )}
         </div>
@@ -308,7 +306,7 @@ Deseja acessar seu portal agora?`)) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
-        
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Que tipo de consultoria você precisa?
@@ -336,7 +334,7 @@ Deseja acessar seu portal agora?`)) {
                   <h3 className="font-semibold text-gray-900">{service}</h3>
                   {(index === 0 || index === 1) && (
                     <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                      GRATUITA
+                      R$ 29,90
                     </span>
                   )}
                 </div>
@@ -362,7 +360,7 @@ Deseja acessar seu portal agora?`)) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
-        
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Escolha seu Especialista
@@ -376,11 +374,10 @@ Deseja acessar seu portal agora?`)) {
           {specialists.map((specialist) => (
             <div
               key={specialist.id}
-              className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${
-                selectedSpecialist === specialist.name
+              className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${selectedSpecialist === specialist.name
                   ? 'border-blue-600 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
-              }`}
+                }`}
               onClick={() => {
                 setSelectedSpecialist(specialist.name)
                 setAppointmentData(prev => ({ ...prev, specialist: specialist.name }))
@@ -410,7 +407,7 @@ Deseja acessar seu portal agora?`)) {
           <Button onClick={prevStep} variant="outline">
             Voltar
           </Button>
-          <Button 
+          <Button
             onClick={nextStep}
             disabled={!selectedSpecialist}
             className="btn-gradient"
@@ -430,7 +427,7 @@ Deseja acessar seu portal agora?`)) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
-        
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Quando você prefere?
@@ -448,11 +445,10 @@ Deseja acessar seu portal agora?`)) {
               <button
                 key={day.fullDate}
                 onClick={() => day.fullDate && handleDateSelect(day.fullDate)}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  selectedDate === day.fullDate
+                className={`p-4 rounded-xl border-2 transition-all ${selectedDate === day.fullDate
                     ? 'border-blue-600 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <div className="text-center">
                   <div className="text-xs text-gray-500 mb-1">{day.dayName}</div>
@@ -476,7 +472,7 @@ Deseja acessar seu portal agora?`)) {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Horários disponíveis para {formatDate(selectedDate)}:
             </h3>
-            
+
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -489,13 +485,12 @@ Deseja acessar seu portal agora?`)) {
                     key={slot.time}
                     onClick={() => slot.available && handleTimeSelect(slot.time, slot.specialist!)}
                     disabled={!slot.available}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      selectedTime === slot.time
+                    className={`p-3 rounded-lg border-2 transition-all ${selectedTime === slot.time
                         ? 'border-blue-600 bg-blue-50'
                         : slot.available
-                        ? 'border-gray-200 hover:border-gray-300 bg-white'
-                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
-                    }`}
+                          ? 'border-gray-200 hover:border-gray-300 bg-white'
+                          : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
                   >
                     <div className="text-sm font-medium">{slot.time}</div>
                     {slot.available && slot.type === 'premium' && (
@@ -520,11 +515,10 @@ Deseja acessar seu portal agora?`)) {
                 <button
                   key={type}
                   onClick={() => setAppointmentType(type)}
-                  className={`p-4 border-2 rounded-xl transition-all ${
-                    appointmentType === type
+                  className={`p-4 border-2 rounded-xl transition-all ${appointmentType === type
                       ? 'border-blue-600 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                   <div className="font-medium text-gray-900">{title}</div>
@@ -539,7 +533,7 @@ Deseja acessar seu portal agora?`)) {
           <Button onClick={prevStep} variant="outline">
             Voltar
           </Button>
-          <Button 
+          <Button
             onClick={nextStep}
             disabled={!selectedTime}
             className="btn-gradient"
@@ -557,7 +551,7 @@ Deseja acessar seu portal agora?`)) {
     return (
       <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto">
         {renderStepIndicator()}
-        
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Quase pronto! Confirme seus dados
@@ -642,7 +636,7 @@ Deseja acessar seu portal agora?`)) {
                   <div className="text-sm text-gray-600">às {selectedTime}</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <User className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
@@ -670,10 +664,10 @@ Deseja acessar seu portal agora?`)) {
 
               <div className="border-t pt-3 mt-4">
                 <div className="text-lg font-bold text-green-600">
-                  CONSULTORIA GRATUITA
+                  AGENDAMENTO INICIAL
                 </div>
                 <div className="text-sm text-gray-600">
-                  Análise completa sem custo
+                  Sujeito à confirmação de pagamento
                 </div>
               </div>
             </div>
@@ -684,7 +678,7 @@ Deseja acessar seu portal agora?`)) {
           <Button onClick={prevStep} variant="outline">
             Voltar
           </Button>
-          <Button 
+          <Button
             className="btn-gradient"
             onClick={handleConfirmAppointment}
             disabled={!appointmentData.clientInfo?.name || !appointmentData.clientInfo?.email || loading}
