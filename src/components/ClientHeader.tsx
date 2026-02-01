@@ -16,10 +16,11 @@ interface ClientHeaderProps {
   }
   onSofiaChat: () => void
   onProfileEdit?: () => void
+  onSettingsClick?: () => void
   onLogout?: () => void
 }
 
-export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit, onLogout }: ClientHeaderProps) {
+export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit, onSettingsClick, onLogout }: ClientHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
