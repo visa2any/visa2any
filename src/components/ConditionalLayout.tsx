@@ -11,26 +11,25 @@ interface ConditionalLayoutProps {
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname()
-  
+
   // Don't show any header/footer for admin routes
-  
+
   if (pathname?.startsWith('/admin')) {
     return <>{children}</>
   }
-  
+
   // Show ClientHeader for client routes (except login which handles its own header)
-  
+
   if (pathname?.startsWith('/cliente') && !pathname?.includes('/login')) {
     return (
       <>
         {children}
-        <Footer />
       </>
     )
   }
-  
+
   // Show main Header for all other routes
-  
+
   return (
     <>
       <Header />
