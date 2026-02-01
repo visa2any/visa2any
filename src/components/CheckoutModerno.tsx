@@ -32,8 +32,8 @@ interface CheckoutModernoProps {
   showGroupDiscount?: boolean
   products?: Product[]
   successUrl?: string
-  consultationId?: string
-  clientId?: string
+  consultationId?: string | undefined
+  clientId?: string | undefined
 
   // Interface legacy (para backward compatibility)
   productId?: string
@@ -204,7 +204,6 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
     adults = 1,
     children = 0,
     description = '',
-    features = [],
     features = [],
     variant = 'default',
     consultationId,
