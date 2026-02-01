@@ -391,7 +391,7 @@ class NotificationService {
   }
 
   private readonly telegramConfig = {
-    botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+    botToken: process.env.TELEGRAM_ADMIN_BOT_TOKEN || '',
     adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID || ''
   }
 
@@ -400,8 +400,8 @@ class NotificationService {
   async sendAdminAlert(topic: string, message: string, data?: any): Promise<boolean> {
     try {
       if (!this.telegramConfig.botToken || !this.telegramConfig.adminChatId) {
-        console.log('⚠️ Telegram Admin não configurado. Alerta:', topic)
-        return false // Silently fail in dev if not configured
+        // Silently fail if not configured (to avoid noise if user only wants one bot active)
+        return false
       }
 
       const formattedMessage = `
@@ -475,7 +475,7 @@ _Visa2Any System_ 🤖
       },
       telegram: {
         configured: telegramConfigured,
-        status: telegramConfigured ? 'Configurado' : 'Bot Token ou Chat ID ausente'
+        status: telegramConfigured ? 'Active (Admin Bot)' : 'TELEGRAM_ADMIN_BOT_TOKEN missing'
       },
       overall: whatsappConfigured || emailConfigured || telegramConfigured
     }

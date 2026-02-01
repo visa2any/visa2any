@@ -2,26 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
 import { addSecurityHeaders } from './middleware-security'
 
-// Inicializar serviços automaticamente
-let servicesInitialized = false
-
-function initializeServicesAsync() {
-  if (!servicesInitialized && process.env.NODE_ENV === 'development') {
-    servicesInitialized = true
-    // Importar e inicializar serviços de forma assíncrona
-    import('./lib/startup').then(({ initializeServices }) => {
-      initializeServices().catch(console.error)
-    }).catch(console.error)
-  }
-}
-
-// Função removida em favor de verificação segura com jose
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-
-  // 🚀 Inicializar serviços automaticamente na primeira requisição
-  initializeServicesAsync()
 
   // ✅ Log apenas em desenvolvimento
   if (process.env.NODE_ENV === 'development') {
@@ -97,7 +79,9 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Decodificar token e verificar assinatura com jose
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'temporary-dev-secret-123')
+      // ⚠️ IMPORTANT: Must match the secret used in /api/auth/login (NEXTAUTH_SECRET)
+      const secretEnv = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || 'temporary-dev-secret-123'
+      const secret = new TextEncoder().encode(secretEnv)
       const { payload: decoded } = await jwtVerify(token, secret) as any
 
       if (!decoded || !decoded.email || !decoded.role) {
