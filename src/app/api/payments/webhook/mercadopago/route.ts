@@ -233,13 +233,37 @@ async function processPaymentSuccess(payment: any, mpPaymentData?: any) {
       const consultId = mpPaymentData.metadata.consultation_id;
       console.log(`🔓 Desbloqueando consultoria IA: ${consultId}`);
 
-      await prisma.consultation.update({
+      const unlockedConsultation = await prisma.consultation.update({
         where: { id: consultId },
         data: {
           status: 'COMPLETED',
           notes: 'Desbloqueado via pagamento confirmado.'
         }
       }).catch(err => console.error('Erro ao desbloquear consultoria:', err));
+
+      if (unlockedConsultation) {
+        // Enviar email com o resultado da análise
+        try {
+          await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: payment.client.email,
+              template: 'ai_analysis_result', // Template específico para o resultado
+              clientId: payment.clientId,
+              variables: {
+                client_name: payment.client.name.split(' ')[0],
+                score: unlockedConsultation.score?.toString() || '0',
+                recommendation: unlockedConsultation.recommendation || 'Análise indisponível',
+                login_url: `${process.env.NEXTAUTH_URL}/cliente`
+              }
+            })
+          });
+          console.log(`📧 Email de resultado enviado para ${payment.client.email}`);
+        } catch (emailError) {
+          console.error('Erro ao enviar email de resultado:', emailError);
+        }
+      }
     }
 
     // 6. Log das automações

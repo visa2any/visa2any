@@ -561,7 +561,10 @@ function CustomerDashboardContent() {
                 <p className="text-xs text-gray-600 mb-2">Monitore cancelamentos e adiante sua entrevista automaticamente</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-orange-600">R$ 497</span>
-                  <button className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600">
+                  <button
+                    onClick={() => router.push(`/checkout-moderno?product=vaga-express&clientId=${customer.id}`)}
+                    className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                  >
                     Ativar
                   </button>
                 </div>
@@ -576,7 +579,10 @@ function CustomerDashboardContent() {
               <p className="text-xs text-gray-600 mb-2">Atendimento prioritário + preparação intensiva para entrevista</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-green-600">R$ 497</span>
-                <button className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600">
+                <button
+                  onClick={() => router.push(`/checkout-moderno?product=servico-vip&clientId=${customer.id}`)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600"
+                >
                   Contratar
                 </button>
               </div>
@@ -590,7 +596,10 @@ function CustomerDashboardContent() {
               <p className="text-xs text-gray-600 mb-2">Módulos específicos para seu país destino + simulações</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-green-600">R$ 197</span>
-                <button className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600">
+                <button
+                  onClick={() => router.push(`/checkout-moderno?product=curso-preparatorio&clientId=${customer.id}`)}
+                  className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600"
+                >
                   Comprar
                 </button>
               </div>
@@ -604,7 +613,10 @@ function CustomerDashboardContent() {
               <p className="text-xs text-gray-600 mb-2">Garantia de reembolso + nova tentativa em caso de negativa</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-green-600">R$ 297</span>
-                <button className="bg-purple-500 text-white px-3 py-1 rounded text-xs hover:bg-purple-600">
+                <button
+                  onClick={() => router.push(`/checkout-moderno?product=seguro-rejeicao&clientId=${customer.id}`)}
+                  className="bg-purple-500 text-white px-3 py-1 rounded text-xs hover:bg-purple-600"
+                >
                   Proteger
                 </button>
               </div>

@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
                 result: {
                     raw_profile: profile,
                     messages: messages,
-                    generated_analysis: analysisResult // Trusted server result
+                    generated_analysis: analysisResult as any // JSON compatible
                 },
                 recommendation: analysisResult.recommendation,
                 timeline: analysisResult.timeline,

@@ -368,9 +368,20 @@ export default function ConsultoriasPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                      <button
+                        onClick={() => {
+                          const products: Record<string, string> = {
+                            'INTERVIEW_PREP': 'simulacao-entrevista',
+                            'DOCUMENT_REVIEW': 'revisao-documentos',
+                            'VIP_SERVICE': 'servico-vip'
+                          }
+                          const productId = products[consultation.type] || 'consultoria-avulsa'
+                          router.push(`/checkout-moderno?product=${productId}&clientId=${customer.id}`)
+                        }}
+                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                      >
                         <Calendar className="h-4 w-4" />
-                        Agendar
+                        Agendar / Comprar
                       </button>
                     </div>
                   </div>
@@ -508,7 +519,10 @@ export default function ConsultoriasPage() {
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-xl font-bold text-green-600">R$ 1.299</span>
-                <button className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm">
+                <button
+                  onClick={() => router.push(`/checkout-moderno?product=servico-vip&clientId=${customer.id}`)}
+                  className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm"
+                >
                   Contratar
                 </button>
               </div>
@@ -524,7 +538,10 @@ export default function ConsultoriasPage() {
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-xl font-bold text-green-600">R$ 399</span>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm">
+                <button
+                  onClick={() => router.push(`/checkout-moderno?product=aceleracao-ia&clientId=${customer.id}`)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                >
                   Ativar
                 </button>
               </div>
@@ -532,7 +549,6 @@ export default function ConsultoriasPage() {
           </div>
         </div>
       </div>
-
     </div>
   )
 }

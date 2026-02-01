@@ -45,7 +45,9 @@ export function calculateEligibility(profile: any): ConsultationResult {
         age: parseInt(String(profile.age)) || 25,
         budget: profile.budget || '',
         timeline: profile.timeline || '',
-        family: profile.family || ''
+        family: profile.family || '',
+        occupation: profile.profession || '',
+        assets: profile.assets || ''
     };
 
     let score = 50 // Base score
@@ -53,105 +55,143 @@ export function calculateEligibility(profile: any): ConsultationResult {
     let needsHuman = false
     const warnings: string[] = []
 
-    // Education
+    // --- SCORING FACTORS ---
+
+    // 1. Education (Weighted by Visa Type)
     const educationScores: Record<string, number> = {
-        'Doutorado': 20, 'Mestrado': 18, 'Pós-graduação': 15,
-        'Superior completo': 12, 'Superior incompleto': 8,
-        'Ensino médio': 5, 'Ensino fundamental': 2
+        'Doutorado': 25, 'Mestrado': 20, 'Pós-graduação': 15,
+        'Superior completo': 10, 'Superior incompleto': 5,
+        'Ensino médio': 2, 'Ensino fundamental': 0
     }
-    score += educationScores[safeProfile.education] || 0
+    const eduScore = educationScores[safeProfile.education] || 0;
 
-    // Experience
+    // Boost education for Student/Work visas
+    if (safeProfile.visaType.includes('Estudo') || safeProfile.visaType.includes('Trabalho')) {
+        score += eduScore;
+    } else {
+        score += eduScore / 2; // Less critical for tourism/investment
+    }
+
+    // 2. Experience (Critical for Work/Skilled Visas)
     const expScores: Record<string, number> = {
-        'Mais de 10 anos': 15, '5-10 anos': 12, '3-5 anos': 8,
-        '1-3 anos': 5, 'Menos de 1 ano': 2
+        'Mais de 10 anos': 20, '5-10 anos': 15, '3-5 anos': 10,
+        '1-3 anos': 5, 'Menos de 1 ano': 0
     }
-    score += expScores[safeProfile.experience] || 0
+    const expScore = expScores[safeProfile.experience] || 0;
 
-    // Language
+    if (safeProfile.visaType.includes('Trabalho') || safeProfile.visaType.includes('Carreira')) {
+        score += expScore;
+    } else {
+        score += expScore / 2;
+    }
+
+    // 3. Language (Critical for Canada/Australia/UK)
     const langScores: Record<string, number> = {
-        'Nativo': 15, 'Fluente': 12, 'Avançado': 8,
-        'Intermediário': 5, 'Básico': 2
+        'Nativo': 20, 'Fluente': 15, 'Avançado': 10,
+        'Intermediário': 5, 'Básico': 0
     }
-    score += langScores[safeProfile.language] || 0
+    let langScore = langScores[safeProfile.language] || 0;
 
-    // Country/Nationality Bonues
-    if (safeProfile.country === 'Portugal') {
-        if (safeProfile.nationality === 'Brasileira') {
-            score += 20
-            if (safeProfile.visaType === 'Cidadania por descendência') score += 15
+    // Country Logic: Anglophone vs Lusophone
+    if (safeProfile.country === 'Portugal' && safeProfile.nationality === 'Brasileira') {
+        score += 20; // Language barrier nonexistent
+        langScore = 20;
+    } else if (['Estados Unidos', 'Canadá', 'Reino Unido', 'Austrália'].includes(safeProfile.country)) {
+        score += langScore;
+        // Canada French Bonus
+        if (safeProfile.country === 'Canadá' && ['Fluente', 'Avançado'].includes(safeProfile.french)) {
+            score += 15; // French proficiency is huge for Canada
+        }
+    }
+
+    // 4. Age (Curved)
+    // Canada/Australia punish age > 30 heavily. Portugal/US less so.
+    if (safeProfile.visaType.includes('Trabalho') && ['Canadá', 'Austrália'].includes(safeProfile.country)) {
+        if (safeProfile.age >= 20 && safeProfile.age <= 29) score += 15;
+        else if (safeProfile.age >= 30 && safeProfile.age <= 34) score += 10;
+        else if (safeProfile.age >= 35 && safeProfile.age <= 39) score += 5;
+        else if (safeProfile.age >= 40) score -= 5; // Penalty
+    } else {
+        // Standard curve
+        if (safeProfile.age >= 21 && safeProfile.age <= 45) score += 10;
+        else if (safeProfile.age > 45 && safeProfile.visaType.includes('Aposentadoria')) score += 15;
+    }
+
+    // 5. Budget / Assets (Critical for Investment/Study)
+    const isHighBudget = ['Acima de R$ 500.000', 'R$ 300.000 - R$ 500.000'].includes(safeProfile.budget);
+
+    if (safeProfile.visaType.includes('Investimento')) {
+        if (isHighBudget) {
+            score += 25;
         } else {
-            score += 5
+            score -= 20; // Critical fail for investment without funds
+            warnings.push('Orçamento abaixo do recomendado para Vistos de Investidor');
+        }
+    } else if (safeProfile.visaType.includes('Estudo')) {
+        if (isHighBudget) score += 15;
+        else if (safeProfile.budget === 'Até R$ 50.000') {
+            score -= 10;
+            warnings.push('Orçamento apertado para taxas internacionais de ensino');
         }
     }
 
-    if (safeProfile.country === 'Canadá') {
-        score -= 5
-        if (safeProfile.french === 'Fluente') score += 20
-        else if (safeProfile.french === 'Avançado') score += 15
-        else if (safeProfile.french === 'Intermediário') score += 10
+    // 6. High Demand Sectors (Bonus)
+    const prioritySectors = ['saúde', 'ti', 'tecnologia', 'engenharia', 'enfermagem', 'médico', 'dev', 'dados', 'construção'];
+    const occupationLower = safeProfile.occupation.toLowerCase();
+    if (prioritySectors.some(s => occupationLower.includes(s))) {
+        score += 10; // STEM/Healthcare bonus
     }
 
-    if (safeProfile.country === 'Estados Unidos') {
-        if (safeProfile.nationality === 'Brasileira') {
-            score += 5
-            if (safeProfile.education === 'Mestrado' || safeProfile.education === 'Doutorado') {
-                score += 15
-            }
-        }
-    }
-
-    // Age
-    if (safeProfile.age >= 25 && safeProfile.age <= 35) score += 10
-    else if (safeProfile.age >= 18 && safeProfile.age <= 45) score += 5
-    else warnings.push('Idade pode ser um fator limitante para alguns programas')
-
-    // Budget
-    const budgetScores: Record<string, number> = {
-        'Acima de R$ 500.000': 15, 'R$ 300.000 - R$ 500.000': 12,
-        'R$ 100.000 - R$ 300.000': 8, 'R$ 50.000 - R$ 100.000': 5,
-        'Até R$ 50.000': 2
-    }
-    score += budgetScores[safeProfile.budget] || 0
-
-    // Complexity
+    // --- COMPLEXITY CHECKS ---
     if (safeProfile.visaType === 'Refugio/Asilo' || safeProfile.visaType === 'Outro') {
-        complexityLevel = 'complex'; needsHuman = true; warnings.push('Caso complexo requer análise especializada')
-    } else if (safeProfile.timeline === 'Até 6 meses' || safeProfile.family === 'Família extensa') {
-        complexityLevel = 'moderate'; if (score < 60) needsHuman = true
+        complexityLevel = 'complex';
+        needsHuman = true;
+        warnings.push('Caso de alta complexidade jurídica');
     }
-    if (score < 40) { needsHuman = true; warnings.push('Perfil requer estratégia personalizada') }
 
-    // Recommendations text
+    // US EB-2 NIW Check (Advanced Degree + Experience)
+    if (safeProfile.country === 'Estados Unidos' && safeProfile.visaType.includes('Trabalho')) {
+        if (['Mestrado', 'Doutorado'].includes(safeProfile.education) && ['Mais de 10 anos', '5-10 anos'].includes(safeProfile.experience)) {
+            score += 10; // Strong NIW candidate
+        }
+    }
+
+    // --- GENERATE OUTPUT ---
     let recommendation = ''
     let timeline = ''
     let cost = ''
     let documents: string[] = []
     let nextSteps: string[] = []
 
-    if (score >= 80) {
-        recommendation = `Excelente! Seu perfil é muito forte para ${safeProfile.country}. Nossa metodologia maximiza suas chances de aprovação.`
-        timeline = 'Processo pode ser concluído em 6-12 meses'
-        cost = 'R$ 15.000 - R$ 30.000'
-        documents = ['Diploma apostilado', 'Comprovante de experiência', 'Teste de idioma', 'Exames médicos']
-        nextSteps = ['Teste de proficiência no idioma', 'Validação de diplomas', 'Submissão de EOI/Aplicação']
-    } else if (score >= 60) {
-        recommendation = `Bom perfil! Com nossa estratégia personalizada, suas chances aumentam significativamente.`
-        timeline = 'Preparação de 6-12 meses + processo de 12-18 meses'
-        cost = 'R$ 20.000 - R$ 40.000'
-        documents = ['Documentos acadêmicos', 'Certificações profissionais', 'Teste de idioma', 'Comprovantes financeiros']
-        nextSteps = ['Melhorar proficiência no idioma', 'Obter certificações na área', 'Plano de fortalecimento do perfil']
+    const finalScore = Math.min(Math.max(score, 10), 99); // Clamp betwen 10 and 99
+
+    // Dynamic Recommendations
+    if (finalScore >= 80) {
+        recommendation = `Perfil de Elite. Suas chances de aprovação para ${safeProfile.country} são altíssimas.`
+        timeline = 'Processo Acelerado (6-9 meses)'
+        cost = 'Investimento Médio'
+        nextSteps = ['Análise detalhada de documentação', 'Aplicação prioritária', 'Preparação para entrevista consular']
+    } else if (finalScore >= 60) {
+        recommendation = `Perfil Competitivo. Você tem os requisitos básicos, mas a estratégia jurídica fará a diferença.`
+        timeline = 'Processo Padrão (12-18 meses)'
+        cost = 'Investimento Padrão'
+        nextSteps = ['Correção de lacunas no perfil', 'Tradução juramentada de documentos', 'Estratégia de aplicação']
     } else {
-        recommendation = `Perfil desafiador, mas nossa experiência pode fazer a diferença. Estratégia especializada recomendada.`
-        timeline = 'Preparação de 12-24 meses + processo'
-        cost = 'R$ 25.000 - R$ 50.000'
-        documents = ['Documentação completa', 'Certificações adicionais', 'Cursos de qualificação']
-        nextSteps = ['Plano de melhoria do perfil', 'Educação adicional', 'Experiência internacional']
-        needsHuman = true
+        recommendation = `Perfil em Desenvolvimento. Recomendamos um plano de fortalecimento antes da aplicação.`
+        timeline = 'Longo Prazo (18-24 meses)'
+        cost = 'Investimento Flexível'
+        nextSteps = ['Plano de qualificação profissional', 'Melhoria do nível de idioma', 'Acúmulo de patrimônio/experiência']
+        needsHuman = true;
     }
 
+    // Specific Document Logic
+    documents = ['Passaporte Válido', 'Comprovante de Renda'];
+    if (safeProfile.visaType.includes('Estudo')) documents.push('Histórico Escolar', 'Carta de Aceite (LOA)');
+    if (safeProfile.visaType.includes('Trabalho')) documents.push('Cartas de Referência', 'Currículo Vitae/Resume', 'Diploma de Maior Grau');
+    if (safeProfile.visaType.includes('Investimento')) documents.push('Declaração de Imposto de Renda', 'Prova de Origem dos Fundos');
+
     return {
-        eligibilityScore: Math.min(score, 100),
+        eligibilityScore: finalScore,
         recommendation,
         timeline,
         estimatedCost: cost,
