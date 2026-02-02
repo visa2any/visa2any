@@ -10,129 +10,191 @@ export async function GET(request: NextRequest) {
     const periodDate = new Date()
     periodDate.setDate(periodDate.getDate() - period)
 
-    // Overview Stats
-    const totalClients = await prisma.client.count()
-    const newClientsThisPeriod = await prisma.client.count({
-      where: { createdAt: { gte: periodDate } }})
-    
-    const clientsGrowth = totalClients > 0 ? 
+    // Data de início da semana (para comparação de clientsStats)
+    const weekDate = new Date()
+    weekDate.setDate(weekDate.getDate() - 7)
+
+    // === PARALLEL QUERIES FOR EFFICIENCY ===
+    const [
+      totalClients,
+      newClientsThisPeriod,
+      activeConsultations,
+      completedConsultations,
+      totalRevenueAgg,
+      revenueThisPeriodAgg,
+      clientsThisWeek,
+      pendingDocumentsCount,
+      pendingAppointmentsCount,
+      totalLeads,
+      clientsByStatus,
+      consultationsByType,
+      recentLogs,
+      topConsultants,
+      interactionsToday
+    ] = await Promise.all([
+      // 1. Client Counts
+      prisma.client.count(),
+      prisma.client.count({ where: { createdAt: { gte: periodDate } } }),
+
+      // 2. Consultation Counts
+      prisma.consultation.count({ where: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } } }),
+      prisma.consultation.count({ where: { status: 'COMPLETED', createdAt: { gte: periodDate } } }),
+
+      // 3. Revenue (All Time)
+      prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: 'COMPLETED' }
+      }),
+
+      // 4. Revenue (This Period)
+      prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: 'COMPLETED', paidAt: { gte: periodDate } }
+      }),
+
+      // 5. Clients This Week
+      prisma.client.count({ where: { createdAt: { gte: weekDate } } }),
+
+      // 6. Pending Tasks (Proxies)
+      prisma.document.count({ where: { status: 'PENDING' } }),
+      prisma.appointment.count({ where: { status: 'PENDING' } }),
+
+      // 7. Conversion Rate Base
+      prisma.client.count({ where: { status: 'LEAD' } }),
+
+      // 8. Clients by Status Grouping
+      prisma.client.groupBy({
+        by: ['status'],
+        _count: { status: true }
+      }),
+
+      // 9. Consultations by Type
+      prisma.consultation.groupBy({
+        by: ['type'],
+        _count: { type: true }
+      }),
+
+      // 10. Recent Activity (Automation Logs + Payments Mixed? For now just Logs)
+      prisma.automationLog.findMany({
+        take: 5,
+        orderBy: { executedAt: 'desc' },
+        include: { client: { select: { id: true, name: true, email: true } } }
+      }),
+
+      // 11. Top Performers (Allocated Clients)
+      prisma.user.findMany({
+        where: { role: { in: ['CONSULTANT', 'ADMIN', 'MANAGER'] } },
+        select: {
+          name: true,
+          _count: {
+            select: { assignedClients: true, consultations: true }
+          }
+        },
+        take: 3,
+        orderBy: { assignedClients: { _count: 'desc' } }
+      }),
+
+      // 12. Interactions Today
+      prisma.interaction.groupBy({
+        by: ['channel'],
+        _count: { channel: true },
+        where: {
+          createdAt: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0))
+          }
+        }
+      })
+    ])
+
+    // === CALCULATIONS ===
+
+    // Clients Growth (Simple approximation based on period)
+    const clientsGrowth = totalClients > 0 ?
       Math.round(((newClientsThisPeriod / totalClients) * 100)) : 0
-    
-    const activeConsultations = await prisma.consultation.count({
-      where: {
-        status: { in: ['SCHEDULED', 'IN_PROGRESS'] }}})
-    
-    const completedConsultations = await prisma.consultation.count({
-      where: {
-        status: 'COMPLETED',
-        createdAt: { gte: periodDate }}})
 
-    // Revenue calculations (mock data for now)
-    const totalRevenue = 125000
-    const revenueThisPeriod = 45000
-    const revenueGrowth = 23
-    const averageTicket = 2500
+    // Revenue
+    const totalRevenue = totalRevenueAgg._sum.amount || 0
+    const revenueThisPeriod = revenueThisPeriodAgg._sum.amount || 0
+    // Mocking revenue growth for now as we don't have previous period easily without another query
+    const revenueGrowth = 0
 
-    // Client stats
-    const clientsThisWeek = await prisma.client.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }}})
-    
-    const clientsThisMonth = await prisma.client.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }}})
+    // Average Ticket
+    const completedPaymentsCount = await prisma.payment.count({ where: { status: 'COMPLETED' } })
+    const averageTicket = completedPaymentsCount > 0 ? (totalRevenue / completedPaymentsCount) : 0
 
-    // Tasks (mock data)
-    const pendingTasks = 12
-    const urgentTasks = 5
+    // Tasks
+    const pendingTasks = pendingDocumentsCount + pendingAppointmentsCount
+    // Urgent tasks could be documents waiting for > 2 days, etc. For now, just a subset.
+    const urgentTasks = Math.round(pendingTasks * 0.3)
 
-    // Conversion rate calculation
-    const totalLeads = await prisma.client.count({
-      where: { status: 'LEAD' }})
+    // Conversion
     const convertedClients = totalClients - totalLeads
-    const conversionRate = totalClients > 0 ? 
+    const conversionRate = totalClients > 0 ?
       Math.round((convertedClients / totalClients) * 100) : 0
 
-    // Clients by status
-    const clientsByStatus = await prisma.client.groupBy({
-      by: ['status'],
-      _count: { status: true }})
-    
+    // Status Counts Format
     const statusCounts = clientsByStatus.map(item => ({
       status: item.status,
       count: item._count.status,
-      growth: Math.floor(Math.random() * 20) - 10 // Mock growth data
+      growth: 0 // Hard to calculate per status without historical snapshots
     }))
 
-    // Consultations by type (mock data)
-    const consultationsByType = [
-      { type: 'Inicial', count: 45, revenue: 22500 },
-      { type: 'Revisão', count: 23, revenue: 11500 },
-      { type: 'Urgente', count: 12, revenue: 18000 },
-      { type: 'Especializada', count: 8, revenue: 12000 }
-    ]
+    // Consultations Format
+    const consultationsFormatted = consultationsByType.map(item => ({
+      type: item.type,
+      count: item._count.type,
+      revenue: 0 // Revenue per consultation type is hard to attribute directly without join
+    }))
 
-    // Recent activity
-    const recentActivity = [
-      {
-        id: '1',
-        type: 'client_created',
-        action: 'Novo cliente cadastrado',
-        client: { id: '1', name: 'João Silva', email: 'joao@email.com' },
-        executedAt: new Date().toISOString(),
-        priority: 'medium' as const},
-      {
-        id: '2',
-        type: 'consultation_completed',
-        action: 'Consulta finalizada',
-        client: { id: '2', name: 'Maria Santos', email: 'maria@email.com' },
-        executedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        priority: 'high' as const},
-      {
-        id: '3',
-        type: 'document_uploaded',
-        action: 'Documento enviado',
-        client: { id: '3', name: 'Pedro Costa', email: 'pedro@email.com' },
-        executedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        priority: 'low' as const}
-    ]
+    // Recent Activity Mapping
+    const recentActivity = recentLogs.map(log => ({
+      id: log.id,
+      type: log.type,
+      action: log.action,
+      client: log.client || { id: 'unknown', name: 'Sistema', email: '' },
+      executedAt: log.executedAt.toISOString(),
+      priority: 'medium'
+    }))
 
-    // Top performers (mock data)
-    const topPerformers = [
-      { consultant: 'Ana Silva', clientsHandled: 23, revenue: 57500, satisfaction: 4.8 },
-      { consultant: 'Carlos Santos', clientsHandled: 19, revenue: 47500, satisfaction: 4.6 },
-      { consultant: 'Lucia Costa', clientsHandled: 17, revenue: 42500, satisfaction: 4.7 }
-    ]
+    // Top Performers Mapping
+    const topPerformersFormatted = topConsultants.map(user => ({
+      consultant: user.name,
+      clientsHandled: user._count.assignedClients,
+      consultations: user._count.consultations,
+      satisfaction: 5.0 // Placeholder as we don't have rating system yet
+    }))
 
-    // Urgent tasks (mock data)
-    const urgentTasksList = [
-      {
-        id: '1',
-        title: 'Revisão de documentos - João Silva',
-        client: { id: '1', name: 'João Silva' },
-        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-        priority: 'high' as const,
-        type: 'document_review'},
-      {
-        id: '2',
-        title: 'Consulta de acompanhamento - Maria Santos',
-        client: { id: '2', name: 'Maria Santos' },
-        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-        priority: 'high' as const,
-        type: 'consultation'}
-    ]
+    // Urgent Tasks List (Real Documents Pending)
+    const urgentDocs = await prisma.document.findMany({
+      where: { status: 'PENDING' },
+      take: 5,
+      include: { client: { select: { id: true, name: true } } },
+      orderBy: { uploadedAt: 'asc' } // Oldest first = Urgent
+    })
 
-    // Communication stats (mock data)
+    const urgentTasksList = urgentDocs.map(doc => ({
+      id: doc.id,
+      title: `Revisar: ${doc.type}`,
+      client: doc.client,
+      dueDate: new Date(doc.uploadedAt.getTime() + 24 * 60 * 60 * 1000).toISOString(), // SLA 24h
+      priority: 'high',
+      type: 'document_review'
+    }))
+
+    // Communication Stats
+    const whatsappCount = interactionsToday.find(i => i.channel === 'WHATSAPP')?._count.channel || 0
+    const emailCount = interactionsToday.find(i => i.channel === 'EMAIL')?._count.channel || 0
+    const callCount = interactionsToday.find(i => i.channel === 'PHONE_CALL')?._count.channel || 0
+
     const communicationStats = {
-      whatsappToday: 45,
-      emailsToday: 23,
-      callsToday: 12,
-      responseTime: 2.3,
-      pendingMessages: 8,
-      unreadMessages: 15}
-    
+      whatsappToday: whatsappCount,
+      emailsToday: emailCount,
+      callsToday: callCount,
+      responseTime: 0, // Need tracking
+      pendingMessages: 0,
+      unreadMessages: 0
+    }
+
     const dashboardStats = {
       overview: {
         totalClients,
@@ -146,16 +208,18 @@ export async function GET(request: NextRequest) {
         revenueGrowth,
         averageTicket,
         clientsThisWeek,
-        clientsThisMonth,
+        clientsThisMonth: newClientsThisPeriod, // Approximation
         pendingTasks,
-        urgentTasks},
+        urgentTasks
+      },
       clientsByStatus: statusCounts,
-      consultationsByType,
+      consultationsByType: consultationsFormatted,
       recentActivity,
-      topPerformers,
+      topPerformers: topPerformersFormatted,
       urgentTasks: urgentTasksList,
-      communicationStats}
-    
+      communicationStats
+    }
+
     return NextResponse.json({
       data: dashboardStats
     })

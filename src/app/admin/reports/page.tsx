@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Download, 
-  Calendar, 
-  Users, 
-  DollarSign, 
-  FileText, 
-  Clock, 
-  Target, 
-  Award, 
+import {
+  BarChart3,
+  TrendingUp,
+  Download,
+  Calendar,
+  Users,
+  DollarSign,
+  FileText,
+  Clock,
+  Target,
+  Award,
   Globe,
   Filter,
   RefreshCw,
@@ -77,55 +77,17 @@ export default function ReportsPage() {
   const fetchReportData = async () => {
     setIsLoading(true)
     try {
-      // Simulando dados de relatório
-      const mockData: ReportData = {
-        period: `Últimos ${period} dias`,
-        metrics: {
-          totalClients: 156,
-          newClients: 23,
-          clientsGrowth: 12.5,
-          consultations: 89,
-          consultationsGrowth: 8.3,
-          revenue: 425000,
-          revenueGrowth: 15.2,
-          conversionRate: 28.5,
-          avgTicket: 2850,
-          avgProcessingTime: 45
-        },
-        conversionFunnel: {
-          leads: 156,
-          qualified: 89,
-          inProcess: 67,
-          approved: 45,
-          completed: 34
-        },
-        clientsByCountry: [
-          { country: 'Canadá', count: 45, percentage: 28.8 },
-          { country: 'Estados Unidos', count: 38, percentage: 24.4 },
-          { country: 'Austrália', count: 29, percentage: 18.6 },
-          { country: 'Portugal', count: 22, percentage: 14.1 },
-          { country: 'Alemanha', count: 15, percentage: 9.6 },
-          { country: 'Outros', count: 7, percentage: 4.5 }
-        ],
-        revenueByPeriod: [
-          { period: 'Jan', revenue: 85000, clients: 28 },
-          { period: 'Fev', revenue: 92000, clients: 31 },
-          { period: 'Mar', revenue: 78000, clients: 26 },
-          { period: 'Abr', revenue: 105000, clients: 35 },
-          { period: 'Mai', revenue: 98000, clients: 33 },
-          { period: 'Jun', revenue: 112000, clients: 38 }
-        ],
-        topConsultants: [
-          { name: 'Ana Silva', consultations: 45, revenue: 125000, rating: 4.9 },
-          { name: 'Carlos Santos', consultations: 38, revenue: 98000, rating: 4.7 },
-          { name: 'Maria Costa', consultations: 32, revenue: 87000, rating: 4.8 },
-          { name: 'João Oliveira', consultations: 28, revenue: 76000, rating: 4.6 }
-        ]
+      const response = await fetch(`/api/admin/reports?period=${period}`)
+
+      if (!response.ok) {
+        throw new Error('Falha ao carregar dados')
       }
-      
-      setReportData(mockData)
+
+      const data = await response.json()
+      setReportData(data)
     } catch (error) {
       console.error('Erro ao buscar dados do relatório:', error)
+      // Opcional: Mostrar erro na UI via toast
     } finally {
       setIsLoading(false)
     }
@@ -140,9 +102,9 @@ export default function ReportsPage() {
 
   const quickActions = [
     { icon: Download, label: 'Baixar PDF', color: 'btn-primary', onClick: generateReport },
-    { icon: Share2, label: 'Compartilhar', color: 'btn-secondary', onClick: () => {} },
+    { icon: Share2, label: 'Compartilhar', color: 'btn-secondary', onClick: () => { } },
     { icon: RefreshCw, label: 'Atualizar', color: 'btn-secondary', onClick: fetchReportData },
-    { icon: Calendar, label: 'Agendar Relatório', color: 'btn-secondary', onClick: () => {} }
+    { icon: Calendar, label: 'Agendar Relatório', color: 'btn-secondary', onClick: () => { } }
   ]
 
   if (isLoading) {
@@ -201,7 +163,7 @@ export default function ReportsPage() {
                 Análises detalhadas de desempenho, métricas e insights estratégicos
               </p>
             </div>
-            
+
             <div className="flex flex-wrap gap-3">
               {quickActions.map((action, index) => (
                 <button
@@ -297,9 +259,8 @@ export default function ReportsPage() {
                   <metric.icon className="h-6 w-6" />
                 </div>
                 {metric.growth !== null && (
-                  <div className={`flex items-center text-sm font-semibold ${
-                    metric.growth >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <div className={`flex items-center text-sm font-semibold ${metric.growth >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
                     <TrendingUp className={`h-4 w-4 mr-1 ${metric.growth < 0 ? 'rotate-180' : ''}`} />
                     {metric.growth >= 0 ? '+' : ''}{metric.growth}%
                   </div>
@@ -322,7 +283,7 @@ export default function ReportsPage() {
               <h3 className="text-lg font-bold text-readable">Funil de Conversão</h3>
               <Target className="h-5 w-5 text-admin-muted" />
             </div>
-            
+
             <div className="space-y-4">
               {[
                 { stage: 'Leads', value: reportData.conversionFunnel.leads, color: 'bg-gray-400' },
@@ -342,7 +303,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
+                      <div
                         className={`h-3 rounded-full ${stage.color} transition-all duration-500 group-hover:opacity-80`}
                         style={{ width: `${percentage}%` }}
                       ></div>
@@ -359,7 +320,7 @@ export default function ReportsPage() {
               <h3 className="text-lg font-bold text-readable">Destinos Mais Procurados</h3>
               <Globe className="h-5 w-5 text-admin-muted" />
             </div>
-            
+
             <div className="space-y-4">
               {reportData.clientsByCountry.map((country, index) => (
                 <div key={index} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-all group">
@@ -371,7 +332,7 @@ export default function ReportsPage() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-16 bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
                         style={{ width: `${country.percentage}%` }}
                       ></div>
@@ -392,7 +353,7 @@ export default function ReportsPage() {
             <h3 className="text-lg font-bold text-readable">Evolução da Receita</h3>
             <LineChart className="h-5 w-5 text-admin-muted" />
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {reportData.revenueByPeriod.map((period, index) => (
               <div key={index} className="text-center p-4 rounded-xl hover:bg-gray-50 transition-all group">
@@ -404,7 +365,7 @@ export default function ReportsPage() {
                   <div className="text-xs text-readable-muted">{period.clients} clientes</div>
                 </div>
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 group-hover:opacity-80"
                     style={{ width: `${(period.revenue / Math.max(...reportData.revenueByPeriod.map(p => p.revenue))) * 100}%` }}
                   ></div>
@@ -420,7 +381,7 @@ export default function ReportsPage() {
             <h3 className="text-lg font-bold text-readable">Top Consultores</h3>
             <Award className="h-5 w-5 text-admin-muted" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {reportData.topConsultants.map((consultant, index) => (
               <div key={index} className="p-4 rounded-xl border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all group">
@@ -432,11 +393,10 @@ export default function ReportsPage() {
                     <div className="font-semibold text-readable">{consultant.name}</div>
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={`w-3 h-3 rounded-full ${
-                            i < Math.floor(consultant.rating) ? 'bg-yellow-400' : 'bg-gray-200'
-                          }`}
+                        <div
+                          key={i}
+                          className={`w-3 h-3 rounded-full ${i < Math.floor(consultant.rating) ? 'bg-yellow-400' : 'bg-gray-200'
+                            }`}
                         ></div>
                       ))}
                       <span className="text-xs text-readable-muted ml-1">{consultant.rating}</span>

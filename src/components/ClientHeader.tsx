@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Globe, Menu, X, LogOut, User, Settings, Bell, Brain, Sparkles } from 'lucide-react'
+import { useCustomerAuth } from '@/hooks/useCustomerAuth'
+import { useRouter } from 'next/navigation'
 
 interface ClientHeaderProps {
   customerData?: {
@@ -21,6 +23,28 @@ interface ClientHeaderProps {
 export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit }: ClientHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+
+  const { logout } = useCustomerAuth()
+  const router = useRouter()
+  const profileMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setShowProfileMenu(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    await logout()
+    router.push('/cliente/login')
+  }
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-40">
@@ -72,11 +96,10 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
             </div>
 
             {/* User Info with Profile Menu */}
-            <div className="relative">
+            <div className="relative" ref={profileMenuRef}>
               <div
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
-                onMouseEnter={() => setShowProfileMenu(true)}
-                onMouseLeave={() => setShowProfileMenu(false)}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors select-none"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
                   {customerData?.profilePhoto ? (
@@ -97,27 +120,26 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
 
               {/* Profile Dropdown Menu */}
               {showProfileMenu && (
-                <div
-                  className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-                  onMouseEnter={() => setShowProfileMenu(true)}
-                  onMouseLeave={() => setShowProfileMenu(false)}
-                >
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
                   <button
                     onClick={() => {
                       onProfileEdit?.()
                       setShowProfileMenu(false)
                     }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
-                    <User className="h-4 w-4" />
+                    <User className="h-4 w-4 text-gray-400" />
                     Editar Perfil
                   </button>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <Settings className="h-4 w-4" />
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <Settings className="h-4 w-4 text-gray-400" />
                     Configurações
                   </button>
-                  <div className="border-t border-gray-200 my-1"></div>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
                     <LogOut className="h-4 w-4" />
                     Sair
                   </button>
@@ -172,7 +194,13 @@ export default function ClientHeader({ customerData, onSofiaChat, onProfileEdit 
                 💳 Pagamentos
               </a>
               <div className="border-t border-gray-200 pt-2 mt-2">
-                <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1">
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setIsMenuOpen(false)
+                  }}
+                  className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors text-sm py-1"
+                >
                   <LogOut className="h-4 w-4" />
                   Sair
                 </button>
