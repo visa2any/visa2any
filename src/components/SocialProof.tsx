@@ -112,12 +112,12 @@ export default function SocialProof() {
       const countries = ['Estados Unidos', 'Canadá', 'Austrália', 'Reino Unido', 'França', 'Alemanha']
       const flags = ['🇺🇸', '🇨🇦', '🇦🇺', '🇬🇧', '🇫🇷', '🇩🇪']
       const types: ('approval' | 'consultation' | 'signup')[] = ['approval', 'consultation', 'signup']
-      
+
       const randomName = names[Math.floor(Math.random() * names.length)] || 'Cliente'
       const randomCountry = countries[Math.floor(Math.random() * countries.length)] || 'País'
       const randomFlag = flags[Math.floor(Math.random() * flags.length)] || '🌎'
       const randomType = types[Math.floor(Math.random() * types.length)] || 'approval'
-      
+
       let message = ''
       switch (randomType) {
         case 'approval':
@@ -212,7 +212,7 @@ export default function SocialProof() {
               🏆 Referência em Assessoria Internacional
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              <strong>8.420+ brasileiros</strong> já conseguiram seus vistos com nossa tecnologia em 2024
+              <strong>8.420+ brasileiros</strong> já conseguiram seus vistos com nossa tecnologia em 2025
             </p>
           </div>
 
@@ -224,10 +224,10 @@ export default function SocialProof() {
                   {stats.approvals.toLocaleString('pt-BR')}+
                 </div>
                 <div className="text-sm font-medium text-gray-700">Vistos Aprovados</div>
-                <div className="text-xs text-green-600 mt-1">✅ Só em 2024</div>
+                <div className="text-xs text-green-600 mt-1">✅ Só em 2025</div>
               </div>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-green-100">
                 <div className="text-4xl font-bold text-green-600 mb-2">
@@ -237,7 +237,7 @@ export default function SocialProof() {
                 <div className="text-xs text-blue-600 mt-1">🎯 Acima da média</div>
               </div>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
                 <div className="text-4xl font-bold text-purple-600 mb-2">15+</div>
@@ -245,7 +245,7 @@ export default function SocialProof() {
                 <div className="text-xs text-purple-600 mt-1">⭐ Desde 2009</div>
               </div>
             </div>
-            
+
             <div className="text-center">
               <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-orange-100">
                 <div className="text-4xl font-bold text-orange-600 mb-2">50+</div>
@@ -291,7 +291,7 @@ export default function SocialProof() {
               <span className="text-gray-600">• {stats.approvals}+ avaliações</span>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              "A Visa2Any transformou nossos sonhos em realidade. Processo transparente, 
+              "A Visa2Any transformou nossos sonhos em realidade. Processo transparente,
               equipe especializada e resultados que superam expectativas."
             </p>
             <div className="text-sm text-gray-500 mt-2">
