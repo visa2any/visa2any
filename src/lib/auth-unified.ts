@@ -20,18 +20,32 @@ export interface UnifiedUser {
   }
 }
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'visa2any-secret-key'
+// ✅ SECURITY FIX: No hardcoded fallback - environment variable is required
+const JWT_SECRET = process.env.NEXTAUTH_SECRET
+
+/**
+ * Get JWT secret with validation
+ * @throws Error if NEXTAUTH_SECRET is not configured
+ */
+export function getJwtSecret(): string {
+  if (!JWT_SECRET) {
+    const errorMsg = 'CRITICAL: NEXTAUTH_SECRET environment variable is not configured'
+    console.error(`❌ ${errorMsg}`)
+    throw new Error(errorMsg)
+  }
+  return JWT_SECRET
+}
 
 // Gerar token JWT unificado
 export function generateToken(user: UnifiedUser): string {
   return jwt.sign(
-    { 
-      userId: user.id, 
+    {
+      userId: user.id,
       email: user.email,
       type: user.type,
-      role: user.role 
+      role: user.role
     },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: '7d' }
   )
 }
@@ -42,7 +56,7 @@ export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUs
     // Buscar token no header ou cookie
     const authHeader = request.headers.get('authorization')
     const cookieToken = request.cookies.get('auth-token')?.value
-    
+
     const token = authHeader?.replace('Bearer ', '') || cookieToken
 
     if (!token) {
@@ -51,7 +65,7 @@ export async function verifyUnifiedAuth(request: NextRequest): Promise<UnifiedUs
 
     // Verificar e decodificar token
 
-    const decoded = jwt.verify(token, JWT_SECRET) as any
+    const decoded = jwt.verify(token, getJwtSecret()) as any
 
     if (decoded.type === 'CUSTOMER') {
       // Buscar como cliente
@@ -139,7 +153,7 @@ export async function loginCustomer(email: string, password?: string): Promise<{
 
     // Se não tem senha, é primeiro login (criar senha)
     if (!password) {
-      return { 
+      return {
         success: true,
         error: 'NEEDS_PASSWORD_SETUP',
         user: {
@@ -302,7 +316,7 @@ export async function createCustomerAccount(data: {
 export function requireUnifiedAuth(allowedTypes: ('CUSTOMER' | 'ADMIN' | 'CONSULTANT')[] = ['CUSTOMER', 'ADMIN', 'CONSULTANT']) {
   return async (request: NextRequest) => {
     const user = await verifyUnifiedAuth(request)
-    
+
     if (!user) {
       return createUnifiedAuthError('Não autorizado', 401)
     }

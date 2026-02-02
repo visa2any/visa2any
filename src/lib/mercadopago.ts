@@ -1,13 +1,26 @@
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago'
 
-// Configuração do MercadoPago
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
-  options: {
-    timeout: 5000,
-    idempotencyKey: 'abc'
-  }
-})
+// ✅ SECURITY FIX: Generate unique idempotency key per request
+function generateIdempotencyKey(): string {
+  return `mp_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+}
+
+/**
+ * Create MercadoPago client with unique idempotency key
+ * @param idempotencyKey Optional custom key, generates unique one if not provided
+ */
+export function createMercadoPagoClient(idempotencyKey?: string) {
+  return new MercadoPagoConfig({
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+    options: {
+      timeout: 5000,
+      idempotencyKey: idempotencyKey || generateIdempotencyKey()
+    }
+  })
+}
+
+// Default client for backward compatibility (singleton pattern)
+const client = createMercadoPagoClient()
 
 const payment = new Payment(client)
 const preference = new Preference(client)
@@ -67,13 +80,13 @@ export interface PreferenceData {
 export async function createPreference(data: PreferenceData) {
   try {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-    
+
     const payerData = data.payer || {
       name: '',
       surname: '',
       email: ''
     };
-    
+
     const preferenceData = {
       payer: {
         ...payerData,
@@ -100,7 +113,7 @@ export async function createPreference(data: PreferenceData) {
     }
 
     const response = await preference.create({ body: preferenceData })
-    
+
     if (!response.id) {
       throw new Error('Failed to create payment preference')
     }
@@ -114,7 +127,7 @@ export async function createPreference(data: PreferenceData) {
     }
   } catch (error: unknown) {
     console.error('Erro ao criar preferência MercadoPago:', error)
-    const err = error as {response?: {data?: unknown}}
+    const err = error as { response?: { data?: unknown } }
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -199,11 +212,11 @@ export async function generatePixCode(amount: number, description: string) {
           }
         }
       })
-      
+
       if (!response.point_of_interaction?.transaction_data) {
         throw new Error('Invalid PIX response from MercadoPago')
       }
-      
+
       const transactionData = response.point_of_interaction.transaction_data
       return {
         success: true,
@@ -219,7 +232,7 @@ export async function generatePixCode(amount: number, description: string) {
 
     // Development mock
     const pixCode = `00020101021243650016COM.MERCADOLIVRE02013063204398735204000053039865802BR5925Visa2Any Assessoria Inter6009SAO PAULO62070503***6304${Math.random().toString(36).substr(2, 4).toUpperCase()}`
-    
+
     return {
       success: true,
       qr_code: pixCode,

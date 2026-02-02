@@ -79,8 +79,16 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Decodificar token e verificar assinatura com jose
-      // ⚠️ IMPORTANT: Must match the secret used in /api/auth/login (NEXTAUTH_SECRET)
-      const secretEnv = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || 'temporary-dev-secret-123'
+      // ⚠️ SECURITY FIX: No hardcoded fallback - must use configured secret
+      const secretEnv = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET
+
+      if (!secretEnv) {
+        console.error('❌ CRITICAL: No JWT secret configured (NEXTAUTH_SECRET or JWT_SECRET)')
+        const loginUrl = new URL('/admin/login', request.url)
+        loginUrl.searchParams.set('error', 'config')
+        return NextResponse.redirect(loginUrl)
+      }
+
       const secret = new TextEncoder().encode(secretEnv)
       const { payload: decoded } = await jwtVerify(token, secret) as any
 

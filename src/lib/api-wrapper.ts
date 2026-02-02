@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { notificationService } from '@/lib/notification-service'
 
-type ApiHandler = (req: NextRequest, context?: any) => Promise<NextResponse>
+type ApiHandler = (req: NextRequest, context?: any) => Promise<Response>
 
 export function withErrorAlert(handler: ApiHandler, contextName: string) {
     return async (req: NextRequest, context?: any) => {
