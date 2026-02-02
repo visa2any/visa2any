@@ -38,8 +38,7 @@ export async function GET(request: NextRequest) {
             prevCompletedPayments,
             clientsByStatus,
             clientsByCountry,
-            revenueByMonth,
-            topConsultantsData
+            revenueByMonth
         ] = await Promise.all([
             // 1. Client Metrics
             prisma.client.count(),
@@ -80,25 +79,25 @@ export async function GET(request: NextRequest) {
             // Let's use a simpler approach: fetch aggregated payments and map in JS or use separate queries (expensive)
             // Attempting aggregation by month is hard in Prisma without raw SQL. 
             // We will stick to fetching payments and aggregating in JS for the graph for now (assuming not huge valid dataset yet)
+            // 6. Revenue Trend (Last 6 months)
             prisma.payment.findMany({
                 where: {
                     status: 'COMPLETED',
                     paidAt: { gte: new Date(now.getFullYear(), now.getMonth() - 5, 1) }
                 },
                 select: { amount: true, paidAt: true }
-            }),
-
-            // 7. Top Consultants
-            prisma.user.findMany({
-                where: { role: { in: ['CONSULTANT', 'ADMIN', 'MANAGER'] } },
-                select: {
-                    name: true,
-                    // Just fetching users, we'll need to join manually or assume `consultations` relation exists
-                    consultations: { select: { id: true }, where: { status: 'COMPLETED' } }
-                },
-                take: 4
             })
         ])
+
+        // 7. Top Consultants (Fetched separately for better type inference)
+        const topConsultantsData = await prisma.user.findMany({
+            where: { role: { in: ['CONSULTANT', 'ADMIN', 'MANAGER'] } },
+            select: {
+                name: true,
+                consultations: { select: { id: true }, where: { status: 'COMPLETED' } }
+            },
+            take: 4
+        })
 
         // === CALCULATIONS ===
 

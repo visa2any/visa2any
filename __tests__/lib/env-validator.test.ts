@@ -62,12 +62,20 @@ describe('Environment Validator', () => {
 
         it('should throw in production when critical vars missing', () => {
             const originalNodeEnv = process.env.NODE_ENV
-            process.env.NODE_ENV = 'production'
+
+            Object.defineProperty(process.env, 'NODE_ENV', {
+                value: 'production',
+                writable: true
+            })
+
             delete process.env.NEXTAUTH_SECRET
 
             expect(() => validateCriticalEnvVars()).toThrow()
 
-            process.env.NODE_ENV = originalNodeEnv
+            Object.defineProperty(process.env, 'NODE_ENV', {
+                value: originalNodeEnv,
+                writable: true
+            })
         })
     })
 

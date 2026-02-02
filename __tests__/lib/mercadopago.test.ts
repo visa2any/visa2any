@@ -46,12 +46,12 @@ describe('MercadoPago Integration', () => {
             const client = createMercadoPagoClient(customKey)
 
             expect(client).toBeDefined()
-            expect(client.options.idempotencyKey).toBe(customKey)
+            expect(client.options?.idempotencyKey).toBe(customKey)
         })
 
         it('should generate key with correct format', () => {
             const client = createMercadoPagoClient()
-            const key = client.options.idempotencyKey
+            const key = client.options?.idempotencyKey
 
             expect(key).toMatch(/^mp_\d+_[a-z0-9]+$/)
         })
