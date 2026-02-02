@@ -158,15 +158,7 @@ Deseja acessar seu portal agora?`)) {
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-blue-50 rounded-xl">
-              <h4 className="font-semibold text-blue-900 mb-2">Consultoria Gratuita</h4>
-              <p className="text-blue-700 text-sm mb-4">
-                Agende uma conversa de 30 minutos sem compromisso para entender como podemos ajudar você.
-              </p>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Agendar Consultoria
-              </Button>
-            </div>
+            {/* Consultoria Gratuita removida */}
           </div>
 
           {/* Contact Form */}

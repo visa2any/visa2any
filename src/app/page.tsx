@@ -882,7 +882,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-4 text-center text-blue-100 text-sm mb-6">
             <div className="flex items-center justify-center gap-2">
               <Shield className="h-5 w-5 text-green-300" />
-              <span><strong>100% Gratuito</strong><br />Sem cartão</span>
+              <span><strong>Análise IA</strong><br />Tecnologia Exclusiva</span>
             </div>
             <div className="flex items-center justify-center gap-2">
               <Clock className="h-5 w-5 text-yellow-300" />
