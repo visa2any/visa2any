@@ -93,9 +93,6 @@ export async function GET(request: NextRequest) {
                 where: { role: { in: ['CONSULTANT', 'ADMIN', 'MANAGER'] } },
                 select: {
                     name: true,
-                    _count: {
-                        select: { filteredConsultations: { where: { status: 'COMPLETED' } } as any } // Workaround if relation name differs
-                    },
                     // Just fetching users, we'll need to join manually or assume `consultations` relation exists
                     consultations: { select: { id: true }, where: { status: 'COMPLETED' } }
                 },
