@@ -483,7 +483,7 @@ export default function PrecosPage() {
         </div>
       </section>
 
-      {/* Seção Vaga Express - DESTAQUE */}
+      {/* Seção Vaga Express - DESTAQUE - HIDDEN TEMPORARILY
       <section className="py-16 bg-gradient-to-br from-orange-50 to-red-50 border-y-4 border-orange-200 overflow-visible">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
           <div className="text-center mb-12">
@@ -584,6 +584,7 @@ export default function PrecosPage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Seção Principal de Seleção */}
       <section className="py-8 bg-white overflow-visible">
