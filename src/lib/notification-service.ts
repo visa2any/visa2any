@@ -437,12 +437,12 @@ _Visa2Any System_ 🤖
 
   async sendErrorAlert(context: string, error: any): Promise<boolean> {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace'
+    const errorStack = (error instanceof Error && error.stack) ? error.stack : 'No stack trace'
 
     return this.sendAdminAlert(
       '🚨 ERRO CRÍTICO DO SISTEMA',
       `*Contexto:* ${context}\n*Erro:* ${errorMessage}`,
-      { stack: errorStack.substring(0, 500) } // Limit stack size
+      { stack: (errorStack || '').substring(0, 500) }
     )
   }
 
