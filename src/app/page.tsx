@@ -402,7 +402,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Vaga Express Section - NOVO PRODUTO */}
+      {/* Vaga Express Section - NOVO PRODUTO - HIDDEN TEMPORARILY
       <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -420,7 +420,6 @@ export default function HomePage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 mb-12">
-            {/* Basic Plan */}
             <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-200 hover:border-orange-300 transition-all">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-4">🥉</div>
@@ -453,7 +452,6 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Premium Plan - DESTAQUE */}
             <div className="bg-white rounded-2xl shadow-2xl p-8 border-4 border-orange-500 relative hover:scale-105 transition-all">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <div className="bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold">
@@ -491,7 +489,6 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* VIP Plan */}
             <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-200 hover:border-orange-300 transition-all">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-4">🥇</div>
@@ -572,6 +569,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Features Section */}
       <section className="py-20 bg-gray-50">
@@ -676,6 +674,7 @@ export default function HomePage() {
               color="blue"
             />
 
+            {/* 
             <ServiceCard
               icon={Zap}
               title="Vaga Express ⚡"
@@ -688,6 +687,7 @@ export default function HomePage() {
               color="orange"
               isNew={true}
             />
+            */}
 
             <ServiceCard
               icon={Users}

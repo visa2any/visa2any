@@ -115,8 +115,20 @@ export async function POST(request: NextRequest) {
             name: body.customer.name || 'Cliente Checkout',
             email: body.customer.email,
             phone: body.customer.phone || null,
+            // CRITICAL FIX: Save targetCountry and VisaType for matching
+            targetCountry: body.customer.targetCountry || body.metadata?.targetCountry || null,
+            visaType: body.customer.visaType || body.metadata?.visaType || null,
             status: 'LEAD',
             source: 'checkout_direct'
+          }
+        })
+      } else {
+        // Update existing client with latest preferences
+        client = await prisma.client.update({
+          where: { id: client.id },
+          data: {
+            targetCountry: body.customer.targetCountry || body.metadata?.targetCountry || client.targetCountry,
+            visaType: body.customer.visaType || body.metadata?.visaType || client.visaType,
           }
         })
       }

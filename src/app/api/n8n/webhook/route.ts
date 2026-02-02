@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 async function handleLegalChange(data: any) {
   const { country, changeType, description, affectedVisaTypes, sourceUrl, priority } = data
-  
+
   // Log the legal change
   await prisma.automationLog.create({
     data: {
@@ -45,9 +45,11 @@ async function handleLegalChange(data: any) {
   }
 }
 
+import { notificationService, WhatsAppMessage } from '@/lib/notification-service'
+
 async function handleConsularSlot(data: any) {
   const { country, consulate, city, availableSlots, visaType, earliestDate } = data
-  
+
   // Log the slot availability
   await prisma.automationLog.create({
     data: {
@@ -56,52 +58,60 @@ async function handleConsularSlot(data: any) {
       executedAt: new Date(),
       details: {
         timestamp: new Date().toISOString(),
-        action: 'automated_action'
+        action: 'automated_action',
+        country,
+        city
       },
       success: true
     }
   })
 
   // Find clients waiting for appointments
+  // Search strictly by country and visa type
   const waitingClients = await prisma.client.findMany({
     where: {
       targetCountry: country,
-      visaType,
-      status: { in: ['IN_PROCESS', 'DOCUMENTS_PENDING'] }
+      visaType: { contains: visaType }, // Flexible match
+      status: { in: ['IN_PROCESS', 'DOCUMENTS_PENDING', 'QUALIFIED', 'LEAD'] } // Include LEADs who just paid
     },
     select: { id: true, name: true, email: true, phone: true }
   })
 
+  console.log(`🔎 Found ${waitingClients.length} clients waiting for ${country} - ${visaType}`)
+
   // Notify eligible clients immediately
   for (const client of waitingClients) {
+    if (!client.phone) continue
+
+    const message = `🚨 VAGA DISPONÍVEL! Nova vaga para ${visaType} em ${consulate}, ${city}.\n📅 Data mais cedo: ${earliestDate}.\n\nResponda RAPIDAMENTE para garantirmos sua vaga!`
+
+    // Dispatch via WhatsApp with new public method
+    const sent = await notificationService.sendVagaAlert(client.phone, message)
+
+    // Log Interaction
     await prisma.interaction.create({
       data: {
         clientId: client.id,
         type: 'AUTOMATED_WHATSAPP',
         channel: 'WHATSAPP',
-        content: `🚨 VAGA DISPONÍVEL! Nova vaga para ${visaType} em ${consulate}, ${city}. Data mais cedo: ${earliestDate}. Responda RAPIDAMENTE!`,
+        content: message,
+        response: sent ? 'SENT' : 'FAILED',
         scheduledAt: new Date(),
+        completedAt: sent ? new Date() : null,
         direction: 'outbound'
       }
     })
 
-    // Also send SMS backup
-    await prisma.interaction.create({
-      data: {
-        clientId: client.id,
-        type: 'SMS',
-        channel: 'SMS',
-        content: `VISA2ANY: Vaga disponível ${visaType} ${city}. Acesse: visa2any.com/appointment`,
-        scheduledAt: new Date(Date.now() + 2 * 60 * 1000), // 2 min delay
-        direction: 'outbound'
-      }
-    })
+    // Also send SMS backup (Mock for now, logging only)
+    if (!sent) {
+      console.warn(`WhatsApp failed for ${client.id}, falling back to SMS logic (log only)`)
+    }
   }
 }
 
 async function handleDocumentValidation(data: any) {
   const { clientId, documentId, validationResult, issues, recommendations } = data
-  
+
   // Update document status
   if (documentId) {
     await prisma.document.update({
@@ -132,12 +142,12 @@ async function handleDocumentValidation(data: any) {
       where: { id: clientId },
       select: { name: true, email: true }
     })
-    
+
     if (client) {
-      const message = validationResult.isValid 
+      const message = validationResult.isValid
         ? `✅ Documento validado com sucesso! Seu processo está avançando.`
         : `❌ Documento precisa de correções: ${issues?.join(', ')}. Recomendações: ${recommendations?.join(', ')}`
-      
+
       await prisma.interaction.create({
         data: {
           clientId: clientId,
@@ -154,7 +164,7 @@ async function handleDocumentValidation(data: any) {
 
 async function handleClientRiskAlert(data: any) {
   const { clientId, riskType, riskScore, factors, recommendations } = data
-  
+
   // Log risk alert
   await prisma.automationLog.create({
     data: {
@@ -199,7 +209,7 @@ async function handleClientRiskAlert(data: any) {
 
 async function handleAutomationCompleted(data: any) {
   const { workflowId, workflowName, clientId, result, metrics } = data
-  
+
   // Log automation completion
   await prisma.automationLog.create({
     data: {

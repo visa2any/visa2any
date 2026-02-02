@@ -201,6 +201,16 @@ class NotificationService {
     }
   }
 
+  // === NOTIFICAÇÕES VAGA EXPRESS ===
+
+  async sendVagaAlert(phone: string, message: string): Promise<boolean> {
+    return this.sendWhatsApp({
+      to: phone,
+      message,
+      type: 'text'
+    })
+  }
+
   // === MÉTODOS DE ENVIO ===
 
   // Enviar WhatsApp

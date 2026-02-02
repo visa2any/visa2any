@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, CheckCircle, Star, Zap, Clock, Shield, Users, Globe, AlertTriangle, Target, Calendar, Bell, Plus, Minus, User, Baby } from 'lucide-react'
 import AffiliateBanner from '@/components/AffiliateBanner'
 
@@ -68,16 +69,16 @@ const VAGA_EXPRESS_PLANS = {
 function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState(0)
-  
+
   // Estratégia de preços
-  
+
   const getAdultPrice = () => plan.price
   const getChildPrice = () => Math.round(plan.price * 0.7) // 30% desconto para crianças,  
   const getQuantityDiscount = (totalPeople: number) => {
     if (totalPeople >= 5) return 0.15 // 15% desconto para 5+ pessoas,    if (totalPeople >= 3) return 0.10 // 10% desconto para 3-4 pessoas
     return 0
   }
-  
+
   const calculateTotal = () => {
     const adultTotal = adults * getAdultPrice()
     const childTotal = children * getChildPrice()
@@ -86,7 +87,7 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
     const discount = getQuantityDiscount(totalPeople)
     return Math.round(subtotal * (1 - discount))
   }
-  
+
   const getSavingsAmount = () => {
     const adultTotal = adults * getAdultPrice()
     const childTotal = children * getChildPrice()
@@ -137,7 +138,7 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
           </div>
         </div>
       )}
-      
+
       {planKey === 'vaga-express-vip' && (
         <div className="absolute -top-3 right-4">
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold">
@@ -174,7 +175,7 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
       {/* Seleção de Quantidade */}
       <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
         <h4 className="font-semibold text-gray-900 mb-4 text-center">👥 Quantas pessoas?</h4>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {/* Adultos */}
           <div>
@@ -289,7 +290,7 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
         onClick={handleClick}
         className={`w-full py-3 text-lg font-semibold text-white rounded-xl transition-all ${getButtonClass()}`}
       >
-        {planKey === 'vaga-express-vip' ? 'Contratar VIP' : 'Escolher Pacote'} 
+        {planKey === 'vaga-express-vip' ? 'Contratar VIP' : 'Escolher Pacote'}
         <ArrowRight className="ml-2 h-5 w-5 inline" />
       </button>
 
@@ -303,80 +304,90 @@ function ProductCard({ planKey, plan }: { planKey: string, plan: any }) {
 }
 
 export default function VagaExpressPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push('/')
+  }, [router])
+
+  return null // Hidden for now
+
+  /* Original Content Hidden
   return (
     <div className="min-h-screen bg-gray-50">
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              🚨 <span className="text-red-600">PARE!</span> Você está perdendo vagas de visto!
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-8">
-              Enquanto você verifica manualmente, outros já agendaram. 
-              <span className="font-bold text-orange-600"> Nossa IA monitora 24/7 e te avisa em segundos!</span>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Escolha Seu Plano Vaga Express
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Planos flexíveis para diferentes necessidades e orçamentos
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {Object.entries(VAGA_EXPRESS_PLANS).map(([key, plan]) => (
-              <div key={key} className="transition-all duration-300 hover:scale-105">
-                <ProductCard planKey={key} plan={plan} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <div className="text-4xl mb-4">🔒</div>
-              <h3 className="font-bold text-lg mb-2">100% Seguro</h3>
-              <p className="text-gray-600">Pagamentos protegidos e dados criptografados</p>
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="font-bold text-lg mb-2">Ativação Imediata</h3>
-              <p className="text-gray-600">Seu monitoramento começa em até 30 minutos</p>
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="font-bold text-lg mb-2">Garantia de Resultado</h3>
-              <p className="text-gray-600">Ou seu dinheiro de volta (planos Premium e VIP)</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Banner de Afiliados */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">⚡ Acelere Sua Renda</h2>
-            <p className="text-lg text-gray-600">Assim como você está buscando vagas mais rápido, ganhe dinheiro mais rápido também!</p>
-          </div>
-          <AffiliateBanner variant="full" />
-        </div>
-      </section>
-
+<section className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-20">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-12">
+      <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+        🚨 <span className="text-red-600">PARE!</span> Você está perdendo vagas de visto!
+      </h1>
+      <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-8">
+        Enquanto você verifica manualmente, outros já agendaram.
+        <span className="font-bold text-orange-600"> Nossa IA monitora 24/7 e te avisa em segundos!</span>
+      </p>
     </div>
+  </div>
+</section>
+
+{/* Pricing Section */ }
+<section className="py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-12">
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Escolha Seu Plano Vaga Express
+      </h2>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        Planos flexíveis para diferentes necessidades e orçamentos
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      {Object.entries(VAGA_EXPRESS_PLANS).map(([key, plan]) => (
+        <div key={key} className="transition-all duration-300 hover:scale-105">
+          <ProductCard planKey={key} plan={plan} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+{/* Trust Section */ }
+<section className="py-16 bg-gray-50">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <div className="text-4xl mb-4">🔒</div>
+        <h3 className="font-bold text-lg mb-2">100% Seguro</h3>
+        <p className="text-gray-600">Pagamentos protegidos e dados criptografados</p>
+      </div>
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <div className="text-4xl mb-4">⚡</div>
+        <h3 className="font-bold text-lg mb-2">Ativação Imediata</h3>
+        <p className="text-gray-600">Seu monitoramento começa em até 30 minutos</p>
+      </div>
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <div className="text-4xl mb-4">🎯</div>
+        <h3 className="font-bold text-lg mb-2">Garantia de Resultado</h3>
+        <p className="text-gray-600">Ou seu dinheiro de volta (planos Premium e VIP)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Banner de Afiliados */ }
+<section className="py-16 bg-gray-50">
+  <div className="max-w-6xl mx-auto px-4">
+    <div className="text-center mb-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-4">⚡ Acelere Sua Renda</h2>
+      <p className="text-lg text-gray-600">Assim como você está buscando vagas mais rápido, ganhe dinheiro mais rápido também!</p>
+    </div>
+    <AffiliateBanner variant="full" />
+  </div>
+</section>
+
+    </div >
   )
+  */
 }

@@ -62,7 +62,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-6 text-blue-400">🛠️ Serviços</h3>
             <ul className="space-y-3 text-gray-300">
               <li><a href="/consultoria-ia" className="hover:text-white transition-colors hover:underline">🤖 IA Consultoria</a></li>
-              <li><a href="/vaga-express" className="hover:text-white transition-colors hover:underline">⚡ Vaga Express</a></li>
+              {/* <li><a href="/vaga-express" className="hover:text-white transition-colors hover:underline">⚡ Vaga Express</a></li> */}
               <li><a href="/precos" className="hover:text-white transition-colors hover:underline">💎 Pacotes Premium</a></li>
               <li><a href="/kit-emigracao" className="hover:text-white transition-colors hover:underline">📋 Kit Emigração</a></li>
               <li><a href="/assessoria-juridica" className="hover:text-white transition-colors hover:underline">⚖️ Assessoria Jurídica</a></li>

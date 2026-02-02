@@ -170,10 +170,12 @@ export default function Header() {
                     <div className="font-semibold text-gray-900">🤖 Pré-Análise IA</div>
                     <div className="text-sm text-gray-600">Pré-análise profissional com IA</div>
                   </a>
+                  {/* 
                   <a href="/vaga-express" className="block px-4 py-3 rounded-lg hover:bg-orange-50 transition-colors">
                     <div className="font-semibold text-gray-900">⚡ Vaga Express</div>
                     <div className="text-sm text-gray-600">Monitore vagas de consulado</div>
                   </a>
+                  */}
                   <div className="border-t border-gray-100 pt-2 mt-2">
                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 mb-2">Documentação</div>
                     <a href="/certidoes" className="block px-4 py-2 rounded-lg hover:bg-green-50 transition-colors">
@@ -414,6 +416,7 @@ export default function Header() {
                   <span className="text-lg">🤖</span>
                   Pré-Análise IA
                 </a>
+                {/* 
                 <a
                   href="/vaga-express"
                   className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors px-2 py-1"
@@ -422,6 +425,7 @@ export default function Header() {
                   <span className="text-lg">⚡</span>
                   Vaga Express
                 </a>
+                */}
 
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2 pt-2">Documentação</div>
                 <a
