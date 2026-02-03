@@ -32,14 +32,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         flag: true
       }
     })
-    
+
     if (!post) {
       return {
         title: 'Post não encontrado | Visa2Any Blog',
         description: 'O post solicitado não foi encontrado.'
       }
     }
-    
+
     return {
       title: `${post.title} | Visa2Any Blog`,
       description: post.excerpt,
@@ -96,28 +96,65 @@ async function generateStructuredData(slug: string) {
         country: true
       }
     })
-    
+
     if (!post) return null
-    
+
     return {
       '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: post.title,
-      description: post.excerpt,
-      image: post.imageUrl ? [post.imageUrl] : [],
-      author: {
-        '@type': 'Person',
-        name: post.author
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Visa2Any'
-      },
-      datePublished: post.publishDate,
-      dateModified: post.updatedAt || post.publishDate,
-      keywords: Array.isArray(post.tags) ? post.tags : [],
-      articleSection: post.category,
-      inLanguage: 'pt-BR'
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            {
+              '@type': 'ListItem',
+              'position': 1,
+              'name': 'Home',
+              'item': 'https://visa2any.com'
+            },
+            {
+              '@type': 'ListItem',
+              'position': 2,
+              'name': 'Blog',
+              'item': 'https://visa2any.com/blog'
+            },
+            {
+              '@type': 'ListItem',
+              'position': 3,
+              'name': post.title,
+              'item': `https://visa2any.com/blog/${slug}`
+            }
+          ]
+        },
+        {
+          '@type': 'BlogPosting',
+          '@id': `https://visa2any.com/blog/${slug}#article`,
+          'headline': post.title,
+          'alternativeHeadline': post.excerpt,
+          'description': post.excerpt,
+          'image': post.imageUrl ? [post.imageUrl] : [],
+          'author': {
+            '@type': 'Person',
+            'name': post.author
+          },
+          'publisher': {
+            '@type': 'Organization',
+            'name': 'Visa2Any',
+            'logo': {
+              '@type': 'ImageObject',
+              'url': 'https://visa2any.com/logo.png'
+            }
+          },
+          'datePublished': post.publishDate,
+          'dateModified': post.updatedAt || post.publishDate,
+          'keywords': Array.isArray(post.tags) ? post.tags : [],
+          'articleSection': post.category,
+          'inLanguage': 'pt-BR',
+          'mainEntityOfPage': {
+            '@type': 'WebPage',
+            '@id': `https://visa2any.com/blog/${slug}`
+          }
+        }
+      ]
     }
   } catch (error) {
     console.error('Erro ao gerar dados estruturados:', error)
@@ -127,7 +164,7 @@ async function generateStructuredData(slug: string) {
 
 export default async function BlogPostPage({ params }: Props) {
   const structuredData = await generateStructuredData(params.slug)
-  
+
   return (
     <>
       {/* Dados estruturados para SEO */}
@@ -139,7 +176,7 @@ export default async function BlogPostPage({ params }: Props) {
           }}
         />
       )}
-      
+
       {/* Componente cliente */}
       <BlogPostClient slug={params.slug} />
     </>

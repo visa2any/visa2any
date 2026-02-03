@@ -13,7 +13,6 @@ const ContactForm = dynamic(() => import('@/components/ContactForm'), {
   loading: () => <div className="min-h-96 bg-gray-50 animate-pulse rounded-lg"></div>
 })
 const ServiceCard = dynamic(() => import('@/components/ServiceCard'), {
-  ssr: false,
   loading: () => <div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-24 bg-gray-200 rounded"></div></div>
 })
 const ChatBot = dynamic(() => import('@/components/ChatBot'), {
@@ -21,7 +20,6 @@ const ChatBot = dynamic(() => import('@/components/ChatBot'), {
   loading: () => null
 })
 const EligibilityCalculator = dynamic(() => import('@/components/EligibilityCalculator'), {
-  ssr: false,
   loading: () => <div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-96 bg-gray-200 rounded"></div></div>
 })
 const SmartScheduler = dynamic(() => import('@/components/SmartScheduler'), {
@@ -33,8 +31,60 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
 
+      {/* Hero Section - OTIMIZADO PARA CONVERSÃO (MOVIDO PARA TOPO) */}
+      <section className="gradient-bg pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            {/* Urgência estratégica */}
+            <div className="inline-block bg-orange-100 text-orange-800 px-6 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
+              🔥 PRÉ-ANÁLISE IA - ÚLTIMAS 48H COM DESCONTO
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Descubra se Você Pode
+              <span className="gradient-text block">Conseguir Seu Visto</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              <strong>IA Especializada analisa seu perfil em 15 minutos</strong> e mostra suas chances reais de aprovação + estratégia personalizada para cada país.
+            </p>
+
+            {/* Social proof integrado */}
+            <div className="flex flex-wrap gap-4 text-sm justify-center items-center mb-8">
+              <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <span className="text-green-700 font-semibold">8.420+ aprovações este ano</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
+                <Star className="h-4 w-4 text-blue-500" />
+                <span className="text-blue-700 font-semibold">98% recomendam nossa IA</span>
+              </div>
+            </div>
+
+            {/* CTA ÚNICO E FOCADO */}
+            <div className="mb-6">
+              <a href="/consultoria-ia">
+                <Button className="btn-gradient text-xl px-12 py-5 shadow-2xl hover:scale-105 transition-all">
+                  <Zap className="mr-3 h-6 w-6" />
+                  INICIAR PRÉ-ANÁLISE (R$ 29,90)
+                </Button>
+              </a>
+            </div>
+
+            {/* Micro-compromissos */}
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-600">
+                ✅ Apenas R$ 29,90 • ⚡ 15 minutos • 🛡️ Dados protegidos
+              </p>
+              <p className="text-xs text-gray-500">
+                <a href="/precos" className="text-blue-600 hover:underline">Ver todos os pacotes e preços →</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Banner Países Premium - SCROLL AUTOMÁTICO */}
-      <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 pt-20 md:pt-24 pb-6 overflow-hidden">
+      <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 py-12 overflow-hidden">
         {/* Background Pattern Sofisticado */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_49%,rgba(255,255,255,0.05)_51%,transparent_52%)] bg-[length:20px_20px]"></div>
@@ -197,57 +247,7 @@ export default function HomePage() {
 
       <SocialProof />
 
-      {/* Hero Section - OTIMIZADO PARA CONVERSÃO */}
-      <section className="gradient-bg py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            {/* Urgência estratégica */}
-            <div className="inline-block bg-orange-100 text-orange-800 px-6 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
-              🔥 PRÉ-ANÁLISE IA - ÚLTIMAS 48H COM DESCONTO
-            </div>
-
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Descubra se Você Pode
-              <span className="gradient-text block">Conseguir Seu Visto</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              <strong>IA Especializada analisa seu perfil em 15 minutos</strong> e mostra suas chances reais de aprovação + estratégia personalizada para cada país.
-            </p>
-
-            {/* Social proof integrado */}
-            <div className="flex flex-wrap gap-4 text-sm justify-center items-center mb-8">
-              <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="text-green-700 font-semibold">8.420+ aprovações este ano</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
-                <Star className="h-4 w-4 text-blue-500" />
-                <span className="text-blue-700 font-semibold">98% recomendam nossa IA</span>
-              </div>
-            </div>
-
-            {/* CTA ÚNICO E FOCADO */}
-            <div className="mb-6">
-              <a href="/consultoria-ia">
-                <Button className="btn-gradient text-xl px-12 py-5 shadow-2xl hover:scale-105 transition-all">
-                  <Zap className="mr-3 h-6 w-6" />
-                  INICIAR PRÉ-ANÁLISE (R$ 29,90)
-                </Button>
-              </a>
-            </div>
-
-            {/* Micro-compromissos */}
-            <div className="text-center space-y-2">
-              <p className="text-sm text-gray-600">
-                ✅ Apenas R$ 29,90 • ⚡ 15 minutos • 🛡️ Dados protegidos
-              </p>
-              <p className="text-xs text-gray-500">
-                <a href="/precos" className="text-blue-600 hover:underline">Ver todos os pacotes e preços →</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Antiga Hero Section removida (movida para o topo) */}
 
       {/* Como Funciona - PROCESSO TRANSPARENTE */}
       <section className="py-20 bg-white">

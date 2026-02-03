@@ -20,9 +20,6 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'),
 
-  alternates: {
-    canonical: '/'
-  },
   openGraph: {
     title: 'Visa2Any - Plataforma Líder em Assessoria de Vistos',
     description: 'Simplifique sua jornada internacional com a plataforma mais completa de assessoria de vistos e imigração.',
@@ -158,42 +155,6 @@ export default function RootLayout({
               ],
               "serviceType": "Assessoria de Imigração",
               "category": "Legal Services"
-            }
-          `}
-        </Script>
-
-        {/* Schema.org FAQPage */}
-        <Script id="faq-schema" type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "Quanto tempo demora para conseguir um visto?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "O tempo varia por país: EUA (3-6 meses), Canadá (2-4 meses), Europa (1-3 meses). Nossa assessoria acelera o processo com preparação adequada."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Qual é a taxa de aprovação com a Visa2Any?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Nossa taxa de aprovação é superior a 85% para clientes que seguem integralmente nossas orientações e preparação."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Vocês garantem a aprovação do visto?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Não garantimos aprovação, pois a decisão final é das autoridades governamentais. Garantimos apenas a qualidade da nossa assessoria e suporte."
-                  }
-                }
-              ]
             }
           `}
         </Script>

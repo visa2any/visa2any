@@ -43,16 +43,41 @@ export default function SobrePage() {
     '⭐ 5 Estrelas Google'
   ]
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    'mainEntity': {
+      '@type': 'Organization',
+      'name': 'Visa2Any',
+      'foundingDate': '2009',
+      'description': 'A Visa2Any é líder em consultoria de imigração e vistos, combinando expertise jurídica com tecnologia de ponta.',
+      'employee': team.map(member => ({
+        '@type': 'Person',
+        'name': member.name,
+        'jobTitle': member.role,
+        'knowsAbout': [member.specialty, 'Imigração', 'Vistos', 'Direito Internacional'],
+        'worksFor': {
+          '@type': 'Organization',
+          'name': 'Visa2Any'
+        },
+        'image': `https://visa2any.com/images/team/${member.name.toLowerCase().replace(' ', '-')}.jpg` // Placeholder for actual images
+      }))
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="page-content py-16">
         {/* Hero Section */}
         <div className="max-w-6xl mx-auto px-4 mb-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Sobre a Visa2Any</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Transformando sonhos internacionais em realidade desde 2009. 
+              Transformando sonhos internacionais em realidade desde 2009.
               Somos a ponte entre você e seu futuro no exterior.
             </p>
           </div>
@@ -62,11 +87,11 @@ export default function SobrePage() {
             <div>
               <h2 className="text-3xl font-bold mb-6">Nossa História</h2>
               <p className="text-gray-600 mb-4 leading-relaxed">
-                A Visa2Any nasceu da necessidade de simplificar e democratizar o acesso aos processos de imigração e obtenção de vistos. 
+                A Visa2Any nasceu da necessidade de simplificar e democratizar o acesso aos processos de imigração e obtenção de vistos.
                 Com mais de 15 anos de experiência, já ajudamos milhares de brasileiros a realizarem seus sonhos de morar, estudar e trabalhar no exterior.
               </p>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Nossa missão é tornar o processo de imigração mais acessível, transparente e eficiente, utilizando tecnologia de ponta 
+                Nossa missão é tornar o processo de imigração mais acessível, transparente e eficiente, utilizando tecnologia de ponta
                 combinada com a expertise de nossos consultores especializados.
               </p>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -74,7 +99,7 @@ export default function SobrePage() {
                 Falar com Especialista
               </Button>
             </div>
-            
+
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl">
               <h3 className="text-2xl font-bold mb-6 text-center">Nossa Trajetória</h3>
               <div className="space-y-6">
@@ -101,21 +126,21 @@ export default function SobrePage() {
               <p className="text-gray-600">Vistos Aprovados</p>
               <p className="text-xs text-green-600 mt-1">✅ Só em 2024</p>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg text-center border-l-4 border-green-600">
               <Globe className="h-12 w-12 text-green-600 mx-auto mb-4" />
               <h3 className="font-bold text-3xl text-gray-900 mb-2">50+</h3>
               <p className="text-gray-600">Países Atendidos</p>
               <p className="text-xs text-blue-600 mt-1">🌍 Cobertura global</p>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg text-center border-l-4 border-purple-600">
               <Award className="h-12 w-12 text-purple-600 mx-auto mb-4" />
               <h3 className="font-bold text-3xl text-gray-900 mb-2">15+</h3>
               <p className="text-gray-600">Anos de Experiência</p>
               <p className="text-xs text-purple-600 mt-1">⭐ Desde 2009</p>
             </div>
-            
+
             <div className="bg-white p-6 rounded-xl shadow-lg text-center border-l-4 border-orange-600">
               <Shield className="h-12 w-12 text-orange-600 mx-auto mb-4" />
               <h3 className="font-bold text-3xl text-gray-900 mb-2">85.2%</h3>
@@ -135,7 +160,7 @@ export default function SobrePage() {
                 <h3 className="font-bold text-xl mb-3">Excelência</h3>
                 <p className="text-gray-600">Buscamos sempre a mais alta qualidade em nossos serviços e resultados excepcionais para nossos clientes.</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl">🤝</span>
@@ -143,7 +168,7 @@ export default function SobrePage() {
                 <h3 className="font-bold text-xl mb-3">Transparência</h3>
                 <p className="text-gray-600">Mantemos comunicação clara e honesta em todas as etapas do processo, sem custos ocultos.</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl">🚀</span>
@@ -196,7 +221,7 @@ export default function SobrePage() {
                 <p className="text-gray-600 mb-4 italic">"Processo impecável do início ao fim. Aprovado no visto americano na primeira tentativa!"</p>
                 <div className="font-semibold">Carlos M. - 🇺🇸 Visto B1/B2</div>
               </div>
-              
+
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -206,7 +231,7 @@ export default function SobrePage() {
                 <p className="text-gray-600 mb-4 italic">"Suporte excepcional durante todo o processo de imigração para o Canadá. Recomendo!"</p>
                 <div className="font-semibold">Ana S. - 🇨🇦 Express Entry</div>
               </div>
-              
+
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -245,7 +270,7 @@ export default function SobrePage() {
           <AffiliateBanner variant="compact" />
         </div>
       </div>
-      
+
     </div>
   )
 }
