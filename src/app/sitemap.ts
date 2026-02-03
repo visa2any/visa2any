@@ -2,15 +2,45 @@ import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com'
-  
+
   // URLs estáticas
-  
+
   const staticUrls = [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1.0
+    },
+    {
+      url: `${baseUrl}/analise`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/servicos`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/visto-americano`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/visto-canadense`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/visto-europeu`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
     },
     {
       url: `${baseUrl}/blog`,
@@ -43,6 +73,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6
     },
     {
+      url: `${baseUrl}/faq`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6
+    },
+    {
       url: `${baseUrl}/checkout`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
@@ -53,6 +89,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.7
+    },
+    {
+      url: `${baseUrl}/privacidade`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3
+    },
+    {
+      url: `${baseUrl}/termos`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3
     }
   ]
 
