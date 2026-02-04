@@ -401,8 +401,8 @@ class NotificationService {
   }
 
   private readonly telegramConfig = {
-    botToken: process.env.TELEGRAM_ADMIN_BOT_TOKEN || '',
-    adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID || ''
+    botToken: process.env.TELEGRAM_ADMIN_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN || '',
+    adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID || ''
   }
 
   // === ADMIN ALERTS (TELEGRAM) ===
