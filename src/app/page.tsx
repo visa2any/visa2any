@@ -32,7 +32,7 @@ export default function HomePage() {
     <div className="min-h-screen">
 
       {/* Banner Países Premium - SCROLL AUTOMÁTICO */}
-      <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 py-12 overflow-hidden">
+      <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 pt-32 pb-12 overflow-hidden">
         {/* Background Pattern Sofisticado */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_49%,rgba(255,255,255,0.05)_51%,transparent_52%)] bg-[length:20px_20px]"></div>
