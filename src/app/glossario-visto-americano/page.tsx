@@ -88,7 +88,7 @@ export default function GlossaryPage() {
                                 "name": "Glossário Técnico de Vistos",
                                 "dataFeedElement": definitions.map(d => ({
                                     "@type": "DefinedTerm",
-                                    "name": d.term.split('(')[0].trim(),
+                                    "name": (d.term.split('(')[0] || '').trim(),
                                     "description": d.def
                                 }))
                             }
