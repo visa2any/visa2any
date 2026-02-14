@@ -83,9 +83,9 @@ export default function SmartScheduler() {
 
   const services = [
     'Pré-Análise IA (15min) - R$ 29,90',
-    'Relatório Premium (R$ 97) - Imediato',
-    'Consultoria Express (R$ 297) - 60min',
-    'Assessoria VIP (R$ 1.997+) - Completa',
+    'Relatório Premium (R$ 97,00) - Imediato',
+    'Consultoria Express (R$ 297,00) - 60min',
+    'Assessoria VIP (R$ 1.997,00+) - Completa',
     'Preparação de Documentos',
     'Acompanhamento de Processo'
   ]
@@ -283,8 +283,8 @@ Deseja acessar seu portal agora?`)) {
         <div key={step} className="flex items-center">
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step <= currentStep
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-600'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-600'
               }`}
           >
             {step < currentStep ? <CheckCircle className="w-5 h-5" /> : step}
@@ -375,8 +375,8 @@ Deseja acessar seu portal agora?`)) {
             <div
               key={specialist.id}
               className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${selectedSpecialist === specialist.name
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                ? 'border-blue-600 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
                 }`}
               onClick={() => {
                 setSelectedSpecialist(specialist.name)
@@ -446,8 +446,8 @@ Deseja acessar seu portal agora?`)) {
                 key={day.fullDate}
                 onClick={() => day.fullDate && handleDateSelect(day.fullDate)}
                 className={`p-4 rounded-xl border-2 transition-all ${selectedDate === day.fullDate
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-blue-600 bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300'
                   }`}
               >
                 <div className="text-center">
@@ -486,10 +486,10 @@ Deseja acessar seu portal agora?`)) {
                     onClick={() => slot.available && handleTimeSelect(slot.time, slot.specialist!)}
                     disabled={!slot.available}
                     className={`p-3 rounded-lg border-2 transition-all ${selectedTime === slot.time
-                        ? 'border-blue-600 bg-blue-50'
-                        : slot.available
-                          ? 'border-gray-200 hover:border-gray-300 bg-white'
-                          : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                      ? 'border-blue-600 bg-blue-50'
+                      : slot.available
+                        ? 'border-gray-200 hover:border-gray-300 bg-white'
+                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
                       }`}
                   >
                     <div className="text-sm font-medium">{slot.time}</div>
@@ -516,8 +516,8 @@ Deseja acessar seu portal agora?`)) {
                   key={type}
                   onClick={() => setAppointmentType(type)}
                   className={`p-4 border-2 rounded-xl transition-all ${appointmentType === type
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-600 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
                     }`}
                 >
                   <Icon className="w-6 h-6 mx-auto mb-2 text-blue-600" />

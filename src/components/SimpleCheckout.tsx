@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, CreditCard, Shield, Check, Clock, Star } from 'lucide-react'
+import { formatCurrency } from '@/utils/format'
 
 interface SimpleCheckoutProps {
   productId: string
@@ -96,16 +97,16 @@ export default function SimpleCheckout({
         <div className="flex flex-col items-center justify-center mb-2">
           {originalPrice && (
             <span className="text-gray-400 line-through text-lg font-medium">
-              De R$ {originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              De {formatCurrency(originalPrice)}
             </span>
           )}
           <span className="text-3xl font-bold text-blue-600">
-            {price === 0 ? 'R$ 0,00' : `Por R$ ${price.toLocaleString('pt-BR')}`}
+            {price === 0 ? 'Grátis' : `Por ${formatCurrency(price)}`}
           </span>
         </div>
         {variant === 'premium' && (
           <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-            Economia de R$ 100+
+            Economia de {formatCurrency(100)}+
           </div>
         )}
       </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Bot, CheckCircle, Lock } from 'lucide-react'
+import { formatCurrency } from '@/utils/format'
 
 // ... interfaces keep formatted ...
 interface ConsultationMessage {
@@ -196,7 +197,7 @@ export default function AIConsultation() {
       question: "Quanto pode investir no processo completo?",
       field: 'budget',
       type: 'select',
-      options: ['Até R$ 50.000', 'R$ 50.000 - R$ 150.000', 'R$ 150.000 - R$ 300.000', 'Acima de R$ 300.000']
+      options: ['Até R$ 50.000,00', 'R$ 50.000,00 - R$ 150.000,00', 'R$ 150.000,00 - R$ 300.000,00', 'Acima de R$ 300.000,00']
     },
     {
       id: 'family',
@@ -405,7 +406,7 @@ export default function AIConsultation() {
             className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 w-full text-lg animate-pulse"
           >
             <Lock className="mr-2 h-6 w-6" />
-            Liberar Acesso Agora - R$ 29,90
+            Liberar Acesso Agora - {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(29.90)}
           </Button>
 
           <p className="text-sm text-gray-500 mt-4">

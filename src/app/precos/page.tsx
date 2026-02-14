@@ -9,6 +9,7 @@ import SimpleCheckout from '@/components/SimpleCheckout'
 import Breadcrumb from '@/components/Breadcrumb'
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { ArrowRight, CheckCircle, Star, Crown, Zap, FileText, Users, Clock, Shield, Download, Check } from 'lucide-react'
+import { formatCurrency } from '@/utils/format'
 
 // Configuração do Vaga Express
 const VAGA_EXPRESS_PLANS = {
@@ -791,35 +792,35 @@ export default function PrecosPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="border border-gray-300 p-2 text-center text-blue-600 font-bold text-sm">R$ 29,90</td>
+                      <td className="border border-gray-300 p-2 text-center text-blue-600 font-bold text-sm">{formatCurrency(29.90)}</td>
                       <td className="border border-gray-300 p-2 text-center font-medium text-sm">
                         {typeof country.prices.report === 'object' ? (
                           <div>
-                            <div>R$ {country.prices.report.base}</div>
+                            <div>{formatCurrency(country.prices.report.base)}</div>
                             <div className="text-xs text-gray-500">varia por tipo</div>
                           </div>
                         ) : (
-                          `R$ ${country.prices.report}`
+                          formatCurrency(country.prices.report as number)
                         )}
                       </td>
                       <td className="border border-gray-300 p-2 text-center font-medium text-sm">
                         {typeof country.prices.consultation === 'object' ? (
                           <div>
-                            <div>R$ {country.prices.consultation.base}</div>
+                            <div>{formatCurrency(country.prices.consultation.base)}</div>
                             <div className="text-xs text-gray-500">varia por tipo</div>
                           </div>
                         ) : (
-                          `R$ ${country.prices.consultation}`
+                          formatCurrency(country.prices.consultation as number)
                         )}
                       </td>
                       <td className="border border-gray-300 p-2 text-center font-medium text-sm">
                         {typeof country.prices.vip === 'object' ? (
                           <div>
-                            <div>R$ {country.prices.vip.base.toLocaleString('pt-BR')}</div>
+                            <div>{formatCurrency(country.prices.vip.base)}</div>
                             <div className="text-xs text-gray-500">varia por tipo</div>
                           </div>
                         ) : (
-                          `R$ ${country.prices.vip.toLocaleString('pt-BR')}`
+                          formatCurrency(country.prices.vip as number)
                         )}
                       </td>
                     </tr>

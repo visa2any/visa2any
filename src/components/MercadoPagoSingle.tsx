@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { ArrowLeft, CreditCard, Shield, Copy, CheckCircle2, Clock, Smartphone } from 'lucide-react'
+import { formatCurrency } from '@/utils/format'
 
 // CONTROLE GLOBAL ÚNICO para evitar duplicação
 let globalMPInstance: any = null
@@ -401,7 +402,7 @@ export default function MercadoPagoSingle({
             <p>Olá ${customerData.name},</p>
             <p>Seu código PIX:</p>
             <code>${pixCode}</code>
-            <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+            <p><strong>Valor:</strong> ${formatCurrency(amount)}</p>
           `,
           template: true
         })
@@ -576,7 +577,7 @@ export default function MercadoPagoSingle({
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-green-600">
-                    R$ {amount.toFixed(2)}
+                    {formatCurrency(amount)}
                   </div>
                   <div className="flex items-center text-sm text-green-600">
                     <Shield className="h-4 w-4 mr-1" />

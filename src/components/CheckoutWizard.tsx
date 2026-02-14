@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { ArrowRight, ArrowLeft, Shield, Star, CreditCard, Check, User, FileText, Zap, Clock, Users, CheckCircle } from 'lucide-react'
+import { formatCurrency } from '@/utils/format'
 
 interface FormData {
   // Etapa 1
   name: string
   email: string
   whatsapp: string
-  
+
   // Etapa 2
-  
+
   cpf: string
   terms: boolean
   contract: boolean
@@ -124,7 +125,7 @@ export default function CheckoutWizard() {
           items: [{
             id: 'consultoria-express',
             title: 'Consultoria Express - Visa2Any',
-            description: `Consultoria personalizada - ${formData.installments}x de R$ ${calculateInstallmentPrice(formData.installments).toFixed(2)}`,
+            description: `Consultoria personalizada - ${formData.installments}x de ${formatCurrency(calculateInstallmentPrice(formData.installments))}`,
             unit_price: totalPrice,
             quantity: 1
           }],
@@ -152,7 +153,7 @@ export default function CheckoutWizard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-32 pb-8 px-4">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Header com barra de progresso */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-6 p-6">
           <div className="flex items-center justify-between mb-4">
@@ -168,24 +169,23 @@ export default function CheckoutWizard() {
               Etapa {currentStep} de {steps.length}
             </div>
           </div>
-          
+
           {/* Barra de progresso horizontal */}
           <div className="w-full bg-gray-200 rounded-full h-3">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${(currentStep / steps.length) * 100}%` }}
             />
           </div>
-          
+
           {/* Indicadores de etapas */}
           <div className="flex justify-between mt-4">
             {steps.map((step) => (
               <div key={step.id} className="flex items-center space-x-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  step.id <= currentStep 
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${step.id <= currentStep
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'bg-gray-200 text-gray-500'
+                  }`}>
                   {step.id < currentStep ? (
                     <CheckCircle className="w-4 h-4" />
                   ) : (
@@ -193,9 +193,8 @@ export default function CheckoutWizard() {
                   )}
                 </div>
                 <div className="hidden sm:block">
-                  <div className={`text-sm font-semibold ${
-                    step.id <= currentStep ? 'text-blue-600' : 'text-gray-500'
-                  }`}>
+                  <div className={`text-sm font-semibold ${step.id <= currentStep ? 'text-blue-600' : 'text-gray-500'
+                    }`}>
                     {step.title}
                   </div>
                   <div className="text-xs text-gray-400">{step.description}</div>
@@ -207,11 +206,11 @@ export default function CheckoutWizard() {
 
         {/* Layout principal com sidebar à direita */}
         <div className="grid lg:grid-cols-4 gap-6">
-          
+
           {/* Formulário principal - lado esquerdo */}
           <div className="lg:col-span-3 order-2 lg:order-1">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-              
+
               {/* Conteúdo das etapas */}
               {currentStep === 1 && (
                 <div className="space-y-6">
@@ -368,7 +367,7 @@ export default function CheckoutWizard() {
                     Voltar
                   </button>
                 )}
-                
+
                 {currentStep < steps.length ? (
                   <button
                     onClick={nextStep}
@@ -403,7 +402,7 @@ export default function CheckoutWizard() {
 
           {/* Sidebar - Resumo do pedido - lado direito */}
           <div className="lg:col-span-1 order-1 lg:order-2 space-y-6 lg:sticky lg:top-32 lg:h-fit">
-            
+
             {/* Card do produto */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <div className="text-center mb-4">
@@ -413,23 +412,23 @@ export default function CheckoutWizard() {
                 <h3 className="font-bold text-gray-900 text-lg">Consultoria Express</h3>
                 <p className="text-gray-600 text-sm mt-1">Processo de visto personalizado</p>
               </div>
-              
+
               {/* Preço com parcelamento */}
               <div className="border-t pt-4 space-y-3">
                 <div className="text-center">
                   <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    R$ {getTotalPrice(formData.installments).toFixed(2)}
+                    {formatCurrency(getTotalPrice(formData.installments))}
                   </div>
                   {formData.installments > 1 && (
                     <div className="text-sm text-gray-600">
-                      {formData.installments}x de R$ {calculateInstallmentPrice(formData.installments).toFixed(2)}
+                      {formData.installments}x de {formatCurrency(calculateInstallmentPrice(formData.installments))}
                       {formData.installments > 3 && (
                         <span className="text-orange-600 font-medium"> (com juros)</span>
                       )}
                     </div>
                   )}
                 </div>
-                
+
                 {/* Seletor de parcelas */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">

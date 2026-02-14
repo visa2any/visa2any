@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CreditCard, Shield, Check, Star, Zap, CheckCircl
 import Link from 'next/link'
 import ServiceContract from './ServiceContract'
 import MercadoPagoSingle from './MercadoPagoSingle'
+import { formatCurrency } from '@/utils/format'
 // import Header from '@/components/Header'
 // import Footer from '@/components/Footer'
 
@@ -655,11 +656,11 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                 <div className="text-right">
                   {(currentAdults > 1 || currentChildren > 0 || getAdultGroupSavings() > 0 || getChildrenSavings() > 0) && (
                     <div className="text-sm text-gray-500 line-through mb-1">
-                      De: R$ {(currentAdults * getBaseAdultPrice() + currentChildren * getBaseChildPrice()).toLocaleString('pt-BR')}
+                      De: {formatCurrency(currentAdults * getBaseAdultPrice() + currentChildren * getBaseChildPrice())}
                     </div>
                   )}
                   <div className="text-4xl font-bold text-blue-600 mb-1">
-                    R$ {currentTotal.toLocaleString('pt-BR')}
+                    {formatCurrency(currentTotal)}
                   </div>
                   {(currentAdults > 1 || currentChildren > 0) && (
                     <div className="text-sm text-gray-600 mb-1">
@@ -668,14 +669,14 @@ export default function CheckoutModerno(props: CheckoutModernoProps) {
                   )}
                   {currentSavings > 0 && (
                     <div className="text-sm text-green-600 font-medium mb-1">
-                      Economize R$ {currentSavings.toLocaleString('pt-BR')}
+                      Economize {formatCurrency(currentSavings)}
                     </div>
                   )}
                   <div className="text-sm text-green-600 font-medium">
                     {productData.highlight}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    ou 12x de R$ {(currentTotal / 12).toFixed(2).replace('.', ',')}
+                    ou 12x de {formatCurrency(currentTotal / 12)}
                   </div>
                 </div>
               </div>
