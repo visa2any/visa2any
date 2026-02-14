@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import AuthorSignature from '@/components/blog/AuthorSignature'
 
 import AffiliateBanner from '@/components/AffiliateBanner'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ import {
 } from 'lucide-react'
 // import { scheduleAutomaticPosts } from '@/lib/social-automation'
 import AuthorBio from '@/components/AuthorBio'
+import Markdown from 'react-markdown'
 
 interface BlogPost {
   id: string
@@ -90,15 +92,20 @@ const ClientOnly = ({ children }: { children: React.ReactNode }) => {
 
 interface Props {
   slug: string
+  initialPost: BlogPost | null
+  initialComments: Comment[]
+  initialRelatedPosts: BlogPost[]
 }
 
-export default function BlogPostClient({ slug }: Props) {
+export default function BlogPostClient({ slug, initialPost, initialComments, initialRelatedPosts }: Props) {
   // Estados
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([])
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [post, setPost] = useState<BlogPost | null>(initialPost)
+  const [comments, setComments] = useState<Comment[]>(initialComments)
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>(initialRelatedPosts)
+
+  // Como agora recebemos via SSR, não precisamos carregar o post, apenas autenticação
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(initialPost ? '' : 'Post não encontrado')
 
   // Estados para comentários
 
@@ -110,7 +117,7 @@ export default function BlogPostClient({ slug }: Props) {
 
   const [isLiked, setIsLiked] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
-  const [localLikes, setLocalLikes] = useState(0)
+  const [localLikes, setLocalLikes] = useState(initialPost?.likes || 0)
 
   // Estados para compartilhamento
 
@@ -121,47 +128,16 @@ export default function BlogPostClient({ slug }: Props) {
 
   const [user, setUser] = useState<any>(null)
 
-  // Carregar dados do post
-
+  // Carregar autenticação
   useEffect(() => {
-    if (slug) {
-      loadPost()
-      loadComments()
-      checkUserAuth()
-    }
-  }, [slug])
+    checkUserAuth()
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setShareUrl(window.location.href)
     }
   }, [])
-
-  const loadPost = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/blog/posts/${slug}`)
-      const data = await response.json()
-
-      if (data.success) {
-        setPost(data.post)
-        setRelatedPosts(data.relatedPosts || [])
-        setLocalLikes(data.post.likes)
-
-        // Agendar posts automáticos se for um post novo
-        // if (data.post.featured) {
-        //   await scheduleAutomaticPosts(data.post)
-        // }
-      } else {
-        setError(data.error || 'Post não encontrado')
-      }
-    } catch (err) {
-      console.error('Erro ao carregar post:', err)
-      setError('Erro ao conectar com o servidor')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const loadComments = async () => {
     try {
@@ -648,11 +624,14 @@ export default function BlogPostClient({ slug }: Props) {
                 </div>
               </section>
 
+
+
+              // ... (in the component return)
+
               <article className="bg-white rounded-xl shadow-lg p-8 mb-12">
-                <div
-                  className="prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <div className="prose prose-lg max-w-none">
+                  <Markdown>{post.content}</Markdown>
+                </div>
 
                 {/* Tags */}
                 <div className="border-t border-gray-200 pt-8 mt-12">
@@ -835,29 +814,7 @@ export default function BlogPostClient({ slug }: Props) {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               {/* Autor Info */}
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Sobre o Autor</h3>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {post.author.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">{post.author}</div>
-                    <div className="text-gray-500 text-sm">Especialista em Imigração</div>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-sm mb-4">
-                  Especialista com mais de 5 anos de experiência em processos de imigração e consultoria internacional.
-                </p>
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-                    Seguir
-                  </button>
-                  <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                    Contato
-                  </button>
-                </div>
-              </div>
+              <AuthorSignature />
 
               {/* Stats do Post */}
               <div className="bg-white rounded-xl shadow-lg p-6 mb-8">

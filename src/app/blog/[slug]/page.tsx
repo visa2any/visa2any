@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: post.excerpt,
         type: 'article',
         publishedTime: post.publishDate.toISOString(),
-        authors: [post.author],
+        authors: ['Equipe Técnica Visa2Any'],
         images: post.imageUrl ? [{
           url: post.imageUrl,
           width: 1200,
@@ -162,8 +162,87 @@ async function generateStructuredData(slug: string) {
   }
 }
 
+// Função para buscar dados do post
+async function getPost(slug: string) {
+  const prisma = new PrismaClient()
+  try {
+    const post = await prisma.blogPost.findFirst({
+      where: {
+        id: slug,
+        published: true
+      },
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        content: true,
+        category: true,
+        author: true,
+        // authorImage: true, // Adicionar se existir no schema
+        publishDate: true,
+        readTime: true,
+        featured: true,
+        trending: true,
+        urgent: true,
+        tags: true,
+        country: true,
+        flag: true,
+        views: true,
+        likes: true,
+        comments: true,
+        difficulty: true,
+        type: true,
+        imageUrl: true,
+        videoUrl: true,
+        sponsored: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    })
+    return post
+  } catch (error) {
+    console.error('Erro ao buscar post:', error)
+    return null
+  }
+}
+
+// Função para buscar comentários
+async function getComments(slug: string) {
+  // Simulando busca de comentários ou implementando via Prisma se a tabela existir
+  // Por enquanto retornando array vazio para manter compatibilidade
+  return []
+}
+
 export default async function BlogPostPage({ params }: Props) {
+  const post = await getPost(params.slug)
+  const comments = await getComments(params.slug)
   const structuredData = await generateStructuredData(params.slug)
+
+  if (!post) {
+    return <BlogPostClient slug={params.slug} initialPost={null} initialComments={[]} initialRelatedPosts={[]} />
+  }
+
+  // Serializar datas para passar do Server Component para Client Component
+  const serializedPost = {
+    ...post,
+    publishDate: post.publishDate.toISOString(),
+    createdAt: post.createdAt ? post.createdAt.toISOString() : undefined,
+    updatedAt: post.updatedAt ? post.updatedAt.toISOString() : undefined,
+    // Garantir compatibilidade de tipos literais
+    difficulty: post.difficulty as 'Iniciante' | 'Intermediário' | 'Avançado',
+    type: post.type as 'Guia' | 'Notícia' | 'Atualização' | 'Dica' | 'Análise',
+    tags: Array.isArray(post.tags) ? post.tags as string[] : [],
+    country: post.country || undefined,
+    flag: post.flag || undefined,
+    imageUrl: post.imageUrl || undefined,
+    videoUrl: post.videoUrl || undefined,
+    sponsored: post.sponsored || undefined,
+    // Ensure exactOptionalPropertyTypes compliance
+    urgent: post.urgent ?? false,
+    trending: post.trending ?? false,
+    featured: post.featured || false
+  }
 
   return (
     <>
@@ -177,8 +256,18 @@ export default async function BlogPostPage({ params }: Props) {
         />
       )}
 
-      {/* Componente cliente */}
-      <BlogPostClient slug={params.slug} />
+      {/* Preload da imagem principal para LCP Otimizado */}
+      {post.imageUrl && (
+        <link rel="preload" as="image" href={post.imageUrl} />
+      )}
+
+      {/* Componente cliente com dados hidratados */}
+      <BlogPostClient
+        slug={params.slug}
+        initialPost={serializedPost}
+        initialComments={comments}
+        initialRelatedPosts={[]}
+      />
     </>
   )
 }

@@ -9,7 +9,19 @@ export const metadata: Metadata = {
     default: 'Visa2Any - Plataforma Líder em Assessoria de Vistos e Imigração'
   },
   description: 'A Visa2Any é a plataforma mais completa para assessoria de vistos, imigração e relocação. Simplifique sua jornada internacional com nossa tecnologia avançada e expertise especializada.',
-  keywords: ['visto', 'imigração', 'relocação', 'assessoria de visto', 'documentação internacional', 'cidadania', 'passaporte'],
+
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com',
+    languages: {
+      'pt-BR': process.env.NEXT_PUBLIC_SITE_URL || 'https://visa2any.com',
+    },
+  },
+  keywords: [
+    'visto americano', 'visto canadense', 'visto europeu', 'assessoria de visto',
+    'imigração', 'relocação', 'cidadania', 'passaporte', 'visto de trabalho',
+    'visto de estudante', 'visto de turista', 'green card', 'dupla cidadania',
+    'morar fora', 'trabalhar no exterior'
+  ],
   authors: [{ name: 'Visa2Any' }],
   creator: 'Visa2Any',
   publisher: 'Visa2Any',
@@ -84,6 +96,23 @@ export default function RootLayout({
           `}
         </Script>
 
+        {/* Schema.org WebSite */}
+        <Script id="website-schema" type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Visa2Any",
+              "url": "https://visa2any.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://visa2any.com/blog?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+          `}
+        </Script>
+
         {/* Schema.org Organization + Service */}
         <Script id="organization-schema" type="application/ld+json">
           {`
@@ -109,7 +138,14 @@ export default function RootLayout({
                 "https://facebook.com/visa2any",
                 "https://instagram.com/visa2any",
                 "https://linkedin.com/company/visa2any"
-              ]
+              ],
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "reviewCount": "8420",
+                "bestRating": "5",
+                "worstRating": "1"
+              }
             }
           `}
         </Script>

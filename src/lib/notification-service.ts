@@ -467,6 +467,12 @@ _Visa2Any System_ 🤖
           parse_mode: 'Markdown'
         })
       })
+
+      if (!response.ok) {
+        const err = await response.text()
+        console.error('Telegram API Failed:', response.status, err)
+      }
+
       return response.ok
     } catch (e) {
       console.error('Telegram API Error:', e)
@@ -496,7 +502,7 @@ _Visa2Any System_ 🤖
       },
       telegram: {
         configured: telegramConfigured,
-        status: telegramConfigured ? 'Active (Admin Bot)' : 'TELEGRAM_ADMIN_BOT_TOKEN missing'
+        status: telegramConfigured ? 'Active (Admin Bot)' : 'Bot Token or Chat ID missing'
       },
       overall: whatsappConfigured || emailConfigured || telegramConfigured
     }
