@@ -39,26 +39,26 @@ interface BlogPost {
   content: string
   category: string
   author: string
-  authorImage?: string
+  authorImage?: string | undefined
   publishDate: string
   readTime: string
   featured: boolean
-  trending?: boolean
-  urgent?: boolean
+  trending?: boolean | undefined
+  urgent?: boolean | undefined
   tags: string[]
-  country?: string
-  flag?: string
+  country?: string | undefined
+  flag?: string | undefined
   views: number
   likes: number
   comments: number
   difficulty: 'Iniciante' | 'Intermediário' | 'Avançado'
   type: 'Guia' | 'Notícia' | 'Atualização' | 'Dica' | 'Análise'
-  imageUrl?: string
-  videoUrl?: string
-  sponsored?: boolean
-  published?: boolean
-  createdAt?: string
-  updatedAt?: string
+  imageUrl?: string | undefined
+  videoUrl?: string | undefined
+  sponsored?: boolean | undefined
+  published?: boolean | undefined
+  createdAt?: string | undefined
+  updatedAt?: string | undefined
 }
 
 interface Comment {
